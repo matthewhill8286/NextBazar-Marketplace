@@ -15,6 +15,10 @@ import {
   Trash2,
   MoreHorizontal,
   X,
+  Tag,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -26,6 +30,9 @@ type Message = {
   read_at: string | null;
   is_pinned: boolean;
   deleted_at: string | null;
+  message_type: "text" | "offer";
+  offer_price: number | null;
+  offer_status: "pending" | "accepted" | "declined" | null;
 };
 
 export default function ChatThread({
@@ -44,10 +51,19 @@ export default function ChatThread({
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null); // message id with open menu
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [pinnedExpanded, setPinnedExpanded] = useState(false);
   const [sendError, setSendError] = useState(false);
+  // Delete conversation dialog
+  const [deleteConvOpen, setDeleteConvOpen] = useState(false);
   const [deletingConv, setDeletingConv] = useState(false);
+  // Delete message dialog
+  const [deleteMsg, setDeleteMsg] = useState<Message | null>(null);
+  const [deletingMsg, setDeletingMsg] = useState(false);
+  // Offer dialog
+  const [offerOpen, setOfferOpen] = useState(false);
+  const [offerPrice, setOfferPrice] = useState("");
+  const [sendingOffer, setSendingOffer] = useState(false);
 
   // Load conversation & messages
   useEffect(() => {
@@ -82,7 +98,7 @@ export default function ChatThread({
 
       const { data: msgs } = await supabase
         .from("messages")
-        .select("id, sender_id, content, created_at, read_at, is_pinned, deleted_at")
+        .select("id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status")
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true });
 
@@ -179,14 +195,24 @@ export default function ChatThread({
       read_at: null,
       is_pinned: false,
       deleted_at: null,
+      message_type: "text",
+      offer_price: null,
+      offer_status: null,
     };
     setMessages((prev) => [...prev, optimistic]);
 
     setSendError(false);
     const { data: inserted, error: insertErr } = await supabase
       .from("messages")
-      .insert({ conversation_id: conversationId, sender_id: userId, content })
-      .select("id, sender_id, content, created_at, read_at, is_pinned, deleted_at")
+      .insert({
+        conversation_id: conversationId,
+        sender_id: userId,
+        content,
+        message_type: "text",
+      })
+      .select(
+        "id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status",
+      )
       .single();
 
     if (inserted) {
@@ -227,24 +253,89 @@ export default function ChatThread({
   }
 
   async function handleDeleteConversation() {
-    if (!confirm("Delete this entire conversation? This cannot be undone.")) return;
     setDeletingConv(true);
     await supabase.from("conversations").delete().eq("id", conversationId);
     router.push("/messages");
   }
 
-  async function handleDelete(msg: Message) {
-    setActiveMenu(null);
-    if (!confirm("Delete this message? It will be removed for everyone.")) return;
+  async function handleDeleteMessage() {
+    if (!deleteMsg) return;
+    setDeletingMsg(true);
     const now = new Date().toISOString();
-    // Optimistic update
     setMessages((prev) =>
-      prev.map((m) => (m.id === msg.id ? { ...m, deleted_at: now } : m)),
+      prev.map((m) => (m.id === deleteMsg.id ? { ...m, deleted_at: now } : m)),
     );
-    await supabase
+    await supabase.from("messages").update({ deleted_at: now }).eq("id", deleteMsg.id);
+    setDeletingMsg(false);
+    setDeleteMsg(null);
+  }
+
+  async function handleSendOffer() {
+    const price = parseFloat(offerPrice);
+    if (!price || price <= 0 || !userId) return;
+    setSendingOffer(true);
+
+    const optimistic: Message = {
+      id: `temp-${Date.now()}`,
+      sender_id: userId,
+      content: "",
+      created_at: new Date().toISOString(),
+      read_at: null,
+      is_pinned: false,
+      deleted_at: null,
+      message_type: "offer",
+      offer_price: price,
+      offer_status: "pending",
+    };
+    setMessages((prev) => [...prev, optimistic]);
+    setOfferOpen(false);
+    setOfferPrice("");
+
+    const { data: inserted } = await supabase
       .from("messages")
-      .update({ deleted_at: now })
-      .eq("id", msg.id);
+      .insert({
+        conversation_id: conversationId,
+        sender_id: userId,
+        content: "",
+        message_type: "offer",
+        offer_price: price,
+        offer_status: "pending",
+      })
+      .select("id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status")
+      .single();
+
+    if (inserted) {
+      setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? inserted : m)));
+      await supabase.from("conversations").update({
+        last_message_at: new Date().toISOString(),
+        last_message_preview: `💰 Offer: €${price.toLocaleString()}`,
+      }).eq("id", conversationId);
+    } else {
+      setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
+    }
+    setSendingOffer(false);
+  }
+
+  async function handleOfferResponse(msg: Message, status: "accepted" | "declined") {
+    // Optimistic
+    setMessages((prev) =>
+      prev.map((m) => (m.id === msg.id ? { ...m, offer_status: status } : m)),
+    );
+    await supabase.from("messages").update({ offer_status: status }).eq("id", msg.id);
+    // Send a follow-up text message
+    const reply = status === "accepted"
+      ? `✅ Offer of €${msg.offer_price?.toLocaleString()} accepted!`
+      : `❌ Offer of €${msg.offer_price?.toLocaleString()} declined.`;
+    await supabase.from("messages").insert({
+      conversation_id: conversationId,
+      sender_id: userId,
+      content: reply,
+      message_type: "text",
+    });
+    await supabase.from("conversations").update({
+      last_message_at: new Date().toISOString(),
+      last_message_preview: reply,
+    }).eq("id", conversationId);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -333,8 +424,7 @@ export default function ChatThread({
           </Link>
         )}
         <button
-          onClick={handleDeleteConversation}
-          disabled={deletingConv}
+          onClick={() => setDeleteConvOpen(true)}
           title="Delete conversation"
           className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
         >
@@ -460,7 +550,7 @@ export default function ChatThread({
                           </button>
                           {isMe && (
                             <button
-                              onClick={() => handleDelete(msg)}
+                              onClick={() => { setActiveMenu(null); setDeleteMsg(msg); }}
                               className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" /> Delete
@@ -472,28 +562,76 @@ export default function ChatThread({
                   </div>
                 )}
 
-                <div
-                  className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-                    isDeleted
-                      ? "bg-gray-100 text-gray-400 italic border border-gray-200"
-                      : isMe
-                        ? `bg-blue-600 text-white rounded-br-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
-                        : `bg-white border border-gray-100 text-gray-900 rounded-bl-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
-                  }`}
-                >
-                  {isDeleted ? (
-                    <p className="flex items-center gap-1.5">
-                      <X className="w-3 h-3" /> Message deleted
-                    </p>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
-                  )}
-                  {!isDeleted && (
-                    <p className={`text-[10px] mt-1 ${isMe ? "text-blue-200" : "text-gray-400"}`}>
-                      {formatTime(msg.created_at)}
-                    </p>
-                  )}
-                </div>
+                {/* Offer card */}
+                {msg.message_type === "offer" && !isDeleted ? (
+                  <div className={`max-w-[75%] rounded-2xl border overflow-hidden ${
+                    isMe ? "rounded-br-md" : "rounded-bl-md"
+                  } ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""} ${
+                    msg.offer_status === "accepted" ? "border-green-200" :
+                    msg.offer_status === "declined" ? "border-red-200" : "border-blue-200"
+                  } bg-white`}>
+                    <div className={`px-4 py-2 flex items-center gap-2 text-xs font-semibold ${
+                      msg.offer_status === "accepted" ? "bg-green-50 text-green-700" :
+                      msg.offer_status === "declined" ? "bg-red-50 text-red-600" :
+                      "bg-blue-50 text-blue-700"
+                    }`}>
+                      <Tag className="w-3.5 h-3.5" />
+                      {msg.offer_status === "accepted" ? "Offer Accepted" :
+                       msg.offer_status === "declined" ? "Offer Declined" : "Price Offer"}
+                    </div>
+                    <div className="px-4 py-3">
+                      <p className="text-2xl font-bold text-gray-900">
+                        €{msg.offer_price?.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">Non-binding offer</p>
+
+                      {/* Accept / Decline for seller when pending */}
+                      {!isMe && msg.offer_status === "pending" && (
+                        <div className="flex gap-2 mt-3">
+                          <button
+                            onClick={() => handleOfferResponse(msg, "accepted")}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-green-500 text-white text-xs font-semibold hover:bg-green-600 transition-colors"
+                          >
+                            <CheckCircle className="w-3.5 h-3.5" /> Accept
+                          </button>
+                          <button
+                            onClick={() => handleOfferResponse(msg, "declined")}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors"
+                          >
+                            <XCircle className="w-3.5 h-3.5" /> Decline
+                          </button>
+                        </div>
+                      )}
+                      {msg.offer_status === "pending" && isMe && (
+                        <p className="text-xs text-blue-500 mt-2 font-medium">Awaiting response…</p>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-gray-400 px-4 pb-2">{formatTime(msg.created_at)}</p>
+                  </div>
+                ) : (
+                  <div
+                    className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                      isDeleted
+                        ? "bg-gray-100 text-gray-400 italic border border-gray-200"
+                        : isMe
+                          ? `bg-blue-600 text-white rounded-br-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
+                          : `bg-white border border-gray-100 text-gray-900 rounded-bl-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
+                    }`}
+                  >
+                    {isDeleted ? (
+                      <p className="flex items-center gap-1.5">
+                        <X className="w-3 h-3" /> Message deleted
+                      </p>
+                    ) : (
+                      <p className="whitespace-pre-wrap">{msg.content}</p>
+                    )}
+                    {!isDeleted && (
+                      <p className={`text-[10px] mt-1 ${isMe ? "text-blue-200" : "text-gray-400"}`}>
+                        {formatTime(msg.created_at)}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           );

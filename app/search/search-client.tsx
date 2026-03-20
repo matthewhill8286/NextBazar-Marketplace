@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal, X, Sparkles, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -84,11 +84,27 @@ export default function SearchClient() {
     loadMeta();
   }, []);
 
-  const doSearch = useCallback(async () => {
+  // Normalise a hit regardless of whether it came from the vector path
+  // (flat category_name/location_name fields) or the Supabase join path
+  // (nested `categories` / `locations` objects).
+  function normalise(h: any) {
+    return {
+      ...h,
+      category: h.category_name
+        ? { name: h.category_name, slug: h.category_slug, icon: h.category_icon }
+        : h.categories ?? h.category ?? null,
+      location: h.location_name
+        ? { name: h.location_name, slug: h.location_slug }
+        : h.locations ?? h.location ?? null,
+    };
+  }
+
+  const doSearch = useCallback(async (searchQuery = query) => {
     setLoading(true);
+    setAiInterpretation("");
 
     const params = new URLSearchParams();
-    if (query)         params.set("q",           query);
+    if (searchQuery)   params.set("q",           searchQuery);
     if (categorySlug)  params.set("category",    categorySlug);
     if (subcategorySlug) params.set("subcategory", subcategorySlug);
     if (locationSlug)  params.set("location",    locationSlug);
@@ -96,86 +112,37 @@ export default function SearchClient() {
     if (priceMin)      params.set("priceMin",     priceMin);
     if (priceMax)      params.set("priceMax",     priceMax);
 
-    try {
-      const res = await fetch(`/api/search?${params.toString()}`);
-      if (!res.ok) throw new Error("search failed");
+    const res = await fetch(`/api/search?${params.toString()}`);
+    if (res.ok) {
       const data = await res.json();
-
-      // Map flat Meilisearch docs to the shape ListingCard expects
-      const hits = (data.hits || []).map((h: any) => ({
-        ...h,
-        category: h.category_name
-          ? { name: h.category_name, slug: h.category_slug, icon: h.category_icon }
-          : null,
-        location: h.location_name
-          ? { name: h.location_name, slug: h.location_slug }
-          : null,
-      }));
-
+      const hits = (data.hits || []).map(normalise);
       setListings(hits);
       setTotalHits(data.totalHits ?? hits.length);
-    } catch {
-      // Meilisearch unavailable — fall back to Supabase query
-      let q = supabase
-        .from("listings")
-        .select(`*, categories(name, slug, icon), locations(name, slug)`)
-        .eq("status", "active");
-
-      if (categorySlug) {
-        const cat = categories.find((c) => c.slug === categorySlug);
-        if (cat) q = q.eq("category_id", cat.id);
-      }
-      if (locationSlug) {
-        const loc = locations.find((l) => l.slug === locationSlug);
-        if (loc) q = q.eq("location_id", loc.id);
-      }
-      if (priceMin !== "") q = q.gte("price", Number(priceMin));
-      if (priceMax !== "") q = q.lte("price", Number(priceMax));
-
-      if (sortBy === "price_low")  q = q.order("price", { ascending: true });
-      else if (sortBy === "price_high") q = q.order("price", { ascending: false });
-      else if (sortBy === "popular") q = q.order("view_count", { ascending: false });
-      else q = q.order("created_at", { ascending: false });
-
-      if (query) {
-        const fts = q.textSearch("search_vector", query, { type: "websearch", config: "english" });
-        const { data: d } = await fts.limit(24);
-        if (d && d.length > 0) { setListings(d); setTotalHits(d.length); setLoading(false); return; }
-        const { data: fb } = await supabase
-          .from("listings")
-          .select(`*, categories(name, slug, icon), locations(name, slug)`)
-          .eq("status", "active")
-          .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-          .order("created_at", { ascending: false })
-          .limit(24);
-        setListings(fb || []);
-        setTotalHits((fb || []).length);
-      } else {
-        const { data: d } = await q.limit(24);
-        setListings(d || []);
-        setTotalHits((d || []).length);
-      }
     }
 
     setLoading(false);
-  }, [query, categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax, categories, locations, supabase.from]);
+  }, [categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax]);
 
-  // Debounce search — wait 300ms after user stops typing
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  // Run on first load (once categories are ready) and whenever filters change.
+  // Deliberately excludes `query` — text search only fires on Enter.
+  const filterKey = `${categorySlug}|${subcategorySlug}|${locationSlug}|${sortBy}|${priceMin}|${priceMax}`;
   useEffect(() => {
     if (categories.length === 0) return;
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    debounceTimer.current = setTimeout(() => {
-      doSearch();
-    }, 300);
-    return () => {
-      if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    };
-  }, [doSearch, categories]);
+    doSearch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey, categories.length]);
+
+  // When the query is cleared, re-run so results refresh without the old term.
+  useEffect(() => {
+    if (categories.length === 0) return;
+    if (query === "") doSearch("");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   async function handleAiSearch() {
-    if (!query.trim()) return;
+    if (!query.trim()) { doSearch(); return; }
     setAiSearching(true);
+    setLoading(true);
     setAiInterpretation("");
     try {
       const res = await fetch("/api/ai/search", {
@@ -185,13 +152,15 @@ export default function SearchClient() {
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      setListings(data.listings || []);
+      // Normalise shape — AI route returns raw Supabase rows
+      const hits = (data.listings || []).map(normalise);
+      setListings(hits);
+      setTotalHits(hits.length);
       setAiInterpretation(data.interpretation || "");
-      // Update filter UI to reflect AI's parsed filters
-      if (data.filters.category_slug) setCategorySlug(data.filters.category_slug);
-      if (data.filters.location_slug) setLocationSlug(data.filters.location_slug);
+      // Reflect AI-parsed filters in the UI
+      if (data.filters?.category_slug) setCategorySlug(data.filters.category_slug);
+      if (data.filters?.location_slug) setLocationSlug(data.filters.location_slug);
     } catch {
-      // Fall back to regular search
       doSearch();
     }
     setAiSearching(false);

@@ -13,6 +13,7 @@ import {
   PinOff,
   Trash2,
   MoreHorizontal,
+  AlertTriangle,
 } from "lucide-react";
 
 type Conversation = {
@@ -35,6 +36,8 @@ export default function MessagesPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Conversation | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadConversations = useCallback(async (uid: string) => {
     const { data } = await supabase
@@ -89,12 +92,6 @@ export default function MessagesPage() {
     return () => { supabase.removeChannel(channel); };
   }, [userId, loadConversations]);
 
-  // Close menu on outside click
-  useEffect(() => {
-    function close() { setActiveMenu(null); }
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, []);
 
   async function handlePin(conv: Conversation, e: React.MouseEvent) {
     e.preventDefault();
@@ -119,9 +116,16 @@ export default function MessagesPage() {
     e.preventDefault();
     e.stopPropagation();
     setActiveMenu(null);
-    if (!confirm("Delete this conversation? This cannot be undone.")) return;
-    setConversations((prev) => prev.filter((c) => c.id !== conv.id));
-    await supabase.from("conversations").delete().eq("id", conv.id);
+    setDeleteTarget(conv);
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    setConversations((prev) => prev.filter((c) => c.id !== deleteTarget.id));
+    await supabase.from("conversations").delete().eq("id", deleteTarget.id);
+    setDeleting(false);
+    setDeleteTarget(null);
   }
 
   function timeAgo(d: string | null) {
@@ -172,7 +176,7 @@ export default function MessagesPage() {
       )}
 
       {filtered.length > 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
           {filtered.map((conv) => {
             const otherUser = conv.buyer_id === userId ? conv.seller : conv.buyer;
             const initials =
@@ -185,16 +189,16 @@ export default function MessagesPage() {
             const menuOpen = activeMenu === conv.id;
 
             return (
-              <div key={conv.id} className="relative group">
+              <div key={conv.id} className="relative group flex items-center hover:bg-gray-50 transition-colors">
+                {/* Pin indicator strip */}
+                {conv.is_pinned && (
+                  <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-400 rounded-l" />
+                )}
+
                 <Link
                   href={`/messages/${conv.id}`}
-                  className="flex items-center gap-3.5 p-4 hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3.5 p-4 flex-1 min-w-0"
                 >
-                  {/* Pin indicator strip */}
-                  {conv.is_pinned && (
-                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-400 rounded-l" />
-                  )}
-
                   {/* Avatar */}
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                     {otherUser?.avatar_url ? (
@@ -247,28 +251,23 @@ export default function MessagesPage() {
                   )}
                 </Link>
 
-                {/* ⋯ Actions menu */}
-                <div
-                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setActiveMenu(menuOpen ? null : conv.id);
-                      }}
-                      className="p-1.5 rounded-lg bg-white border border-gray-100 shadow-sm hover:bg-gray-50 text-gray-500 transition-colors"
-                    >
-                      <MoreHorizontal className="w-4 h-4" />
-                    </button>
+                {/* ⋯ Actions menu — flex sibling, right of thumbnail */}
+                <div className="pr-3 flex-shrink-0 relative">
+                  <button
+                    onClick={() => setActiveMenu(menuOpen ? null : conv.id)}
+                    className="p-1.5 rounded-lg bg-white border border-gray-100 shadow-sm hover:bg-gray-50 text-gray-500 transition-colors"
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
 
-                    {menuOpen && (
+                  {menuOpen && (
+                    <>
+                      {/* Backdrop — closes menu when clicking anywhere outside */}
                       <div
-                        className="absolute right-0 top-full mt-1 z-30 bg-white border border-gray-100 rounded-xl shadow-lg py-1 min-w-[160px]"
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                        className="fixed inset-0 z-20"
+                        onClick={() => setActiveMenu(null)}
+                      />
+                      <div className="absolute right-0 top-full mt-1 z-30 bg-white border border-gray-100 rounded-xl shadow-lg py-1 min-w-[160px]">
                         <button
                           onClick={(e) => handlePin(conv, e)}
                           className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -286,8 +285,8 @@ export default function MessagesPage() {
                           <Trash2 className="w-3.5 h-3.5" /> Delete conversation
                         </button>
                       </div>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -308,6 +307,48 @@ export default function MessagesPage() {
           >
             Browse Listings
           </Link>
+        </div>
+      )}
+
+      {/* Delete confirmation dialog */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => !deleting && setDeleteTarget(null)}
+          />
+          {/* Modal */}
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-500" />
+            </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">Delete conversation?</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              This will permanently remove the conversation with{" "}
+              <span className="font-medium text-gray-700">
+                {(deleteTarget.buyer_id === userId ? deleteTarget.seller : deleteTarget.buyer)?.display_name || "this user"}
+              </span>
+              . This cannot be undone.
+            </p>
+            <div className="flex gap-3 w-full">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {deleting ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
