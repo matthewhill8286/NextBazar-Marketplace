@@ -26,6 +26,7 @@ import {
   ReportAction,
   ShareAction,
 } from "./listing-actions";
+import { LeaveReviewPrompt, SellerReviews } from "./seller-reviews";
 
 const LISTING_SELECT = `
   *,
@@ -152,8 +153,8 @@ export default function ListingDetail({ slug }: { slug: string }) {
     : 2024;
 
   const price = listing.price;
-  const _priceEstLow = price ? Math.round(price * 0.85) : 0;
-  const _priceEstHigh = price ? Math.round(price * 1.15) : 0;
+  const priceEstLow = price ? Math.round(price * 0.85) : 0;
+  const priceEstHigh = price ? Math.round(price * 1.15) : 0;
 
   const galleryImages =
     listing.listing_images && listing.listing_images.length > 0
@@ -278,7 +279,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 </span>
               </div>
 
-              <div className="flex items-end gap-3 mb-4">
+              <div className="flex items-end gap-3 mb-1">
                 <span className="text-3xl md:text-4xl font-bold text-gray-900">
                   {formatPrice(listing.price, listing.currency)}
                 </span>
@@ -288,6 +289,18 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   </span>
                 )}
               </div>
+
+              {price && (
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
+                  <span className="flex items-center gap-1">
+                    <Shield className="w-3 h-3 text-blue-500" />
+                    Market value:
+                  </span>
+                  <span className="font-semibold text-gray-700">
+                    {formatPrice(priceEstLow, listing.currency)} – {formatPrice(priceEstHigh, listing.currency)}
+                  </span>
+                </div>
+              )}
 
               <div className="flex items-center gap-2 pt-2">
                 <FavoriteAction listingId={listing.id} />
@@ -472,6 +485,24 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 </li>
               </ul>
             </div>
+
+            {/* Leave a review — shown only when listing is sold */}
+            {listing.status === "sold" && profile?.id && (
+              <LeaveReviewPrompt
+                listingId={listing.id}
+                sellerId={profile.id}
+                sellerName={profile.display_name || "the seller"}
+              />
+            )}
+
+            {/* Seller reviews */}
+            {profile?.id && (
+              <SellerReviews
+                sellerId={profile.id}
+                avgRating={sellerRating}
+                totalReviews={sellerReviews}
+              />
+            )}
           </div>
         </div>
 

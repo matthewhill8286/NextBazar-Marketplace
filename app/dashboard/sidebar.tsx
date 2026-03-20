@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import {
   Eye,
+  Flag,
   Heart,
   LayoutDashboard,
   Package,
@@ -26,6 +27,7 @@ type SidebarProps = {
     views: number;
     favorites: number;
   };
+  isAdmin?: boolean;
 };
 
 const NAV_ITEMS = [
@@ -34,7 +36,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
-export default function DashboardSidebar({ profile, stats }: SidebarProps) {
+export default function DashboardSidebar({ profile, stats, isAdmin }: SidebarProps) {
   const pathname = usePathname();
 
   const initials =
@@ -116,7 +118,7 @@ export default function DashboardSidebar({ profile, stats }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="bg-white rounded-xl border border-gray-100 p-2">
-        {NAV_ITEMS.map((item) => {
+        {[...NAV_ITEMS, ...(isAdmin ? [{ href: "/admin/reports", label: "Reports Queue", icon: Flag }] : [])].map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));

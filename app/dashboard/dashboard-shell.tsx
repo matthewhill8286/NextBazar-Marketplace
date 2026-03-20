@@ -16,6 +16,7 @@ export default function DashboardShell({
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [stats, setStats] = useState({ active: 0, sold: 0, views: 0, favorites: 0 });
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -45,6 +46,10 @@ export default function DashboardShell({
         is_dealer: prof?.is_dealer || false,
       });
 
+      // Simple admin check by email — swap in your own address
+      const ADMIN_EMAILS = ["matthill8286@gmail.com"];
+      setIsAdmin(ADMIN_EMAILS.includes(user.email || ""));
+
       const items = listings || [];
       setStats({
         active: items.filter((s) => s.status === "active").length,
@@ -69,7 +74,7 @@ export default function DashboardShell({
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-        {profile && <DashboardSidebar profile={profile} stats={stats} />}
+        {profile && <DashboardSidebar profile={profile} stats={stats} isAdmin={isAdmin} />}
         <div className="min-w-0">{children}</div>
       </div>
     </div>

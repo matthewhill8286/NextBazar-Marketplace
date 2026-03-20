@@ -38,6 +38,7 @@ export default function SearchClient() {
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [locations, setLocations]       = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalHits, setTotalHits] = useState(0);
   const [aiSearching, setAiSearching] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
@@ -86,76 +87,78 @@ export default function SearchClient() {
   const doSearch = useCallback(async () => {
     setLoading(true);
 
-    let q = supabase
-      .from("listings")
-      .select(`*, categories(name, slug, icon), locations(name, slug), subcategories(name, slug)`)
-      .eq("status", "active");
+    const params = new URLSearchParams();
+    if (query)         params.set("q",           query);
+    if (categorySlug)  params.set("category",    categorySlug);
+    if (subcategorySlug) params.set("subcategory", subcategorySlug);
+    if (locationSlug)  params.set("location",    locationSlug);
+    if (sortBy)        params.set("sort",         sortBy);
+    if (priceMin)      params.set("priceMin",     priceMin);
+    if (priceMax)      params.set("priceMax",     priceMax);
 
-    // Apply category / subcategory / location / price filters
-    if (categorySlug) {
-      const cat = categories.find((c) => c.slug === categorySlug);
-      if (cat) q = q.eq("category_id", cat.id);
-    }
-    if (subcategorySlug) {
-      const sub = subcategories.find((s) => s.slug === subcategorySlug);
-      if (sub) q = q.eq("subcategory_id", sub.id);
-    }
-    if (locationSlug) {
-      const loc = locations.find((l) => l.slug === locationSlug);
-      if (loc) q = q.eq("location_id", loc.id);
-    }
-    if (priceMin !== "") q = q.gte("price", Number(priceMin));
-    if (priceMax !== "") q = q.lte("price", Number(priceMax));
+    try {
+      const res = await fetch(`/api/search?${params.toString()}`);
+      if (!res.ok) throw new Error("search failed");
+      const data = await res.json();
 
-    // Sort
-    if (sortBy === "price_low") q = q.order("price", { ascending: true });
-    else if (sortBy === "price_high") q = q.order("price", { ascending: false });
-    else if (sortBy === "popular")    q = q.order("view_count", { ascending: false });
-    else                              q = q.order("created_at", { ascending: false });
+      // Map flat Meilisearch docs to the shape ListingCard expects
+      const hits = (data.hits || []).map((h: any) => ({
+        ...h,
+        category: h.category_name
+          ? { name: h.category_name, slug: h.category_slug, icon: h.category_icon }
+          : null,
+        location: h.location_name
+          ? { name: h.location_name, slug: h.location_slug }
+          : null,
+      }));
 
-    if (query) {
-      // Try full-text search first
-      const fts = q.textSearch("search_vector", query, { type: "websearch", config: "english" });
-      const { data } = await fts.limit(24);
-
-      if (data && data.length > 0) {
-        setListings(data);
-        setLoading(false);
-        return;
-      }
-
-      // Fallback: pattern match
-      const fallback = supabase
+      setListings(hits);
+      setTotalHits(data.totalHits ?? hits.length);
+    } catch {
+      // Meilisearch unavailable — fall back to Supabase query
+      let q = supabase
         .from("listings")
-        .select(`*, categories(name, slug, icon), locations(name, slug), subcategories(name, slug)`)
-        .eq("status", "active")
-        .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
+        .select(`*, categories(name, slug, icon), locations(name, slug)`)
+        .eq("status", "active");
 
       if (categorySlug) {
         const cat = categories.find((c) => c.slug === categorySlug);
-        if (cat) fallback.eq("category_id", cat.id);
-      }
-      if (subcategorySlug) {
-        const sub = subcategories.find((s) => s.slug === subcategorySlug);
-        if (sub) fallback.eq("subcategory_id", sub.id);
+        if (cat) q = q.eq("category_id", cat.id);
       }
       if (locationSlug) {
         const loc = locations.find((l) => l.slug === locationSlug);
-        if (loc) fallback.eq("location_id", loc.id);
+        if (loc) q = q.eq("location_id", loc.id);
       }
-      if (priceMin !== "") fallback.gte("price", Number(priceMin));
-      if (priceMax !== "") fallback.lte("price", Number(priceMax));
+      if (priceMin !== "") q = q.gte("price", Number(priceMin));
+      if (priceMax !== "") q = q.lte("price", Number(priceMax));
 
-      const { data: fallbackData } = await fallback
-        .order("created_at", { ascending: false })
-        .limit(24);
-      setListings(fallbackData || []);
-    } else {
-      const { data } = await q.limit(24);
-      setListings(data || []);
+      if (sortBy === "price_low")  q = q.order("price", { ascending: true });
+      else if (sortBy === "price_high") q = q.order("price", { ascending: false });
+      else if (sortBy === "popular") q = q.order("view_count", { ascending: false });
+      else q = q.order("created_at", { ascending: false });
+
+      if (query) {
+        const fts = q.textSearch("search_vector", query, { type: "websearch", config: "english" });
+        const { data: d } = await fts.limit(24);
+        if (d && d.length > 0) { setListings(d); setTotalHits(d.length); setLoading(false); return; }
+        const { data: fb } = await supabase
+          .from("listings")
+          .select(`*, categories(name, slug, icon), locations(name, slug)`)
+          .eq("status", "active")
+          .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
+          .order("created_at", { ascending: false })
+          .limit(24);
+        setListings(fb || []);
+        setTotalHits((fb || []).length);
+      } else {
+        const { data: d } = await q.limit(24);
+        setListings(d || []);
+        setTotalHits((d || []).length);
+      }
     }
+
     setLoading(false);
-  }, [query, categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax, categories, subcategories, locations]);
+  }, [query, categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax, categories, locations, supabase.from]);
 
   // Debounce search — wait 300ms after user stops typing
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -228,7 +231,7 @@ export default function SearchClient() {
             <button
               onClick={handleAiSearch}
               disabled={aiSearching || !query.trim()}
-              className="p-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="p-2 rounded-lg bg-linear-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               title="AI Smart Search"
             >
               {aiSearching ? (
@@ -318,7 +321,7 @@ export default function SearchClient() {
                   className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
-              <span className="text-gray-400 text-sm flex-shrink-0">–</span>
+              <span className="text-gray-400 text-sm shrink-0">–</span>
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">€</span>
                 <input
@@ -421,14 +424,14 @@ export default function SearchClient() {
       {/* AI interpretation */}
       {aiInterpretation && (
         <div className="flex items-center gap-2 bg-indigo-50 text-indigo-800 text-sm px-4 py-2.5 rounded-xl border border-indigo-100 mb-4">
-          <Sparkles className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+          <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
           <span>{aiInterpretation}</span>
         </div>
       )}
 
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-900">{listings.length}</span>{" "}
+          <span className="font-semibold text-gray-900">{totalHits}</span>{" "}
           listings found
         </p>
         {!showFilters && (
@@ -452,7 +455,7 @@ export default function SearchClient() {
               key={i}
               className="bg-white rounded-xl border border-gray-100 overflow-hidden"
             >
-              <div className="aspect-[4/3] bg-gray-100 animate-pulse" />
+              <div className="aspect-4/3 bg-gray-100 animate-pulse" />
               <div className="p-3.5 space-y-2">
                 <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
                 <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />

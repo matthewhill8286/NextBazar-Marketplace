@@ -1,8 +1,18 @@
 "use client";
 
-import { Check, Flag, Heart, Share2 } from "lucide-react";
+import { Check, Flag, Heart, Loader2, Share2, X } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+
+const REPORT_REASONS: { value: string; label: string }[] = [
+  { value: "scam",           label: "Scam or fraud" },
+  { value: "spam",           label: "Spam or duplicate" },
+  { value: "counterfeit",    label: "Counterfeit / fake item" },
+  { value: "wrong_category", label: "Wrong category" },
+  { value: "offensive",      label: "Offensive or inappropriate" },
+  { value: "already_sold",   label: "Already sold / unavailable" },
+  { value: "other",          label: "Other" },
+];
 
 export function FavoriteAction({ listingId }: { listingId: string }) {
   const [saved, setSaved] = useState(false);
@@ -89,18 +99,131 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
   );
 }
 
-export function ReportAction(_: { listingId: string }) {
-  const [reported, setReported] = useState(false);
+export function ReportAction({ listingId }: { listingId: string }) {
+  const supabase = createClient();
+  const [open, setOpen]       = useState(false);
+  const [reason, setReason]   = useState("");
+  const [details, setDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone]       = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!reason || submitting) return;
+    setSubmitting(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      window.location.href = `/auth/login?redirect=${window.location.pathname}`;
+      return;
+    }
+
+    await supabase.from("reports").insert({
+      reporter_id: user.id,
+      listing_id: listingId,
+      reason,
+      details: details.trim() || null,
+    });
+
+    setDone(true);
+    setSubmitting(false);
+  }
+
+  if (done) {
+    return (
+      <span className="flex items-center gap-1.5 text-xs text-green-600">
+        <Check className="w-3 h-3" /> Report submitted
+      </span>
+    );
+  }
 
   return (
-    <button
-      onClick={() => setReported(true)}
-      disabled={reported}
-      className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors disabled:text-gray-300"
-    >
-      <Flag className="w-3 h-3" />
-      {reported ? "Reported" : "Report"}
-    </button>
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
+      >
+        <Flag className="w-3 h-3" />
+        Report
+      </button>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+        >
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <h2 className="font-semibold text-gray-900">Report Listing</h2>
+              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  What's the issue?
+                </label>
+                <div className="space-y-2">
+                  {REPORT_REASONS.map((r) => (
+                    <label
+                      key={r.value}
+                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                        reason === r.value
+                          ? "border-red-400 bg-red-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="reason"
+                        value={r.value}
+                        checked={reason === r.value}
+                        onChange={() => setReason(r.value)}
+                        className="accent-red-500"
+                      />
+                      <span className="text-sm text-gray-700">{r.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Additional details <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Describe the issue..."
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none text-sm resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={!reason || submitting}
+                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Report"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
