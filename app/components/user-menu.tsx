@@ -127,7 +127,7 @@ export default function UserMenu() {
             <p className="text-xs text-gray-500 truncate">{user.email}</p>
           </div>
           <Link
-            href="/dashboard"
+            href="/dashboard/listings"
             onClick={() => setOpen(false)}
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
