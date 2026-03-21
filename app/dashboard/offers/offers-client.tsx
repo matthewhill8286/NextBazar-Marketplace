@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Tag,
   Check,
@@ -48,6 +49,7 @@ type Props = {
   userId: string;
   receivedOffers: Offer[];
   sentOffers: Offer[];
+  focusOfferId?: string;
 };
 
 const STATUS_CONFIG: Record<
@@ -102,20 +104,31 @@ function OfferCard({
   isSeller,
   userId,
   onUpdate,
+  focused = false,
 }: {
   offer: Offer;
   isSeller: boolean;
   userId: string;
   onUpdate: (id: string, patch: Partial<Offer>) => void;
+  focused?: boolean;
 }) {
   const supabase = createClient();
+  const router = useRouter();
   const sym = offer.currency === "EUR" ? "€" : offer.currency;
   const cfg = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.pending;
   const [loading, setLoading] = useState<string | null>(null);
   const [showCounter, setShowCounter] = useState(false);
   const [counterAmount, setCounterAmount] = useState("");
   const [counterMessage, setCounterMessage] = useState("");
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(focused);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Scroll focused card into view on mount
+  useEffect(() => {
+    if (focused && cardRef.current) {
+      setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+    }
+  }, [focused]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [existingRating, setExistingRating] = useState<number | null>(null);
@@ -149,11 +162,16 @@ function OfferCard({
     onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
     setLoading(null);
     setShowCounter(false);
+    // Clear the router cache so navigating back always shows fresh data
+    router.refresh();
   }
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div
+        ref={cardRef}
+        className={`bg-white rounded-xl border overflow-hidden transition-colors ${focused ? "border-blue-300 ring-2 ring-blue-100" : "border-gray-100"}`}
+      >
         <div
           className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
           onClick={() => setExpanded(!expanded)}
@@ -412,8 +430,14 @@ export default function OffersClient({
   userId,
   receivedOffers: initialReceived,
   sentOffers: initialSent,
+  focusOfferId,
 }: Props) {
-  const [tab, setTab] = useState<"received" | "sent">("received");
+  // If the linked offer is in sent, open that tab automatically
+  const defaultTab: "received" | "sent" =
+    focusOfferId && initialSent.some((o) => o.id === focusOfferId)
+      ? "sent"
+      : "received";
+  const [tab, setTab] = useState<"received" | "sent">(defaultTab);
   const [received, setReceived] = useState(initialReceived);
   const [sent, setSent] = useState(initialSent);
 
@@ -481,6 +505,7 @@ export default function OffersClient({
                 offer={offer}
                 isSeller={true}
                 userId={userId}
+                focused={offer.id === focusOfferId}
                 onUpdate={(id, patch) => setReceived((prev) => updateOffer(prev, id, patch))}
               />
             ))}
@@ -510,6 +535,7 @@ export default function OffersClient({
               offer={offer}
               isSeller={false}
               userId={userId}
+              focused={offer.id === focusOfferId}
               onUpdate={(id, patch) => setSent((prev) => updateOffer(prev, id, patch))}
             />
           ))}

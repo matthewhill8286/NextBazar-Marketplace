@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import OffersClient from "./offers-client";
 
 export default function OffersPage() {
+  const searchParams = useSearchParams();
+  const focusOfferId = searchParams.get("offer") ?? undefined;
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const [received, setReceived] = useState<any[]>([]);
@@ -51,6 +54,7 @@ export default function OffersPage() {
       userId={userId || ""}
       receivedOffers={received}
       sentOffers={sent}
+      focusOfferId={focusOfferId}
     />
   );
 }
