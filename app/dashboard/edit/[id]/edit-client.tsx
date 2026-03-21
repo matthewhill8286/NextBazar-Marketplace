@@ -125,6 +125,21 @@ export default function EditClient({ listing }: { listing: ListingData }) {
       return;
     }
 
+    // Fire price-drop notifications if price was lowered
+    const oldPrice = listing.price;
+    const newPrice = formData.price ? Number(formData.price) : null;
+    if (oldPrice && newPrice && newPrice < oldPrice) {
+      fetch("/api/notify/price-drop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listing_id: listing.id,
+          old_price: oldPrice,
+          new_price: newPrice,
+        }),
+      }).catch(() => {});
+    }
+
     // Sync listing_images: delete old, insert new
     await supabase.from("listing_images").delete().eq("listing_id", listing.id);
 

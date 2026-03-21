@@ -21,9 +21,10 @@ export default function MyListingsPage() {
         .from("listings")
         .select(
           `
-          id, title, slug, price, currency, status,
+          id, title, slug, price, currency, price_type, condition, status,
           primary_image_url, view_count, favorite_count,
           is_promoted, is_urgent, created_at,
+          category_id, location_id,
           categories(name, icon),
           locations(name)
         `,

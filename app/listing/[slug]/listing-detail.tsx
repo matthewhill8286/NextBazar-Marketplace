@@ -12,6 +12,7 @@ import {
   MapPin,
   Shield,
   Star,
+  Activity,
   Tag,
 } from "lucide-react";
 import Link from "next/link";
@@ -27,6 +28,8 @@ import {
   ShareAction,
 } from "./listing-actions";
 import { LeaveReviewPrompt, SellerReviews } from "./seller-reviews";
+import MakeOfferModal from "@/app/components/make-offer-modal";
+import PriceHistory from "./price-history";
 
 const LISTING_SELECT = `
   *,
@@ -79,6 +82,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
   const [notFound, setNotFound] = useState(false);
   const [aiPrice, setAiPrice] = useState<InsightsPriceSummary | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showOfferModal, setShowOfferModal] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -98,12 +102,22 @@ export default function ListingDetail({ slug }: { slug: string }) {
 
       setListing(data);
 
-      // Increment view count
+      // Increment view count on the listing row
       supabase
         .from("listings")
         .update({ view_count: (data.view_count || 0) + 1 })
         .eq("id", data.id)
         .then();
+
+      // Record daily analytics (non-owner only)
+      const viewerId = user?.id ?? null;
+      if (!viewerId || viewerId !== data.user_id) {
+        fetch("/api/analytics/view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ listing_id: data.id }),
+        }).catch(() => {});
+      }
 
       // Fetch related
       const { data: rel } = await supabase
@@ -177,7 +191,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
         ? [{ url: listing.primary_image_url, sort_order: 0 }]
         : [];
 
-  const _qualityScore = Math.min(
+  const qualityScore = Math.min(
     100,
     40 +
       galleryImages.length * 10 +
@@ -185,6 +199,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
   );
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-3">
@@ -402,6 +417,22 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     </div>
                   </div>
                 </div>
+                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <Activity className={`w-4 h-4 ${
+                      qualityScore >= 80 ? "text-green-500" : 
+                      qualityScore >= 50 ? "text-blue-500" : "text-amber-500"
+                    }`} />
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-gray-500 font-medium">
+                      Listing Quality
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      {qualityScore}%
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -421,6 +452,13 @@ export default function ListingDetail({ slug }: { slug: string }) {
             {isOwner && (
               <AiInsights listingId={listing.id} onInsights={setAiPrice} />
             )}
+
+            {/* Price History */}
+            <PriceHistory
+              listingId={listing.id}
+              currentPrice={listing.price}
+              currency={listing.currency || "EUR"}
+            />
 
             <div className="flex justify-end">
               <ReportAction listingId={listing.id} />
@@ -486,6 +524,17 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 whatsappNumber={profile?.whatsapp_number || null}
                 telegramUsername={profile?.telegram_username || null}
               />
+
+              {/* Make an Offer — show to logged-in non-owners when listing has a price */}
+              {!isOwner && listing.price && listing.status === "active" && (
+                <button
+                  onClick={() => setShowOfferModal(true)}
+                  className="w-full mt-3 py-3 rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 hover:border-blue-300 transition-all flex items-center justify-center gap-2"
+                >
+                  <Tag className="w-4 h-4" />
+                  Make an Offer
+                </button>
+              )}
 
               <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                 <Link
@@ -565,5 +614,18 @@ export default function ListingDetail({ slug }: { slug: string }) {
         )}
       </div>
     </div>
+
+    {/* Make an Offer modal */}
+    {showOfferModal && listing && (
+      <MakeOfferModal
+        listingId={listing.id}
+        sellerId={listing.user_id}
+        listingTitle={listing.title}
+        listingPrice={listing.price}
+        currency={listing.currency || "EUR"}
+        onClose={() => setShowOfferModal(false)}
+      />
+    )}
+    </>
   );
 }

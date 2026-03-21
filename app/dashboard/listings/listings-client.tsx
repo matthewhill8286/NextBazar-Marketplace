@@ -7,13 +7,13 @@ import {
   Loader2,
   MoreVertical,
   Pencil,
+  RefreshCw,
   RotateCcw,
   Star,
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -23,6 +23,8 @@ type Listing = {
   slug: string;
   price: number | null;
   currency: string;
+  price_type?: string;
+  condition?: string | null;
   status: string;
   primary_image_url: string | null;
   view_count: number;
@@ -30,6 +32,8 @@ type Listing = {
   is_promoted: boolean;
   is_urgent: boolean;
   created_at: string;
+  category_id?: string | null;
+  location_id?: string | null;
   categories:
     | { name: string; icon: string }[]
     | { name: string; icon: string }
@@ -49,7 +53,6 @@ export default function ListingsClient({
 }: {
   initialListings: Listing[];
 }) {
-  const _router = useRouter();
   const supabase = createClient();
   const [listings, setListings] = useState(initialListings);
   const [tab, setTab] = useState("active");
@@ -95,6 +98,66 @@ export default function ListingsClient({
     setLoadingAction(null);
   }
 
+  async function relistListing(id: string) {
+    setLoadingAction(id);
+    const original = listings.find((l) => l.id === id);
+    if (!original) { setLoadingAction(null); return; }
+
+    // Duplicate the listing with status=active and fresh timestamps
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoadingAction(null); return; }
+
+    // Build a new slug by appending a short timestamp
+    const suffix = Date.now().toString(36);
+    const baseSlug = original.slug.replace(/-[a-z0-9]{6,}$/, ""); // strip any previous suffix
+    const newSlug = `${baseSlug}-${suffix}`;
+
+    const { data: newListing, error } = await supabase
+      .from("listings")
+      .insert({
+        user_id: user.id,
+        title: original.title,
+        slug: newSlug,
+        description: null, // description not loaded here; user can edit if needed
+        price: original.price,
+        currency: original.currency,
+        price_type: original.price_type ?? "fixed",
+        condition: original.condition ?? null,
+        category_id: original.category_id ?? null,
+        location_id: original.location_id ?? null,
+        primary_image_url: original.primary_image_url,
+        status: "active",
+        is_promoted: false,
+        is_urgent: false,
+        view_count: 0,
+        favorite_count: 0,
+      })
+      .select()
+      .single();
+
+    if (!error && newListing) {
+      // Copy listing_images if present
+      const { data: imgs } = await supabase
+        .from("listing_images")
+        .select("url, sort_order")
+        .eq("listing_id", id);
+      if (imgs && imgs.length > 0) {
+        await supabase.from("listing_images").insert(
+          imgs.map((img) => ({ listing_id: newListing.id, url: img.url, sort_order: img.sort_order }))
+        );
+      }
+      // Add the new listing to state and switch to active tab
+      setListings((prev) => [
+        { ...newListing, categories: original.categories, locations: original.locations },
+        ...prev,
+      ]);
+      setTab("active");
+    }
+
+    setOpenMenu(null);
+    setLoadingAction(null);
+  }
+
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold text-gray-900">My Listings</h1>
@@ -133,7 +196,7 @@ export default function ListingsClient({
               className="flex items-center gap-4 p-4 hover:bg-gray-50/50 transition-colors"
             >
               {/* Thumbnail */}
-              <div className="w-20 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative">
+              <div className="w-20 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
                 {listing.primary_image_url ? (
                   <Image
                     src={listing.primary_image_url}
@@ -181,7 +244,7 @@ export default function ListingsClient({
               </div>
 
               {/* Stats */}
-              <div className="hidden md:flex items-center gap-5 text-xs text-gray-500 flex-shrink-0">
+              <div className="hidden md:flex items-center gap-5 text-xs text-gray-500 shrink-0">
                 <div className="flex items-center gap-1">
                   <Eye className="w-3.5 h-3.5" />
                   <span>{(listing.view_count || 0).toLocaleString()}</span>
@@ -192,8 +255,24 @@ export default function ListingsClient({
                 </div>
               </div>
 
+              {/* Relist CTA — prominent shortcut for expired listings */}
+              {listing.status === "expired" && (
+                <button
+                  onClick={() => relistListing(listing.id)}
+                  disabled={loadingAction === listing.id}
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 shrink-0"
+                >
+                  {loadingAction === listing.id ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3 h-3" />
+                  )}
+                  Relist
+                </button>
+              )}
+
               {/* Actions Menu */}
-              <div className="relative flex-shrink-0">
+              <div className="relative shrink-0">
                 {loadingAction === listing.id ? (
                   <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
                 ) : (
@@ -239,6 +318,14 @@ export default function ListingsClient({
                         className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
                       >
                         <RotateCcw className="w-3.5 h-3.5" /> Reactivate
+                      </button>
+                    )}
+                    {listing.status === "expired" && (
+                      <button
+                        onClick={() => relistListing(listing.id)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> Relist
                       </button>
                     )}
                     <button

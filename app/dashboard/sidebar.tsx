@@ -2,6 +2,8 @@
 
 import clsx from "clsx";
 import {
+  BarChart2,
+  Bell,
   Eye,
   Flag,
   Heart,
@@ -9,6 +11,7 @@ import {
   Package,
   Settings,
   Shield,
+  Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,6 +36,10 @@ type SidebarProps = {
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/listings", label: "My Listings", icon: Package },
+  { href: "/dashboard/offers", label: "Offers", icon: Tag },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
+  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
+  { href: "/dashboard/saved-searches", label: "Saved Searches", icon: Bell },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 

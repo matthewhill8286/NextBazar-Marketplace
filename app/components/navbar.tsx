@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, MessageCircle, Plus, Search } from "lucide-react";
+import { Bell, Heart, MessageCircle, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -11,24 +11,37 @@ export default function Navbar() {
   const supabase = createClient();
   const { count: savedCount } = useSaved();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifCount, setNotifCount] = useState(0);
 
   useEffect(() => {
-    async function loadUnread() {
+    async function loadCounts() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { count } = await supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .neq("sender_id", user.id)
-        .is("read_at", null);
-      setUnreadCount(count || 0);
+
+      const [{ count: msgCount }, { count: nCount }] = await Promise.all([
+        supabase
+          .from("messages")
+          .select("id", { count: "exact", head: true })
+          .neq("sender_id", user.id)
+          .is("read_at", null),
+        supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("read", false),
+      ]);
+
+      setUnreadCount(msgCount || 0);
+      setNotifCount(nCount || 0);
     }
-    loadUnread();
+    loadCounts();
 
     const channel = supabase
       .channel("nav-unread")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, loadUnread)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, loadUnread)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, loadCounts)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages" }, loadCounts)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, loadCounts)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications" }, loadCounts)
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
@@ -91,6 +104,19 @@ export default function Navbar() {
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full">
                 {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            href="/dashboard/notifications"
+            className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+          >
+            <Bell className="w-4 h-4" />
+            <span className="hidden lg:inline font-medium">Alerts</span>
+            {notifCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-blue-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                {notifCount > 9 ? "9+" : notifCount}
               </span>
             )}
           </Link>

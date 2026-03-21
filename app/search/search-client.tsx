@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal, X, Sparkles, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import ListingCard from "@/app/components/listing-card";
+import SaveSearchButton from "@/app/components/save-search-button";
 
 type Category = { id: string; name: string; slug: string; icon: string };
 type Subcategory = { id: string; category_id: string; name: string; slug: string };
@@ -173,9 +174,9 @@ export default function SearchClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) new Error();
       const data = await res.json();
-      // Normalise shape — AI route returns raw Supabase rows
+      // Normalize shape — AI route returns raw Supabase rows
       const hits = (data.listings || []).map(normalise);
       setListings(hits);
       setTotalHits(hits.length);
@@ -422,13 +423,24 @@ export default function SearchClient() {
       )}
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-900">{totalHits}</span>{" "}
-          {totalHits === 1 ? "listing" : "listings"} found
-          {listings.length < totalHits && !loading && (
-            <span className="text-gray-400"> · showing {listings.length}</span>
-          )}
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-gray-500">
+            <span className="font-semibold text-gray-900">{totalHits}</span>{" "}
+            {totalHits === 1 ? "listing" : "listings"} found
+            {listings.length < totalHits && !loading && (
+              <span className="text-gray-400"> · showing {listings.length}</span>
+            )}
+          </p>
+          <SaveSearchButton
+            query={query}
+            categorySlug={categorySlug}
+            subcategorySlug={subcategorySlug}
+            locationSlug={locationSlug}
+            priceMin={priceMin}
+            priceMax={priceMax}
+            sortBy={sortBy}
+          />
+        </div>
         {!showFilters && (
           <select
             className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white"
