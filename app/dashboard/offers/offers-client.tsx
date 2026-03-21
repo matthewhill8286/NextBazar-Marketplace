@@ -65,7 +65,7 @@ const STATUS_CONFIG: Record<
 function Avatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   return (
-    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
+    <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
       {avatarUrl ? (
         <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
       ) : (
