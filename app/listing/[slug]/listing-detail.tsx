@@ -652,6 +652,10 @@ export default function ListingDetail({ slug }: { slug: string }) {
         listingPrice={listing.price}
         currency={listing.currency || "EUR"}
         onCloseAction={() => setShowOfferModal(false)}
+        onOfferSentAction={() => {
+          setExistingOffer({ status: "pending" });
+          setShowOfferModal(false);
+        }}
       />
     )}
     </>

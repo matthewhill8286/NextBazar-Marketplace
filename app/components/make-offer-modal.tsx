@@ -11,6 +11,7 @@ type Props = {
   listingPrice: number | null;
   currency: string;
   onCloseAction: () => void;
+  onOfferSentAction?: () => void;
 };
 
 export default function MakeOfferModal({
@@ -20,6 +21,7 @@ export default function MakeOfferModal({
   listingPrice,
   currency,
   onCloseAction,
+  onOfferSentAction,
 }: Props) {
   const supabase = createClient();
   const sym = currency === "EUR" ? "€" : currency;
@@ -70,6 +72,7 @@ export default function MakeOfferModal({
 
     setState("success");
     setLoading(false);
+    onOfferSentAction?.();
   }
 
   const pct = listingPrice
