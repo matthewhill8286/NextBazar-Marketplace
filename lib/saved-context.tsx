@@ -103,7 +103,7 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
   const toggle = useCallback(
     async (listingId: string) => {
       if (!userId) {
-        window.location.href = "/auth/login";
+        window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
         return;
       }
 

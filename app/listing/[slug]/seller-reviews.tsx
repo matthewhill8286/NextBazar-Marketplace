@@ -97,7 +97,7 @@ export function LeaveReviewPrompt({
 
     await supabase.from("reviews").insert({
       reviewer_id: userId,
-      reviewed_id: sellerId,
+      reviewee_id: sellerId,
       listing_id: listingId,
       rating,
       comment: comment.trim() || null,
@@ -198,7 +198,7 @@ export function SellerReviews({
         `id, rating, comment, created_at,
          reviewer:profiles!reviews_reviewer_id_fkey(display_name, avatar_url)`,
       )
-      .eq("reviewed_id", sellerId)
+      .eq("reviewee_id", sellerId)
       .order("created_at", { ascending: false })
       .limit(20);
 

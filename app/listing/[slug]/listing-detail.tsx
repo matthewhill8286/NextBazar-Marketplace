@@ -83,6 +83,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
   const [aiPrice, setAiPrice] = useState<InsightsPriceSummaryAction | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showOfferModal, setShowOfferModal] = useState(false);
+  const [existingOffer, setExistingOffer] = useState<{ status: string } | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -101,6 +102,20 @@ export default function ListingDetail({ slug }: { slug: string }) {
       }
 
       setListing(data);
+
+      // Check if the logged-in user already has an active offer on this listing
+      if (user && user.id !== data.user_id) {
+        supabase
+          .from("offers")
+          .select("status")
+          .eq("listing_id", data.id)
+          .eq("buyer_id", user.id)
+          .in("status", ["pending", "countered"])
+          .maybeSingle()
+          .then(({ data: offer }) => {
+            if (offer) setExistingOffer(offer);
+          });
+      }
 
       // Increment view count on the listing row
       supabase
@@ -483,9 +498,12 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-gray-900 truncate">
+                    <Link
+                      href={`/profile/${listing.user_id}`}
+                      className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+                    >
                       {profile?.display_name || "Seller"}
-                    </span>
+                    </Link>
                     {profile?.verified && (
                       <Shield className="w-4 h-4 text-blue-500 shrink-0" />
                     )}
@@ -525,23 +543,33 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 telegramUsername={profile?.telegram_username || null}
               />
 
-              {/* Make an Offer — show to logged-in non-owners when listing has a price */}
+              {/* Make an Offer / Offer state — non-owners only */}
               {!isOwner && listing.price && listing.status === "active" && (
-                <button
-                  onClick={() => setShowOfferModal(true)}
-                  className="w-full mt-3 py-3 rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 hover:border-blue-300 transition-all flex items-center justify-center gap-2"
-                >
-                  <Tag className="w-4 h-4" />
-                  Make an Offer
-                </button>
+                existingOffer ? (
+                  <Link
+                    href="/dashboard/offers"
+                    className="w-full mt-3 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-700 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-amber-100 transition-colors"
+                  >
+                    <Tag className="w-4 h-4" />
+                    {existingOffer.status === "countered" ? "Offer Countered — View" : "Offer Pending — View"}
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => setShowOfferModal(true)}
+                    className="w-full mt-3 py-3 rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 hover:border-blue-300 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Tag className="w-4 h-4" />
+                    Make an Offer
+                  </button>
+                )
               )}
 
               <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                 <Link
-                  href={`/search`}
+                  href={`/profile/${listing.user_id}`}
                   className="text-sm text-blue-600 font-medium hover:underline"
                 >
-                  View all listings from this seller →
+                  View seller profile →
                 </Link>
               </div>
             </div>
@@ -624,6 +652,10 @@ export default function ListingDetail({ slug }: { slug: string }) {
         listingPrice={listing.price}
         currency={listing.currency || "EUR"}
         onCloseAction={() => setShowOfferModal(false)}
+        onOfferSentAction={() => {
+          setExistingOffer({ status: "pending" });
+          setShowOfferModal(false);
+        }}
       />
     )}
     </>

@@ -97,7 +97,8 @@ Respond in JSON:
       q = q.eq("condition", parsed.condition);
     }
 
-    // Sort
+    // Promoted listings always surface first, then apply AI-chosen sort
+    q = q.order("is_promoted", { ascending: false });
     if (parsed.sort === "price_low") q = q.order("price", { ascending: true });
     else if (parsed.sort === "price_high")
       q = q.order("price", { ascending: false });

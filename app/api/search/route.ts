@@ -56,6 +56,8 @@ export async function GET(req: NextRequest) {
             ? { name: r.location_name, slug: r.location_slug }
             : null,
         }));
+        // Promoted listings always surface first, preserving similarity rank within each group
+        hits.sort((a: any, b: any) => (b.is_promoted ? 1 : 0) - (a.is_promoted ? 1 : 0));
         return NextResponse.json({ hits, totalHits: hits.length, source: "vector" });
       }
       // Fall through to full-text if vector search returns nothing
@@ -73,7 +75,10 @@ export async function GET(req: NextRequest) {
     if (priceMin)  ftq = ftq.gte("price", Number(priceMin));
     if (priceMax)  ftq = ftq.lte("price", Number(priceMax));
 
-    const { data: ftData } = await ftq.order("created_at", { ascending: false }).limit(limit);
+    const { data: ftData } = await ftq
+      .order("is_promoted", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
     // ilike fallback if full-text returns nothing
     if (!ftData || ftData.length === 0) {
@@ -87,6 +92,7 @@ export async function GET(req: NextRequest) {
       if (priceMax) ilikeQ = ilikeQ.lte("price", Number(priceMax));
 
       const { data: ilikeData } = await ilikeQ
+        .order("is_promoted", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(limit);
 
@@ -139,7 +145,10 @@ export async function GET(req: NextRequest) {
     popular:    { col: "view_count", asc: false },
   };
   const s = sortMap[sort] ?? sortMap.newest;
-  browseQ = browseQ.order(s.col, { ascending: s.asc });
+  // Promoted listings always float to the top, then apply the user's chosen sort
+  browseQ = browseQ
+    .order("is_promoted", { ascending: false })
+    .order(s.col, { ascending: s.asc });
 
   const { data, count, error } = await browseQ.range(offset, offset + limit - 1);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
