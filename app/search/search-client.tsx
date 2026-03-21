@@ -23,6 +23,7 @@ export default function SearchClient() {
   const initialSort        = searchParams.get("sort")        || "newest";
   const initialPriceMin    = searchParams.get("priceMin")    || "";
   const initialPriceMax    = searchParams.get("priceMax")    || "";
+  const initialAi          = searchParams.get("ai")          === "1";
 
   const supabase = createClient();
 
@@ -61,6 +62,9 @@ export default function SearchClient() {
   // that would normally re-fire the filter effect and wipe the AI results.
   // This ref blocks exactly ONE re-trigger.
   const suppressNextFilterSearch = useRef(false);
+
+  // ─── Ref: track if we've auto-fired AI search from ?ai=1 param ───────────
+  const aiAutoFired = useRef(false);
 
   // ─── Load meta once ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -142,6 +146,14 @@ export default function SearchClient() {
   const filterKey = `${categorySlug}|${subcategorySlug}|${locationSlug}|${sortBy}|${priceMin}|${priceMax}`;
   useEffect(() => {
     if (categories.length === 0) return;
+
+    // Auto-fire AI search when arriving from the global search bar with ?ai=1
+    if (initialAi && !aiAutoFired.current) {
+      aiAutoFired.current = true;
+      suppressNextFilterSearch.current = true;
+      handleAiSearch(initialQuery);
+      return;
+    }
 
     // Block the one extra trigger caused by AI search updating filter state
     if (suppressNextFilterSearch.current) {

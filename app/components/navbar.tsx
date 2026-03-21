@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSaved } from "@/lib/saved-context";
 import UserMenu from "./user-menu";
+import GlobalSearchBar from "./global-search-bar";
 
 export default function Navbar() {
   const supabase = createClient();
@@ -63,14 +64,7 @@ export default function Navbar() {
 
         {/* Search bar */}
         <div className="flex-1 max-w-xl hidden md:block">
-          <Link href="/search" className="block">
-            <div className="relative flex items-center">
-              <Search className="absolute left-3.5 text-gray-400 w-4 h-4" />
-              <div className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400 hover:border-blue-300 hover:bg-white transition-all cursor-pointer">
-                Search thousands of listings...
-              </div>
-            </div>
-          </Link>
+          <GlobalSearchBar variant="navbar" />
         </div>
 
         {/* Actions */}

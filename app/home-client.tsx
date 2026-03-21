@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ListingCard from "./components/listing-card";
+import GlobalSearchBar from "./components/global-search-bar";
 
 const LISTING_SELECT = `
   *,
@@ -93,17 +94,7 @@ export default function HomeClient() {
           </p>
 
           {/* Search */}
-          <Link href="/search" className="block max-w-2xl mx-auto mb-10">
-            <div className="relative flex items-center group cursor-pointer">
-              <Search className="absolute left-5 text-gray-400 w-5 h-5 z-10" />
-              <div className="w-full pl-14 pr-36 py-4 rounded-2xl bg-white text-gray-400 text-base shadow-2xl shadow-indigo-900/30 group-hover:shadow-indigo-900/50 transition-shadow text-left">
-                What are you looking for?
-              </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-linear-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md group-hover:from-blue-600 group-hover:to-indigo-700 transition-all">
-                Search
-              </div>
-            </div>
-          </Link>
+          <GlobalSearchBar variant="hero" />
 
           {/* Stats chips */}
           <div className="flex flex-wrap justify-center gap-3">
