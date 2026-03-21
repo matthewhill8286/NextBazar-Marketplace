@@ -105,7 +105,7 @@ export default function UserMenu() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-9 h-9 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
+        className="w-9 h-9 bg-linear-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
           <img
@@ -127,12 +127,12 @@ export default function UserMenu() {
             <p className="text-xs text-gray-500 truncate">{user.email}</p>
           </div>
           <Link
-            href="/dashboard/listings"
+            href="/dashboard"
             onClick={() => setOpen(false)}
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <LayoutDashboard className="w-4 h-4 text-gray-400" />
-            My Listings
+            Dashboard
           </Link>
           <Link
             href="/dashboard/settings"

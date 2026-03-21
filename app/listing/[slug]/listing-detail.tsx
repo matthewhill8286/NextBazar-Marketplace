@@ -434,22 +434,24 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Activity className={`w-4 h-4 ${
-                      qualityScore >= 80 ? "text-green-500" : 
-                      qualityScore >= 50 ? "text-blue-500" : "text-amber-500"
-                    }`} />
-                  </div>
-                  <div>
-                    <div className="text-[11px] text-gray-500 font-medium">
-                      Listing Quality
+                {isOwner && (
+                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <Activity className={`w-4 h-4 ${
+                        qualityScore >= 80 ? "text-green-500" :
+                        qualityScore >= 50 ? "text-blue-500" : "text-amber-500"
+                      }`} />
                     </div>
-                    <div className="text-sm font-semibold text-gray-900">
-                      {qualityScore}%
+                    <div>
+                      <div className="text-[11px] text-gray-500 font-medium">
+                        Listing Quality
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900">
+                        {qualityScore}%
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -547,12 +549,8 @@ export default function ListingDetail({ slug }: { slug: string }) {
 
               {/* Make an Offer / Offer state — non-owners only */}
               {!isOwner && listing.price && listing.status === "active" && (
-                offerCount >= 2 ? (
-                  <div className="w-full mt-3 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
-                    <Tag className="w-4 h-4" />
-                    Offer limit reached
-                  </div>
-                ) : existingOffer ? (
+                existingOffer ? (
+                  // Active offer always takes priority over the count check
                   <Link
                     href="/dashboard/offers"
                     className="w-full mt-3 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-700 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-amber-100 transition-colors"
@@ -560,6 +558,12 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     <Tag className="w-4 h-4" />
                     {existingOffer.status === "countered" ? "Offer Countered — View" : "Offer Pending — View"}
                   </Link>
+                ) : offerCount >= 2 ? (
+                  // No active offer but limit exhausted (both were withdrawn/declined)
+                  <div className="w-full mt-3 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+                    <Tag className="w-4 h-4" />
+                    Offer limit reached
+                  </div>
                 ) : (
                   <button
                     onClick={() => setShowOfferModal(true)}

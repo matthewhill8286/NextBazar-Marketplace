@@ -2,7 +2,7 @@
 
 import { Bot, MessageCircle, Search, Shield, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ListingCard from "./components/listing-card";
 import GlobalSearchBar from "./components/global-search-bar";
@@ -94,7 +94,9 @@ export default function HomeClient() {
           </p>
 
           {/* Search */}
-          <GlobalSearchBar variant="hero" />
+          <Suspense fallback={null}>
+            <GlobalSearchBar variant="hero" />
+          </Suspense>
 
           {/* Stats chips */}
           <div className="flex flex-wrap justify-center gap-3">

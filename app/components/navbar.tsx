@@ -2,7 +2,7 @@
 
 import { Bell, Heart, MessageCircle, Plus, Search } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useSaved } from "@/lib/saved-context";
 import UserMenu from "./user-menu";
@@ -64,7 +64,13 @@ export default function Navbar() {
 
         {/* Search bar */}
         <div className="flex-1 max-w-xl hidden md:block">
-          <GlobalSearchBar variant="navbar" />
+          <Suspense fallback={
+            <div className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400">
+              Search thousands of listings...
+            </div>
+          }>
+            <GlobalSearchBar variant="navbar" />
+          </Suspense>
         </div>
 
         {/* Actions */}

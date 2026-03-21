@@ -117,6 +117,7 @@ function OfferCard({
   const sym = offer.currency === "EUR" ? "€" : offer.currency;
   const cfg = STATUS_CONFIG[offer.status] ?? STATUS_CONFIG.pending;
   const [loading, setLoading] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [showCounter, setShowCounter] = useState(false);
   const [counterAmount, setCounterAmount] = useState("");
   const [counterMessage, setCounterMessage] = useState("");
@@ -155,10 +156,16 @@ function OfferCard({
 
   async function respond(status: string, extras: Record<string, unknown> = {}) {
     setLoading(status);
-    await supabase
+    setActionError(null);
+    const { error } = await supabase
       .from("offers")
       .update({ status, responded_at: new Date().toISOString(), ...extras })
       .eq("id", offer.id);
+    if (error) {
+      setActionError("Couldn't update offer. Please try again.");
+      setLoading(null);
+      return;
+    }
     onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
     setLoading(null);
     setShowCounter(false);
@@ -375,8 +382,13 @@ function OfferCard({
               </div>
             )}
 
-            {/* Buyer can withdraw the pending offer */}
-            {!isSeller && offer.status === "pending" && (
+            {/* Error message */}
+            {actionError && (
+              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{actionError}</p>
+            )}
+
+            {/* Buyer can withdraw the pending or countered offer */}
+            {!isSeller && (offer.status === "pending" || offer.status === "countered") && (
               <button
                 onClick={() => respond("withdrawn")}
                 disabled={!!loading}

@@ -1,27 +1,56 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useRef, useState, KeyboardEvent } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRef, useState, useEffect, KeyboardEvent } from "react";
 import { Search, Sparkles, Loader2 } from "lucide-react";
 
 type Variant = "hero" | "navbar";
 
 interface Props {
   variant?: Variant;
-  initialValue?: string;
 }
 
-export default function GlobalSearchBar({ variant = "navbar", initialValue = "" }: Props) {
+export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [query, setQuery] = useState(initialValue);
   const [aiLoading, setAiLoading] = useState(false);
 
+  // ── Always mirror the URL's ?q= value so both bars stay in sync ──────────
+  // On the search page this means typing in the search page input (which calls
+  // router.replace) will also update the header, and vice-versa.
+  const urlQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(urlQuery);
+
+  // Keep the local state in sync when the URL changes externally
+  // (e.g. search page executes a search, or user navigates back/forward)
+  useEffect(() => {
+    setQuery(urlQuery);
+  }, [urlQuery]);
+
+  const isOnSearchPage = pathname === "/search";
+
   function goToSearch(q: string, ai = false) {
-    const params = new URLSearchParams();
-    if (q.trim()) params.set("q", q.trim());
-    if (ai) params.set("ai", "1");
-    router.push(`/search?${params.toString()}`);
+    const params = new URLSearchParams(searchParams.toString());
+    if (q.trim()) {
+      params.set("q", q.trim());
+    } else {
+      params.delete("q");
+    }
+    if (ai) {
+      params.set("ai", "1");
+    } else {
+      params.delete("ai");
+    }
+    // When already on the search page use replace so the search page's own
+    // searchParams watcher picks it up without adding an extra history entry.
+    const url = `/search?${params.toString()}`;
+    if (isOnSearchPage) {
+      router.replace(url, { scroll: false });
+    } else {
+      router.push(url);
+    }
   }
 
   function handleKey(e: KeyboardEvent<HTMLInputElement>) {
@@ -34,9 +63,7 @@ export default function GlobalSearchBar({ variant = "navbar", initialValue = "" 
   async function handleAi() {
     if (aiLoading) return;
     setAiLoading(true);
-    // Navigate immediately — search page will auto-fire the AI search
     goToSearch(query, true);
-    // Brief delay so the loading indicator is visible before unmount
     setTimeout(() => setAiLoading(false), 600);
   }
 
@@ -54,7 +81,6 @@ export default function GlobalSearchBar({ variant = "navbar", initialValue = "" 
           placeholder="What are you looking for?"
           className="w-full pl-14 pr-44 py-4 rounded-2xl bg-white text-gray-800 placeholder:text-gray-400 text-base shadow-2xl shadow-indigo-900/30 focus:outline-none focus:shadow-indigo-900/50 transition-shadow"
         />
-        {/* AI button */}
         <button
           onClick={handleAi}
           disabled={aiLoading}
@@ -68,7 +94,6 @@ export default function GlobalSearchBar({ variant = "navbar", initialValue = "" 
           )}
           <span className="text-xs font-semibold hidden sm:inline">AI</span>
         </button>
-        {/* Search button */}
         <button
           onClick={() => goToSearch(query)}
           className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md hover:from-blue-600 hover:to-indigo-700 transition-all"
@@ -92,7 +117,6 @@ export default function GlobalSearchBar({ variant = "navbar", initialValue = "" 
         placeholder="Search thousands of listings..."
         className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-700 placeholder:text-gray-400 hover:border-blue-300 hover:bg-white focus:outline-none focus:border-blue-400 focus:bg-white transition-all"
       />
-      {/* AI sparkle button */}
       <button
         onClick={handleAi}
         disabled={aiLoading}

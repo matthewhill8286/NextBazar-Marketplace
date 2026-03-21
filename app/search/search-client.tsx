@@ -66,6 +66,10 @@ export default function SearchClient() {
   // ─── Ref: track if we've auto-fired AI search from ?ai=1 param ───────────
   const aiAutoFired = useRef(false);
 
+  // ─── Ref: track the last query WE pushed to the URL (to avoid re-searching
+  //     when our own syncUrl call triggers the searchParams watcher) ─────────
+  const lastInternalQuery = useRef(initialQuery);
+
   // ─── Load meta once ───────────────────────────────────────────────────────
   useEffect(() => {
     async function loadMeta() {
@@ -167,6 +171,7 @@ export default function SearchClient() {
 
   // ─── Sync URL only when a search is actually executed ─────────────────────
   function syncUrl(q: string) {
+    lastInternalQuery.current = q; // mark as our own change so the watcher ignores it
     const params = new URLSearchParams();
     if (q)                             params.set("q",           q);
     if (categorySlug)                  params.set("category",    categorySlug);
@@ -178,6 +183,21 @@ export default function SearchClient() {
     const qs = params.toString();
     router.replace(qs ? `/search?${qs}` : "/search", { scroll: false });
   }
+
+  // ─── React to URL changes driven by the global header search bar ─────────
+  // When the header fires router.replace("/search?q=..."), searchParams updates
+  // here. We only act if the new q differs from what we last pushed ourselves.
+  useEffect(() => {
+    const urlQ = searchParams.get("q") ?? "";
+    if (urlQ === lastInternalQuery.current) return; // our own syncUrl — ignore
+    lastInternalQuery.current = urlQ;
+    setInputValue(urlQ);
+    setSubmittedQuery(urlQ);
+    if (categories.length > 0) {
+      doSearch(urlQ);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   // ─── Load more ────────────────────────────────────────────────────────────
   const loadMore = useCallback(async () => {
@@ -258,14 +278,14 @@ export default function SearchClient() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
 
-      {/* ── Search Bar ──────────────────────────────────────────────────── */}
-      <div className="mb-6">
+      {/* ── Mobile search bar (header is hidden on small screens) ──────── */}
+      <div className="md:hidden mb-6">
         <div className="relative flex items-center">
           <Search className="absolute left-4 text-gray-400 w-5 h-5 pointer-events-none" />
           <input
             type="text"
             className="w-full pl-12 pr-28 py-3.5 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
-            placeholder='Search listings… or press Enter to search'
+            placeholder="Search listings… or press Enter to search"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -274,10 +294,7 @@ export default function SearchClient() {
           <div className="absolute right-2 flex items-center gap-1.5">
             {inputValue && (
               <button
-                onClick={() => {
-                  setInputValue("");
-                  executeSearch("");
-                }}
+                onClick={() => { setInputValue(""); executeSearch(""); }}
                 className="p-2 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X className="w-4 h-4" />
@@ -302,6 +319,53 @@ export default function SearchClient() {
         <p className="text-xs text-gray-400 mt-1.5 pl-1">
           Press <kbd className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500 font-mono text-[11px]">Enter</kbd> to search · <Sparkles className="w-3 h-3 inline text-indigo-500" /> for AI smart search
         </p>
+      </div>
+
+      {/* ── Desktop controls bar (header handles the input on md+) ──────── */}
+      <div className="hidden md:flex items-center justify-between mb-5 gap-4">
+        {/* Left: query context */}
+        <div className="flex items-center gap-2.5 min-w-0">
+          {submittedQuery ? (
+            <>
+              <span className="text-sm text-gray-500 shrink-0">Results for</span>
+              <span className="text-sm font-semibold text-gray-900 truncate max-w-xs">
+                &ldquo;{submittedQuery}&rdquo;
+              </span>
+              {wasAiSearch && (
+                <span className="hidden lg:flex items-center gap-1 text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full border border-indigo-100 font-medium shrink-0">
+                  <Sparkles className="w-3 h-3" />
+                  AI Search
+                </span>
+              )}
+            </>
+          ) : (
+            <span className="text-sm text-gray-500">Browse all listings</span>
+          )}
+        </div>
+
+        {/* Right: action buttons */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => handleAiSearch()}
+            disabled={aiSearching || !inputValue.trim()}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium hover:from-indigo-600 hover:to-purple-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+            title="AI Smart Search"
+          >
+            {aiSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            <span>AI Search</span>
+          </button>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+              showFilters
+                ? "bg-blue-50 text-blue-700 border-blue-200"
+                : "bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600"
+            }`}
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            Filters
+          </button>
+        </div>
       </div>
 
       {/* ── Filters Panel ───────────────────────────────────────────────── */}
