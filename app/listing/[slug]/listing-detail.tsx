@@ -84,6 +84,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [existingOffer, setExistingOffer] = useState<{ status: string } | null>(null);
+  const [offerCount, setOfferCount] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -103,17 +104,18 @@ export default function ListingDetail({ slug }: { slug: string }) {
 
       setListing(data);
 
-      // Check if the logged-in user already has an active offer on this listing
+      // Check buyer's offer history on this listing
       if (user && user.id !== data.user_id) {
         supabase
           .from("offers")
           .select("status")
           .eq("listing_id", data.id)
           .eq("buyer_id", user.id)
-          .in("status", ["pending", "countered"])
-          .maybeSingle()
-          .then(({ data: offer }) => {
-            if (offer) setExistingOffer(offer);
+          .then(({ data: allOffers }) => {
+            if (!allOffers) return;
+            setOfferCount(allOffers.length);
+            const active = allOffers.find((o) => o.status === "pending" || o.status === "countered");
+            if (active) setExistingOffer(active);
           });
       }
 
@@ -545,7 +547,12 @@ export default function ListingDetail({ slug }: { slug: string }) {
 
               {/* Make an Offer / Offer state — non-owners only */}
               {!isOwner && listing.price && listing.status === "active" && (
-                existingOffer ? (
+                offerCount >= 2 ? (
+                  <div className="w-full mt-3 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+                    <Tag className="w-4 h-4" />
+                    Offer limit reached
+                  </div>
+                ) : existingOffer ? (
                   <Link
                     href="/dashboard/offers"
                     className="w-full mt-3 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-700 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-amber-100 transition-colors"
@@ -654,6 +661,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
         onCloseAction={() => setShowOfferModal(false)}
         onOfferSentAction={() => {
           setExistingOffer({ status: "pending" });
+          setOfferCount((c) => c + 1);
           setShowOfferModal(false);
         }}
       />
