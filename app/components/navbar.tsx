@@ -14,17 +14,13 @@ export default function Navbar() {
 
   useEffect(() => {
     async function loadUnread() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-
       const { count } = await supabase
         .from("messages")
         .select("id", { count: "exact", head: true })
         .neq("sender_id", user.id)
         .is("read_at", null);
-
       setUnreadCount(count || 0);
     }
     loadUnread();
@@ -39,32 +35,33 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-md shadow-blue-200">
+        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-blue-200 group-hover:shadow-blue-300 transition-shadow">
             N
           </div>
-          <span className="font-bold text-xl text-gray-900 hidden sm:block tracking-tight">
-            NextBazar
+          <span className="font-extrabold text-xl text-gray-900 hidden sm:block tracking-tight">
+            Next<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Bazar</span>
           </span>
         </Link>
 
-        {/* Search Bar */}
+        {/* Search bar */}
         <div className="flex-1 max-w-xl hidden md:block">
           <Link href="/search" className="block">
             <div className="relative flex items-center">
               <Search className="absolute left-3.5 text-gray-400 w-4 h-4" />
-              <div className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400 hover:border-gray-300 hover:bg-white transition-colors cursor-pointer">
+              <div className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400 hover:border-blue-300 hover:bg-white transition-all cursor-pointer">
                 Search thousands of listings...
               </div>
             </div>
           </Link>
         </div>
 
-        {/* Desktop Nav */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        {/* Actions */}
+        <div className="flex items-center gap-1 flex-shrink-0">
           <Link
             href="/search"
             className="md:hidden p-2.5 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
@@ -77,7 +74,7 @@ export default function Navbar() {
             className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
           >
             <Heart className="w-4 h-4" />
-            <span className="hidden lg:inline">Saved</span>
+            <span className="hidden lg:inline font-medium">Saved</span>
             {savedCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
                 {savedCount > 99 ? "99+" : savedCount}
@@ -90,7 +87,7 @@ export default function Navbar() {
             className="hidden sm:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
           >
             <MessageCircle className="w-4 h-4" />
-            <span className="hidden lg:inline">Messages</span>
+            <span className="hidden lg:inline font-medium">Messages</span>
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full">
                 {unreadCount > 9 ? "9+" : unreadCount}
@@ -100,7 +97,7 @@ export default function Navbar() {
 
           <Link
             href="/post"
-            className="bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1.5 shadow-sm shadow-blue-200"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center gap-1.5 shadow-md shadow-blue-200 hover:shadow-lg hover:shadow-blue-300"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Post Ad</span>

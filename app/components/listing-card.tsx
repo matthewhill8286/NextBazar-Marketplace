@@ -1,4 +1,4 @@
-import { Eye, MapPin } from "lucide-react";
+import { Clock, Eye, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import FavoriteButton from "./favorite-button";
@@ -20,13 +20,11 @@ type ListingCardProps = {
     view_count: number;
     created_at: string;
     status?: string | null;
-    // Accept both aliased and non-aliased shapes from Supabase
     category?: CatLike | null;
     categories?: CatLike | null;
     location?: LocLike | null;
     locations?: LocLike | null;
   };
-  // Legacy props kept for call-site compatibility — no longer used internally
   userId?: string | null;
   isSaved?: boolean;
   onUnsave?: () => void;
@@ -57,6 +55,7 @@ function timeAgo(dateStr: string): string {
 export default function ListingCard({ listing }: ListingCardProps) {
   const cat = unwrap(listing.categories) || unwrap(listing.category);
   const loc = unwrap(listing.locations) || unwrap(listing.location);
+  const isSold = listing.status === "sold";
 
   const imageSrc =
     listing.primary_image_url ||
@@ -65,37 +64,44 @@ export default function ListingCard({ listing }: ListingCardProps) {
   return (
     <Link
       href={`/listing/${listing.slug}`}
-      className="group bg-white rounded-xl border border-gray-100 overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-gray-200 hover:-translate-y-0.5 block"
+      className="group bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-gray-200/80 hover:border-gray-200 hover:-translate-y-1 block"
     >
+      {/* Image */}
       <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
         <Image
           src={imageSrc}
           alt={listing.title}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className={`object-cover transition-transform duration-500 group-hover:scale-105 ${isSold ? "opacity-60" : ""}`}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
 
+        {/* Bottom gradient for contrast */}
+        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+
+        {/* Category icon */}
         {cat?.icon && (
-          <span className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-sm text-gray-800 text-sm w-7 h-7 flex items-center justify-center rounded-full shadow-sm z-10">
+          <span className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-sm text-gray-800 text-sm w-7 h-7 flex items-center justify-center rounded-full shadow-sm z-10">
             {cat.icon}
           </span>
         )}
 
+        {/* Status badges */}
         {listing.is_promoted && (
-          <span className="absolute top-2.5 left-2.5 bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-            Featured
+          <span className="absolute top-2.5 left-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md z-10 flex items-center gap-1">
+            ✦ Featured
           </span>
         )}
         {listing.is_urgent && !listing.is_promoted && (
-          <span className="absolute top-2.5 left-2.5 bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-            Urgent
+          <span className="absolute top-2.5 left-2.5 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md z-10">
+            ⚡ Urgent
           </span>
         )}
 
-        {listing.status === "sold" && (
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <span className="bg-white text-gray-900 text-sm font-bold px-4 py-1.5 rounded-full shadow-md tracking-wide uppercase">
+        {/* Sold overlay */}
+        {isSold && (
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <span className="bg-white text-gray-900 text-sm font-bold px-5 py-1.5 rounded-full shadow-lg tracking-widest uppercase">
               Sold
             </span>
           </div>
@@ -103,45 +109,45 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
         <FavoriteButton listingId={listing.id} />
 
-        <div className="absolute bottom-2 right-2 flex gap-1.5">
-          <span className="flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
-            <Eye className="w-3 h-3" />
-            {(listing.view_count || 0).toLocaleString()}
-          </span>
+        {/* View count on gradient */}
+        <div className="absolute bottom-2 left-2.5 flex items-center gap-1 text-white/90 text-xs font-medium">
+          <Eye className="w-3 h-3" />
+          {(listing.view_count || 0).toLocaleString()}
         </div>
       </div>
 
-      <div className="p-3.5">
-        <h3 className="font-semibold text-gray-900 text-sm leading-tight line-clamp-1 mb-1">
+      {/* Body */}
+      <div className="p-4">
+        <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors duration-150">
           {listing.title}
         </h3>
-        <div className="flex items-center gap-1.5 text-gray-500 text-xs mb-2.5">
+
+        <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-3">
           <MapPin className="w-3 h-3 shrink-0" />
-          <span>{loc?.name || "Cyprus"}</span>
-          {cat?.name && (
-            <>
-              <span className="text-gray-300">·</span>
-              <span className="truncate">{cat.name}</span>
-            </>
-          )}
+          <span className="truncate">{loc?.name || "Cyprus"}</span>
           {listing.condition && (
             <>
-              <span className="text-gray-300">·</span>
-              <span className="capitalize">
-                {listing.condition.replace("_", " ")}
-              </span>
+              <span className="text-gray-200">·</span>
+              <span className="capitalize shrink-0">{listing.condition.replace("_", " ")}</span>
             </>
           )}
         </div>
+
         <div className="flex items-center justify-between">
-          <span className="text-lg font-bold text-gray-900">
+          <span className={`font-extrabold ${listing.price === null ? "text-gray-500 text-sm" : "text-gray-900 text-lg"}`}>
             {formatPrice(listing.price, listing.currency)}
           </span>
-          <span className="text-xs text-gray-400">
+          <span className="flex items-center gap-1 text-[11px] text-gray-400">
+            <Clock className="w-3 h-3" />
             {timeAgo(listing.created_at)}
           </span>
         </div>
       </div>
+
+      {/* Amber accent stripe for featured listings */}
+      {listing.is_promoted && (
+        <div className="h-0.5 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400" />
+      )}
     </Link>
   );
 }

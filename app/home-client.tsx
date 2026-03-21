@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, MessageCircle, Search, Shield } from "lucide-react";
+import { Bot, MessageCircle, Search, Shield, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -30,28 +30,12 @@ export default function HomeClient() {
         { data: feat },
         { data: rec },
         { count },
-        {
-          data: { user },
-        },
+        { data: { user } },
       ] = await Promise.all([
         supabase.from("categories").select("*").order("sort_order"),
-        supabase
-          .from("listings")
-          .select(LISTING_SELECT)
-          .eq("status", "active")
-          .eq("is_promoted", true)
-          .order("created_at", { ascending: false })
-          .limit(4),
-        supabase
-          .from("listings")
-          .select(LISTING_SELECT)
-          .eq("status", "active")
-          .order("created_at", { ascending: false })
-          .limit(8),
-        supabase
-          .from("listings")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "active"),
+        supabase.from("listings").select(LISTING_SELECT).eq("status", "active").eq("is_promoted", true).order("created_at", { ascending: false }).limit(4),
+        supabase.from("listings").select(LISTING_SELECT).eq("status", "active").order("created_at", { ascending: false }).limit(8),
+        supabase.from("listings").select("id", { count: "exact", head: true }).eq("status", "active"),
         supabase.auth.getUser(),
       ]);
 
@@ -62,11 +46,7 @@ export default function HomeClient() {
 
       if (user) {
         setUserId(user.id);
-        // Fetch all saved listing IDs in one shot
-        const { data: favs } = await supabase
-          .from("favorites")
-          .select("listing_id")
-          .eq("user_id", user.id);
+        const { data: favs } = await supabase.from("favorites").select("listing_id").eq("user_id", user.id);
         if (favs) setSavedIds(new Set(favs.map((f: any) => f.listing_id)));
       }
 
@@ -77,125 +57,154 @@ export default function HomeClient() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="bg-linear-to-br from-blue-600 via-indigo-600 to-purple-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-14 md:py-20 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-            Buy &amp; Sell Anything in Cyprus
+      {/* ── Hero ──────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white">
+        {/* Dot mesh overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.12]"
+          style={{
+            backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+            backgroundSize: "32px 32px",
+          }}
+        />
+        {/* Ambient glow blobs */}
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-blue-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-violet-500 rounded-full blur-3xl opacity-25 pointer-events-none" />
+
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
+          {/* Eyebrow pill */}
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-semibold px-4 py-1.5 rounded-full mb-6">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            Cyprus&rsquo;s smartest marketplace
+          </div>
+
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 tracking-tight leading-[1.1]">
+            Buy &amp; Sell{" "}
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-300">
+                Anything
+              </span>
+            </span>{" "}
+            in Cyprus
           </h1>
-          <p className="text-blue-100 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-            The smarter marketplace. AI-powered search, instant messaging, and
-            trusted sellers.
+
+          <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+            AI-powered search, instant messaging, and verified sellers — all in one place.
           </p>
 
-          <Link href="/search" className="block max-w-2xl mx-auto mb-8">
-            <div className="relative flex items-center">
-              <Search className="absolute left-4 text-gray-400 w-5 h-5" />
-              <div className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white text-gray-400 text-left text-base shadow-xl shadow-blue-900/20 hover:shadow-2xl transition-shadow cursor-pointer">
+          {/* Search */}
+          <Link href="/search" className="block max-w-2xl mx-auto mb-10">
+            <div className="relative flex items-center group cursor-pointer">
+              <Search className="absolute left-5 text-gray-400 w-5 h-5 z-10" />
+              <div className="w-full pl-14 pr-36 py-4 rounded-2xl bg-white text-gray-400 text-base shadow-2xl shadow-indigo-900/30 group-hover:shadow-indigo-900/50 transition-shadow text-left">
                 What are you looking for?
+              </div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md group-hover:from-blue-600 group-hover:to-indigo-700 transition-all">
+                Search
               </div>
             </div>
           </Link>
 
-          <div className="flex flex-wrap justify-center gap-4 text-sm">
-            <div className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-              <Search className="w-3.5 h-3.5" />
-              {totalCount.toLocaleString()}+ Active Listings
-            </div>
-            <div className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-              <Shield className="w-3.5 h-3.5" />
-              Verified Sellers
-            </div>
-            <div className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-              <Bot className="w-3.5 h-3.5" />
-              AI-Powered
-            </div>
-            <div className="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-              <MessageCircle className="w-3.5 h-3.5" />
-              Real-time Chat
-            </div>
+          {/* Stats chips */}
+          <div className="flex flex-wrap justify-center gap-3">
+            {[
+              { icon: TrendingUp, label: `${totalCount.toLocaleString()}+ Active Listings` },
+              { icon: Shield, label: "Verified Sellers" },
+              { icon: Bot, label: "AI-Powered" },
+              { icon: MessageCircle, label: "Real-time Chat" },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-2 rounded-full text-sm text-white/90 font-medium">
+                <Icon className="w-3.5 h-3.5 text-blue-200" />
+                {label}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Categories */}
-        <section className="mb-10">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            Browse Categories
-          </h2>
+      <div className="max-w-7xl mx-auto px-4 py-10">
+
+        {/* ── Categories ──────────────────────────────────────────────── */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Browse Categories</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Find exactly what you&rsquo;re looking for</p>
+            </div>
+          </div>
           {loading ? (
             <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-xl p-3 border border-gray-100 h-20 animate-pulse"
-                />
+                <div key={i} className="bg-white rounded-2xl p-3 border border-gray-100 h-24 animate-pulse" />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/search?category=${cat.slug}`}
-                  className="bg-white rounded-xl p-3 border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all text-center group"
-                >
-                  <div className="text-2xl mb-1 group-hover:scale-110 transition-transform">
-                    {cat.icon}
-                  </div>
-                  <div className="text-xs font-medium text-gray-700">
-                    {cat.name}
-                  </div>
-                  <div className="text-xs text-gray-400">
-                    {(cat.listing_count || 0).toLocaleString()}
-                  </div>
-                </Link>
-              ))}
+              {categories.map((cat, i) => {
+                const palettes = [
+                  "from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-100",
+                  "from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-100",
+                  "from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border-emerald-100",
+                  "from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-100",
+                  "from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-violet-100",
+                  "from-cyan-50 to-sky-50 hover:from-cyan-100 hover:to-sky-100 border-cyan-100",
+                  "from-lime-50 to-green-50 hover:from-lime-100 hover:to-green-100 border-lime-100",
+                  "from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 border-orange-100",
+                ];
+                return (
+                  <Link
+                    key={cat.id}
+                    href={`/search?category=${cat.slug}`}
+                    className={`bg-gradient-to-br ${palettes[i % palettes.length]} rounded-2xl p-3 border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center group`}
+                  >
+                    <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform duration-200">
+                      {cat.icon}
+                    </div>
+                    <div className="text-xs font-semibold text-gray-700 leading-tight">{cat.name}</div>
+                    {cat.listing_count > 0 && (
+                      <div className="text-[10px] text-gray-400 mt-0.5">{cat.listing_count.toLocaleString()}</div>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </section>
 
-        {/* Featured */}
+        {/* ── Featured Listings ────────────────────────────────────────── */}
         {!loading && featured.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900">
-                Featured Listings
-              </h2>
-              <Link
-                href="/search"
-                className="text-sm text-blue-600 font-medium hover:underline"
-              >
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-6 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full" />
+                <h2 className="text-xl font-bold text-gray-900">Featured Listings</h2>
+                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                  Promoted
+                </span>
+              </div>
+              <Link href="/search" className="text-sm text-blue-600 font-semibold hover:underline">
                 View all →
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featured.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
-                />
+                <ListingCard key={listing.id} listing={listing} userId={userId} isSaved={savedIds.has(listing.id)} />
               ))}
             </div>
           </section>
         )}
 
-        {/* Recent */}
-        <section className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-gray-900">
-              {!loading && recent.length === 0
-                ? "No listings yet"
-                : "Recently Added"}
-            </h2>
+        {/* ── Recently Added ───────────────────────────────────────────── */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+              <h2 className="text-xl font-bold text-gray-900">
+                {!loading && recent.length === 0 ? "No listings yet" : "Recently Added"}
+              </h2>
+            </div>
             {recent.length > 0 && (
-              <Link
-                href="/search"
-                className="text-sm text-blue-600 font-medium hover:underline"
-              >
+              <Link href="/search" className="text-sm text-blue-600 font-semibold hover:underline">
                 View all →
               </Link>
             )}
@@ -203,15 +212,12 @@ export default function HomeClient() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-xl border border-gray-100 overflow-hidden"
-                >
+                <div key={i} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                   <div className="aspect-4/3 bg-gray-100 animate-pulse" />
-                  <div className="p-3.5 space-y-2">
-                    <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                    <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
-                    <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
+                  <div className="p-4 space-y-2.5">
+                    <div className="h-4 bg-gray-100 rounded-lg animate-pulse w-3/4" />
+                    <div className="h-3 bg-gray-100 rounded-lg animate-pulse w-1/2" />
+                    <div className="h-6 bg-gray-100 rounded-lg animate-pulse w-1/3" />
                   </div>
                 </div>
               ))}
@@ -219,77 +225,58 @@ export default function HomeClient() {
           ) : recent.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recent.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
-                />
+                <ListingCard key={listing.id} listing={listing} userId={userId} isSaved={savedIds.has(listing.id)} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
+            <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
               <div className="text-5xl mb-4">🏪</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Be the first to post!
-              </h3>
-              <p className="text-gray-500 mb-4">
-                The marketplace is waiting for listings
-              </p>
-              <Link
-                href="/post"
-                className="inline-flex bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-              >
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Be the first to post!</h3>
+              <p className="text-gray-400 mb-6">The marketplace is waiting for listings</p>
+              <Link href="/post" className="inline-flex bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-200">
                 Post Your First Ad
               </Link>
             </div>
           )}
         </section>
 
-        {/* Why NextBazar */}
-        <section className="bg-white rounded-2xl border border-gray-100 p-8 md:p-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            Why NextBazar?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Bot className="w-7 h-7 text-blue-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                AI-Powered Listings
-              </h3>
-              <p className="text-sm text-gray-500">
-                Upload photos and let AI auto-fill your listing details. Get
-                smart pricing suggestions based on market data.
-              </p>
+        {/* ── Why NextBazar ─────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-white mb-4">
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }}
+          />
+          <div className="relative">
+            <div className="text-center mb-10">
+              <p className="text-xs font-bold tracking-widest text-blue-400 uppercase mb-3">Why NextBazar</p>
+              <h2 className="text-2xl md:text-3xl font-bold">The smarter way to trade</h2>
             </div>
-            <div className="text-center">
-              <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-7 h-7 text-green-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Trust &amp; Safety
-              </h3>
-              <p className="text-sm text-gray-500">
-                Verified sellers, user reviews, and AI-powered spam detection
-                keep the marketplace safe and trustworthy.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { icon: Bot, color: "from-blue-500 to-indigo-600", title: "AI-Powered Listings", desc: "Upload photos and let AI auto-fill your listing details. Get smart pricing suggestions based on live market data." },
+                { icon: Shield, color: "from-emerald-500 to-teal-600", title: "Trust & Safety", desc: "Verified sellers, user reviews, and AI-powered spam detection keep the marketplace safe and trustworthy." },
+                { icon: MessageCircle, color: "from-violet-500 to-purple-600", title: "Instant Communication", desc: "Real-time messaging, instant notifications, and secure in-app communication between buyers and sellers." },
+              ].map(({ icon: Icon, color, title, desc }) => (
+                <div key={title} className="text-center group">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${color} rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform duration-200`}>
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="font-bold text-white mb-2">{title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">{desc}</p>
+                </div>
+              ))}
             </div>
-            <div className="text-center">
-              <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <MessageCircle className="w-7 h-7 text-purple-600" />
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Instant Communication
-              </h3>
-              <p className="text-sm text-gray-500">
-                Real-time messaging, instant notifications, and secure in-app
-                communication between buyers and sellers.
-              </p>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <Link href="/post" className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-7 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all shadow-lg shadow-blue-900/30">
+                Post a Free Ad
+              </Link>
+              <Link href="/search" className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-7 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors">
+                Browse Listings
+              </Link>
             </div>
           </div>
         </section>
+
       </div>
     </>
   );
