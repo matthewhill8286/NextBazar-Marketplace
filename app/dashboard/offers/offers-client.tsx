@@ -357,7 +357,7 @@ function OfferCard({
               </div>
             )}
 
-            {/* Buyer can withdraw pending offer */}
+            {/* Buyer can withdraw the pending offer */}
             {!isSeller && offer.status === "pending" && (
               <button
                 onClick={() => respond("withdrawn")}
