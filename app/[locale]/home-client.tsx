@@ -4,8 +4,8 @@ import { Bot, MessageCircle, Search, Shield, Sparkles, TrendingUp } from "lucide
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import ListingCard from "./components/listing-card";
-import GlobalSearchBar from "./components/global-search-bar";
+import ListingCard from "@/app/components/listing-card";
+import GlobalSearchBar from "@/app/components/global-search-bar";
 
 const LISTING_SELECT = `
   *,
@@ -92,11 +92,6 @@ export default function HomeClient() {
           <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
             AI-powered search, instant messaging, and verified sellers — all in one place.
           </p>
-
-          {/* Search */}
-          <Suspense fallback={null}>
-            <GlobalSearchBar variant="hero" />
-          </Suspense>
 
           {/* Stats chips */}
           <div className="flex flex-wrap justify-center gap-3">

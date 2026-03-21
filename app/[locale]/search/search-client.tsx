@@ -57,6 +57,10 @@ export default function SearchClient() {
   const [userId, setUserId]                 = useState<string | null>(null);
   const [savedIds, setSavedIds]             = useState<Set<string>>(new Set());
 
+  // ─── Featured/promoted listings shown when no search is active ────────────
+  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [featuredLoading, setFeaturedLoading]   = useState(!initialQuery && !initialCategory && !initialLocation);
+
   // ─── Ref: suppress filterKey re-trigger after AI search sets filters ──────
   // When AI search calls setCategorySlug / setLocationSlug to update the UI,
   // that would normally re-fire the filter effect and wipe the AI results.
@@ -69,6 +73,25 @@ export default function SearchClient() {
   // ─── Ref: track the last query WE pushed to the URL (to avoid re-searching
   //     when our own syncUrl call triggers the searchParams watcher) ─────────
   const lastInternalQuery = useRef(initialQuery);
+
+  // ─── Load featured/promoted listings once ────────────────────────────────
+  useEffect(() => {
+    async function loadFeatured() {
+      setFeaturedLoading(true);
+      const { data } = await supabase
+        .from("listings")
+        .select("*, categories(name, slug, icon), locations(name, slug)")
+        .eq("status", "active")
+        .or("is_promoted.eq.true,is_featured.eq.true")
+        .order("is_promoted", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(24);
+      if (data) setFeaturedListings(data.map(normalise));
+      setFeaturedLoading(false);
+    }
+    loadFeatured();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ─── Load meta once ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -166,6 +189,7 @@ export default function SearchClient() {
     }
 
     doSearch(submittedQuery);
+    syncUrl(submittedQuery);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey, categories.length]);
 
@@ -278,8 +302,8 @@ export default function SearchClient() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
 
-      {/* ── Mobile search bar (header is hidden on small screens) ──────── */}
-      <div className="md:hidden mb-6">
+      {/* ── Search bar ───────────────────────────────────────────────── */}
+      <div className="mb-6">
         <div className="relative flex items-center">
           <Search className="absolute left-4 text-gray-400 w-5 h-5 pointer-events-none" />
           <input
@@ -319,53 +343,6 @@ export default function SearchClient() {
         <p className="text-xs text-gray-400 mt-1.5 pl-1">
           Press <kbd className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500 font-mono text-[11px]">Enter</kbd> to search · <Sparkles className="w-3 h-3 inline text-indigo-500" /> for AI smart search
         </p>
-      </div>
-
-      {/* ── Desktop controls bar (header handles the input on md+) ──────── */}
-      <div className="hidden md:flex items-center justify-between mb-5 gap-4">
-        {/* Left: query context */}
-        <div className="flex items-center gap-2.5 min-w-0">
-          {submittedQuery ? (
-            <>
-              <span className="text-sm text-gray-500 shrink-0">Results for</span>
-              <span className="text-sm font-semibold text-gray-900 truncate max-w-xs">
-                &ldquo;{submittedQuery}&rdquo;
-              </span>
-              {wasAiSearch && (
-                <span className="hidden lg:flex items-center gap-1 text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full border border-indigo-100 font-medium shrink-0">
-                  <Sparkles className="w-3 h-3" />
-                  AI Search
-                </span>
-              )}
-            </>
-          ) : (
-            <span className="text-sm text-gray-500">Browse all listings</span>
-          )}
-        </div>
-
-        {/* Right: action buttons */}
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => handleAiSearch()}
-            disabled={aiSearching || !inputValue.trim()}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium hover:from-indigo-600 hover:to-purple-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-            title="AI Smart Search"
-          >
-            {aiSearching ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-            <span>AI Search</span>
-          </button>
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-              showFilters
-                ? "bg-blue-50 text-blue-700 border-blue-200"
-                : "bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600"
-            }`}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            Filters
-          </button>
-        </div>
       </div>
 
       {/* ── Filters Panel ───────────────────────────────────────────────── */}
@@ -486,7 +463,12 @@ export default function SearchClient() {
             </button>
           )}
           <button
-            onClick={() => { setInputValue(""); setSubmittedQuery(""); setCategorySlug(""); setSubcategorySlug(""); setLocationSlug(""); setPriceMin(""); setPriceMax(""); }}
+            onClick={() => {
+              setInputValue(""); setSubmittedQuery(""); setCategorySlug(""); setSubcategorySlug(""); setLocationSlug(""); setPriceMin(""); setPriceMax("");
+              setListings([]); setTotalHits(0); setAiInterpretation(""); setWasAiSearch(false);
+              lastInternalQuery.current = "";
+              router.replace("/search", { scroll: false });
+            }}
             className="text-sm text-gray-400 hover:text-gray-600 ml-1">
             Clear all
           </button>
@@ -590,7 +572,12 @@ export default function SearchClient() {
           )}
 
           <button
-            onClick={() => { setInputValue(""); setSubmittedQuery(""); setCategorySlug(""); setSubcategorySlug(""); setLocationSlug(""); setPriceMin(""); setPriceMax(""); }}
+            onClick={() => {
+              setInputValue(""); setSubmittedQuery(""); setCategorySlug(""); setSubcategorySlug(""); setLocationSlug(""); setPriceMin(""); setPriceMax("");
+              setListings([]); setTotalHits(0); setAiInterpretation(""); setWasAiSearch(false);
+              lastInternalQuery.current = "";
+              router.replace("/search", { scroll: false });
+            }}
             className="text-blue-600 font-medium hover:underline text-sm"
           >
             Clear all filters
@@ -628,10 +615,42 @@ export default function SearchClient() {
           )}
         </>
       ) : (
-        // Initial empty state — no search performed yet
-        <div className="text-center py-20 text-gray-400">
-          <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">Type something and press Enter to search</p>
+        // Default discovery state — show featured & promoted listings
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            <h2 className="text-sm font-semibold text-gray-700">Featured &amp; Promoted Listings</h2>
+          </div>
+          {featuredLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                  <div className="aspect-4/3 bg-gray-100 animate-pulse" />
+                  <div className="p-3.5 space-y-2">
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                    <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                    <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : featuredListings.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {featuredListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  userId={userId}
+                  isSaved={savedIds.has(listing.id)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 text-gray-400">
+              <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">Type something and press Enter to search</p>
+            </div>
+          )}
         </div>
       )}
     </div>

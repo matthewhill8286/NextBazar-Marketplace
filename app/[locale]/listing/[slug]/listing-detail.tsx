@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import ListingCard from "@/app/components/listing-card";
 import { createClient } from "@/lib/supabase/client";
 import AiInsights, { type InsightsPriceSummaryAction } from "./ai-insights";
@@ -40,41 +41,19 @@ const LISTING_SELECT = `
   listing_images(id, url, thumbnail_url, sort_order)
 `;
 
-function formatPrice(p: number | null, currency: string): string {
-  if (p === null) return "Contact for price";
-  const sym = currency === "EUR" ? "€" : currency;
-  return `${sym}${p.toLocaleString()}`;
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function conditionLabel(c: string | null): string {
-  if (!c) return "—";
-  return c.replace("_", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
-}
+const conditionKeys: Record<string, string> = {
+  new: "condition_new",
+  like_new: "condition_like_new",
+  good: "condition_good",
+  fair: "condition_fair",
+  for_parts: "condition_for_parts",
+};
 
 export default function ListingDetail({ slug }: { slug: string }) {
+  const t = useTranslations("listing");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+
   const supabase = createClient();
   const [listing, setListing] = useState<any>(null);
   const [related, setRelated] = useState<any[]>([]);
@@ -85,6 +64,43 @@ export default function ListingDetail({ slug }: { slug: string }) {
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [existingOffer, setExistingOffer] = useState<{ status: string } | null>(null);
   const [offerCount, setOfferCount] = useState(0);
+
+  const dateLocale = locale === "el" ? "el-GR" : "en-GB";
+
+  function formatPrice(p: number | null, currency: string): string {
+    if (p === null) return t("contactForPrice");
+    const sym = currency === "EUR" ? "€" : currency;
+    return `${sym}${p.toLocaleString()}`;
+  }
+
+  function timeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return t("timeMinutes", { n: mins });
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return t("timeHours", { n: hrs });
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return t("timeDays", { n: days });
+    return new Date(dateStr).toLocaleDateString(dateLocale, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
+  function formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString(dateLocale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
+  function conditionLabel(c: string | null): string {
+    if (!c) return "—";
+    const key = conditionKeys[c];
+    return key ? t(key) : c.replace(/_/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
+  }
 
   useEffect(() => {
     async function load() {
@@ -165,16 +181,16 @@ export default function ListingDetail({ slug }: { slug: string }) {
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="text-6xl mb-4">🔍</div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Listing not found
+          {t("notFound")}
         </h1>
         <p className="text-gray-500 mb-6">
-          This listing may have been removed or the link is incorrect.
+          {t("notFoundDesc")}
         </p>
         <Link
           href="/"
           className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
         >
-          Browse Listings
+          {t("browseListings")}
         </Link>
       </div>
     );
@@ -226,7 +242,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
             className="hover:text-gray-700 flex items-center gap-1 shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
-            Home
+            {tCommon("home")}
           </Link>
           <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
           <Link
@@ -267,17 +283,17 @@ export default function ListingDetail({ slug }: { slug: string }) {
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 {listing.status === "sold" && (
                   <span className="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full tracking-wide uppercase">
-                    Sold
+                    {t("sold")}
                   </span>
                 )}
                 {listing.is_promoted && (
                   <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                    Featured
+                    {t("featured")}
                   </span>
                 )}
                 {listing.is_urgent && (
                   <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                    Urgent
+                    {t("urgent")}
                   </span>
                 )}
                 <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">
@@ -290,12 +306,12 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 )}
                 {listing.price_type === "negotiable" && (
                   <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                    Negotiable
+                    {tCommon("negotiable")}
                   </span>
                 )}
                 {listing.price_type === "free" && (
                   <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                    Free
+                    {tCommon("free")}
                   </span>
                 )}
               </div>
@@ -315,11 +331,11 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Eye className="w-4 h-4 text-gray-400" />
-                  {(listing.view_count || 0).toLocaleString()} views
+                  {t("views", { count: (listing.view_count || 0).toLocaleString() })}
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Heart className="w-4 h-4 text-gray-400" />
-                  {(listing.favorite_count || 0).toLocaleString()} saved
+                  {t("savedCount", { count: (listing.favorite_count || 0).toLocaleString() })}
                 </span>
               </div>
 
@@ -329,7 +345,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 </span>
                 {listing.price_type === "negotiable" && (
                   <span className="text-sm text-green-600 font-medium pb-1">
-                    Price negotiable
+                    {t("priceNegotiable")}
                   </span>
                 )}
               </div>
@@ -338,7 +354,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
                   <span className="flex items-center gap-1">
                     <Shield className="w-3 h-3 text-blue-500" />
-                    Market value:
+                    {t("marketValue")}
                   </span>
                   {aiMarketLoading ? (
                     <span className="h-3.5 w-28 bg-gray-200 rounded animate-pulse inline-block" />
@@ -356,10 +372,10 @@ export default function ListingDetail({ slug }: { slug: string }) {
                               : "bg-blue-100 text-blue-700"
                         }`}>
                           {aiPrice.price_verdict === "underpriced"
-                            ? "Below Market"
+                            ? t("belowMarket")
                             : aiPrice.price_verdict === "overpriced"
-                              ? "Above Market"
-                              : "Fair Price"}
+                              ? t("aboveMarket")
+                              : t("fairPrice")}
                         </span>
                       )}
                       <span className="text-[10px] text-gray-400 ml-0.5">· AI</span>
@@ -377,7 +393,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
             {/* Details grid */}
             <div className="bg-white rounded-2xl p-6 border border-gray-100">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Details
+                {t("details")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
@@ -386,7 +402,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   </div>
                   <div>
                     <div className="text-[11px] text-gray-500 font-medium">
-                      Category
+                      {t("category")}
                     </div>
                     <div className="text-sm font-semibold text-gray-900">
                       {listing.categories?.name || "—"}
@@ -400,7 +416,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     </div>
                     <div>
                       <div className="text-[11px] text-gray-500 font-medium">
-                        Condition
+                        {t("condition")}
                       </div>
                       <div className="text-sm font-semibold text-gray-900">
                         {conditionLabel(listing.condition)}
@@ -414,7 +430,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   </div>
                   <div>
                     <div className="text-[11px] text-gray-500 font-medium">
-                      Location
+                      {t("location")}
                     </div>
                     <div className="text-sm font-semibold text-gray-900">
                       {listing.locations?.name || "Cyprus"}
@@ -427,7 +443,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   </div>
                   <div>
                     <div className="text-[11px] text-gray-500 font-medium">
-                      Posted
+                      {t("posted")}
                     </div>
                     <div className="text-sm font-semibold text-gray-900">
                       {formatDate(listing.created_at)}
@@ -444,7 +460,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     </div>
                     <div>
                       <div className="text-[11px] text-gray-500 font-medium">
-                        Listing Quality
+                        {t("listingQuality")}
                       </div>
                       <div className="text-sm font-semibold text-gray-900">
                         {qualityScore}%
@@ -459,7 +475,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
             {listing.description && (
               <div className="bg-white rounded-2xl p-6 border border-gray-100">
                 <h2 className="text-lg font-semibold text-gray-900 mb-3">
-                  Description
+                  {t("description")}
                 </h2>
                 <div className="text-gray-600 leading-relaxed whitespace-pre-wrap text-[15px]">
                   {listing.description}
@@ -533,7 +549,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     </span>
                   </div>
                   <p className="text-[11px] text-gray-400 mt-0.5">
-                    Member since {sellerYear}
+                    {t("memberSince")} {sellerYear}
                   </p>
                 </div>
               </div>
@@ -556,13 +572,13 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     className="w-full mt-3 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-700 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-amber-100 transition-colors"
                   >
                     <Tag className="w-4 h-4" />
-                    {existingOffer.status === "countered" ? "Offer Countered — View" : "Offer Pending — View"}
+                    {existingOffer.status === "countered" ? t("offerCountered") : t("offerPending")}
                   </Link>
                 ) : offerCount >= 2 ? (
                   // No active offer but limit exhausted (both were withdrawn/declined)
                   <div className="w-full mt-3 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
                     <Tag className="w-4 h-4" />
-                    Offer limit reached
+                    {t("offerLimitReached")}
                   </div>
                 ) : (
                   <button
@@ -570,7 +586,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     className="w-full mt-3 py-3 rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 hover:border-blue-300 transition-all flex items-center justify-center gap-2"
                   >
                     <Tag className="w-4 h-4" />
-                    Make an Offer
+                    {t("makeOffer")}
                   </button>
                 )
               )}
@@ -580,7 +596,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   href={`/profile/${listing.user_id}`}
                   className="text-sm text-blue-600 font-medium hover:underline"
                 >
-                  View seller profile →
+                  {t("viewSellerProfile")}
                 </Link>
               </div>
             </div>
@@ -588,24 +604,24 @@ export default function ListingDetail({ slug }: { slug: string }) {
             {/* Safety tips */}
             <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
               <p className="text-sm text-amber-800 font-semibold mb-2">
-                🛡️ Safety Tips
+                🛡️ {t("safetyTips")}
               </p>
               <ul className="space-y-1.5 text-xs text-amber-700 leading-relaxed">
                 <li className="flex gap-2">
                   <span className="shrink-0">•</span>
-                  Meet in a public place for the exchange
+                  {t("safetyTip1")}
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0">•</span>
-                  Check the item thoroughly before paying
+                  {t("safetyTip2")}
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0">•</span>
-                  Never send money in advance
+                  {t("safetyTip3")}
                 </li>
                 <li className="flex gap-2">
                   <span className="shrink-0">•</span>
-                  Use in-app messaging for all communication
+                  {t("safetyTip4")}
                 </li>
               </ul>
             </div>
@@ -635,13 +651,13 @@ export default function ListingDetail({ slug }: { slug: string }) {
           <section className="mt-12">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xl font-bold text-gray-900">
-                Similar Listings
+                {t("similarListings")}
               </h2>
               <Link
                 href={`/search?category=${listing.categories?.slug || ""}`}
                 className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
               >
-                View more <ChevronRight className="w-3.5 h-3.5" />
+                {t("viewMore")} <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

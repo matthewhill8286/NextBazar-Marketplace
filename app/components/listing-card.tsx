@@ -1,6 +1,9 @@
+"use client";
+
 import { Clock, Eye, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import FavoriteButton from "./favorite-button";
 
 type CatLike = { name: string; slug?: string; icon?: string };
@@ -36,23 +39,17 @@ function unwrap<T>(v: T | T[] | null | undefined): T | null {
   return v;
 }
 
-function formatPrice(price: number | null, currency: string): string {
-  if (price === null) return "Contact";
-  const sym = currency === "EUR" ? "€" : currency;
-  return `${sym}${price.toLocaleString()}`;
-}
-
-function timeAgo(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
-}
+const conditionKeys: Record<string, string> = {
+  new: "condition_new",
+  like_new: "condition_like_new",
+  good: "condition_good",
+  fair: "condition_fair",
+  for_parts: "condition_for_parts",
+};
 
 export default function ListingCard({ listing }: ListingCardProps) {
+  const t = useTranslations("listing");
+
   const cat = unwrap(listing.categories) || unwrap(listing.category);
   const loc = unwrap(listing.locations) || unwrap(listing.location);
   const isSold = listing.status === "sold";
@@ -60,6 +57,27 @@ export default function ListingCard({ listing }: ListingCardProps) {
   const imageSrc =
     listing.primary_image_url ||
     "https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop";
+
+  function formatPrice(price: number | null, currency: string): string {
+    if (price === null) return t("contact");
+    const sym = currency === "EUR" ? "€" : currency;
+    return `${sym}${price.toLocaleString()}`;
+  }
+
+  function timeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return t("timeMinutes", { n: mins });
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return t("timeHours", { n: hrs });
+    const days = Math.floor(hrs / 24);
+    return t("timeDays", { n: days });
+  }
+
+  function formatCondition(condition: string): string {
+    const key = conditionKeys[condition];
+    return key ? t(key) : condition.replace(/_/g, " ");
+  }
 
   return (
     <Link
@@ -89,12 +107,12 @@ export default function ListingCard({ listing }: ListingCardProps) {
         {/* Status badges */}
         {listing.is_promoted && (
           <span className="absolute top-2.5 left-2.5 bg-linear-to-r from-amber-500 to-orange-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md z-10 flex items-center gap-1">
-            ✦ Featured
+            ✦ {t("featured")}
           </span>
         )}
         {listing.is_urgent && !listing.is_promoted && (
           <span className="absolute top-2.5 left-2.5 bg-linear-to-r from-red-500 to-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md z-10">
-            ⚡ Urgent
+            ⚡ {t("urgent")}
           </span>
         )}
 
@@ -102,7 +120,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         {isSold && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <span className="bg-white text-gray-900 text-sm font-bold px-5 py-1.5 rounded-full shadow-lg tracking-widest uppercase">
-              Sold
+              {t("sold")}
             </span>
           </div>
         )}
@@ -128,7 +146,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
           {listing.condition && (
             <>
               <span className="text-gray-200">·</span>
-              <span className="capitalize shrink-0">{listing.condition.replace("_", " ")}</span>
+              <span className="shrink-0">{formatCondition(listing.condition)}</span>
             </>
           )}
         </div>

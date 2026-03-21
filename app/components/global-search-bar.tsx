@@ -2,9 +2,11 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useRef, useState, useEffect, KeyboardEvent } from "react";
-import { Search, Sparkles, Loader2 } from "lucide-react";
+import { Search, Sparkles, Loader2, ChevronDown } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 type Variant = "hero" | "navbar";
+type Category = { id: string; name: string; slug: string; icon: string };
 
 interface Props {
   variant?: Variant;
@@ -17,34 +19,35 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   // ── Always mirror the URL's ?q= value so both bars stay in sync ──────────
-  // On the search page this means typing in the search page input (which calls
-  // router.replace) will also update the header, and vice-versa.
   const urlQuery = searchParams.get("q") ?? "";
   const [query, setQuery] = useState(urlQuery);
 
-  // Keep the local state in sync when the URL changes externally
-  // (e.g. search page executes a search, or user navigates back/forward)
   useEffect(() => {
     setQuery(urlQuery);
   }, [urlQuery]);
 
+  // Load categories once
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("categories")
+      .select("id, name, slug, icon")
+      .order("sort_order")
+      .then(({ data }) => { if (data) setCategories(data); });
+  }, []);
+
   const isOnSearchPage = pathname === "/search";
+  const isOnListingPage = pathname.startsWith("/listing/");
 
   function goToSearch(q: string, ai = false) {
     const params = new URLSearchParams(searchParams.toString());
-    if (q.trim()) {
-      params.set("q", q.trim());
-    } else {
-      params.delete("q");
-    }
-    if (ai) {
-      params.set("ai", "1");
-    } else {
-      params.delete("ai");
-    }
-    // When already on the search page use replace so the search page's own
-    // searchParams watcher picks it up without adding an extra history entry.
+    if (q.trim()) { params.set("q", q.trim()); } else { params.delete("q"); }
+    if (selectedCategory) { params.set("category", selectedCategory); } else { params.delete("category"); }
+    if (ai) { params.set("ai", "1"); } else { params.delete("ai"); }
     const url = `/search?${params.toString()}`;
     if (isOnSearchPage) {
       router.replace(url, { scroll: false });
@@ -105,30 +108,56 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   }
 
   // ────────────────────────────── NAVBAR variant ────────────────────────────
+  // Hide the navbar search on the search page — the page has its own search bar
+  if (isOnSearchPage) return null;
+
+  const activeCategory = categories.find((c) => c.slug === selectedCategory);
+
   return (
-    <div className="relative flex items-center w-full">
-      <Search className="absolute left-3.5 text-gray-400 w-4 h-4 pointer-events-none z-10" />
-      <input
-        ref={inputRef}
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={handleKey}
-        placeholder="Search thousands of listings..."
-        className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-700 placeholder:text-gray-400 hover:border-blue-300 hover:bg-white focus:outline-none focus:border-blue-400 focus:bg-white transition-all"
-      />
-      <button
-        onClick={handleAi}
-        disabled={aiLoading}
-        title="AI smart search"
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-violet-500 hover:text-violet-700 hover:bg-violet-50 transition-colors disabled:opacity-60"
-      >
-        {aiLoading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-        ) : (
-          <Sparkles className="w-3.5 h-3.5" />
-        )}
-      </button>
+    <div className="flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-white focus-within:border-blue-400 focus-within:bg-white transition-all overflow-hidden">
+
+      {/* Category picker */}
+      <div className="relative shrink-0">
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="appearance-none h-full pl-3 pr-7 py-2.5 bg-transparent text-sm font-medium text-gray-600 focus:outline-none cursor-pointer border-r border-gray-200"
+          aria-label="Category"
+        >
+          <option value="">All</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.slug}>
+              {cat.icon} {cat.name}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400" />
+      </div>
+
+      {/* Text input */}
+      <div className="relative flex-1 flex items-center">
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKey}
+          placeholder={activeCategory ? `Search in ${activeCategory.name}…` : "Search thousands of listings..."}
+          className="w-full pl-3 pr-9 py-2.5 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
+        />
+        <button
+          onClick={handleAi}
+          disabled={aiLoading}
+          title="AI smart search"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg text-violet-500 hover:text-violet-700 hover:bg-violet-50 transition-colors disabled:opacity-60"
+        >
+          {aiLoading ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : (
+            <Sparkles className="w-3.5 h-3.5" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }
