@@ -42,7 +42,7 @@ test.describe("Search page", () => {
 
   test("shows the Featured badge on a promoted listing", async ({ page }) => {
     // macbook is is_promoted: true
-    await expect(page.getByText("Featured").first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/Featured/).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("clicking a result card navigates to listing detail", async ({ page }) => {

@@ -77,8 +77,13 @@ export async function GET(req: NextRequest) {
             ? { name: r.location_name, slug: r.location_slug }
             : null,
         }));
-        // Promoted listings always surface first, preserving similarity rank within each group
-        hits.sort((a: any, b: any) => (b.is_promoted ? 1 : 0) - (a.is_promoted ? 1 : 0));
+        // 3-tier boost: featured (0) > urgent (1) > normal (2), then newest within each tier
+        hits.sort((a: any, b: any) => {
+          const tierA = a.is_promoted ? 0 : a.is_urgent ? 1 : 2;
+          const tierB = b.is_promoted ? 0 : b.is_urgent ? 1 : 2;
+          if (tierA !== tierB) return tierA - tierB;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
         return NextResponse.json({ hits, totalHits: hits.length, source: "vector" });
       }
       // Fall through to full-text if vector search returns nothing
@@ -99,7 +104,8 @@ export async function GET(req: NextRequest) {
 
     const { data: ftData } = await ftq
       .order("is_promoted", { ascending: false })
-      .order("created_at", { ascending: false })
+      .order("is_urgent",   { ascending: false })
+      .order("created_at",  { ascending: false })
       .limit(limit);
 
     // ilike fallback if full-text returns nothing
@@ -118,7 +124,8 @@ export async function GET(req: NextRequest) {
 
       const { data: ilikeData } = await ilikeQ
         .order("is_promoted", { ascending: false })
-        .order("created_at", { ascending: false })
+        .order("is_urgent",   { ascending: false })
+        .order("created_at",  { ascending: false })
         .limit(limit);
 
       const hits = ilikeData || [];
@@ -148,10 +155,11 @@ export async function GET(req: NextRequest) {
     popular:    { col: "view_count", asc: false },
   };
   const s = sortMap[sort] ?? sortMap.newest;
-  // Promoted listings always float to the top, then apply the user's chosen sort
+  // 3-tier boost: featured → urgent → normal, then the user's chosen sort within each tier
   browseQ = browseQ
     .order("is_promoted", { ascending: false })
-    .order(s.col, { ascending: s.asc });
+    .order("is_urgent",   { ascending: false })
+    .order(s.col,         { ascending: s.asc });
 
   const { data, count, error } = await browseQ.range(offset, offset + limit - 1);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

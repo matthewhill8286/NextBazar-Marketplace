@@ -98,6 +98,31 @@ export const mockLocations = [
 
 /** Intercept all Supabase REST API calls and return mock data */
 export async function mockSupabase(page: Page) {
+  // ── /api/search — server-side route used by the search page ───────────────
+  // Must be mocked at the Next.js route level because the handler calls
+  // Supabase server-side (not through the browser), so Supabase URL interception
+  // alone won't cover it.
+  await page.route("**/api/search**", (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        hits: mockListings,
+        totalHits: mockListings.length,
+        source: "browse",
+      }),
+    })
+  );
+
+  // ── /api/ai/search — block AI search so it never fires in tests ───────────
+  await page.route("**/api/ai/search**", (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ filters: {} }),
+    })
+  );
+
   await page.route(`${SUPABASE_URL}/rest/v1/**`, async (route: Route) => {
     const url = route.request().url();
 
@@ -119,10 +144,20 @@ export async function mockSupabase(page: Page) {
       });
     }
 
+    // Favorites — table is called "favorites", not "listing_favorites"
+    if (url.includes("/rest/v1/favorites")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([]),
+        headers: { "Content-Range": "0-0/0" },
+      });
+    }
+
     // Single listing by slug
     if (url.includes("/rest/v1/listings") && url.includes("slug=eq.")) {
       const slug = url.match(/slug=eq\.([^&]+)/)?.[1];
-      const listing = mockListings.find((l) => l.slug === slug);
+      const listing = mockListings.find((l) => l.slug === decodeURIComponent(slug ?? ""));
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -137,6 +172,16 @@ export async function mockSupabase(page: Page) {
         contentType: "application/json",
         body: JSON.stringify(mockListings),
         headers: { "Content-Range": `0-1/${mockListings.length}` },
+      });
+    }
+
+    // Notifications — empty by default
+    if (url.includes("/rest/v1/notifications")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([]),
+        headers: { "Content-Range": "0-0/0" },
       });
     }
 

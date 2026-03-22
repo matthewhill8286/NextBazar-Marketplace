@@ -181,6 +181,8 @@ const MOCK_VECTOR_ROW = {
   title: "Penthouse",
   price: 500000,
   is_promoted: true,
+  is_urgent: false,
+  created_at: "2024-06-01T00:00:00Z",
   category_name: "Property",
   category_slug: "property",
   category_icon: "🏠",
@@ -287,15 +289,29 @@ describe("GET /api/search", () => {
       expect(hits[0].location).toEqual({ name: "Limassol", slug: "limassol" });
     });
 
-    it("sorts promoted listings first in vector results", async () => {
-      const promoted = { ...MOCK_VECTOR_ROW, id: "a", is_promoted: true };
-      const normal   = { ...MOCK_VECTOR_ROW, id: "b", is_promoted: false };
+    it("sorts featured > urgent > normal in vector results", async () => {
+      const normal   = { ...MOCK_VECTOR_ROW, id: "normal",   is_promoted: false, is_urgent: false, created_at: "2024-06-03T00:00:00Z" };
+      const urgent   = { ...MOCK_VECTOR_ROW, id: "urgent",   is_promoted: false, is_urgent: true,  created_at: "2024-06-02T00:00:00Z" };
+      const featured = { ...MOCK_VECTOR_ROW, id: "featured", is_promoted: true,  is_urgent: false, created_at: "2024-06-01T00:00:00Z" };
       state.embedResult = [0.1];
-      state.rpcResult = { data: [normal, promoted], error: null };
+      // Arrive out-of-order: normal, featured, urgent
+      state.rpcResult = { data: [normal, featured, urgent], error: null };
       const res = await GET(makeRequest({ q: "sea" }));
       const { hits } = await res.json();
-      expect(hits[0].id).toBe("a");
-      expect(hits[1].id).toBe("b");
+      expect(hits[0].id).toBe("featured");
+      expect(hits[1].id).toBe("urgent");
+      expect(hits[2].id).toBe("normal");
+    });
+
+    it("sorts by recency within the same tier in vector results", async () => {
+      const older  = { ...MOCK_VECTOR_ROW, id: "older",  is_promoted: true, is_urgent: false, created_at: "2024-01-01T00:00:00Z" };
+      const newer  = { ...MOCK_VECTOR_ROW, id: "newer",  is_promoted: true, is_urgent: false, created_at: "2024-06-01T00:00:00Z" };
+      state.embedResult = [0.1];
+      state.rpcResult = { data: [older, newer], error: null };
+      const res = await GET(makeRequest({ q: "sea" }));
+      const { hits } = await res.json();
+      expect(hits[0].id).toBe("newer");
+      expect(hits[1].id).toBe("older");
     });
 
     it("falls through to full-text when RPC returns empty results", async () => {
@@ -362,6 +378,16 @@ describe("GET /api/search", () => {
       expect(hits).toHaveLength(1);
       expect(hits[0].id).toBe("listing-1");
     });
+
+    it("orders full-text results by is_promoted DESC, is_urgent DESC, created_at DESC", async () => {
+      await GET(makeRequest({ q: "sea" }));
+      const chain = state.listingsChains[0];
+      const cols = chain.orders.map(([col]) => col);
+      expect(cols).toEqual(["is_promoted", "is_urgent", "created_at"]);
+      expect(chain.orders[0][1]).toMatchObject({ ascending: false });
+      expect(chain.orders[1][1]).toMatchObject({ ascending: false });
+      expect(chain.orders[2][1]).toMatchObject({ ascending: false });
+    });
   });
 
   // ── ilike fallback path ───────────────────────────────────────────────────
@@ -410,6 +436,16 @@ describe("GET /api/search", () => {
       const res = await GET(makeRequest({ q: "sea" }));
       const body = await res.json();
       expect(body.source).toBe("ilike");
+    });
+
+    it("orders ilike results by is_promoted DESC, is_urgent DESC, created_at DESC", async () => {
+      await GET(makeRequest({ q: "sea" }));
+      const ilikeChain = state.listingsChains[1];
+      const cols = ilikeChain.orders.map(([col]) => col);
+      expect(cols).toEqual(["is_promoted", "is_urgent", "created_at"]);
+      expect(ilikeChain.orders[0][1]).toMatchObject({ ascending: false });
+      expect(ilikeChain.orders[1][1]).toMatchObject({ ascending: false });
+      expect(ilikeChain.orders[2][1]).toMatchObject({ ascending: false });
     });
 
     it("does NOT add category filter when no category is specified", async () => {
@@ -476,10 +512,23 @@ describe("GET /api/search", () => {
       expect(body.totalHits).toBe(42);
     });
 
-    it("orders by is_promoted desc first to float promoted listings", async () => {
+    it("orders by is_promoted DESC, is_urgent DESC, then user sort for 3-tier ranking", async () => {
       await GET(makeRequest({}));
       const chain = state.listingsChains[0];
-      expect(chain.orders[0]).toContainEqual("is_promoted");
+      const cols = chain.orders.map(([col]) => col);
+      expect(cols[0]).toBe("is_promoted");
+      expect(cols[1]).toBe("is_urgent");
+      // Both should be descending so featured/urgent float to the top
+      expect(chain.orders[0][1]).toMatchObject({ ascending: false });
+      expect(chain.orders[1][1]).toMatchObject({ ascending: false });
+    });
+
+    it("applies the user-chosen sort as the 3rd order key in browse mode", async () => {
+      await GET(makeRequest({ sort: "price_low" }));
+      const chain = state.listingsChains[0];
+      const cols = chain.orders.map(([col]) => col);
+      expect(cols[2]).toBe("price");
+      expect(chain.orders[2][1]).toMatchObject({ ascending: true });
     });
 
     it("returns 500 when Supabase returns an error in browse mode", async () => {

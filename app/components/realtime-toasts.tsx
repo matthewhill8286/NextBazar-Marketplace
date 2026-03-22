@@ -26,8 +26,8 @@ function MessageToast({
   onNavigate: () => void;
 }) {
   return (
-    <div className="w-[340px] bg-white rounded-2xl shadow-2xl shadow-blue-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-gradient-to-b from-blue-500 to-indigo-600 shrink-0" />
+    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-blue-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-blue-500 to-indigo-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -95,8 +95,8 @@ function OfferToast({
   onNavigate: () => void;
 }) {
   return (
-    <div className="w-[340px] bg-white rounded-2xl shadow-2xl shadow-emerald-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-gradient-to-b from-emerald-500 to-teal-600 shrink-0" />
+    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-emerald-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-emerald-500 to-teal-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
