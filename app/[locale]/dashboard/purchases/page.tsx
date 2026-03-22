@@ -29,7 +29,7 @@ export default function PurchasesPage() {
           counter_message,
           created_at,
           responded_at,
-          listings(id, title, slug, primary_image_url, price, currency, status, categories(name, icon), locations(name)),
+          listings(id, title, slug, primary_image_url, price, currency, status, categories(name, slug, icon), locations(name)),
           seller:profiles!offers_seller_id_fkey(id, display_name, avatar_url, verified)
         `)
         .eq("buyer_id", user.id)

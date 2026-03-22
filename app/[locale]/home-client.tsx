@@ -1,11 +1,11 @@
 "use client";
 
-import { Bot, MessageCircle, Search, Shield, Sparkles, TrendingUp } from "lucide-react";
+import { Bot, MessageCircle, Shield, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import ListingCard from "@/app/components/listing-card";
-import GlobalSearchBar from "@/app/components/global-search-bar";
+import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 const LISTING_SELECT = `
   *,
@@ -145,8 +145,8 @@ export default function HomeClient() {
                     href={`/search?category=${cat.slug}`}
                     className={`bg-gradient-to-br ${palettes[i % palettes.length]} rounded-2xl p-3 border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center group`}
                   >
-                    <div className="text-2xl mb-1.5 group-hover:scale-110 transition-transform duration-200">
-                      {cat.icon}
+                    <div className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1.5 mx-auto group-hover:scale-110 transition-transform duration-200`}>
+                      <CategoryIcon slug={cat.slug} size={20} />
                     </div>
                     <div className="text-xs font-semibold text-gray-700 leading-tight">{cat.name}</div>
                     {cat.listing_count > 0 && (

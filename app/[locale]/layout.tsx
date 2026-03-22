@@ -13,6 +13,27 @@ export const metadata: Metadata = {
   title: "NextBazar — Buy & Sell Anything in Cyprus",
   description:
     "The smarter marketplace. AI-powered search, instant messaging, and trusted sellers. Buy and sell vehicles, property, electronics, and more.",
+  icons: {
+    icon: [
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon.ico",    sizes: "any" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "mask-icon", url: "/nextbazar-icon.svg", color: "#3B82F6" },
+    ],
+  },
+  manifest: "/manifest.webmanifest",
+  themeColor: "#3B82F6",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "NextBazar",
+  },
 };
 
 export function generateStaticParams() {

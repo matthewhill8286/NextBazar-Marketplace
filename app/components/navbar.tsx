@@ -1,7 +1,8 @@
 "use client";
 
-import { MessageCircle, Plus, Search } from "lucide-react";
+import { Bell, Heart, MessageCircle, Plus, Search } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
@@ -41,14 +42,26 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
 
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-blue-200 group-hover:shadow-blue-300 transition-shadow">
-            N
-          </div>
-          <span className="font-extrabold text-xl text-gray-900 hidden sm:block tracking-tight">
-            Next<span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-indigo-600">Bazar</span>
-          </span>
+        {/* Logo — full wordmark on desktop, icon only on mobile */}
+        <Link href="/" className="shrink-0 flex items-center">
+          {/* Desktop: full wordmark */}
+          <Image
+            src="/nextbazar-logo.svg"
+            alt="NextBazar"
+            width={220}
+            height={55}
+            priority
+            className="hidden md:block h-10.5 w-auto"
+          />
+          {/* Mobile: icon only */}
+          <Image
+            src="/nextbazar-icon.svg"
+            alt="NextBazar"
+            width={40}
+            height={40}
+            priority
+            className="md:hidden h-10 w-10"
+          />
         </Link>
 
         {/* Search bar */}
@@ -80,7 +93,7 @@ export default function Navbar() {
             <MessageCircle className="w-4 h-4" />
             <span className="hidden lg:inline font-medium">{t("messages")}</span>
             {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full">
+              <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}

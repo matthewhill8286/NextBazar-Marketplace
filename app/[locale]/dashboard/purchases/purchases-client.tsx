@@ -9,11 +9,11 @@ import {
   Shield,
   CheckCircle,
   ExternalLink,
-  Calendar,
   Tag,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
+import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 type Purchase = {
   id: string; // offer id
@@ -33,7 +33,7 @@ type Purchase = {
     price: number | null;
     currency: string;
     status: string;
-    categories: { name: string; icon: string } | { name: string; icon: string }[] | null;
+    categories: { name: string; slug: string; icon?: string } | { name: string; slug: string; icon?: string }[] | null;
     locations: { name: string } | { name: string }[] | null;
   } | null;
   seller: {
@@ -133,8 +133,8 @@ function PurchaseCard({
                 sizes="80px"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-2xl">
-                {cat?.icon || "📦"}
+              <div className={`w-full h-full flex items-center justify-center ${getCategoryConfig(cat?.slug).bg}`}>
+                <CategoryIcon slug={cat?.slug} size={20} />
               </div>
             )}
             {listing?.status === "sold" && (
@@ -157,7 +157,12 @@ function PurchaseCard({
                   {listing?.title || "Listing"}
                 </Link>
                 <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500 flex-wrap">
-                  {cat && <span>{cat.icon} {cat.name}</span>}
+                  {cat && (
+                    <span className="flex items-center gap-1">
+                      <CategoryIcon slug={cat.slug} size={11} />
+                      {cat.name}
+                    </span>
+                  )}
                   {loc && <><span>·</span><span>{loc.name}</span></>}
                 </div>
               </div>

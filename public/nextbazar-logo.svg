@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none" role="img" aria-label="NextBazar">
+  <defs>
+    <!-- Primary gradient: blue → indigo -->
+    <linearGradient id="grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+    <!-- Shine gradient for badge -->
+    <linearGradient id="grad-shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Drop shadow filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#3B82F6" flood-opacity="0.35"/>
+    </filter>
+    <!-- Subtle text shadow -->
+    <filter id="text-shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+    <clipPath id="badge-clip">
+      <rect x="0" y="8" width="64" height="64" rx="16"/>
+    </clipPath>
+  </defs>
+
+  <!-- ─── Badge / Icon mark ─── -->
+  <!-- Outer shadow layer -->
+  <rect x="0" y="8" width="64" height="64" rx="16" fill="url(#grad-main)" filter="url(#shadow)"/>
+  <!-- Shine overlay -->
+  <rect x="0" y="8" width="64" height="64" rx="16" fill="url(#grad-shine)"/>
+
+  <!-- Bazaar arch / storefront motif: three arches -->
+  <g clip-path="url(#badge-clip)">
+    <!-- Awning stripe decoration (subtle) -->
+    <rect x="-4" y="8" width="72" height="12" fill="#ffffff" fill-opacity="0.07"/>
+  </g>
+
+  <!-- Bold "N" letterform -->
+  <text
+    x="32"
+    y="54"
+    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="40"
+    font-weight="800"
+    fill="#ffffff"
+    text-anchor="middle"
+    letter-spacing="-1"
+    filter="url(#text-shadow)"
+  >N</text>
+
+  <!-- Small arc / bazaar arch below N -->
+  <path
+    d="M14 62 Q32 54 50 62"
+    stroke="#ffffff"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    fill="none"
+    opacity="0.6"
+  />
+
+  <!-- Three small dots above the arc (bazaar stalls motif) -->
+  <circle cx="20" cy="59" r="2" fill="#ffffff" opacity="0.5"/>
+  <circle cx="32" cy="56" r="2" fill="#ffffff" opacity="0.5"/>
+  <circle cx="44" cy="59" r="2" fill="#ffffff" opacity="0.5"/>
+
+  <!-- ─── Wordmark ─── -->
+  <!-- "Next" — dark, heavy weight -->
+  <text
+    x="80"
+    y="52"
+    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="34"
+    font-weight="800"
+    fill="#0F172A"
+    letter-spacing="-1.5"
+  >Next</text>
+
+  <!-- "Bazar" — gradient fill -->
+  <text
+    x="165"
+    y="52"
+    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="34"
+    font-weight="800"
+    fill="url(#grad-main)"
+    letter-spacing="-1.5"
+  >Bazar</text>
+
+  <!-- Tagline -->
+  <text
+    x="80"
+    y="67"
+    font-family="'SF Pro Text', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="10.5"
+    font-weight="500"
+    fill="#64748B"
+    letter-spacing="2.5"
+  >MARKETPLACE</text>
+</svg>

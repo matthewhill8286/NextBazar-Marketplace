@@ -18,6 +18,7 @@ import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { createClient } from "@/lib/supabase/client";
+import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 type Category = { id: string; name: string; slug: string; icon: string };
 type Subcategory = {
@@ -380,7 +381,9 @@ export default function PostClient() {
                       : "border-gray-200 hover:border-gray-300 bg-white"
                   }`}
                 >
-                  <div className="text-2xl mb-1">{cat.icon}</div>
+                  <div className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1 mx-auto`}>
+                    <CategoryIcon slug={cat.slug} size={20} />
+                  </div>
                   <div className="text-xs font-medium text-gray-700">
                     {cat.name}
                   </div>

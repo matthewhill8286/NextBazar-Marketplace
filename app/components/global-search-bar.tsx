@@ -41,7 +41,6 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   }, []);
 
   const isOnSearchPage = pathname === "/search";
-  const isOnListingPage = pathname.startsWith("/listing/");
 
   function goToSearch(q: string, ai = false) {
     const params = new URLSearchParams(searchParams.toString());
@@ -127,7 +126,7 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
           <option value="">All</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.slug}>
-              {cat.icon} {cat.name}
+              {cat.name}
             </option>
           ))}
         </select>

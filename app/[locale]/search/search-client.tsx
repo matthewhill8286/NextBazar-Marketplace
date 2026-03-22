@@ -6,6 +6,7 @@ import { Search, SlidersHorizontal, X, Sparkles, Loader2, Wand2 } from "lucide-r
 import { createClient } from "@/lib/supabase/client";
 import ListingCard from "@/app/components/listing-card";
 import SaveSearchButton from "@/app/components/save-search-button";
+import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 type Category = { id: string; name: string; slug: string; icon: string };
 type Subcategory = { id: string; category_id: string; name: string; slug: string };
@@ -358,7 +359,7 @@ export default function SearchClient() {
               >
                 <option value="">All Categories</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.slug}>{cat.icon} {cat.name}</option>
+                  <option key={cat.id} value={cat.slug}>{cat.name}</option>
                 ))}
               </select>
             </div>
@@ -440,7 +441,10 @@ export default function SearchClient() {
           {activeCategory && (
             <button onClick={() => { setCategorySlug(""); setSubcategorySlug(""); }}
               className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors">
-              {activeCategory.icon} {activeCategory.name}<X className="w-3 h-3" />
+              <span className={`w-4 h-4 ${getCategoryConfig(activeCategory.slug).bg} rounded flex items-center justify-center`}>
+                <CategoryIcon slug={activeCategory.slug} size={10} />
+              </span>
+              {activeCategory.name}<X className="w-3 h-3" />
             </button>
           )}
           {activeSubcategory && (

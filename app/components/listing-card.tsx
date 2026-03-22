@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import FavoriteButton from "./favorite-button";
+import CategoryIcon, { getCategoryConfig } from "./category-icon";
 
 type CatLike = { name: string; slug?: string; icon?: string };
 type LocLike = { name: string; slug?: string };
@@ -98,9 +99,9 @@ export default function ListingCard({ listing }: ListingCardProps) {
         <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/40 to-transparent pointer-events-none" />
 
         {/* Category icon */}
-        {cat?.icon && (
-          <span className="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-sm text-gray-800 text-sm w-7 h-7 flex items-center justify-center rounded-full shadow-sm z-10">
-            {cat.icon}
+        {cat?.slug && (
+          <span className={`absolute top-2.5 right-2.5 ${getCategoryConfig(cat.slug).bg} w-7 h-7 flex items-center justify-center rounded-full shadow-sm z-10`}>
+            <CategoryIcon slug={cat.slug} size={14} />
           </span>
         )}
 

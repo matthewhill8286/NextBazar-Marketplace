@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NextBazar Logo Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Inter, system-ui, sans-serif; background: #f1f5f9; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 100vh; }
+    .panel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; padding: 60px 40px; }
+    .panel.light { background: #ffffff; }
+    .panel.dark  { background: #0F172A; }
+    .label { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+    .panel.light .label { color: #94a3b8; }
+    .panel.dark  .label { color: #475569; }
+    .logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    img { display: block; }
+    h2 { font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+    .panel.light h2 { color: #64748b; }
+    .panel.dark  h2 { color: #475569; }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <!-- Light panel -->
+    <div class="panel light">
+      <h2>Light Mode</h2>
+
+      <div class="logo-wrap">
+        <span class="label">Full Wordmark</span>
+        <img src="nextbazar-logo.svg" height="80" alt="NextBazar logo"/>
+      </div>
+
+      <div class="logo-wrap">
+        <span class="label">Icon Only</span>
+        <img src="nextbazar-icon.svg" height="80" alt="NextBazar icon"/>
+      </div>
+
+      <div class="logo-wrap">
+        <span class="label">Icon — Small (32px)</span>
+        <img src="nextbazar-icon.svg" height="32" alt="NextBazar icon small"/>
+      </div>
+    </div>
+
+    <!-- Dark panel -->
+    <div class="panel dark">
+      <h2>Dark Mode</h2>
+
+      <div class="logo-wrap">
+        <span class="label">Full Wordmark</span>
+        <img src="nextbazar-logo-dark.svg" height="80" alt="NextBazar logo dark"/>
+      </div>
+
+      <div class="logo-wrap">
+        <span class="label">Icon Only</span>
+        <img src="nextbazar-icon.svg" height="80" alt="NextBazar icon"/>
+      </div>
+
+      <div class="logo-wrap">
+        <span class="label">Icon — Small (32px)</span>
+        <img src="nextbazar-icon.svg" height="32" alt="NextBazar icon small"/>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -41,3 +41,4 @@ yarn-error.log*
 next-env.d.ts
 
 supabase
+\n# Playwright\nplaywright-report/\ntest-results/

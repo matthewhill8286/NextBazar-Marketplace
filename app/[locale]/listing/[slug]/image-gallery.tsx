@@ -31,7 +31,6 @@ export default function ImageGallery({
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const lightboxVideoRef = useRef<HTMLVideoElement>(null);
 
   const goNext = useCallback(() => {
     setActiveIndex((prev) => (prev + 1) % media.length);
@@ -43,7 +42,7 @@ export default function ImageGallery({
 
   if (media.length === 0) {
     return (
-      <div className="relative aspect-video max-h-[520px] bg-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
+      <div className="relative aspect-video max-h-130 bg-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
         <span className="text-6xl">📷</span>
       </div>
     );
@@ -54,7 +53,7 @@ export default function ImageGallery({
   return (
     <>
       {/* ── Main viewer ─────────────────────────────────────────────── */}
-      <div className="relative aspect-video max-h-[520px] bg-gray-900 rounded-2xl overflow-hidden group">
+      <div className="relative aspect-video max-h-130 bg-gray-900 rounded-2xl overflow-hidden group">
         {active.kind === "video" ? (
           <video
             ref={videoRef}
@@ -69,6 +68,7 @@ export default function ImageGallery({
             src={active.url}
             alt={`${title} — photo ${activeIndex + 1 - (videoUrl ? 1 : 0)}`}
             fill
+            loading="eager"
             className="object-contain"
             priority={activeIndex === 0}
             sizes="(max-width: 1280px) 100vw, 1280px"
@@ -196,6 +196,7 @@ export default function ImageGallery({
               src={active.url}
               alt={`${title}`}
               fill
+              loading="eager"
               className="object-contain"
               sizes="100vw"
             />

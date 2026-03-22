@@ -18,10 +18,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch categories for matching
-    const { data: categories } = await supabase
+    const { data: categories, error: catError } = await supabase
       .from("categories")
       .select("id, name, slug")
-      .order("sort_order");
+      .order("name");
+
+    if (catError) {
+      console.error("Categories fetch error:", catError);
+    }
 
     const categoryList = (categories || [])
       .map((c) => `${c.slug}: ${c.name}`)
@@ -62,9 +66,14 @@ Respond in JSON format:
       max_tokens: 500,
     });
 
-    const result = JSON.parse(
-      response.choices[0].message.content || "{}",
-    );
+    const content = response.choices[0].message.content;
+    if (!content) {
+      return NextResponse.json(
+        { error: "OpenAI returned an empty response" },
+        { status: 500 },
+      );
+    }
+    const result = JSON.parse(content);
 
     // Map category slug to ID
     const matchedCategory = (categories || []).find(

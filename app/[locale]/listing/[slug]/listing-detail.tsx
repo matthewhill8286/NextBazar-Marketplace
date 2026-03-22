@@ -8,7 +8,6 @@ import {
   Clock,
   Eye,
   Heart,
-  Loader2,
   MapPin,
   Shield,
   Star,
@@ -31,6 +30,7 @@ import {
 import { LeaveReviewPrompt, SellerReviews } from "./seller-reviews";
 import MakeOfferModal from "@/app/components/make-offer-modal";
 import PriceHistory from "./price-history";
+import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 const LISTING_SELECT = `
   *,
@@ -40,6 +40,129 @@ const LISTING_SELECT = `
   profiles!listings_user_id_fkey(id, display_name, avatar_url, verified, rating, total_reviews, is_dealer, created_at, whatsapp_number, telegram_username),
   listing_images(id, url, thumbnail_url, sort_order)
 `;
+
+// ─── Skeleton ────────────────────────────────────────────────────────────────
+
+function Bone({ className = "" }: { className?: string }) {
+  return (
+    <div className={`bg-gray-200 rounded-lg animate-pulse ${className}`} />
+  );
+}
+
+function ListingDetailSkeleton() {
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-6">
+      {/* Back button */}
+      <Bone className="h-5 w-20 mb-6" />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ── Left column ── */}
+        <div className="lg:col-span-2 space-y-4">
+
+          {/* Image gallery */}
+          <Bone className="w-full aspect-[4/3] rounded-2xl" />
+
+          {/* Thumbnail strip */}
+          <div className="flex gap-2">
+            {[...Array(4)].map((_, i) => (
+              <Bone key={i} className="w-16 h-16 rounded-xl shrink-0" />
+            ))}
+          </div>
+
+          {/* Title card */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
+            {/* Badge row */}
+            <div className="flex gap-2">
+              <Bone className="h-5 w-16 rounded-full" />
+              <Bone className="h-5 w-20 rounded-full" />
+            </div>
+            {/* Title */}
+            <Bone className="h-8 w-3/4" />
+            {/* Price */}
+            <Bone className="h-10 w-1/3" />
+            {/* Meta row */}
+            <div className="flex gap-4 pt-1">
+              <Bone className="h-4 w-24" />
+              <Bone className="h-4 w-20" />
+              <Bone className="h-4 w-16" />
+            </div>
+          </div>
+
+          {/* Details grid */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
+            <Bone className="h-5 w-24 mb-1" />
+            <div className="grid grid-cols-2 gap-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-gray-50 rounded-xl p-3 flex gap-3 items-center">
+                  <Bone className="w-8 h-8 rounded-lg shrink-0" />
+                  <div className="space-y-1.5 flex-1">
+                    <Bone className="h-3 w-16" />
+                    <Bone className="h-4 w-24" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-2.5">
+            <Bone className="h-5 w-28 mb-1" />
+            <Bone className="h-4 w-full" />
+            <Bone className="h-4 w-full" />
+            <Bone className="h-4 w-5/6" />
+            <Bone className="h-4 w-4/6" />
+          </div>
+        </div>
+
+        {/* ── Right column (sidebar) ── */}
+        <div className="space-y-4">
+
+          {/* Price / CTA card */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+            <Bone className="h-9 w-1/2" />
+            <Bone className="h-12 w-full rounded-xl" />
+            <Bone className="h-12 w-full rounded-xl" />
+            <div className="flex gap-3 pt-1">
+              <Bone className="h-10 flex-1 rounded-xl" />
+              <Bone className="h-10 flex-1 rounded-xl" />
+            </div>
+          </div>
+
+          {/* Seller card */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+            <Bone className="h-5 w-16 mb-1" />
+            <div className="flex items-center gap-3">
+              <Bone className="w-12 h-12 rounded-full shrink-0" />
+              <div className="space-y-2 flex-1">
+                <Bone className="h-5 w-32" />
+                <Bone className="h-3.5 w-24" />
+              </div>
+            </div>
+            <Bone className="h-px w-full bg-gray-100 rounded-full" />
+            <div className="space-y-2">
+              <Bone className="h-4 w-full" />
+              <Bone className="h-4 w-3/4" />
+            </div>
+            <Bone className="h-10 w-full rounded-xl" />
+          </div>
+
+          {/* Safety tips card */}
+          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 space-y-3">
+            <Bone className="h-5 w-28 bg-amber-200" />
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex gap-2 items-center">
+                <Bone className="w-3 h-3 rounded-full bg-amber-200 shrink-0" />
+                <Bone className={`h-3.5 bg-amber-200 ${i % 2 === 0 ? "w-full" : "w-4/5"}`} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 const conditionKeys: Record<string, string> = {
   new: "condition_new",
@@ -169,11 +292,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
   }, [slug, supabase.from]);
 
   if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-      </div>
-    );
+    return <ListingDetailSkeleton />;
   }
 
   if (notFound) {
@@ -296,8 +415,9 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     {t("urgent")}
                   </span>
                 )}
-                <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2.5 py-1 rounded-full">
-                  {listing.categories?.icon} {listing.categories?.name}
+                <span className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5`}>
+                  <CategoryIcon slug={listing.categories?.slug} size={12} />
+                  <span className={getCategoryConfig(listing.categories?.slug).color}>{listing.categories?.name}</span>
                 </span>
                 {listing.condition && (
                   <span className="bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-full">
@@ -509,7 +629,8 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   {profile?.avatar_url ? (
                     <img
                       src={profile.avatar_url}
-                      alt=""
+                      alt={profile?.display_name || "Seller"}
+                      loading="eager"
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (

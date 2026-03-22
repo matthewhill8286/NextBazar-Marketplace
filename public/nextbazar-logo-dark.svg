@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none" role="img" aria-label="NextBazar">
+  <defs>
+    <linearGradient id="grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <linearGradient id="grad-badge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="grad-shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow-dk">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#3B82F6" flood-opacity="0.5"/>
+    </filter>
+    <clipPath id="badge-clip-dk">
+      <rect x="0" y="8" width="64" height="64" rx="16"/>
+    </clipPath>
+  </defs>
+
+  <!-- Badge -->
+  <rect x="0" y="8" width="64" height="64" rx="16" fill="url(#grad-badge)" filter="url(#shadow-dk)"/>
+  <rect x="0" y="8" width="64" height="64" rx="16" fill="url(#grad-shine)"/>
+  <rect x="0" y="8" width="64" height="19" fill="#ffffff" fill-opacity="0.06" clip-path="url(#badge-clip-dk)"/>
+
+  <text
+    x="32" y="54"
+    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="40" font-weight="800" fill="#ffffff"
+    text-anchor="middle" letter-spacing="-1"
+  >N</text>
+  <path d="M14 62 Q32 54 50 62" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <circle cx="20" cy="59" r="2" fill="#ffffff" opacity="0.45"/>
+  <circle cx="32" cy="56" r="2" fill="#ffffff" opacity="0.45"/>
+  <circle cx="44" cy="59" r="2" fill="#ffffff" opacity="0.45"/>
+
+  <!-- Wordmark — light on dark -->
+  <text
+    x="80" y="52"
+    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="34" font-weight="800" fill="#F8FAFC"
+    letter-spacing="-1.5"
+  >Next</text>
+  <text
+    x="165" y="52"
+    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="34" font-weight="800" fill="url(#grad-main)"
+    letter-spacing="-1.5"
+  >Bazar</text>
+  <text
+    x="80" y="67"
+    font-family="'SF Pro Text', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="10.5" font-weight="500" fill="#94A3B8"
+    letter-spacing="2.5"
+  >MARKETPLACE</text>
+</svg>

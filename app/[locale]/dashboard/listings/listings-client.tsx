@@ -19,6 +19,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 type Listing = {
   id: string;
@@ -38,8 +39,8 @@ type Listing = {
   category_id?: string | null;
   location_id?: string | null;
   categories:
-    | { name: string; icon: string }[]
-    | { name: string; icon: string }
+    | { name: string; slug: string; icon?: string }[]
+    | { name: string; slug: string; icon?: string }
     | null;
   locations: { name: string }[] | { name: string } | null;
 };
@@ -384,8 +385,8 @@ export default function ListingsClient({
                       sizes="80px"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">
-                      {unwrap(listing.categories)?.icon || "📦"}
+                    <div className={`w-full h-full flex items-center justify-center ${getCategoryConfig(unwrap(listing.categories)?.slug).bg}`}>
+                      <CategoryIcon slug={unwrap(listing.categories)?.slug} size={20} />
                     </div>
                   )}
                   {listing.is_promoted && listing.status !== "sold" && (

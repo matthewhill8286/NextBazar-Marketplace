@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import CategoryIcon, { getCategoryConfig } from "./category-icon";
 
 export default async function CategoryGrid() {
   const supabase = await createClient();
@@ -18,8 +19,8 @@ export default async function CategoryGrid() {
           href={`/search?category=${cat.slug}`}
           className="bg-white rounded-xl p-3 border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all text-center group"
         >
-          <div className="text-2xl mb-1 group-hover:scale-110 transition-transform">
-            {cat.icon}
+          <div className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1.5 mx-auto group-hover:scale-110 transition-transform`}>
+            <CategoryIcon slug={cat.slug} size={20} />
           </div>
           <div className="text-xs font-medium text-gray-700">{cat.name}</div>
           <div className="text-xs text-gray-400">

@@ -25,7 +25,7 @@ export default function MyListingsPage() {
           primary_image_url, view_count, favorite_count,
           is_promoted, is_urgent, created_at,
           category_id, location_id,
-          categories(name, icon),
+          categories(name, slug, icon),
           locations(name)
         `,
         )
