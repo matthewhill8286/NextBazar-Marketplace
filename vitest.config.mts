@@ -8,7 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    // Exclude node_modules from test file discovery
-    exclude: ["node_modules/**", ".next/**"],
+    // Exclude node_modules and Playwright e2e specs from unit test discovery
+    exclude: ["node_modules/**", ".next/**", "e2e/**"],
   },
 });

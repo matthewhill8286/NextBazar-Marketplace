@@ -10,14 +10,14 @@ export const PROMOTION_PRICES = {
     priceId: "price_1TD6LxI6t3gE5tEXGDty8s9J",
     name: "Featured Listing",
     description: "Top placement + highlighted for 7 days",
-    amount: 499,
+    amount: 999,
     duration: 7, // days
   },
   urgent: {
     priceId: "price_1TD6M3I6t3gE5tEXMP3hRen1",
     name: "Urgent Badge",
     description: "Urgent badge + priority in search for 3 days",
-    amount: 299,
+    amount: 699,
     duration: 3, // days
   },
 } as const;

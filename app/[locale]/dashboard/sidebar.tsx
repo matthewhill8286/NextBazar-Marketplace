@@ -46,7 +46,9 @@ const NAV_ITEMS = [
 ];
 
 export default function DashboardSidebar({ profile, stats, isAdmin }: SidebarProps) {
-  const pathname = usePathname();
+  const rawPathname = usePathname();
+  // Strip locale prefix (/en/ or /el/) so href comparisons work correctly
+  const pathname = rawPathname.replace(/^\/(en|el)(\/|$)/, "/");
 
   const initials =
     profile.display_name

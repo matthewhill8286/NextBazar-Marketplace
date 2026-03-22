@@ -104,7 +104,7 @@ test.describe("Auth redirect behaviour", () => {
 
   test("visiting /notifications when not signed in redirects to login", async ({ page }) => {
     await mockSupabase(page);
-    await page.goto("/notifications");
+    await page.goto("/dashboard/notifications");
     await expect(page).toHaveURL(/auth\/login|login/, { timeout: 8_000 });
   });
 

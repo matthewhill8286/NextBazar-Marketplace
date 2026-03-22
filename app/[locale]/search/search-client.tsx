@@ -301,50 +301,88 @@ export default function SearchClient() {
   const noResults = !loading && listings.length === 0 && (hasFilters || submittedQuery);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <>
+      {/* ── Hero search header ───────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white py-8 px-4">
+        {/* Dot mesh */}
+        <div
+          className="absolute inset-0 opacity-[0.10] pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }}
+        />
+        {/* Ambient blobs */}
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-violet-500 rounded-full blur-3xl opacity-20 pointer-events-none" />
 
-      {/* ── Search bar ───────────────────────────────────────────────── */}
-      <div className="mb-6">
-        <div className="relative flex items-center">
-          <Search className="absolute left-4 text-gray-400 w-5 h-5 pointer-events-none" />
-          <input
-            type="text"
-            className="w-full pl-12 pr-28 py-3.5 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
-            placeholder="Search listings… or press Enter to search"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-          <div className="absolute right-2 flex items-center gap-1.5">
-            {inputValue && (
-              <button
-                onClick={() => { setInputValue(""); executeSearch(""); }}
-                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-            <button
-              onClick={() => handleAiSearch()}
-              disabled={aiSearching || !inputValue.trim()}
-              className="p-2 rounded-lg bg-linear-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              title="AI Smart Search"
-            >
-              {aiSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            </button>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className={`p-2 rounded-lg transition-colors ${showFilters ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-            </button>
+        <div className="relative max-w-3xl mx-auto">
+          {/* Dynamic title + count */}
+          <div className="text-center mb-5">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+              {submittedQuery
+                ? <>Results for <span className="text-amber-300">&ldquo;{submittedQuery}&rdquo;</span></>
+                : activeCategory
+                ? <><span className="text-blue-200">Browse</span> {activeCategory.name}</>
+                : "Browse Listings"}
+            </h1>
+            <p className="text-blue-200 text-sm mt-1.5">
+              {loading
+                ? "Finding listings…"
+                : totalHits > 0
+                ? <><span className="text-white font-semibold">{totalHits.toLocaleString()}</span> {totalHits === 1 ? "listing" : "listings"} available</>
+                : hasFilters
+                ? "No listings match your search"
+                : "Discover great deals across Cyprus"}
+            </p>
           </div>
+
+          {/* Search input */}
+          <div className="relative flex items-center">
+            <Search className="absolute left-4 text-white/50 w-5 h-5 pointer-events-none" />
+            <input
+              type="text"
+              className="w-full pl-12 pr-28 py-4 rounded-2xl border border-white/25 bg-white/15 backdrop-blur-sm text-white placeholder-white/50 focus:bg-white/20 focus:outline-none focus:border-white/50 text-sm"
+              placeholder="Search listings… or press Enter to search"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+            <div className="absolute right-2 flex items-center gap-1.5">
+              {inputValue && (
+                <button
+                  onClick={() => { setInputValue(""); executeSearch(""); }}
+                  className="p-2 rounded-xl text-white/60 hover:text-white transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+              <button
+                onClick={() => handleAiSearch()}
+                disabled={aiSearching || !inputValue.trim()}
+                className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="AI Smart Search"
+              >
+                {aiSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`p-2 rounded-xl transition-colors ${showFilters ? "bg-white/30 text-white" : "bg-white/20 hover:bg-white/30 text-white"}`}
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Hint row */}
+          <p className="text-center text-xs text-white/45 mt-2.5">
+            Press{" "}
+            <kbd className="bg-white/15 border border-white/20 px-1.5 py-0.5 rounded text-white/60 font-mono text-[11px]">Enter</kbd>
+            {" "}to search ·{" "}
+            <Sparkles className="w-3 h-3 inline text-indigo-300" /> for AI smart search
+          </p>
         </div>
-        <p className="text-xs text-gray-400 mt-1.5 pl-1">
-          Press <kbd className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500 font-mono text-[11px]">Enter</kbd> to search · <Sparkles className="w-3 h-3 inline text-indigo-500" /> for AI smart search
-        </p>
-      </div>
+      </section>
+
+    <div className="max-w-7xl mx-auto px-4 py-6">
 
       {/* ── Filters Panel ───────────────────────────────────────────────── */}
       {showFilters && (
@@ -658,5 +696,6 @@ export default function SearchClient() {
         </div>
       )}
     </div>
+    </>
   );
 }

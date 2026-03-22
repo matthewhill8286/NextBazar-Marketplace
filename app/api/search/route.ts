@@ -32,6 +32,27 @@ export async function GET(req: NextRequest) {
 
   const supabase = getSupabase();
 
+  // ── Resolve slugs → IDs once, reused by all query branches ───────────────
+  let categoryId:    string | null = null;
+  let subcategoryId: string | null = null;
+  let locationId:    string | null = null;
+
+  if (category) {
+    const { data } = await supabase
+      .from("categories").select("id").eq("slug", category).single();
+    categoryId = data?.id ?? null;
+  }
+  if (subcategory) {
+    const { data } = await supabase
+      .from("subcategories").select("id").eq("slug", subcategory).single();
+    subcategoryId = data?.id ?? null;
+  }
+  if (location) {
+    const { data } = await supabase
+      .from("locations").select("id").eq("slug", location).single();
+    locationId = data?.id ?? null;
+  }
+
   // ── Semantic search (query provided) ──────────────────────────────────────
   if (q) {
     const embedding = await embed(q);
@@ -56,8 +77,13 @@ export async function GET(req: NextRequest) {
             ? { name: r.location_name, slug: r.location_slug }
             : null,
         }));
-        // Promoted listings always surface first, preserving similarity rank within each group
-        hits.sort((a: any, b: any) => (b.is_promoted ? 1 : 0) - (a.is_promoted ? 1 : 0));
+        // 3-tier boost: featured (0) > urgent (1) > normal (2), then newest within each tier
+        hits.sort((a: any, b: any) => {
+          const tierA = a.is_promoted ? 0 : a.is_urgent ? 1 : 2;
+          const tierB = b.is_promoted ? 0 : b.is_urgent ? 1 : 2;
+          if (tierA !== tierB) return tierA - tierB;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
         return NextResponse.json({ hits, totalHits: hits.length, source: "vector" });
       }
       // Fall through to full-text if vector search returns nothing
@@ -70,14 +96,16 @@ export async function GET(req: NextRequest) {
       .eq("status", "active")
       .textSearch("search_vector", q, { type: "websearch", config: "english" });
 
-    if (category)  ftq = ftq.eq("category_slug_ref", category);   // filtered below
-    if (location)  ftq = ftq.eq("location_slug_ref", location);
-    if (priceMin)  ftq = ftq.gte("price", Number(priceMin));
-    if (priceMax)  ftq = ftq.lte("price", Number(priceMax));
+    if (categoryId)    ftq = ftq.eq("category_id",    categoryId);
+    if (subcategoryId) ftq = ftq.eq("subcategory_id", subcategoryId);
+    if (locationId)    ftq = ftq.eq("location_id",    locationId);
+    if (priceMin)      ftq = ftq.gte("price", Number(priceMin));
+    if (priceMax)      ftq = ftq.lte("price", Number(priceMax));
 
     const { data: ftData } = await ftq
       .order("is_promoted", { ascending: false })
-      .order("created_at", { ascending: false })
+      .order("is_urgent",   { ascending: false })
+      .order("created_at",  { ascending: false })
       .limit(limit);
 
     // ilike fallback if full-text returns nothing
@@ -88,12 +116,16 @@ export async function GET(req: NextRequest) {
         .eq("status", "active")
         .or(`title.ilike.%${q}%,description.ilike.%${q}%`);
 
-      if (priceMin) ilikeQ = ilikeQ.gte("price", Number(priceMin));
-      if (priceMax) ilikeQ = ilikeQ.lte("price", Number(priceMax));
+      if (categoryId)    ilikeQ = ilikeQ.eq("category_id",    categoryId);
+      if (subcategoryId) ilikeQ = ilikeQ.eq("subcategory_id", subcategoryId);
+      if (locationId)    ilikeQ = ilikeQ.eq("location_id",    locationId);
+      if (priceMin)      ilikeQ = ilikeQ.gte("price", Number(priceMin));
+      if (priceMax)      ilikeQ = ilikeQ.lte("price", Number(priceMax));
 
       const { data: ilikeData } = await ilikeQ
         .order("is_promoted", { ascending: false })
-        .order("created_at", { ascending: false })
+        .order("is_urgent",   { ascending: false })
+        .order("created_at",  { ascending: false })
         .limit(limit);
 
       const hits = ilikeData || [];
@@ -109,33 +141,11 @@ export async function GET(req: NextRequest) {
     .select(`*, categories(name, slug, icon), locations(name, slug)`, { count: "exact" })
     .eq("status", "active");
 
-  // Apply filters via joined table slug lookups
-  if (category) {
-    const { data: cat } = await supabase
-      .from("categories")
-      .select("id")
-      .eq("slug", category)
-      .single();
-    if (cat) browseQ = browseQ.eq("category_id", cat.id);
-  }
-  if (subcategory) {
-    const { data: sub } = await supabase
-      .from("subcategories")
-      .select("id")
-      .eq("slug", subcategory)
-      .single();
-    if (sub) browseQ = browseQ.eq("subcategory_id", sub.id);
-  }
-  if (location) {
-    const { data: loc } = await supabase
-      .from("locations")
-      .select("id")
-      .eq("slug", location)
-      .single();
-    if (loc) browseQ = browseQ.eq("location_id", loc.id);
-  }
-  if (priceMin) browseQ = browseQ.gte("price", Number(priceMin));
-  if (priceMax) browseQ = browseQ.lte("price", Number(priceMax));
+  if (categoryId)    browseQ = browseQ.eq("category_id",    categoryId);
+  if (subcategoryId) browseQ = browseQ.eq("subcategory_id", subcategoryId);
+  if (locationId)    browseQ = browseQ.eq("location_id",    locationId);
+  if (priceMin)      browseQ = browseQ.gte("price", Number(priceMin));
+  if (priceMax)      browseQ = browseQ.lte("price", Number(priceMax));
 
   const sortMap: Record<string, { col: string; asc: boolean }> = {
     newest:     { col: "created_at", asc: false },
@@ -145,10 +155,11 @@ export async function GET(req: NextRequest) {
     popular:    { col: "view_count", asc: false },
   };
   const s = sortMap[sort] ?? sortMap.newest;
-  // Promoted listings always float to the top, then apply the user's chosen sort
+  // 3-tier boost: featured → urgent → normal, then the user's chosen sort within each tier
   browseQ = browseQ
     .order("is_promoted", { ascending: false })
-    .order(s.col, { ascending: s.asc });
+    .order("is_urgent",   { ascending: false })
+    .order(s.col,         { ascending: s.asc });
 
   const { data, count, error } = await browseQ.range(offset, offset + limit - 1);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

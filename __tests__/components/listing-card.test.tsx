@@ -2,6 +2,27 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import ListingCard from "@/app/components/listing-card";
 
+// next-intl — return simple key-based translations so no provider is needed
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string, params?: Record<string, any>) => {
+    const map: Record<string, string> = {
+      contact: "Contact",
+      featured: "Featured",
+      urgent: "Urgent",
+      sold: "SOLD",
+      condition_new: "New",
+      condition_like_new: "Like new",
+      condition_good: "Good",
+      condition_fair: "Fair",
+      condition_for_parts: "For parts",
+    };
+    if (key === "timeMinutes") return `${params?.n}m`;
+    if (key === "timeHours") return `${params?.n}h`;
+    if (key === "timeDays") return `${params?.n}d`;
+    return map[key] ?? key;
+  },
+}));
+
 // ---------------------------------------------------------------------------
 // Mocks
 // ---------------------------------------------------------------------------
@@ -98,23 +119,23 @@ describe("ListingCard", () => {
 
   it("shows 'Featured' badge when is_promoted is true", () => {
     render(<ListingCard listing={{ ...baseListing, is_promoted: true }} />);
-    expect(screen.getByText("Featured")).toBeInTheDocument();
+    expect(screen.getByText(/Featured/)).toBeInTheDocument();
   });
 
   it("does NOT show 'Featured' badge when is_promoted is false", () => {
     render(<ListingCard listing={baseListing} />);
-    expect(screen.queryByText("Featured")).toBeNull();
+    expect(screen.queryByText(/Featured/)).toBeNull();
   });
 
   it("shows 'Urgent' badge when is_urgent is true and not promoted", () => {
     render(<ListingCard listing={{ ...baseListing, is_urgent: true, is_promoted: false }} />);
-    expect(screen.getByText("Urgent")).toBeInTheDocument();
+    expect(screen.getByText(/Urgent/)).toBeInTheDocument();
   });
 
   it("does NOT show 'Urgent' badge when is_promoted is also true (Featured takes priority)", () => {
     render(<ListingCard listing={{ ...baseListing, is_urgent: true, is_promoted: true }} />);
-    expect(screen.queryByText("Urgent")).toBeNull();
-    expect(screen.getByText("Featured")).toBeInTheDocument();
+    expect(screen.queryByText(/Urgent/)).toBeNull();
+    expect(screen.getByText(/Featured/)).toBeInTheDocument();
   });
 
   it("displays the condition with underscores replaced by spaces", () => {

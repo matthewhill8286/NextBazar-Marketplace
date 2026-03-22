@@ -103,7 +103,7 @@ test.describe("Listing detail — featured listing", () => {
   test("shows the Featured badge on a promoted listing", async ({ page }) => {
     await mockSupabase(page);
     await page.goto(`/listing/${mockListings[1].slug}`);
-    await expect(page.getByText("Featured").first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/Featured/).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test("shows Negotiable badge for a negotiable listing", async ({ page }) => {

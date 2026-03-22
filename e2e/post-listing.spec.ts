@@ -93,7 +93,7 @@ test.describe("Saved listings page — authenticated", () => {
     await mockSupabase(page);
 
     // Mock listing_favorites as empty
-    await page.route("**/rest/v1/listing_favorites**", (route) =>
+    await page.route("**/rest/v1/favorites**", (route) =>
       route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -111,7 +111,7 @@ test.describe("Saved listings page — authenticated", () => {
     await mockAuthUser(page);
     await mockSupabase(page);
 
-    await page.route("**/rest/v1/listing_favorites**", (route) =>
+    await page.route("**/rest/v1/favorites**", (route) =>
       route.fulfill({
         status: 200,
         contentType: "application/json",
