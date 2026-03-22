@@ -37,28 +37,40 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
-  // Initial load
+  // Load favorites for a given user (or clear state on logout)
   useEffect(() => {
-    async function init() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
+    async function init(uid: string | null) {
+      if (!uid) {
+        // Logged out — immediately wipe any previously loaded data
+        setUserId(null);
+        setSavedIds(new Set());
         setLoading(false);
         return;
       }
-      setUserId(user.id);
+
+      setUserId(uid);
+      setLoading(true);
 
       const { data } = await supabase
         .from("favorites")
         .select("listing_id")
-        .eq("user_id", user.id);
+        .eq("user_id", uid);
 
       setSavedIds(new Set((data || []).map((r) => r.listing_id as string)));
       setLoading(false);
     }
-    init();
+
+    // Fire once on mount with whoever is currently logged in
+    supabase.auth.getUser().then(({ data: { user } }) => init(user?.id ?? null));
+
+    // Re-fire on every auth change: login, logout, or user switch.
+    // Without this, a second user logging in would see the previous user's
+    // saved listings because the context never re-initialised.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      init(session?.user?.id ?? null);
+    });
+
+    return () => { subscription.unsubscribe(); };
   }, []);
 
   // Keep in sync with other tabs / devices via realtime

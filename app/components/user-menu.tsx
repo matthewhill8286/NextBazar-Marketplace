@@ -25,6 +25,7 @@ export default function UserMenu() {
   const tDash = useTranslations("dashboard");
 
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notifCount, setNotifCount] = useState(0);
@@ -39,6 +40,7 @@ export default function UserMenu() {
     router.push(newPath);
   }
 
+  // ── Auth: load user profile + initial unread count ───────────────────────
   useEffect(() => {
     const supabase = createClient();
 
@@ -65,7 +67,11 @@ export default function UserMenu() {
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
         });
+        setUserId(authUser.id);
         setNotifCount(nCount || 0);
+      } else {
+        setUser(null);
+        setUserId(null);
       }
       setLoading(false);
     }
@@ -73,20 +79,53 @@ export default function UserMenu() {
     loadUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) { setUser(null); } else { loadUser(); }
+      if (!session) { setUser(null); setUserId(null); } else { loadUser(); }
     });
 
+    return () => { subscription.unsubscribe(); };
+  }, []);
+
+  // ── Realtime: re-fetch unread count on any notification change ────────────
+  // Only set up after userId is resolved so we can use a row-level filter,
+  // which is required for postgres_changes to fire through RLS.
+  useEffect(() => {
+    if (!userId) return;
+    const supabase = createClient();
+
+    async function refreshCount() {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId!)
+        .eq("read", false);
+      setNotifCount(count || 0);
+    }
+
     const channel = supabase
-      .channel("usermenu-notifs")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "notifications" }, loadUser)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "notifications" }, loadUser)
+      .channel(`usermenu-notifs-${userId}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${userId}`,
+      }, refreshCount)
       .subscribe();
 
-    return () => {
-      subscription.unsubscribe();
-      supabase.removeChannel(channel);
-    };
-  }, []);
+    return () => { supabase.removeChannel(channel); };
+  }, [userId]);
+
+  // ── Refresh count whenever the menu is opened ─────────────────────────────
+  // Belt-and-suspenders: catches any changes Realtime may have missed.
+  useEffect(() => {
+    if (!open || !userId) return;
+    const supabase = createClient();
+    supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("read", false)
+      .then(({ count }) => setNotifCount(count || 0));
+  }, [open, userId]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

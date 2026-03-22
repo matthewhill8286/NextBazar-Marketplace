@@ -4,6 +4,7 @@ import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe
 import { loadStripe } from "@stripe/stripe-js";
 import { Bitcoin, CreditCard, ExternalLink, Loader2, X } from "lucide-react";
 import { useCallback, useState } from "react";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -128,6 +129,7 @@ function CryptoTab({
 
 export default function StripeCheckoutModal({ listingId, promotionType, onCloseAction }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "crypto">("card");
+  const cryptoEnabled = FEATURE_FLAGS.CRYPTO_PAYMENTS;
 
   const fetchClientSecret = useCallback(async () => {
     const res = await fetch("/api/checkout", {
@@ -168,35 +170,39 @@ export default function StripeCheckoutModal({ listingId, promotionType, onCloseA
           </button>
         </div>
 
-        {/* Payment method tabs */}
-        <div className="flex border-b border-gray-100">
-          <button
-            onClick={() => setPaymentMethod("card")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
-              paymentMethod === "card"
-                ? "text-blue-600 border-b-2 border-blue-600 -mb-px"
-                : "text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            <CreditCard className="w-4 h-4" />
-            Card / Bank
-          </button>
-          <button
-            onClick={() => setPaymentMethod("crypto")}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
-              paymentMethod === "crypto"
-                ? "text-orange-500 border-b-2 border-orange-500 -mb-px"
-                : "text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            <Bitcoin className="w-4 h-4" />
-            Crypto
-          </button>
-        </div>
+        {/* Payment method tabs — only rendered when crypto flag is on */}
+        {cryptoEnabled && (
+          <div className="flex border-b border-gray-100">
+            <button
+              onClick={() => setPaymentMethod("card")}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
+                paymentMethod === "card"
+                  ? "text-blue-600 border-b-2 border-blue-600 -mb-px"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <CreditCard className="w-4 h-4" />
+              Card / Bank
+            </button>
+            <button
+              onClick={() => setPaymentMethod("crypto")}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
+                paymentMethod === "crypto"
+                  ? "text-orange-500 border-b-2 border-orange-500 -mb-px"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <Bitcoin className="w-4 h-4" />
+              Crypto
+            </button>
+          </div>
+        )}
 
         {/* Panel content */}
         <div className="overflow-y-auto flex-1">
-          {paymentMethod === "card" ? (
+          {cryptoEnabled && paymentMethod === "crypto" ? (
+            <CryptoTab listingId={listingId} promotionType={promotionType} />
+          ) : (
             <div className="p-1">
               <EmbeddedCheckoutProvider
                 stripe={stripePromise}
@@ -205,8 +211,6 @@ export default function StripeCheckoutModal({ listingId, promotionType, onCloseA
                 <EmbeddedCheckout />
               </EmbeddedCheckoutProvider>
             </div>
-          ) : (
-            <CryptoTab listingId={listingId} promotionType={promotionType} />
           )}
         </div>
 

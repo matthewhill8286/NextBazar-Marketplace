@@ -5,6 +5,8 @@ import { routing } from "@/i18n/routing";
 import { SavedProvider } from "@/lib/saved-context";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
+import RealtimeToasts from "@/app/components/realtime-toasts";
+import { Toaster } from "sonner";
 import type { ReactNode } from "react";
 
 type Messages = Record<string, unknown>;
@@ -28,7 +30,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/manifest.webmanifest",
-  themeColor: "#3B82F6",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -64,6 +65,13 @@ export default async function LocaleLayout({
             <Navbar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <RealtimeToasts />
+            <Toaster
+              position="top-right"
+              visibleToasts={4}
+              gap={8}
+              toastOptions={{ unstyled: true, classNames: { toast: "" } }}
+            />
           </SavedProvider>
         </NextIntlClientProvider>
       </body>
