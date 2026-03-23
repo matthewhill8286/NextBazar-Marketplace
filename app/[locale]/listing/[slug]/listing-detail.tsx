@@ -23,6 +23,7 @@ import CategoryIcon, {
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
 import { createClient } from "@/lib/supabase/client";
+import type { ListingCardRow, ListingDetailRow } from "@/lib/supabase/types";
 import AiInsights, { type InsightsPriceSummaryAction } from "./ai-insights";
 import ImageGallery from "./image-gallery";
 import {
@@ -177,15 +178,26 @@ const conditionKeys: Record<string, string> = {
   for_parts: "condition_for_parts",
 };
 
-export default function ListingDetail({ slug }: { slug: string }) {
+type Props = {
+  slug: string;
+  initialListing?: ListingDetailRow | null;
+  initialRelated?: ListingCardRow[];
+};
+
+export default function ListingDetail({
+  slug,
+  initialListing = null,
+  initialRelated = [],
+}: Props) {
   const t = useTranslations("listing");
   const tCommon = useTranslations("common");
   const locale = useLocale();
 
   const supabase = createClient();
-  const [listing, setListing] = useState<any>(null);
-  const [related, setRelated] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [listing, setListing] = useState<ListingDetailRow | null>(initialListing);
+  const [related, setRelated] = useState<ListingCardRow[]>(initialRelated);
+  // Skip loading skeleton when server already provided the data
+  const [loading, setLoading] = useState(!initialListing);
   const [notFound, setNotFound] = useState(false);
   const [aiPrice, setAiPrice] = useState<InsightsPriceSummaryAction | null>(
     null,
@@ -238,30 +250,52 @@ export default function ListingDetail({ slug }: { slug: string }) {
 
   useEffect(() => {
     async function load() {
-      // Fetch current user in parallel with listing
-      const [
-        {
-          data: { user },
-        },
-        { data, error },
-      ] = await Promise.all([
-        supabase.auth.getUser(),
-        supabase
+      let data = listing; // may already be hydrated from server
+
+      if (!data) {
+        // Client-side fallback: fetch listing + auth in parallel
+        const [
+          {
+            data: { user: u },
+          },
+          { data: fetched, error },
+        ] = await Promise.all([
+          supabase.auth.getUser(),
+          supabase
+            .from("listings")
+            .select(LISTING_SELECT)
+            .eq("slug", slug)
+            .single(),
+        ]);
+
+        setCurrentUserId(u?.id ?? null);
+
+        if (error || !fetched) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        }
+
+        data = fetched as ListingDetailRow;
+        setListing(data);
+
+        // Also fetch related on client-side fallback
+        const { data: rel } = await supabase
           .from("listings")
-          .select(LISTING_SELECT)
-          .eq("slug", slug)
-          .single(),
-      ]);
-
-      setCurrentUserId(user?.id ?? null);
-
-      if (error || !data) {
-        setNotFound(true);
-        setLoading(false);
-        return;
+          .select(`*, categories(name, slug, icon), locations(name, slug)`)
+          .eq("status", "active")
+          .eq("category_id", data.category_id)
+          .neq("id", data.id)
+          .order("created_at", { ascending: false })
+          .limit(4);
+        setRelated((rel || []) as ListingCardRow[]);
+      } else {
+        // Data came from server — just get the current user
+        const {
+          data: { user: u },
+        } = await supabase.auth.getUser();
+        setCurrentUserId(u?.id ?? null);
       }
-
-      setListing(data);
 
       // Track recently viewed (store up to 12 listing IDs, newest first)
       try {
@@ -271,22 +305,24 @@ export default function ListingDetail({ slug }: { slug: string }) {
         localStorage.setItem("recentlyViewed", JSON.stringify(updated));
       } catch {}
 
-      // Check buyer's offer history on this listing
-      if (user && user.id !== data.user_id) {
-        supabase
-          .from("offers")
-          .select("status")
-          .eq("listing_id", data.id)
-          .eq("buyer_id", user.id)
-          .then(({ data: allOffers }) => {
-            if (!allOffers) return;
-            setOfferCount(allOffers.length);
-            const active = allOffers.find(
-              (o) => o.status === "pending" || o.status === "countered",
-            );
-            if (active) setExistingOffer(active);
-          });
-      }
+      // Lazy-load auth-dependent data (offer history)
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user && user.id !== data.user_id) {
+          supabase
+            .from("offers")
+            .select("status")
+            .eq("listing_id", data.id)
+            .eq("buyer_id", user.id)
+            .then(({ data: allOffers }) => {
+              if (!allOffers) return;
+              setOfferCount(allOffers.length);
+              const active = allOffers.find(
+                (o) => o.status === "pending" || o.status === "countered",
+              );
+              if (active) setExistingOffer(active);
+            });
+        }
+      });
 
       // Increment view count on the listing row
       supabase
@@ -296,30 +332,22 @@ export default function ListingDetail({ slug }: { slug: string }) {
         .then();
 
       // Record daily analytics (non-owner only)
-      const viewerId = user?.id ?? null;
-      if (!viewerId || viewerId !== data.user_id) {
-        fetch("/api/analytics/view", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listing_id: data.id }),
-        }).catch(() => {});
-      }
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        const viewerId = user?.id ?? null;
+        if (!viewerId || viewerId !== data.user_id) {
+          fetch("/api/analytics/view", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ listing_id: data.id }),
+          }).catch(() => {});
+        }
+      });
 
-      // Fetch related
-      const { data: rel } = await supabase
-        .from("listings")
-        .select(`*, categories(name, slug, icon), locations(name, slug)`)
-        .eq("status", "active")
-        .eq("category_id", data.category_id)
-        .neq("id", data.id)
-        .order("created_at", { ascending: false })
-        .limit(4);
-
-      setRelated(rel || []);
       setLoading(false);
     }
     load();
-  }, [slug, supabase.from]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
   if (loading) {
     return <ListingDetailSkeleton />;
@@ -342,6 +370,9 @@ export default function ListingDetail({ slug }: { slug: string }) {
       </div>
     );
   }
+
+  // TypeScript guard — if not loading and not notFound, listing is always set
+  if (!listing) return null;
 
   const profile = listing.profiles;
   const sellerRating = profile?.rating || 0;
@@ -381,7 +412,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
     100,
     40 +
       galleryImages.length * 10 +
-      (listing.description?.length > 100 ? 20 : 0),
+      ((listing.description?.length ?? 0) > 100 ? 20 : 0),
   );
 
   return (
