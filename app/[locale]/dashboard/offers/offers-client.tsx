@@ -477,7 +477,7 @@ function OfferCard({
               </button>
             )}
 
-            {!isSeller && offer.status === "countered" && offer.counter_amount && (
+            {!isSeller && offer.status === "countered" && offer.counter_amount != null && (
               <div className="flex gap-2">
                 <button
                     type="button"
