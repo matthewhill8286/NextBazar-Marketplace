@@ -1,7 +1,6 @@
 "use client";
 
 import { Loader2, Lock, Mail, User } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -27,7 +26,6 @@ const GoogleIcon = () => (
 );
 
 export default function SignupForm() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

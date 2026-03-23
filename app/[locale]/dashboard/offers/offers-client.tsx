@@ -118,6 +118,7 @@ function Pagination({
       </span>
       <div className="flex items-center gap-1">
         <button
+            type="button"
           onClick={() => onPage(page - 1)}
           disabled={page === 0}
           className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -127,6 +128,7 @@ function Pagination({
         {Array.from({ length: totalPages }, (_, i) => (
           <button
             key={i}
+            type="button"
             onClick={() => onPage(i)}
             className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
               i === page
@@ -138,6 +140,7 @@ function Pagination({
           </button>
         ))}
         <button
+            type="button"
           onClick={() => onPage(page + 1)}
           disabled={page >= totalPages - 1}
           className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -204,36 +207,47 @@ function OfferCard({
           setExistingRating(data.rating);
         }
       });
-  }, [offer.id, offer.status, userId]);
+  }, [supabase, offer.id, offer.status, userId]);
 
   async function respond(status: string, extras: Record<string, unknown> = {}) {
     setLoading(status);
     setActionError(null);
-    const { error } = await supabase
-      .from("offers")
-      .update({ status, responded_at: new Date().toISOString(), ...extras })
-      .eq("id", offer.id);
-    if (error) {
+    try {
+      const { error } = await supabase
+        .from("offers")
+        .update({ status, responded_at: new Date().toISOString(), ...extras })
+        .eq("id", offer.id);
+      if (error) {
+        setActionError("Couldn't update offer. Please try again.");
+        return;
+      }
+      onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
+      setShowCounter(false);
+      router.refresh();
+    } catch {
       setActionError("Couldn't update offer. Please try again.");
+    } finally {
       setLoading(null);
-      return;
     }
-    onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
-    setLoading(null);
-    setShowCounter(false);
-    router.refresh();
   }
 
   async function handleDelete() {
     setLoading("delete");
-    const { error } = await supabase.from("offers").delete().eq("id", offer.id);
-    if (error) {
+    setActionError(null);
+    try {
+      const { error } = await supabase.from("offers").delete().eq("id", offer.id);
+      if (error) {
+        setActionError("Couldn't delete offer. Please try again.");
+        setDeleteConfirm(false);
+        return;
+      }
+      onDelete(offer.id);
+    } catch {
       setActionError("Couldn't delete offer. Please try again.");
-      setLoading(null);
       setDeleteConfirm(false);
-      return;
+    } finally {
+      setLoading(null);
     }
-    onDelete(offer.id);
   }
 
   return (
@@ -244,6 +258,7 @@ function OfferCard({
           focused ? "border-indigo-300 ring-2 ring-indigo-100" : "border-gray-100"
         }`}
       >
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: this can be looked another time */}
         <div
           className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
           onClick={() => setExpanded(!expanded)}
@@ -356,6 +371,8 @@ function OfferCard({
                 </div>
                 {!hasReviewed && (
                   <button
+                      disabled={loading === "review"}
+                      type="button"
                     onClick={() => setShowReviewModal(true)}
                     className="shrink-0 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors flex items-center gap-1.5"
                   >
@@ -372,6 +389,7 @@ function OfferCard({
                 {!showCounter ? (
                   <div className="flex gap-2">
                     <button
+                        type="button"
                       onClick={() => respond("accepted")}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
@@ -380,6 +398,7 @@ function OfferCard({
                       Accept
                     </button>
                     <button
+                        type="button"
                       onClick={() => setShowCounter(true)}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-medium hover:bg-indigo-100 transition-colors disabled:opacity-50"
@@ -388,6 +407,7 @@ function OfferCard({
                       Counter
                     </button>
                     <button
+                        type="button"
                       onClick={() => respond("declined")}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
@@ -398,9 +418,9 @@ function OfferCard({
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <label className="block text-xs font-medium text-gray-600">
+                    <span className="block text-xs font-medium text-gray-600">
                       Your counter offer amount
-                    </label>
+                    </span>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">{sym}</span>
                       <input
@@ -421,6 +441,7 @@ function OfferCard({
                     />
                     <div className="flex gap-2">
                       <button
+                          type="button"
                         onClick={() => respond("countered", {
                           counter_amount: Number(counterAmount),
                           counter_message: counterMessage || null,
@@ -431,6 +452,7 @@ function OfferCard({
                         {loading === "countered" ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Send Counter"}
                       </button>
                       <button
+                          type="button"
                         onClick={() => setShowCounter(false)}
                         className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
                       >
@@ -445,6 +467,7 @@ function OfferCard({
             {/* Buyer actions */}
             {!isSeller && (offer.status === "pending" || offer.status === "countered") && (
               <button
+                  type="button"
                 onClick={() => respond("withdrawn")}
                 disabled={!!loading}
                 className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
@@ -457,6 +480,7 @@ function OfferCard({
             {!isSeller && offer.status === "countered" && offer.counter_amount && (
               <div className="flex gap-2">
                 <button
+                    type="button"
                   onClick={() => respond("accepted")}
                   disabled={!!loading}
                   className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1.5"
@@ -465,6 +489,7 @@ function OfferCard({
                   Accept {sym}{offer.counter_amount.toLocaleString()}
                 </button>
                 <button
+                    type="button"
                   onClick={() => respond("declined")}
                   disabled={!!loading}
                   className="flex-1 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-50 flex items-center justify-center gap-1.5"
@@ -482,6 +507,7 @@ function OfferCard({
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-500 flex-1">Remove this offer permanently?</span>
                     <button
+                        type="button"
                       onClick={handleDelete}
                       disabled={loading === "delete"}
                       className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
@@ -490,6 +516,7 @@ function OfferCard({
                       Delete
                     </button>
                     <button
+                        type="button"
                       onClick={() => setDeleteConfirm(false)}
                       className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                     >
@@ -498,6 +525,7 @@ function OfferCard({
                   </div>
                 ) : (
                   <button
+                      type="button"
                     onClick={() => setDeleteConfirm(true)}
                     className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
                   >
@@ -528,6 +556,28 @@ function OfferCard({
       )}
     </>
   );
+}
+
+// ─── Public card exports ──────────────────────────────────────────────────────
+// Thin wrappers that fix the `isSeller` flag so callers (and tests) don't have
+// to know about the internal prop.  Both receive the same public props.
+
+type OfferCardPublicProps = {
+  offer: Offer;
+  userId: string;
+  onUpdate: (id: string, patch: Partial<Offer>) => void;
+  onDelete: (id: string) => void;
+  focused?: boolean;
+};
+
+/** Offer card rendered from the **buyer's** perspective (Withdraw / Accept counter / Decline counter). */
+export function BuyerOfferCard(props: OfferCardPublicProps) {
+  return <OfferCard {...props} isSeller={false} />;
+}
+
+/** Offer card rendered from the **seller's** perspective (Accept / Counter / Decline). */
+export function SellerOfferCard(props: OfferCardPublicProps) {
+  return <OfferCard {...props} isSeller={true} />;
 }
 
 export default function OffersClient({ userId, focusOfferId }: Props) {
@@ -573,7 +623,7 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
       }
       setPageLoading(false);
     },
-    [userId],
+    [supabase, userId],
   );
 
   // Initial load for both tabs
@@ -583,8 +633,8 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
   }, [fetchPage]);
 
   // Reload when page changes
-  useEffect(() => { fetchPage("received", receivedPage); }, [receivedPage]);
-  useEffect(() => { fetchPage("sent",     sentPage);     }, [sentPage]);
+  useEffect(() => { fetchPage("received", receivedPage); }, [fetchPage, receivedPage]);
+  useEffect(() => { fetchPage("sent",     sentPage);     }, [fetchPage, sentPage]);
 
   // If there's a focused offer and it's in the sent list, switch to that tab
   useEffect(() => {
@@ -628,6 +678,8 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
         <button
+            disabled={pageLoading}
+            type="button"
           onClick={() => setTab("received")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             tab === "received" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
@@ -641,6 +693,8 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
           )}
         </button>
         <button
+            disabled={pageLoading}
+            type="button"
           onClick={() => setTab("sent")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
             tab === "sent" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
