@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { Star, Loader2, CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2, Star } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Review = {
@@ -117,7 +117,9 @@ export function LeaveReviewPrompt({
       <div className="bg-green-50 border border-green-100 rounded-2xl p-5 flex items-center gap-3">
         <CheckCircle className="w-5 h-5 text-green-600 shrink-0" />
         <p className="text-sm text-green-800 font-medium">
-          {done ? "Thanks for your review!" : "You've already reviewed this seller"}
+          {done
+            ? "Thanks for your review!"
+            : "You've already reviewed this seller"}
         </p>
       </div>
     );
@@ -218,12 +220,12 @@ export function SellerReviews({
     <div className="bg-white rounded-2xl border border-gray-100 p-5">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">
-          Seller Reviews
-        </h3>
+        <h3 className="font-semibold text-gray-900">Seller Reviews</h3>
         <div className="flex items-center gap-1.5">
           <Star className="w-4 h-4 fill-amber-400 stroke-amber-400" />
-          <span className="font-bold text-gray-900">{avgRating.toFixed(1)}</span>
+          <span className="font-bold text-gray-900">
+            {avgRating.toFixed(1)}
+          </span>
           <span className="text-sm text-gray-400">({totalReviews})</span>
         </div>
       </div>

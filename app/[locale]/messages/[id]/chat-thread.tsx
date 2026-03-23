@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import {
+  AlertTriangle,
   ArrowLeft,
-  Send,
-  Loader2,
-  Shield,
+  CheckCircle,
   ExternalLink,
+  Loader2,
+  MoreHorizontal,
   Pin,
   PinOff,
-  Trash2,
-  MoreHorizontal,
-  X,
+  Send,
+  Shield,
   Tag,
-  CheckCircle,
+  Trash2,
+  X,
   XCircle,
-  AlertTriangle,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Message = {
@@ -98,7 +98,9 @@ export default function ChatThread({
 
       const { data: msgs } = await supabase
         .from("messages")
-        .select("id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status")
+        .select(
+          "id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status",
+        )
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true });
 
@@ -175,7 +177,9 @@ export default function ChatThread({
 
   // Close context menu on outside click
   useEffect(() => {
-    function close() { setActiveMenu(null); }
+    function close() {
+      setActiveMenu(null);
+    }
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
   }, []);
@@ -265,7 +269,10 @@ export default function ChatThread({
     setMessages((prev) =>
       prev.map((m) => (m.id === deleteMsg.id ? { ...m, deleted_at: now } : m)),
     );
-    await supabase.from("messages").update({ deleted_at: now }).eq("id", deleteMsg.id);
+    await supabase
+      .from("messages")
+      .update({ deleted_at: now })
+      .eq("id", deleteMsg.id);
     setDeletingMsg(false);
     setDeleteMsg(null);
   }
@@ -301,41 +308,58 @@ export default function ChatThread({
         offer_price: price,
         offer_status: "pending",
       })
-      .select("id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status")
+      .select(
+        "id, sender_id, content, created_at, read_at, is_pinned, deleted_at, message_type, offer_price, offer_status",
+      )
       .single();
 
     if (inserted) {
-      setMessages((prev) => prev.map((m) => (m.id === optimistic.id ? inserted : m)));
-      await supabase.from("conversations").update({
-        last_message_at: new Date().toISOString(),
-        last_message_preview: `💰 Offer: €${price.toLocaleString()}`,
-      }).eq("id", conversationId);
+      setMessages((prev) =>
+        prev.map((m) => (m.id === optimistic.id ? inserted : m)),
+      );
+      await supabase
+        .from("conversations")
+        .update({
+          last_message_at: new Date().toISOString(),
+          last_message_preview: `💰 Offer: €${price.toLocaleString()}`,
+        })
+        .eq("id", conversationId);
     } else {
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
     }
     setSendingOffer(false);
   }
 
-  async function handleOfferResponse(msg: Message, status: "accepted" | "declined") {
+  async function handleOfferResponse(
+    msg: Message,
+    status: "accepted" | "declined",
+  ) {
     // Optimistic
     setMessages((prev) =>
       prev.map((m) => (m.id === msg.id ? { ...m, offer_status: status } : m)),
     );
-    await supabase.from("messages").update({ offer_status: status }).eq("id", msg.id);
+    await supabase
+      .from("messages")
+      .update({ offer_status: status })
+      .eq("id", msg.id);
     // Send a follow-up text message
-    const reply = status === "accepted"
-      ? `✅ Offer of €${msg.offer_price?.toLocaleString()} accepted!`
-      : `❌ Offer of €${msg.offer_price?.toLocaleString()} declined.`;
+    const reply =
+      status === "accepted"
+        ? `✅ Offer of €${msg.offer_price?.toLocaleString()} accepted!`
+        : `❌ Offer of €${msg.offer_price?.toLocaleString()} declined.`;
     await supabase.from("messages").insert({
       conversation_id: conversationId,
       sender_id: userId,
       content: reply,
       message_type: "text",
     });
-    await supabase.from("conversations").update({
-      last_message_at: new Date().toISOString(),
-      last_message_preview: reply,
-    }).eq("id", conversationId);
+    await supabase
+      .from("conversations")
+      .update({
+        last_message_at: new Date().toISOString(),
+        last_message_preview: reply,
+      })
+      .eq("id", conversationId);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -346,7 +370,10 @@ export default function ChatThread({
   }
 
   function formatTime(d: string) {
-    return new Date(d).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    return new Date(d).toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   function formatDate(d: string) {
@@ -386,7 +413,10 @@ export default function ChatThread({
   let lastDate = "";
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col" style={{ height: "calc(100vh - 80px)" }}>
+    <div
+      className="max-w-3xl mx-auto flex flex-col"
+      style={{ height: "calc(100vh - 80px)" }}
+    >
       {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0">
         <Link
@@ -397,7 +427,11 @@ export default function ChatThread({
         </Link>
         <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0">
           {otherUser?.avatar_url ? (
-            <img src={otherUser.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+            <img
+              src={otherUser.avatar_url}
+              alt=""
+              className="w-full h-full rounded-full object-cover"
+            />
           ) : (
             initials
           )}
@@ -407,10 +441,15 @@ export default function ChatThread({
             <span className="font-semibold text-gray-900 text-sm truncate">
               {otherUser?.display_name || "User"}
             </span>
-            {otherUser?.verified && <Shield className="w-3.5 h-3.5 text-blue-500" />}
+            {otherUser?.verified && (
+              <Shield className="w-3.5 h-3.5 text-blue-500" />
+            )}
           </div>
           {listing?.title && (
-            <Link href={`/listing/${listing.slug}`} className="text-xs text-blue-600 hover:underline truncate block">
+            <Link
+              href={`/listing/${listing.slug}`}
+              className="text-xs text-blue-600 hover:underline truncate block"
+            >
               {listing.title}
             </Link>
           )}
@@ -420,7 +459,13 @@ export default function ChatThread({
             href={`/listing/${listing.slug}`}
             className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative hover:opacity-80 transition-opacity"
           >
-            <Image src={listing.primary_image_url} alt="" fill className="object-cover" sizes="40px" />
+            <Image
+              src={listing.primary_image_url}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="40px"
+            />
           </Link>
         )}
         <button
@@ -436,7 +481,9 @@ export default function ChatThread({
       {listing && (
         <div className="bg-blue-50 border-b border-blue-100 px-4 py-2.5 flex items-center gap-3 shrink-0">
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-blue-800 font-medium truncate">{listing.title}</p>
+            <p className="text-xs text-blue-800 font-medium truncate">
+              {listing.title}
+            </p>
             <p className="text-xs text-blue-600">
               {listing.price
                 ? `${listing.currency === "EUR" ? "€" : listing.currency}${listing.price.toLocaleString()}`
@@ -462,7 +509,8 @@ export default function ChatThread({
             <div className="flex items-center gap-2">
               <Pin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <span className="text-xs font-semibold text-amber-800">
-                {pinnedMessages.length} pinned {pinnedMessages.length === 1 ? "message" : "messages"}
+                {pinnedMessages.length} pinned{" "}
+                {pinnedMessages.length === 1 ? "message" : "messages"}
               </span>
               <span className="text-xs text-amber-600 ml-auto">
                 {pinnedExpanded ? "Hide" : "Show"}
@@ -471,7 +519,10 @@ export default function ChatThread({
             {pinnedExpanded && (
               <div className="mt-2 space-y-1.5">
                 {pinnedMessages.map((pm) => (
-                  <div key={pm.id} className="bg-white rounded-lg px-3 py-2 border border-amber-100 text-xs text-gray-700 line-clamp-2">
+                  <div
+                    key={pm.id}
+                    className="bg-white rounded-lg px-3 py-2 border border-amber-100 text-xs text-gray-700 line-clamp-2"
+                  >
                     {pm.content}
                   </div>
                 ))}
@@ -511,17 +562,23 @@ export default function ChatThread({
 
               {/* Pinned indicator */}
               {msg.is_pinned && !isDeleted && (
-                <div className={`flex ${isMe ? "justify-end" : "justify-start"} mb-0.5`}>
+                <div
+                  className={`flex ${isMe ? "justify-end" : "justify-start"} mb-0.5`}
+                >
                   <span className="flex items-center gap-1 text-[10px] text-amber-600 font-medium">
                     <Pin className="w-2.5 h-2.5" /> Pinned
                   </span>
                 </div>
               )}
 
-              <div className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1 group`}>
+              <div
+                className={`flex ${isMe ? "justify-end" : "justify-start"} mb-1 group`}
+              >
                 {/* Actions menu — appears on hover */}
                 {!isDeleted && (
-                  <div className={`flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${isMe ? "order-first mr-1.5" : "order-last ml-1.5"}`}>
+                  <div
+                    className={`flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ${isMe ? "order-first mr-1.5" : "order-last ml-1.5"}`}
+                  >
                     <div className="relative">
                       <button
                         onClick={(e) => {
@@ -543,14 +600,23 @@ export default function ChatThread({
                             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                           >
                             {msg.is_pinned ? (
-                              <><PinOff className="w-3.5 h-3.5 text-amber-500" /> Unpin</>
+                              <>
+                                <PinOff className="w-3.5 h-3.5 text-amber-500" />{" "}
+                                Unpin
+                              </>
                             ) : (
-                              <><Pin className="w-3.5 h-3.5 text-amber-500" /> Pin message</>
+                              <>
+                                <Pin className="w-3.5 h-3.5 text-amber-500" />{" "}
+                                Pin message
+                              </>
                             )}
                           </button>
                           {isMe && (
                             <button
-                              onClick={() => { setActiveMenu(null); setDeleteMsg(msg); }}
+                              onClick={() => {
+                                setActiveMenu(null);
+                                setDeleteMsg(msg);
+                              }}
                               className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" /> Delete
@@ -564,26 +630,40 @@ export default function ChatThread({
 
                 {/* Offer card */}
                 {msg.message_type === "offer" && !isDeleted ? (
-                  <div className={`max-w-[75%] rounded-2xl border overflow-hidden ${
-                    isMe ? "rounded-br-md" : "rounded-bl-md"
-                  } ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""} ${
-                    msg.offer_status === "accepted" ? "border-green-200" :
-                    msg.offer_status === "declined" ? "border-red-200" : "border-blue-200"
-                  } bg-white`}>
-                    <div className={`px-4 py-2 flex items-center gap-2 text-xs font-semibold ${
-                      msg.offer_status === "accepted" ? "bg-green-50 text-green-700" :
-                      msg.offer_status === "declined" ? "bg-red-50 text-red-600" :
-                      "bg-blue-50 text-blue-700"
-                    }`}>
+                  <div
+                    className={`max-w-[75%] rounded-2xl border overflow-hidden ${
+                      isMe ? "rounded-br-md" : "rounded-bl-md"
+                    } ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""} ${
+                      msg.offer_status === "accepted"
+                        ? "border-green-200"
+                        : msg.offer_status === "declined"
+                          ? "border-red-200"
+                          : "border-blue-200"
+                    } bg-white`}
+                  >
+                    <div
+                      className={`px-4 py-2 flex items-center gap-2 text-xs font-semibold ${
+                        msg.offer_status === "accepted"
+                          ? "bg-green-50 text-green-700"
+                          : msg.offer_status === "declined"
+                            ? "bg-red-50 text-red-600"
+                            : "bg-blue-50 text-blue-700"
+                      }`}
+                    >
                       <Tag className="w-3.5 h-3.5" />
-                      {msg.offer_status === "accepted" ? "Offer Accepted" :
-                       msg.offer_status === "declined" ? "Offer Declined" : "Price Offer"}
+                      {msg.offer_status === "accepted"
+                        ? "Offer Accepted"
+                        : msg.offer_status === "declined"
+                          ? "Offer Declined"
+                          : "Price Offer"}
                     </div>
                     <div className="px-4 py-3">
                       <p className="text-2xl font-bold text-gray-900">
                         €{msg.offer_price?.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">Non-binding offer</p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        Non-binding offer
+                      </p>
 
                       {/* Accept / Decline for seller when pending */}
                       {!isMe && msg.offer_status === "pending" && (
@@ -603,10 +683,14 @@ export default function ChatThread({
                         </div>
                       )}
                       {msg.offer_status === "pending" && isMe && (
-                        <p className="text-xs text-blue-500 mt-2 font-medium">Awaiting response…</p>
+                        <p className="text-xs text-blue-500 mt-2 font-medium">
+                          Awaiting response…
+                        </p>
                       )}
                     </div>
-                    <p className="text-[10px] text-gray-400 px-4 pb-2">{formatTime(msg.created_at)}</p>
+                    <p className="text-[10px] text-gray-400 px-4 pb-2">
+                      {formatTime(msg.created_at)}
+                    </p>
                   </div>
                 ) : (
                   <div
@@ -626,7 +710,9 @@ export default function ChatThread({
                       <p className="whitespace-pre-wrap">{msg.content}</p>
                     )}
                     {!isDeleted && (
-                      <p className={`text-[10px] mt-1 ${isMe ? "text-blue-200" : "text-gray-400"}`}>
+                      <p
+                        className={`text-[10px] mt-1 ${isMe ? "text-blue-200" : "text-gray-400"}`}
+                      >
                         {formatTime(msg.created_at)}
                       </p>
                     )}
@@ -642,8 +728,13 @@ export default function ChatThread({
       {/* Send error banner */}
       {sendError && (
         <div className="bg-red-50 border-t border-red-100 px-4 py-2 flex items-center justify-between shrink-0">
-          <span className="text-xs text-red-600">Message failed to send. Please try again.</span>
-          <button onClick={() => setSendError(false)} className="text-red-400 hover:text-red-600">
+          <span className="text-xs text-red-600">
+            Message failed to send. Please try again.
+          </span>
+          <button
+            onClick={() => setSendError(false)}
+            className="text-red-400 hover:text-red-600"
+          >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -667,7 +758,11 @@ export default function ChatThread({
             disabled={!newMessage.trim() || sending}
             className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           >
-            {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+            {sending ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Send className="w-5 h-5" />
+            )}
           </button>
         </div>
       </div>

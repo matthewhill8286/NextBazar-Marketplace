@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { mockSupabase } from "./helpers/mocks";
 
 test.describe("Homepage", () => {
@@ -8,7 +8,9 @@ test.describe("Homepage", () => {
 
   test("renders the NextBazar logo and brand name", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("NextBazar").or(page.getByText("Next")).first()).toBeVisible();
+    await expect(
+      page.getByText("NextBazar").or(page.getByText("Next")).first(),
+    ).toBeVisible();
   });
 
   test("shows the search bar in the navbar", async ({ page }) => {
@@ -23,15 +25,15 @@ test.describe("Homepage", () => {
   test("navbar has Post Ad link", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByRole("link", { name: /post/i }).first()
+      page.getByRole("link", { name: /post/i }).first(),
     ).toBeVisible();
   });
 
   test("navbar has saved (heart) icon", async ({ page }) => {
     await page.goto("/");
-    const savedLink = page.getByRole("link", { name: /saved/i }).or(
-      page.locator('a[href="/saved"]')
-    );
+    const savedLink = page
+      .getByRole("link", { name: /saved/i })
+      .or(page.locator('a[href="/saved"]'));
     await expect(savedLink.first()).toBeVisible();
   });
 
@@ -51,18 +53,22 @@ test.describe("Homepage", () => {
     await page.goto("/");
     // Wait for at least one listing card to appear
     await expect(
-      page.getByText("iPhone 14 Pro").or(page.getByText("MacBook Pro")).first()
+      page.getByText("iPhone 14 Pro").or(page.getByText("MacBook Pro")).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
   test("listing card shows price", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText(/€800|€1,500/).first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/€800|€1,500/).first()).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
   test("listing card shows location", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("Nicosia").or(page.getByText("Limassol")).first()).toBeVisible({
+    await expect(
+      page.getByText("Nicosia").or(page.getByText("Limassol")).first(),
+    ).toBeVisible({
       timeout: 10_000,
     });
   });
@@ -70,11 +76,13 @@ test.describe("Homepage", () => {
   test("category chips are visible", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.getByText("Electronics").or(page.getByText("Vehicles")).first()
+      page.getByText("Electronics").or(page.getByText("Vehicles")).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test("clicking a listing card navigates to listing detail", async ({ page }) => {
+  test("clicking a listing card navigates to listing detail", async ({
+    page,
+  }) => {
     await page.goto("/");
     const card = page.getByRole("link", { name: /iPhone 14 Pro/i }).first();
     await expect(card).toBeVisible({ timeout: 10_000 });

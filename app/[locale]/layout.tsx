@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
+import type { ReactNode } from "react";
+import { Toaster } from "sonner";
+import Footer from "@/app/components/footer";
+import Navbar from "@/app/components/navbar";
+import RealtimeToasts from "@/app/components/realtime-toasts";
 import { routing } from "@/i18n/routing";
 import { SavedProvider } from "@/lib/saved-context";
-import Navbar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
-import RealtimeToasts from "@/app/components/realtime-toasts";
-import { Toaster } from "sonner";
-import type { ReactNode } from "react";
 
 type Messages = Record<string, unknown>;
 
@@ -20,14 +20,12 @@ export const metadata: Metadata = {
       { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
-      { url: "/favicon.ico",    sizes: "any" },
+      { url: "/favicon.ico", sizes: "any" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    other: [
-      { rel: "mask-icon", url: "/nextbazar-icon.svg", color: "#3B82F6" },
-    ],
+    other: [{ rel: "mask-icon", url: "/nextbazar-icon.svg", color: "#3B82F6" }],
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -55,7 +53,8 @@ export default async function LocaleLayout({
   }
 
   // Load messages directly — no plugin required
-  const messages: Messages = (await import(`../../messages/${locale}.json`)).default;
+  const messages: Messages = (await import(`../../messages/${locale}.json`))
+    .default;
 
   return (
     <html lang={locale} className="h-full antialiased">

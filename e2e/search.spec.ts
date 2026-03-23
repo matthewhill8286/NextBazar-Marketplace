@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { mockSupabase } from "./helpers/mocks";
 
 test.describe("Search page", () => {
@@ -17,11 +17,13 @@ test.describe("Search page", () => {
 
   test("shows listing results on load", async ({ page }) => {
     await expect(
-      page.getByText("iPhone 14 Pro").or(page.getByText("MacBook Pro")).first()
+      page.getByText("iPhone 14 Pro").or(page.getByText("MacBook Pro")).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test("typing in the search box updates the URL query param", async ({ page }) => {
+  test("typing in the search box updates the URL query param", async ({
+    page,
+  }) => {
     const input = page
       .getByRole("searchbox")
       .or(page.getByPlaceholder(/search/i))
@@ -31,7 +33,9 @@ test.describe("Search page", () => {
     await expect(page).toHaveURL(/[?&]q=macbook/i, { timeout: 5_000 });
   });
 
-  test("pre-fills the search input when q param is in the URL", async ({ page }) => {
+  test("pre-fills the search input when q param is in the URL", async ({
+    page,
+  }) => {
     await page.goto("/search?q=iphone");
     const input = page
       .getByRole("searchbox")
@@ -42,11 +46,17 @@ test.describe("Search page", () => {
 
   test("shows the Featured badge on a promoted listing", async ({ page }) => {
     // macbook is is_promoted: true
-    await expect(page.getByText(/Featured/).first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/Featured/).first()).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
-  test("clicking a result card navigates to listing detail", async ({ page }) => {
-    const card = page.getByRole("link", { name: /iPhone 14 Pro|MacBook Pro/i }).first();
+  test("clicking a result card navigates to listing detail", async ({
+    page,
+  }) => {
+    const card = page
+      .getByRole("link", { name: /iPhone 14 Pro|MacBook Pro/i })
+      .first();
     await expect(card).toBeVisible({ timeout: 10_000 });
     await card.click();
     await expect(page).toHaveURL(/\/listing\//);
@@ -60,11 +70,11 @@ test.describe("Search page", () => {
         contentType: "application/json",
         body: JSON.stringify([]),
         headers: { "Content-Range": "0-0/0" },
-      })
+      }),
     );
     await page.goto("/search?q=xyzunmatchable");
     await expect(
-      page.getByText(/no listings|no results|nothing found/i).first()
+      page.getByText(/no listings|no results|nothing found/i).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 

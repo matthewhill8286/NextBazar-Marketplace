@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/webhooks/stripe/route";
 
 // ---------------------------------------------------------------------------
@@ -98,7 +98,9 @@ describe("POST /api/webhooks/stripe", () => {
     expect(updateArg.is_promoted).toBe(true);
     expect(updateArg.promoted_until).toBeDefined();
     // promoted_until should be a future ISO date string
-    expect(new Date(updateArg.promoted_until).getTime()).toBeGreaterThan(Date.now());
+    expect(new Date(updateArg.promoted_until).getTime()).toBeGreaterThan(
+      Date.now(),
+    );
   });
 
   it("calls .eq('id', listingId) for featured promotion", async () => {
@@ -122,7 +124,10 @@ describe("POST /api/webhooks/stripe", () => {
   });
 
   it("returns { received: true } for an unknown event type without modifying the DB", async () => {
-    const unknownEvent = { type: "payment_intent.created", data: { object: {} } };
+    const unknownEvent = {
+      type: "payment_intent.created",
+      data: { object: {} },
+    };
     const res = await POST(makeWebhookRequest(unknownEvent));
     expect(res.status).toBe(200);
     expect(mockUpdate).not.toHaveBeenCalled();

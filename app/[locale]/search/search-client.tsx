@@ -1,15 +1,29 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Loader2,
+  Search,
+  SlidersHorizontal,
+  Sparkles,
+  Wand2,
+  X,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal, X, Sparkles, Loader2, Wand2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import SaveSearchButton from "@/app/components/save-search-button";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
+import { createClient } from "@/lib/supabase/client";
 
 type Category = { id: string; name: string; slug: string; icon: string };
-type Subcategory = { id: string; category_id: string; name: string; slug: string };
+type Subcategory = {
+  id: string;
+  category_id: string;
+  name: string;
+  slug: string;
+};
 type Location = { id: string; name: string; slug: string };
 
 export default function SearchClient() {
@@ -17,50 +31,52 @@ export default function SearchClient() {
   const searchParams = useSearchParams();
 
   // ─── Seed from URL once on mount ─────────────────────────────────────────
-  const initialQuery       = searchParams.get("q")           || "";
-  const initialCategory    = searchParams.get("category")    || "";
+  const initialQuery = searchParams.get("q") || "";
+  const initialCategory = searchParams.get("category") || "";
   const initialSubcategory = searchParams.get("subcategory") || "";
-  const initialLocation    = searchParams.get("location")    || "";
-  const initialSort        = searchParams.get("sort")        || "newest";
-  const initialPriceMin    = searchParams.get("priceMin")    || "";
-  const initialPriceMax    = searchParams.get("priceMax")    || "";
-  const initialAi          = searchParams.get("ai")          === "1";
+  const initialLocation = searchParams.get("location") || "";
+  const initialSort = searchParams.get("sort") || "newest";
+  const initialPriceMin = searchParams.get("priceMin") || "";
+  const initialPriceMax = searchParams.get("priceMax") || "";
+  const initialAi = searchParams.get("ai") === "1";
 
   const supabase = createClient();
 
   // ─── TWO query states ─────────────────────────────────────────────────────
   // inputValue: what the user is currently typing (live, no search triggered)
   // submittedQuery: what was last actually searched (Enter / button press)
-  const [inputValue, setInputValue]       = useState(initialQuery);
+  const [inputValue, setInputValue] = useState(initialQuery);
   const [submittedQuery, setSubmittedQuery] = useState(initialQuery);
 
-  const [categorySlug, setCategorySlug]         = useState(initialCategory);
-  const [subcategorySlug, setSubcategorySlug]   = useState(initialSubcategory);
-  const [locationSlug, setLocationSlug]         = useState(initialLocation);
-  const [sortBy, setSortBy]                     = useState(initialSort);
-  const [priceMin, setPriceMin]                 = useState(initialPriceMin);
-  const [priceMax, setPriceMax]                 = useState(initialPriceMax);
-  const [showFilters, setShowFilters]           = useState(false);
+  const [categorySlug, setCategorySlug] = useState(initialCategory);
+  const [subcategorySlug, setSubcategorySlug] = useState(initialSubcategory);
+  const [locationSlug, setLocationSlug] = useState(initialLocation);
+  const [sortBy, setSortBy] = useState(initialSort);
+  const [priceMin, setPriceMin] = useState(initialPriceMin);
+  const [priceMax, setPriceMax] = useState(initialPriceMax);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const [listings, setListings]   = useState<any[]>([]);
+  const [listings, setListings] = useState<any[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading]     = useState(true);
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
-  const [offset, setOffset]       = useState(0);
+  const [offset, setOffset] = useState(0);
   const PAGE_SIZE = 24;
 
-  const [aiSearching, setAiSearching]       = useState(false);
+  const [aiSearching, setAiSearching] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState("");
-  const [wasAiSearch, setWasAiSearch]       = useState(false);
-  const [userId, setUserId]                 = useState<string | null>(null);
-  const [savedIds, setSavedIds]             = useState<Set<string>>(new Set());
+  const [wasAiSearch, setWasAiSearch] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   // ─── Featured/promoted listings shown when no search is active ────────────
   const [featuredListings, setFeaturedListings] = useState<any[]>([]);
-  const [featuredLoading, setFeaturedLoading]   = useState(!initialQuery && !initialCategory && !initialLocation);
+  const [featuredLoading, setFeaturedLoading] = useState(
+    !initialQuery && !initialCategory && !initialLocation,
+  );
 
   // ─── Ref: suppress filterKey re-trigger after AI search sets filters ──────
   // When AI search calls setCategorySlug / setLocationSlug to update the UI,
@@ -91,15 +107,28 @@ export default function SearchClient() {
       setFeaturedLoading(false);
     }
     loadFeatured();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── Load meta once ───────────────────────────────────────────────────────
   useEffect(() => {
     async function loadMeta() {
-      const [{ data: cats }, { data: subs }, { data: locs }, { data: { user } }] = await Promise.all([
-        supabase.from("categories").select("id, name, slug, icon").order("sort_order"),
-        supabase.from("subcategories").select("id, category_id, name, slug").order("sort_order"),
+      const [
+        { data: cats },
+        { data: subs },
+        { data: locs },
+        {
+          data: { user },
+        },
+      ] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("id, name, slug, icon")
+          .order("sort_order"),
+        supabase
+          .from("subcategories")
+          .select("id, category_id, name, slug")
+          .order("sort_order"),
         supabase.from("locations").select("id, name, slug").order("sort_order"),
         supabase.auth.getUser(),
       ]);
@@ -116,7 +145,7 @@ export default function SearchClient() {
       }
     }
     loadMeta();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── Normalise hit shape ──────────────────────────────────────────────────
@@ -124,11 +153,15 @@ export default function SearchClient() {
     return {
       ...h,
       category: h.category_name
-        ? { name: h.category_name, slug: h.category_slug, icon: h.category_icon }
-        : h.categories ?? h.category ?? null,
+        ? {
+            name: h.category_name,
+            slug: h.category_slug,
+            icon: h.category_icon,
+          }
+        : (h.categories ?? h.category ?? null),
       location: h.location_name
         ? { name: h.location_name, slug: h.location_slug }
-        : h.locations ?? h.location ?? null,
+        : (h.locations ?? h.location ?? null),
     };
   }
 
@@ -136,14 +169,14 @@ export default function SearchClient() {
   const buildParams = useCallback(
     (q: string, pageOffset: number) => {
       const p = new URLSearchParams();
-      if (q)            p.set("q",          q);
-      if (categorySlug) p.set("category",   categorySlug);
+      if (q) p.set("q", q);
+      if (categorySlug) p.set("category", categorySlug);
       if (subcategorySlug) p.set("subcategory", subcategorySlug);
-      if (locationSlug) p.set("location",   locationSlug);
-      if (sortBy)       p.set("sort",       sortBy);
-      if (priceMin)     p.set("priceMin",   priceMin);
-      if (priceMax)     p.set("priceMax",   priceMax);
-      p.set("limit",  String(PAGE_SIZE));
+      if (locationSlug) p.set("location", locationSlug);
+      if (sortBy) p.set("sort", sortBy);
+      if (priceMin) p.set("priceMin", priceMin);
+      if (priceMax) p.set("priceMax", priceMax);
+      p.set("limit", String(PAGE_SIZE));
       p.set("offset", String(pageOffset));
       return p;
     },
@@ -191,20 +224,20 @@ export default function SearchClient() {
 
     doSearch(submittedQuery);
     syncUrl(submittedQuery);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey, categories.length]);
 
   // ─── Sync URL only when a search is actually executed ─────────────────────
   function syncUrl(q: string) {
     lastInternalQuery.current = q; // mark as our own change so the watcher ignores it
     const params = new URLSearchParams();
-    if (q)                             params.set("q",           q);
-    if (categorySlug)                  params.set("category",    categorySlug);
-    if (subcategorySlug)               params.set("subcategory", subcategorySlug);
-    if (locationSlug)                  params.set("location",    locationSlug);
-    if (sortBy && sortBy !== "newest") params.set("sort",        sortBy);
-    if (priceMin)                      params.set("priceMin",    priceMin);
-    if (priceMax)                      params.set("priceMax",    priceMax);
+    if (q) params.set("q", q);
+    if (categorySlug) params.set("category", categorySlug);
+    if (subcategorySlug) params.set("subcategory", subcategorySlug);
+    if (locationSlug) params.set("location", locationSlug);
+    if (sortBy && sortBy !== "newest") params.set("sort", sortBy);
+    if (priceMin) params.set("priceMin", priceMin);
+    if (priceMax) params.set("priceMax", priceMax);
     const qs = params.toString();
     router.replace(qs ? `/search?${qs}` : "/search", { scroll: false });
   }
@@ -221,7 +254,7 @@ export default function SearchClient() {
     if (categories.length > 0) {
       doSearch(urlQ);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   // ─── Load more ────────────────────────────────────────────────────────────
@@ -237,7 +270,7 @@ export default function SearchClient() {
       setOffset(next);
     }
     setLoadingMore(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset, submittedQuery, buildParams, listings.length]);
 
   // ─── Execute regular search (Enter / button) ──────────────────────────────
@@ -249,7 +282,10 @@ export default function SearchClient() {
 
   // ─── AI search ────────────────────────────────────────────────────────────
   async function handleAiSearch(q = inputValue) {
-    if (!q.trim()) { executeSearch(""); return; }
+    if (!q.trim()) {
+      executeSearch("");
+      return;
+    }
     setAiSearching(true);
     setLoading(true);
     setAiInterpretation("");
@@ -274,8 +310,10 @@ export default function SearchClient() {
       if (data.filters?.category_slug || data.filters?.location_slug) {
         suppressNextFilterSearch.current = true;
       }
-      if (data.filters?.category_slug) setCategorySlug(data.filters.category_slug);
-      if (data.filters?.location_slug) setLocationSlug(data.filters.location_slug);
+      if (data.filters?.category_slug)
+        setCategorySlug(data.filters.category_slug);
+      if (data.filters?.location_slug)
+        setLocationSlug(data.filters.location_slug);
     } catch {
       // AI failed — fall back to regular search
       doSearch(q);
@@ -292,13 +330,22 @@ export default function SearchClient() {
   }
 
   // ─── Derived ──────────────────────────────────────────────────────────────
-  const activeCategory    = categories.find((c) => c.slug === categorySlug);
-  const activeSubcategory = subcategories.find((s) => s.slug === subcategorySlug);
+  const activeCategory = categories.find((c) => c.slug === categorySlug);
+  const activeSubcategory = subcategories.find(
+    (s) => s.slug === subcategorySlug,
+  );
   const visibleSubcategories = subcategories.filter(
     (s) => s.category_id === activeCategory?.id,
   );
-  const hasFilters = submittedQuery || categorySlug || subcategorySlug || locationSlug || priceMin || priceMax;
-  const noResults = !loading && listings.length === 0 && (hasFilters || submittedQuery);
+  const hasFilters =
+    submittedQuery ||
+    categorySlug ||
+    subcategorySlug ||
+    locationSlug ||
+    priceMin ||
+    priceMax;
+  const noResults =
+    !loading && listings.length === 0 && (hasFilters || submittedQuery);
 
   return (
     <>
@@ -307,7 +354,11 @@ export default function SearchClient() {
         {/* Dot mesh */}
         <div
           className="absolute inset-0 opacity-[0.10] pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }}
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+            backgroundSize: "28px 28px",
+          }}
         />
         {/* Ambient blobs */}
         <div className="absolute -top-20 -left-20 w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
@@ -317,20 +368,37 @@ export default function SearchClient() {
           {/* Dynamic title + count */}
           <div className="text-center mb-5">
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-              {submittedQuery
-                ? <>Results for <span className="text-amber-300">&ldquo;{submittedQuery}&rdquo;</span></>
-                : activeCategory
-                ? <><span className="text-blue-200">Browse</span> {activeCategory.name}</>
-                : "Browse Listings"}
+              {submittedQuery ? (
+                <>
+                  Results for{" "}
+                  <span className="text-amber-300">
+                    &ldquo;{submittedQuery}&rdquo;
+                  </span>
+                </>
+              ) : activeCategory ? (
+                <>
+                  <span className="text-blue-200">Browse</span>{" "}
+                  {activeCategory.name}
+                </>
+              ) : (
+                "Browse Listings"
+              )}
             </h1>
             <p className="text-blue-200 text-sm mt-1.5">
-              {loading
-                ? "Finding listings…"
-                : totalHits > 0
-                ? <><span className="text-white font-semibold">{totalHits.toLocaleString()}</span> {totalHits === 1 ? "listing" : "listings"} available</>
-                : hasFilters
-                ? "No listings match your search"
-                : "Discover great deals across Cyprus"}
+              {loading ? (
+                "Finding listings…"
+              ) : totalHits > 0 ? (
+                <>
+                  <span className="text-white font-semibold">
+                    {totalHits.toLocaleString()}
+                  </span>{" "}
+                  {totalHits === 1 ? "listing" : "listings"} available
+                </>
+              ) : hasFilters ? (
+                "No listings match your search"
+              ) : (
+                "Discover great deals across Cyprus"
+              )}
             </p>
           </div>
 
@@ -349,7 +417,10 @@ export default function SearchClient() {
             <div className="absolute right-2 flex items-center gap-1.5">
               {inputValue && (
                 <button
-                  onClick={() => { setInputValue(""); executeSearch(""); }}
+                  onClick={() => {
+                    setInputValue("");
+                    executeSearch("");
+                  }}
                   className="p-2 rounded-xl text-white/60 hover:text-white transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -361,7 +432,11 @@ export default function SearchClient() {
                 className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 title="AI Smart Search"
               >
-                {aiSearching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {aiSearching ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4" />
+                )}
               </button>
               <button
                 onClick={() => setShowFilters(!showFilters)}
@@ -375,49 +450,257 @@ export default function SearchClient() {
           {/* Hint row */}
           <p className="text-center text-xs text-white/45 mt-2.5">
             Press{" "}
-            <kbd className="bg-white/15 border border-white/20 px-1.5 py-0.5 rounded text-white/60 font-mono text-[11px]">Enter</kbd>
-            {" "}to search ·{" "}
-            <Sparkles className="w-3 h-3 inline text-indigo-300" /> for AI smart search
+            <kbd className="bg-white/15 border border-white/20 px-1.5 py-0.5 rounded text-white/60 font-mono text-[11px]">
+              Enter
+            </kbd>{" "}
+            to search · <Sparkles className="w-3 h-3 inline text-indigo-300" />{" "}
+            for AI smart search
           </p>
         </div>
       </section>
 
-    <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* ── Filters Panel ───────────────────────────────────────────────── */}
+        {showFilters && (
+          <div className="bg-white rounded-xl border border-gray-100 p-4 mb-6 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Category
+                </label>
+                <select
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                  value={categorySlug}
+                  onChange={(e) => {
+                    setCategorySlug(e.target.value);
+                    setSubcategorySlug("");
+                  }}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.slug}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Location
+                </label>
+                <select
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                  value={locationSlug}
+                  onChange={(e) => setLocationSlug(e.target.value)}
+                >
+                  <option value="">All Locations</option>
+                  {locations.map((loc) => (
+                    <option key={loc.id} value={loc.slug}>
+                      {loc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Sort By
+                </label>
+                <select
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="price_low">Price: Low → High</option>
+                  <option value="price_high">Price: High → Low</option>
+                  <option value="popular">Most Popular</option>
+                </select>
+              </div>
+            </div>
 
-      {/* ── Filters Panel ───────────────────────────────────────────────── */}
-      {showFilters && (
-        <div className="bg-white rounded-xl border border-gray-100 p-4 mb-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Category</label>
-              <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
-                value={categorySlug}
-                onChange={(e) => { setCategorySlug(e.target.value); setSubcategorySlug(""); }}
-              >
-                <option value="">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.slug}>{cat.name}</option>
-                ))}
-              </select>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                Price Range (€)
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                    €
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Min"
+                    value={priceMin}
+                    onChange={(e) => setPriceMin(e.target.value)}
+                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
+                <span className="text-gray-400 text-sm shrink-0">–</span>
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                    €
+                  </span>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Max"
+                    value={priceMax}
+                    onChange={(e) => setPriceMax(e.target.value)}
+                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Location</label>
-              <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
-                value={locationSlug}
-                onChange={(e) => setLocationSlug(e.target.value)}
+
+            {visibleSubcategories.length > 0 && (
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-2">
+                  Subcategory
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {visibleSubcategories.map((sub) => (
+                    <button
+                      key={sub.id}
+                      onClick={() =>
+                        setSubcategorySlug(
+                          subcategorySlug === sub.slug ? "" : sub.slug,
+                        )
+                      }
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                        subcategorySlug === sub.slug
+                          ? "border-blue-400 bg-blue-50 text-blue-700 ring-2 ring-blue-100"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:text-blue-600"
+                      }`}
+                    >
+                      {sub.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Active filter chips ──────────────────────────────────────────── */}
+        {hasFilters && (
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            {activeCategory && (
+              <button
+                onClick={() => {
+                  setCategorySlug("");
+                  setSubcategorySlug("");
+                }}
+                className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors"
               >
-                <option value="">All Locations</option>
-                {locations.map((loc) => (
-                  <option key={loc.id} value={loc.slug}>{loc.name}</option>
-                ))}
-              </select>
+                <span
+                  className={`w-4 h-4 ${getCategoryConfig(activeCategory.slug).bg} rounded flex items-center justify-center`}
+                >
+                  <CategoryIcon slug={activeCategory.slug} size={10} />
+                </span>
+                {activeCategory.name}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {activeSubcategory && (
+              <button
+                onClick={() => setSubcategorySlug("")}
+                className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+              >
+                {activeSubcategory.name}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {submittedQuery && (
+              <button
+                onClick={() => {
+                  setInputValue("");
+                  executeSearch("");
+                }}
+                className="flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+              >
+                &ldquo;{submittedQuery}&rdquo;
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            {(priceMin || priceMax) && (
+              <button
+                onClick={() => {
+                  setPriceMin("");
+                  setPriceMax("");
+                }}
+                className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-green-100 transition-colors"
+              >
+                {priceMin && priceMax
+                  ? `€${priceMin}–€${priceMax}`
+                  : priceMin
+                    ? `From €${priceMin}`
+                    : `Up to €${priceMax}`}
+                <X className="w-3 h-3" />
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setInputValue("");
+                setSubmittedQuery("");
+                setCategorySlug("");
+                setSubcategorySlug("");
+                setLocationSlug("");
+                setPriceMin("");
+                setPriceMax("");
+                setListings([]);
+                setTotalHits(0);
+                setAiInterpretation("");
+                setWasAiSearch(false);
+                lastInternalQuery.current = "";
+                router.replace("/search", { scroll: false });
+              }}
+              className="text-sm text-gray-400 hover:text-gray-600 ml-1"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
+
+        {/* ── AI interpretation banner ─────────────────────────────────────── */}
+        {aiInterpretation && (
+          <div className="flex items-center gap-2 bg-indigo-50 text-indigo-800 text-sm px-4 py-2.5 rounded-xl border border-indigo-100 mb-4">
+            <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+            <span>{aiInterpretation}</span>
+          </div>
+        )}
+
+        {/* ── Results header ───────────────────────────────────────────────── */}
+        {!noResults && (
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              {!loading && (
+                <p className="text-sm text-gray-500">
+                  <span className="font-semibold text-gray-900">
+                    {totalHits}
+                  </span>{" "}
+                  {totalHits === 1 ? "listing" : "listings"} found
+                  {listings.length < totalHits && (
+                    <span className="text-gray-400">
+                      {" "}
+                      · showing {listings.length}
+                    </span>
+                  )}
+                </p>
+              )}
+              <SaveSearchButton
+                query={submittedQuery}
+                categorySlug={categorySlug}
+                subcategorySlug={subcategorySlug}
+                locationSlug={locationSlug}
+                priceMin={priceMin}
+                priceMax={priceMax}
+                sortBy={sortBy}
+              />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">Sort By</label>
+            {!showFilters && (
               <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -426,259 +709,95 @@ export default function SearchClient() {
                 <option value="price_high">Price: High → Low</option>
                 <option value="popular">Most Popular</option>
               </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Price Range (€)</label>
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">€</span>
-                <input type="number" min="0" placeholder="Min" value={priceMin}
-                  onChange={(e) => setPriceMin(e.target.value)}
-                  className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
-              </div>
-              <span className="text-gray-400 text-sm shrink-0">–</span>
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">€</span>
-                <input type="number" min="0" placeholder="Max" value={priceMax}
-                  onChange={(e) => setPriceMax(e.target.value)}
-                  className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {visibleSubcategories.length > 0 && (
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">Subcategory</label>
-              <div className="flex flex-wrap gap-2">
-                {visibleSubcategories.map((sub) => (
-                  <button
-                    key={sub.id}
-                    onClick={() => setSubcategorySlug(subcategorySlug === sub.slug ? "" : sub.slug)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                      subcategorySlug === sub.slug
-                        ? "border-blue-400 bg-blue-50 text-blue-700 ring-2 ring-blue-100"
-                        : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:text-blue-600"
-                    }`}
-                  >
-                    {sub.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Active filter chips ──────────────────────────────────────────── */}
-      {hasFilters && (
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          {activeCategory && (
-            <button onClick={() => { setCategorySlug(""); setSubcategorySlug(""); }}
-              className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors">
-              <span className={`w-4 h-4 ${getCategoryConfig(activeCategory.slug).bg} rounded flex items-center justify-center`}>
-                <CategoryIcon slug={activeCategory.slug} size={10} />
-              </span>
-              {activeCategory.name}<X className="w-3 h-3" />
-            </button>
-          )}
-          {activeSubcategory && (
-            <button onClick={() => setSubcategorySlug("")}
-              className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors">
-              {activeSubcategory.name}<X className="w-3 h-3" />
-            </button>
-          )}
-          {submittedQuery && (
-            <button onClick={() => { setInputValue(""); executeSearch(""); }}
-              className="flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors">
-              &ldquo;{submittedQuery}&rdquo;<X className="w-3 h-3" />
-            </button>
-          )}
-          {(priceMin || priceMax) && (
-            <button onClick={() => { setPriceMin(""); setPriceMax(""); }}
-              className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-green-100 transition-colors">
-              {priceMin && priceMax ? `€${priceMin}–€${priceMax}` : priceMin ? `From €${priceMin}` : `Up to €${priceMax}`}
-              <X className="w-3 h-3" />
-            </button>
-          )}
-          <button
-            onClick={() => {
-              setInputValue(""); setSubmittedQuery(""); setCategorySlug(""); setSubcategorySlug(""); setLocationSlug(""); setPriceMin(""); setPriceMax("");
-              setListings([]); setTotalHits(0); setAiInterpretation(""); setWasAiSearch(false);
-              lastInternalQuery.current = "";
-              router.replace("/search", { scroll: false });
-            }}
-            className="text-sm text-gray-400 hover:text-gray-600 ml-1">
-            Clear all
-          </button>
-        </div>
-      )}
-
-      {/* ── AI interpretation banner ─────────────────────────────────────── */}
-      {aiInterpretation && (
-        <div className="flex items-center gap-2 bg-indigo-50 text-indigo-800 text-sm px-4 py-2.5 rounded-xl border border-indigo-100 mb-4">
-          <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
-          <span>{aiInterpretation}</span>
-        </div>
-      )}
-
-      {/* ── Results header ───────────────────────────────────────────────── */}
-      {!noResults && (
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {!loading && (
-              <p className="text-sm text-gray-500">
-                <span className="font-semibold text-gray-900">{totalHits}</span>{" "}
-                {totalHits === 1 ? "listing" : "listings"} found
-                {listings.length < totalHits && (
-                  <span className="text-gray-400"> · showing {listings.length}</span>
-                )}
-              </p>
             )}
-            <SaveSearchButton
-              query={submittedQuery}
-              categorySlug={categorySlug}
-              subcategorySlug={subcategorySlug}
-              locationSlug={locationSlug}
-              priceMin={priceMin}
-              priceMax={priceMax}
-              sortBy={sortBy}
-            />
           </div>
-          {!showFilters && (
-            <select
-              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="newest">Newest First</option>
-              <option value="price_low">Price: Low → High</option>
-              <option value="price_high">Price: High → Low</option>
-              <option value="popular">Most Popular</option>
-            </select>
-          )}
-        </div>
-      )}
+        )}
 
-      {/* ── Listings grid ───────────────────────────────────────────────── */}
-      {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-              <div className="aspect-4/3 bg-gray-100 animate-pulse" />
-              <div className="p-3.5 space-y-2">
-                <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
-                <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : noResults ? (
-        /* ── No-results empty state ──────────────────────────────────────── */
-        <div className="max-w-md mx-auto py-20 text-center">
-          <div className="text-5xl mb-4">🔍</div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No listings found</h3>
-          <p className="text-gray-500 text-sm mb-8">
-            We couldn't find anything matching{submittedQuery ? ` "${submittedQuery}"` : " your filters"}.
-            {!wasAiSearch && " Try AI search — it understands natural language and fuzzy matches."}
-          </p>
-
-          {/* AI search nudge — only show if they haven't tried it yet */}
-          {!wasAiSearch && submittedQuery && (
-            <div className="bg-linear-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 mb-6">
-              <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                <Wand2 className="w-6 h-6 text-white" />
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-1">Try AI Search</h4>
-              <p className="text-sm text-gray-500 mb-4">
-                AI search understands phrases like <em>"cheap car under 5k in Limassol"</em> or{" "}
-                <em>"second-hand iPhone good condition"</em>.
-              </p>
-              <button
-                onClick={() => handleAiSearch(submittedQuery)}
-                disabled={aiSearching}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md shadow-indigo-200 disabled:opacity-60"
-              >
-                {aiSearching ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Sparkles className="w-4 h-4" />
-                )}
-                Search with AI
-              </button>
-            </div>
-          )}
-
-          <button
-            onClick={() => {
-              setInputValue(""); setSubmittedQuery(""); setCategorySlug(""); setSubcategorySlug(""); setLocationSlug(""); setPriceMin(""); setPriceMax("");
-              setListings([]); setTotalHits(0); setAiInterpretation(""); setWasAiSearch(false);
-              lastInternalQuery.current = "";
-              router.replace("/search", { scroll: false });
-            }}
-            className="text-blue-600 font-medium hover:underline text-sm"
-          >
-            Clear all filters
-          </button>
-        </div>
-      ) : listings.length > 0 ? (
-        <>
+        {/* ── Listings grid ───────────────────────────────────────────────── */}
+        {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {listings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                listing={listing}
-                userId={userId}
-                isSaved={savedIds.has(listing.id)}
-              />
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+              >
+                <div className="aspect-4/3 bg-gray-100 animate-pulse" />
+                <div className="p-3.5 space-y-2">
+                  <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                  <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
+                </div>
+              </div>
             ))}
           </div>
-          {listings.length < totalHits && (
-            <div className="mt-8 flex flex-col items-center gap-2">
-              <p className="text-sm text-gray-400">
-                Showing {listings.length} of {totalHits} listings
-              </p>
-              <button
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="px-8 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                {loadingMore ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Loading…</>
-                ) : (
-                  `Load more (${totalHits - listings.length} remaining)`
-                )}
-              </button>
-            </div>
-          )}
-        </>
-      ) : (
-        // Default discovery state — show featured & promoted listings
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <h2 className="text-sm font-semibold text-gray-700">Featured &amp; Promoted Listings</h2>
-          </div>
-          {featuredLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                  <div className="aspect-4/3 bg-gray-100 animate-pulse" />
-                  <div className="p-3.5 space-y-2">
-                    <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                    <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
-                    <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
-                  </div>
+        ) : noResults ? (
+          /* ── No-results empty state ──────────────────────────────────────── */
+          <div className="max-w-md mx-auto py-20 text-center">
+            <div className="text-5xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">
+              No listings found
+            </h3>
+            <p className="text-gray-500 text-sm mb-8">
+              We couldn't find anything matching
+              {submittedQuery ? ` "${submittedQuery}"` : " your filters"}.
+              {!wasAiSearch &&
+                " Try AI search — it understands natural language and fuzzy matches."}
+            </p>
+
+            {/* AI search nudge — only show if they haven't tried it yet */}
+            {!wasAiSearch && submittedQuery && (
+              <div className="bg-linear-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 mb-6">
+                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <Wand2 className="w-6 h-6 text-white" />
                 </div>
-              ))}
-            </div>
-          ) : featuredListings.length > 0 ? (
+                <h4 className="font-semibold text-gray-900 mb-1">
+                  Try AI Search
+                </h4>
+                <p className="text-sm text-gray-500 mb-4">
+                  AI search understands phrases like{" "}
+                  <em>"cheap car under 5k in Limassol"</em> or{" "}
+                  <em>"second-hand iPhone good condition"</em>.
+                </p>
+                <button
+                  onClick={() => handleAiSearch(submittedQuery)}
+                  disabled={aiSearching}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md shadow-indigo-200 disabled:opacity-60"
+                >
+                  {aiSearching ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-4 h-4" />
+                  )}
+                  Search with AI
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                setInputValue("");
+                setSubmittedQuery("");
+                setCategorySlug("");
+                setSubcategorySlug("");
+                setLocationSlug("");
+                setPriceMin("");
+                setPriceMax("");
+                setListings([]);
+                setTotalHits(0);
+                setAiInterpretation("");
+                setWasAiSearch(false);
+                lastInternalQuery.current = "";
+                router.replace("/search", { scroll: false });
+              }}
+              className="text-blue-600 font-medium hover:underline text-sm"
+            >
+              Clear all filters
+            </button>
+          </div>
+        ) : listings.length > 0 ? (
+          <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {featuredListings.map((listing) => (
+              {listings.map((listing) => (
                 <ListingCard
                   key={listing.id}
                   listing={listing}
@@ -687,15 +806,74 @@ export default function SearchClient() {
                 />
               ))}
             </div>
-          ) : (
-            <div className="text-center py-20 text-gray-400">
-              <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">Type something and press Enter to search</p>
+            {listings.length < totalHits && (
+              <div className="mt-8 flex flex-col items-center gap-2">
+                <p className="text-sm text-gray-400">
+                  Showing {listings.length} of {totalHits} listings
+                </p>
+                <button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="px-8 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Loading…
+                    </>
+                  ) : (
+                    `Load more (${totalHits - listings.length} remaining)`
+                  )}
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          // Default discovery state — show featured & promoted listings
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <h2 className="text-sm font-semibold text-gray-700">
+                Featured &amp; Promoted Listings
+              </h2>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+            {featuredLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                  >
+                    <div className="aspect-4/3 bg-gray-100 animate-pulse" />
+                    <div className="p-3.5 space-y-2">
+                      <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
+                      <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
+                      <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : featuredListings.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {featuredListings.map((listing) => (
+                  <ListingCard
+                    key={listing.id}
+                    listing={listing}
+                    userId={userId}
+                    isSaved={savedIds.has(listing.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20 text-gray-400">
+                <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                <p className="text-sm">
+                  Type something and press Enter to search
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </>
   );
 }

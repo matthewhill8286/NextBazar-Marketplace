@@ -1,23 +1,29 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Loader2,
+  MessageCircle,
+  RotateCcw,
+  Star,
+  Tag,
+  Trash2,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Tag,
-  Check,
-  X,
-  RotateCcw,
-  Loader2,
-  MessageCircle,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-  Star,
-} from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
+import { createClient } from "@/lib/supabase/client";
+
+const PAGE_SIZE = 10;
+const TERMINAL_STATUSES = ["withdrawn", "declined", "expired"];
 
 type Offer = {
   id: string;
@@ -47,15 +53,10 @@ type Offer = {
 
 type Props = {
   userId: string;
-  receivedOffers: Offer[];
-  sentOffers: Offer[];
   focusOfferId?: string;
 };
 
-const STATUS_CONFIG: Record<
-  string,
-  { label: string; bg: string; text: string }
-> = {
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
   pending:   { label: "Pending",   bg: "bg-amber-50",  text: "text-amber-700" },
   accepted:  { label: "Accepted",  bg: "bg-green-50",  text: "text-green-700" },
   declined:  { label: "Declined",  bg: "bg-red-50",    text: "text-red-600"   },
@@ -99,17 +100,68 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+function Pagination({
+  page,
+  total,
+  onPage,
+}: {
+  page: number;
+  total: number;
+  onPage: (p: number) => void;
+}) {
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between pt-2">
+      <span className="text-xs text-gray-400">
+        Page {page + 1} of {totalPages} · {total} offer{total !== 1 ? "s" : ""}
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPage(page - 1)}
+          disabled={page === 0}
+          className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => onPage(i)}
+            className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
+              i === page
+                ? "bg-blue-600 text-white"
+                : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => onPage(page + 1)}
+          disabled={page >= totalPages - 1}
+          className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function OfferCard({
   offer,
   isSeller,
   userId,
   onUpdate,
+  onDelete,
   focused = false,
 }: {
   offer: Offer;
   isSeller: boolean;
   userId: string;
   onUpdate: (id: string, patch: Partial<Offer>) => void;
+  onDelete: (id: string) => void;
   focused?: boolean;
 }) {
   const supabase = createClient();
@@ -122,22 +174,22 @@ function OfferCard({
   const [counterAmount, setCounterAmount] = useState("");
   const [counterMessage, setCounterMessage] = useState("");
   const [expanded, setExpanded] = useState(focused);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [existingRating, setExistingRating] = useState<number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Scroll focused card into view on mount
+  const listing = offer.listings;
+  const person = isSeller ? offer.buyer : offer.seller;
+  const isTerminal = TERMINAL_STATUSES.includes(offer.status);
+
   useEffect(() => {
     if (focused && cardRef.current) {
       setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
     }
   }, [focused]);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [hasReviewed, setHasReviewed] = useState(false);
-  const [existingRating, setExistingRating] = useState<number | null>(null);
 
-  const listing = offer.listings;
-  const person = isSeller ? offer.buyer : offer.seller;
-
-  // Check if the current user has already reviewed this offer
   useEffect(() => {
     if (offer.status !== "accepted") return;
     supabase
@@ -169,15 +221,28 @@ function OfferCard({
     onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
     setLoading(null);
     setShowCounter(false);
-    // Clear the router cache so navigating back always shows fresh data
     router.refresh();
+  }
+
+  async function handleDelete() {
+    setLoading("delete");
+    const { error } = await supabase.from("offers").delete().eq("id", offer.id);
+    if (error) {
+      setActionError("Couldn't delete offer. Please try again.");
+      setLoading(null);
+      setDeleteConfirm(false);
+      return;
+    }
+    onDelete(offer.id);
   }
 
   return (
     <>
       <div
         ref={cardRef}
-        className={`bg-white rounded-xl border overflow-hidden transition-colors ${focused ? "border-blue-300 ring-2 ring-blue-100" : "border-gray-100"}`}
+        className={`bg-white rounded-xl border overflow-hidden transition-colors ${
+          focused ? "border-blue-300 ring-2 ring-blue-100" : "border-gray-100"
+        }`}
       >
         <div
           className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
@@ -235,11 +300,8 @@ function OfferCard({
                 {timeLeft(offer.expires_at)}
               </span>
             )}
-            {/* Review badge for accepted offers */}
             {offer.status === "accepted" && hasReviewed && existingRating && (
-              <div className="flex items-center gap-1">
-                <StarRating rating={existingRating} />
-              </div>
+              <StarRating rating={existingRating} />
             )}
             {expanded ? (
               <ChevronUp className="w-4 h-4 text-gray-400" />
@@ -359,12 +421,10 @@ function OfferCard({
                     />
                     <div className="flex gap-2">
                       <button
-                        onClick={() =>
-                          respond("countered", {
-                            counter_amount: Number(counterAmount),
-                            counter_message: counterMessage || null,
-                          })
-                        }
+                        onClick={() => respond("countered", {
+                          counter_amount: Number(counterAmount),
+                          counter_message: counterMessage || null,
+                        })}
                         disabled={!counterAmount || !!loading}
                         className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
                       >
@@ -382,12 +442,7 @@ function OfferCard({
               </div>
             )}
 
-            {/* Error message */}
-            {actionError && (
-              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{actionError}</p>
-            )}
-
-            {/* Buyer can withdraw the pending or countered offer */}
+            {/* Buyer actions */}
             {!isSeller && (offer.status === "pending" || offer.status === "countered") && (
               <button
                 onClick={() => respond("withdrawn")}
@@ -399,7 +454,6 @@ function OfferCard({
               </button>
             )}
 
-            {/* Buyer accepts counter */}
             {!isSeller && offer.status === "countered" && offer.counter_amount && (
               <div className="flex gap-2">
                 <button
@@ -420,6 +474,44 @@ function OfferCard({
                 </button>
               </div>
             )}
+
+            {/* Delete button — only for terminal offers */}
+            {isTerminal && (
+              <div className="pt-1 border-t border-gray-50">
+                {deleteConfirm ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 flex-1">Remove this offer permanently?</span>
+                    <button
+                      onClick={handleDelete}
+                      disabled={loading === "delete"}
+                      className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                    >
+                      {loading === "delete" ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(false)}
+                      className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setDeleteConfirm(true)}
+                    className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Remove from history
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Error message */}
+            {actionError && (
+              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{actionError}</p>
+            )}
           </div>
         )}
       </div>
@@ -438,26 +530,91 @@ function OfferCard({
   );
 }
 
-export default function OffersClient({
-  userId,
-  receivedOffers: initialReceived,
-  sentOffers: initialSent,
-  focusOfferId,
-}: Props) {
-  // If the linked offer is in sent, open that tab automatically
-  const defaultTab: "received" | "sent" =
-    focusOfferId && initialSent.some((o) => o.id === focusOfferId)
-      ? "sent"
-      : "received";
+export default function OffersClient({ userId, focusOfferId }: Props) {
+  const supabase = createClient();
+
+  const defaultTab: "received" | "sent" = "received";
   const [tab, setTab] = useState<"received" | "sent">(defaultTab);
-  const [received, setReceived] = useState(initialReceived);
-  const [sent, setSent] = useState(initialSent);
+  const [receivedPage, setReceivedPage] = useState(0);
+  const [sentPage, setSentPage]         = useState(0);
+  const [received, setReceived]         = useState<Offer[]>([]);
+  const [sent, setSent]                 = useState<Offer[]>([]);
+  const [receivedTotal, setReceivedTotal] = useState(0);
+  const [sentTotal, setSentTotal]         = useState(0);
+  const [pageLoading, setPageLoading] = useState(false);
+
+  const RECEIVED_SELECT = `*, listings(id,title,slug,primary_image_url,price,currency), buyer:profiles!offers_buyer_id_fkey(id,display_name,avatar_url)`;
+  const SENT_SELECT     = `*, listings(id,title,slug,primary_image_url,price,currency), seller:profiles!offers_seller_id_fkey(id,display_name,avatar_url)`;
+
+  const fetchPage = useCallback(
+    async (which: "received" | "sent", page: number) => {
+      setPageLoading(true);
+      const from = page * PAGE_SIZE;
+      const to   = from + PAGE_SIZE - 1;
+
+      if (which === "received") {
+        const { data, count } = await supabase
+          .from("offers")
+          .select(RECEIVED_SELECT, { count: "exact" })
+          .eq("seller_id", userId)
+          .order("created_at", { ascending: false })
+          .range(from, to);
+        setReceived(data || []);
+        setReceivedTotal(count ?? 0);
+      } else {
+        const { data, count } = await supabase
+          .from("offers")
+          .select(SENT_SELECT, { count: "exact" })
+          .eq("buyer_id", userId)
+          .order("created_at", { ascending: false })
+          .range(from, to);
+        setSent(data || []);
+        setSentTotal(count ?? 0);
+      }
+      setPageLoading(false);
+    },
+    [userId],
+  );
+
+  // Initial load for both tabs
+  useEffect(() => {
+    fetchPage("received", 0);
+    fetchPage("sent", 0);
+  }, [fetchPage]);
+
+  // Reload when page changes
+  useEffect(() => { fetchPage("received", receivedPage); }, [receivedPage]);
+  useEffect(() => { fetchPage("sent",     sentPage);     }, [sentPage]);
+
+  // If there's a focused offer and it's in the sent list, switch to that tab
+  useEffect(() => {
+    if (!focusOfferId) return;
+    if (sent.some((o) => o.id === focusOfferId)) setTab("sent");
+  }, [focusOfferId, sent]);
 
   function updateOffer(list: Offer[], id: string, patch: Partial<Offer>): Offer[] {
     return list.map((o) => (o.id === id ? { ...o, ...patch } : o));
   }
 
-  const pendingReceivedCount = received.filter((o) => o.status === "pending").length;
+  function handleDelete(id: string) {
+    if (tab === "received") {
+      setReceived((prev) => prev.filter((o) => o.id !== id));
+      setReceivedTotal((n) => n - 1);
+    } else {
+      setSent((prev) => prev.filter((o) => o.id !== id));
+      setSentTotal((n) => n - 1);
+    }
+  }
+
+  const pendingReceivedCount = receivedTotal > 0
+    ? received.filter((o) => o.status === "pending").length
+    : 0;
+
+  const offers       = tab === "received" ? received : sent;
+  const total        = tab === "received" ? receivedTotal : sentTotal;
+  const page         = tab === "received" ? receivedPage : sentPage;
+  const setPage      = tab === "received" ? setReceivedPage : setSentPage;
+  const isSeller     = tab === "received";
 
   return (
     <div className="space-y-6">
@@ -498,59 +655,51 @@ export default function OffersClient({
         </button>
       </div>
 
-      {tab === "received" ? (
-        received.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-            <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Tag className="w-7 h-7 text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">No offers yet</h3>
-            <p className="text-gray-500 text-sm">
-              When buyers make offers on your listings, they'll appear here.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {received.map((offer) => (
-              <OfferCard
-                key={offer.id}
-                offer={offer}
-                isSeller={true}
-                userId={userId}
-                focused={offer.id === focusOfferId}
-                onUpdate={(id, patch) => setReceived((prev) => updateOffer(prev, id, patch))}
-              />
-            ))}
-          </div>
-        )
-      ) : sent.length === 0 ? (
+      {pageLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+        </div>
+      ) : offers.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Tag className="w-7 h-7 text-gray-400" />
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-blue-50" : "bg-gray-50"}`}>
+            <Tag className={`w-7 h-7 ${isSeller ? "text-blue-400" : "text-gray-400"}`} />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No offers sent</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            {isSeller ? "No offers yet" : "No offers sent"}
+          </h3>
           <p className="text-gray-500 text-sm mb-6">
-            Browse listings and make an offer when you find something you like.
+            {isSeller
+              ? "When buyers make offers on your listings, they'll appear here."
+              : "Browse listings and make an offer when you find something you like."}
           </p>
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
-            Browse Listings
-          </Link>
+          {!isSeller && (
+            <Link
+              href="/search"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+            >
+              Browse Listings
+            </Link>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
-          {sent.map((offer) => (
+          {offers.map((offer) => (
             <OfferCard
               key={offer.id}
               offer={offer}
-              isSeller={false}
+              isSeller={isSeller}
               userId={userId}
               focused={offer.id === focusOfferId}
-              onUpdate={(id, patch) => setSent((prev) => updateOffer(prev, id, patch))}
+              onUpdate={(id, patch) =>
+                isSeller
+                  ? setReceived((prev) => updateOffer(prev, id, patch))
+                  : setSent((prev) => updateOffer(prev, id, patch))
+              }
+              onDelete={handleDelete}
             />
           ))}
+
+          <Pagination page={page} total={total} onPage={setPage} />
         </div>
       )}
     </div>

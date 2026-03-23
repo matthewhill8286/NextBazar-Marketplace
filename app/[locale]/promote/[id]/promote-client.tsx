@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
+import { createClient } from "@/lib/supabase/client";
 
 const PROMOTIONS = [
   {

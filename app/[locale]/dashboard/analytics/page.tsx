@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import AnalyticsClient from "./analytics-client";
 
@@ -13,12 +13,19 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       const { data: listingData } = await supabase
         .from("listings")
-        .select("id, title, slug, primary_image_url, view_count, favorite_count, status, created_at")
+        .select(
+          "id, title, slug, primary_image_url, view_count, favorite_count, status, created_at",
+        )
         .eq("user_id", user.id)
         .order("view_count", { ascending: false });
 

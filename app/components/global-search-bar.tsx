@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useRef, useState, useEffect, KeyboardEvent } from "react";
-import { Search, Sparkles, Loader2, ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2, Search, Sparkles } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Variant = "hero" | "navbar";
@@ -37,16 +37,30 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
       .from("categories")
       .select("id, name, slug, icon")
       .order("sort_order")
-      .then(({ data }) => { if (data) setCategories(data); });
+      .then(({ data }) => {
+        if (data) setCategories(data);
+      });
   }, []);
 
   const isOnSearchPage = pathname === "/search";
 
   function goToSearch(q: string, ai = false) {
     const params = new URLSearchParams(searchParams.toString());
-    if (q.trim()) { params.set("q", q.trim()); } else { params.delete("q"); }
-    if (selectedCategory) { params.set("category", selectedCategory); } else { params.delete("category"); }
-    if (ai) { params.set("ai", "1"); } else { params.delete("ai"); }
+    if (q.trim()) {
+      params.set("q", q.trim());
+    } else {
+      params.delete("q");
+    }
+    if (selectedCategory) {
+      params.set("category", selectedCategory);
+    } else {
+      params.delete("category");
+    }
+    if (ai) {
+      params.set("ai", "1");
+    } else {
+      params.delete("ai");
+    }
     const url = `/search?${params.toString()}`;
     if (isOnSearchPage) {
       router.replace(url, { scroll: false });
@@ -114,7 +128,6 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
 
   return (
     <div className="flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-white focus-within:border-blue-400 focus-within:bg-white transition-all overflow-hidden">
-
       {/* Category picker */}
       <div className="relative shrink-0">
         <select
@@ -141,7 +154,11 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKey}
-          placeholder={activeCategory ? `Search in ${activeCategory.name}…` : "Search thousands of listings..."}
+          placeholder={
+            activeCategory
+              ? `Search in ${activeCategory.name}…`
+              : "Search thousands of listings..."
+          }
           className="w-full pl-3 pr-9 py-2.5 bg-transparent text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
         />
         <button

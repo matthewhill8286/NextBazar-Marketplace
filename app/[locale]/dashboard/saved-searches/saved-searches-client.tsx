@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Bell, ExternalLink, Loader2, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { Bell, Search, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type SavedSearch = {
@@ -178,8 +178,8 @@ export default function SavedSearchesClient({
 
       <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm text-amber-700">
         <strong>How alerts work:</strong> When a new listing is posted that
-        matches one of your saved searches, you'll receive an email notification.
-        Make sure your email address is verified in{" "}
+        matches one of your saved searches, you'll receive an email
+        notification. Make sure your email address is verified in{" "}
         <Link href="/dashboard/settings" className="underline font-medium">
           Account Settings
         </Link>

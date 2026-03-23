@@ -52,7 +52,13 @@ export default function EditClient({ listing }: { listing: ListingData }) {
   // Initialize video state from existing video_url (if any)
   const [video, setVideo] = useState<UploadedVideo | null>(
     listing.video_url
-      ? { file: null, previewUrl: listing.video_url, url: listing.video_url, uploading: false, progress: 100 }
+      ? {
+          file: null,
+          previewUrl: listing.video_url,
+          url: listing.video_url,
+          uploading: false,
+          progress: 100,
+        }
       : null,
   );
 
@@ -194,16 +200,23 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           <div className="rounded-2xl border-2 border-violet-200 bg-violet-50/50 p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-gray-900 text-sm">🎬 Video Tour</p>
+                <p className="font-semibold text-gray-900 text-sm">
+                  🎬 Video Tour
+                </p>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Add or replace a short video — included with your Featured listing
+                  Add or replace a short video — included with your Featured
+                  listing
                 </p>
               </div>
               <span className="text-[10px] font-bold bg-violet-600 text-white px-2 py-0.5 rounded-full">
                 PAID FEATURE
               </span>
             </div>
-            <VideoUpload userId={listing.user_id} video={video} onChangeAction={setVideo} />
+            <VideoUpload
+              userId={listing.user_id}
+              video={video}
+              onChangeAction={setVideo}
+            />
           </div>
         )}
 

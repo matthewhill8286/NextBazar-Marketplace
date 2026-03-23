@@ -5,7 +5,7 @@
  * document the expected behaviour precisely.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 // ----- replicated from app/components/listing-card.tsx -----
 
@@ -33,7 +33,10 @@ function timeAgo(dateStr: string): string {
 
 // ----- replicated from app/listing/[slug]/listing-actions.tsx -----
 
-function buildWhatsAppLink(whatsappNumber: string, listingTitle: string): string {
+function buildWhatsAppLink(
+  whatsappNumber: string,
+  listingTitle: string,
+): string {
   const cleaned = whatsappNumber.replace(/[\s\-().]/g, "");
   return `https://wa.me/${cleaned}?text=${encodeURIComponent(
     `Hi! I'm interested in your listing: ${listingTitle}`,
@@ -79,12 +82,16 @@ describe("timeAgo", () => {
   });
 
   it("returns hours for timestamps a few hours old", () => {
-    const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+    const threeHoursAgo = new Date(
+      Date.now() - 3 * 60 * 60 * 1000,
+    ).toISOString();
     expect(timeAgo(threeHoursAgo)).toBe("3h ago");
   });
 
   it("returns days for timestamps multiple days old", () => {
-    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString();
+    const twoDaysAgo = new Date(
+      Date.now() - 2 * 24 * 60 * 60 * 1000,
+    ).toISOString();
     expect(timeAgo(twoDaysAgo)).toBe("2d ago");
   });
 
@@ -104,7 +111,9 @@ describe("unwrap", () => {
   });
 
   it("returns the first element of an array", () => {
-    expect(unwrap([{ name: "Electronics" }, { name: "Cars" }])).toEqual({ name: "Electronics" });
+    expect(unwrap([{ name: "Electronics" }, { name: "Cars" }])).toEqual({
+      name: "Electronics",
+    });
   });
 
   it("returns null for an empty array", () => {
@@ -134,7 +143,11 @@ describe("buildWhatsAppLink", () => {
 
   it("encodes the listing title in the query string", () => {
     const link = buildWhatsAppLink("+35799000000", "My Listing & More");
-    expect(link).toContain(encodeURIComponent("Hi! I'm interested in your listing: My Listing & More"));
+    expect(link).toContain(
+      encodeURIComponent(
+        "Hi! I'm interested in your listing: My Listing & More",
+      ),
+    );
   });
 
   it("builds a valid wa.me URL", () => {
@@ -150,6 +163,8 @@ describe("buildTelegramLink", () => {
 
   it("preserves the username exactly (no leading @)", () => {
     // The settings form strips @ before saving, so stored value has no @
-    expect(buildTelegramLink("seller_cyprus")).toBe("https://t.me/seller_cyprus");
+    expect(buildTelegramLink("seller_cyprus")).toBe(
+      "https://t.me/seller_cyprus",
+    );
   });
 });

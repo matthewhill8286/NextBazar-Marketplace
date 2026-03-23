@@ -45,7 +45,7 @@ export const mockListings = [
   {
     id: "listing-2",
     slug: "macbook-pro-limassol",
-    title: "MacBook Pro 14\" M2",
+    title: 'MacBook Pro 14" M2',
     description: "Used for 6 months, perfect working condition.",
     price: 1500,
     currency: "EUR",
@@ -82,7 +82,12 @@ export const mockListings = [
 ];
 
 export const mockCategories = [
-  { id: "cat-electronics", name: "Electronics", slug: "electronics", icon: "📱" },
+  {
+    id: "cat-electronics",
+    name: "Electronics",
+    slug: "electronics",
+    icon: "📱",
+  },
   { id: "cat-vehicles", name: "Vehicles", slug: "vehicles", icon: "🚗" },
   { id: "cat-fashion", name: "Fashion", slug: "fashion", icon: "👗" },
   { id: "cat-home", name: "Home & Garden", slug: "home-garden", icon: "🏡" },
@@ -111,7 +116,7 @@ export async function mockSupabase(page: Page) {
         totalHits: mockListings.length,
         source: "browse",
       }),
-    })
+    }),
   );
 
   // ── /api/ai/search — block AI search so it never fires in tests ───────────
@@ -120,7 +125,7 @@ export async function mockSupabase(page: Page) {
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({ filters: {} }),
-    })
+    }),
   );
 
   await page.route(`${SUPABASE_URL}/rest/v1/**`, async (route: Route) => {
@@ -157,7 +162,9 @@ export async function mockSupabase(page: Page) {
     // Single listing by slug
     if (url.includes("/rest/v1/listings") && url.includes("slug=eq.")) {
       const slug = url.match(/slug=eq\.([^&]+)/)?.[1];
-      const listing = mockListings.find((l) => l.slug === decodeURIComponent(slug ?? ""));
+      const listing = mockListings.find(
+        (l) => l.slug === decodeURIComponent(slug ?? ""),
+      );
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -213,7 +220,7 @@ export async function mockAuthUser(page: Page, userId = "user-test-1") {
         email: "test@example.com",
         user_metadata: { display_name: "Test User" },
       }),
-    })
+    }),
   );
 
   // Seed localStorage with a fake session so createClient sees it

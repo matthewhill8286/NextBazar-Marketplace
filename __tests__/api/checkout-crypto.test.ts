@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest } from "next/server";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -82,25 +82,36 @@ describe("POST /api/checkout/crypto", () => {
   // ── Input validation ──────────────────────────────────────────────────────
 
   it("returns 400 when listingId is missing", async () => {
-    const res = await POST(makeRequest({ promotionType: "featured", origin: "https://next-bazar.com" }));
+    const res = await POST(
+      makeRequest({
+        promotionType: "featured",
+        origin: "https://next-bazar.com",
+      }),
+    );
     expect(res.status).toBe(400);
     expect((await res.json()).error).toBe("Missing required fields");
   });
 
   it("returns 400 when promotionType is missing", async () => {
-    const res = await POST(makeRequest({ listingId: "listing-1", origin: "https://next-bazar.com" }));
+    const res = await POST(
+      makeRequest({ listingId: "listing-1", origin: "https://next-bazar.com" }),
+    );
     expect(res.status).toBe(400);
     expect((await res.json()).error).toBe("Missing required fields");
   });
 
   it("returns 400 when origin is missing", async () => {
-    const res = await POST(makeRequest({ listingId: "listing-1", promotionType: "featured" }));
+    const res = await POST(
+      makeRequest({ listingId: "listing-1", promotionType: "featured" }),
+    );
     expect(res.status).toBe(400);
     expect((await res.json()).error).toBe("Missing required fields");
   });
 
   it("returns 400 when promotionType is not valid", async () => {
-    const res = await POST(makeRequest({ ...VALID_BODY, promotionType: "platinum" }));
+    const res = await POST(
+      makeRequest({ ...VALID_BODY, promotionType: "platinum" }),
+    );
     expect(res.status).toBe(400);
     expect((await res.json()).error).toBe("Invalid promotion type");
   });
@@ -126,7 +137,9 @@ describe("POST /api/checkout/crypto", () => {
     const res = await POST(makeRequest(VALID_BODY));
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.hosted_url).toBe("https://commerce.coinbase.com/charges/charge-abc-123");
+    expect(body.hosted_url).toBe(
+      "https://commerce.coinbase.com/charges/charge-abc-123",
+    );
     expect(body.charge_id).toBe("charge-abc-123");
   });
 
@@ -158,7 +171,13 @@ describe("POST /api/checkout/crypto", () => {
   });
 
   it("sends listing metadata in the charge body", async () => {
-    await POST(makeRequest({ ...VALID_BODY, listingId: "listing-42", promotionType: "urgent" }));
+    await POST(
+      makeRequest({
+        ...VALID_BODY,
+        listingId: "listing-42",
+        promotionType: "urgent",
+      }),
+    );
     const [, options] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     const body = JSON.parse(options.body);
     expect(body.metadata.listing_id).toBe("listing-42");

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ContactButtons } from "@/app/[locale]/listing/[slug]/listing-actions";
 
 // ---------------------------------------------------------------------------
@@ -43,7 +43,9 @@ const baseProps = {
 describe("ContactButtons — Send Message", () => {
   it("always renders the Send Message button", () => {
     render(<ContactButtons {...baseProps} />);
-    expect(screen.getByRole("button", { name: /send message/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /send message/i }),
+    ).toBeInTheDocument();
   });
 
   it("redirects to login when unauthenticated user clicks Send Message", async () => {
@@ -64,12 +66,16 @@ describe("ContactButtons — Send Message", () => {
 describe("ContactButtons — WhatsApp", () => {
   it("renders WhatsApp link when whatsappNumber is provided", () => {
     render(<ContactButtons {...baseProps} whatsappNumber="+35799123456" />);
-    expect(screen.getByRole("link", { name: /chat on whatsapp/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /chat on whatsapp/i }),
+    ).toBeInTheDocument();
   });
 
   it("does NOT render WhatsApp link when whatsappNumber is null", () => {
     render(<ContactButtons {...baseProps} whatsappNumber={null} />);
-    expect(screen.queryByRole("link", { name: /chat on whatsapp/i })).toBeNull();
+    expect(
+      screen.queryByRole("link", { name: /chat on whatsapp/i }),
+    ).toBeNull();
   });
 
   it("WhatsApp link opens in a new tab", () => {
@@ -90,12 +96,21 @@ describe("ContactButtons — WhatsApp", () => {
     const href = link.getAttribute("href") ?? "";
     // The path segment should contain the cleaned number (no spaces/dashes)
     expect(href).toContain("+35799123456");
-    expect(href).not.toMatch(/[\s\-]/);
+    expect(href).not.toMatch(/[\s-]/);
   });
 
   it("WhatsApp href encodes the listing title in the pre-filled message", () => {
-    render(<ContactButtons {...baseProps} whatsappNumber="+35799000000" listingTitle="MacBook Pro" />);
-    const href = screen.getByRole("link", { name: /chat on whatsapp/i }).getAttribute("href") ?? "";
+    render(
+      <ContactButtons
+        {...baseProps}
+        whatsappNumber="+35799000000"
+        listingTitle="MacBook Pro"
+      />,
+    );
+    const href =
+      screen
+        .getByRole("link", { name: /chat on whatsapp/i })
+        .getAttribute("href") ?? "";
     expect(href).toContain(encodeURIComponent("MacBook Pro"));
   });
 });
@@ -103,12 +118,16 @@ describe("ContactButtons — WhatsApp", () => {
 describe("ContactButtons — Telegram", () => {
   it("renders Telegram link when telegramUsername is provided", () => {
     render(<ContactButtons {...baseProps} telegramUsername="johndoe" />);
-    expect(screen.getByRole("link", { name: /message on telegram/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /message on telegram/i }),
+    ).toBeInTheDocument();
   });
 
   it("does NOT render Telegram link when telegramUsername is null", () => {
     render(<ContactButtons {...baseProps} telegramUsername={null} />);
-    expect(screen.queryByRole("link", { name: /message on telegram/i })).toBeNull();
+    expect(
+      screen.queryByRole("link", { name: /message on telegram/i }),
+    ).toBeNull();
   });
 
   it("Telegram link opens in a new tab", () => {
@@ -119,7 +138,9 @@ describe("ContactButtons — Telegram", () => {
 
   it("Telegram href is https://t.me/{username}", () => {
     render(<ContactButtons {...baseProps} telegramUsername="cyprusSeller" />);
-    const href = screen.getByRole("link", { name: /message on telegram/i }).getAttribute("href");
+    const href = screen
+      .getByRole("link", { name: /message on telegram/i })
+      .getAttribute("href");
     expect(href).toBe("https://t.me/cyprusSeller");
   });
 });
@@ -127,12 +148,16 @@ describe("ContactButtons — Telegram", () => {
 describe("ContactButtons — Phone number reveal", () => {
   it("renders phone button when contactPhone is provided", () => {
     render(<ContactButtons {...baseProps} contactPhone="+357 99 000 111" />);
-    expect(screen.getByRole("button", { name: /show phone number/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /show phone number/i }),
+    ).toBeInTheDocument();
   });
 
   it("does NOT render phone button when contactPhone is null", () => {
     render(<ContactButtons {...baseProps} contactPhone={null} />);
-    expect(screen.queryByRole("button", { name: /show phone number/i })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /show phone number/i }),
+    ).toBeNull();
   });
 
   it("reveals the phone number on click", () => {

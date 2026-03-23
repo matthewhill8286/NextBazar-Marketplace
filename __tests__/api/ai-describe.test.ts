@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/ai/describe/route";
 
 // ---------------------------------------------------------------------------
@@ -44,7 +44,9 @@ describe("POST /api/ai/describe", () => {
   });
 
   it("returns 200 with generated description for a text-only request", async () => {
-    const res = await POST(makeRequest({ title: "iPhone 14 Pro", category: "Electronics" }));
+    const res = await POST(
+      makeRequest({ title: "iPhone 14 Pro", category: "Electronics" }),
+    );
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.description).toBe("A great listing description.");
@@ -68,7 +70,9 @@ describe("POST /api/ai/describe", () => {
     const callArgs = mockCreate.mock.calls[0][0];
     const userMessage = callArgs.messages.find((m: any) => m.role === "user");
     expect(Array.isArray(userMessage.content)).toBe(true);
-    const imageBlock = userMessage.content.find((b: any) => b.type === "image_url");
+    const imageBlock = userMessage.content.find(
+      (b: any) => b.type === "image_url",
+    );
     expect(imageBlock.image_url.url).toBe("https://example.com/camera.jpg");
   });
 

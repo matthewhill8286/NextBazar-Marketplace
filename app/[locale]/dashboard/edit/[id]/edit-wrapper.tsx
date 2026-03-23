@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import EditClient from "./edit-client";
 
 export default function EditWrapper({ listingId }: { listingId: string }) {
@@ -62,7 +62,10 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
       <div className="text-center py-20">
         <div className="text-4xl mb-3">🔍</div>
         <p className="text-gray-500 mb-4">Listing not found</p>
-        <Link href="/dashboard/listings" className="text-blue-600 font-medium hover:underline">
+        <Link
+          href="/dashboard/listings"
+          className="text-blue-600 font-medium hover:underline"
+        >
           Back to listings
         </Link>
       </div>

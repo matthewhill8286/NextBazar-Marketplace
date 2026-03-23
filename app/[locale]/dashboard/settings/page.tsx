@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import SettingsClient from "./settings-client";
 
 export default function SettingsPage() {
@@ -19,7 +19,9 @@ export default function SettingsPage() {
 
       const { data } = await supabase
         .from("profiles")
-        .select("id, display_name, username, phone, bio, whatsapp_number, telegram_username")
+        .select(
+          "id, display_name, username, phone, bio, whatsapp_number, telegram_username",
+        )
         .eq("id", user.id)
         .single();
 

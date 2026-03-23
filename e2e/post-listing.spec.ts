@@ -1,5 +1,5 @@
-import { test, expect } from "@playwright/test";
-import { mockSupabase, mockAuthUser } from "./helpers/mocks";
+import { expect, test } from "@playwright/test";
+import { mockAuthUser, mockSupabase } from "./helpers/mocks";
 
 test.describe("Post listing — unauthenticated", () => {
   test("redirects to login when not signed in", async ({ page }) => {
@@ -31,7 +31,7 @@ test.describe("Post listing — authenticated", () => {
           whatsapp_number: null,
           telegram_username: null,
         }),
-      })
+      }),
     );
 
     await page.goto("/post");
@@ -39,50 +39,59 @@ test.describe("Post listing — authenticated", () => {
 
   test("renders the post listing form", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: /post|listing|sell/i }).first()
+      page.getByRole("heading", { name: /post|listing|sell/i }).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
   test("has a title input", async ({ page }) => {
     await expect(
-      page.getByLabel(/title/i).or(page.getByPlaceholder(/title/i)).first()
+      page.getByLabel(/title/i).or(page.getByPlaceholder(/title/i)).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
   test("has a price input", async ({ page }) => {
     await expect(
-      page.getByLabel(/price/i).or(page.getByPlaceholder(/price/i)).first()
+      page.getByLabel(/price/i).or(page.getByPlaceholder(/price/i)).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
   test("has a description input", async ({ page }) => {
     await expect(
-      page.getByLabel(/description/i).or(page.getByPlaceholder(/description/i)).first()
+      page
+        .getByLabel(/description/i)
+        .or(page.getByPlaceholder(/description/i))
+        .first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
   test("has a category selector", async ({ page }) => {
     await expect(
-      page.getByLabel(/category/i).or(page.getByText(/category/i)).first()
+      page
+        .getByLabel(/category/i)
+        .or(page.getByText(/category/i))
+        .first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test("shows a validation error when submitting without a title", async ({ page }) => {
+  test("shows a validation error when submitting without a title", async ({
+    page,
+  }) => {
     const submitBtn = page
       .getByRole("button", { name: /post|publish|submit|list/i })
       .first();
     await expect(submitBtn).toBeVisible({ timeout: 10_000 });
     await submitBtn.click();
-    await expect(
-      page.getByText(/required|title|please/i).first()
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText(/required|title|please/i).first()).toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test("has AI autofill button", async ({ page }) => {
     await expect(
-      page.getByRole("button", { name: /ai|autofill|auto-fill/i })
+      page
+        .getByRole("button", { name: /ai|autofill|auto-fill/i })
         .or(page.getByText(/auto.?fill with ai/i))
-        .first()
+        .first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 });
@@ -98,12 +107,12 @@ test.describe("Saved listings page — authenticated", () => {
         status: 200,
         contentType: "application/json",
         body: JSON.stringify([]),
-      })
+      }),
     );
 
     await page.goto("/saved");
     await expect(
-      page.getByRole("heading", { name: /saved/i }).first()
+      page.getByRole("heading", { name: /saved/i }).first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -116,12 +125,14 @@ test.describe("Saved listings page — authenticated", () => {
         status: 200,
         contentType: "application/json",
         body: JSON.stringify([]),
-      })
+      }),
     );
 
     await page.goto("/saved");
     await expect(
-      page.getByText(/no saved|nothing saved|haven't saved|start saving/i).first()
+      page
+        .getByText(/no saved|nothing saved|haven't saved|start saving/i)
+        .first(),
     ).toBeVisible({ timeout: 10_000 });
   });
 });

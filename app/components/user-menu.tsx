@@ -1,13 +1,19 @@
 "use client";
 
-import { Bell, Bookmark, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase/client";
-import { useSaved } from "@/lib/saved-context";
+import { useEffect, useRef, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { useSaved } from "@/lib/saved-context";
+import { createClient } from "@/lib/supabase/client";
 
 type UserProfile = {
   id: string;
@@ -45,7 +51,9 @@ export default function UserMenu() {
     const supabase = createClient();
 
     async function loadUser() {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
 
       if (authUser) {
         const [{ data: profile }, { count: nCount }] = await Promise.all([
@@ -78,11 +86,20 @@ export default function UserMenu() {
 
     loadUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) { setUser(null); setUserId(null); } else { loadUser(); }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        setUser(null);
+        setUserId(null);
+      } else {
+        loadUser();
+      }
     });
 
-    return () => { subscription.unsubscribe(); };
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // ── Realtime: re-fetch unread count on any notification change ────────────
@@ -103,15 +120,21 @@ export default function UserMenu() {
 
     const channel = supabase
       .channel(`usermenu-notifs-${userId}`)
-      .on("postgres_changes", {
-        event: "*",
-        schema: "public",
-        table: "notifications",
-        filter: `user_id=eq.${userId}`,
-      }, refreshCount)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        refreshCount,
+      )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   // ── Refresh count whenever the menu is opened ─────────────────────────────
@@ -178,7 +201,11 @@ export default function UserMenu() {
         className="relative w-9 h-9 bg-linear-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
-          <img src={user.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+          <img
+            src={user.avatar_url}
+            alt=""
+            className="w-full h-full rounded-full object-cover"
+          />
         ) : (
           initials
         )}

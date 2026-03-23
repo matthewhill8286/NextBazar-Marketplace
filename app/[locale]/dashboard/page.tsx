@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import {
+  ArrowRight,
   Eye,
   Heart,
-  MessageCircle,
-  Plus,
-  ArrowRight,
-  Package,
   Loader2,
+  MessageCircle,
+  Package,
+  Plus,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function DashboardPage() {
@@ -28,9 +28,7 @@ export default function DashboardPage() {
 
       const { data } = await supabase
         .from("listings")
-        .select(
-          `*, categories(name, slug, icon), locations(name, slug)`,
-        )
+        .select(`*, categories(name, slug, icon), locations(name, slug)`)
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(5);
@@ -43,7 +41,10 @@ export default function DashboardPage() {
 
   const totalViews = listings.reduce((s, l) => s + (l.view_count || 0), 0);
   const totalFavs = listings.reduce((s, l) => s + (l.favorite_count || 0), 0);
-  const totalMessages = listings.reduce((s, l) => s + (l.message_count || 0), 0);
+  const totalMessages = listings.reduce(
+    (s, l) => s + (l.message_count || 0),
+    0,
+  );
 
   function timeAgo(d: string) {
     const diff = Date.now() - new Date(d).getTime();

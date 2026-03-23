@@ -1,7 +1,7 @@
 "use client";
 
+import { AlertCircle, CheckCircle, DollarSign, Loader2, X } from "lucide-react";
 import { useState } from "react";
-import { X, DollarSign, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
@@ -44,7 +44,9 @@ export default function MakeOfferModal({
     setLoading(true);
     setErrorMsg("");
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       setErrorMsg("You must be logged in to make an offer.");
       setLoading(false);

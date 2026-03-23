@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
 import { embed } from "@/lib/embeddings";
 
 export const runtime = "nodejs";
@@ -7,7 +7,8 @@ export const runtime = "nodejs";
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
 
@@ -20,36 +21,45 @@ function getSupabase() {
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
 
-  const q           = sp.get("q")?.trim() || "";
-  const category    = sp.get("category") || "";
+  const q = sp.get("q")?.trim() || "";
+  const category = sp.get("category") || "";
   const subcategory = sp.get("subcategory") || "";
-  const location    = sp.get("location") || "";
-  const sort        = sp.get("sort") || "newest";
-  const priceMin    = sp.get("priceMin");
-  const priceMax    = sp.get("priceMax");
-  const limit       = Math.min(48, Number(sp.get("limit") || "24"));
-  const offset      = Math.max(0, Number(sp.get("offset") || "0"));
+  const location = sp.get("location") || "";
+  const sort = sp.get("sort") || "newest";
+  const priceMin = sp.get("priceMin");
+  const priceMax = sp.get("priceMax");
+  const limit = Math.min(48, Number(sp.get("limit") || "24"));
+  const offset = Math.max(0, Number(sp.get("offset") || "0"));
 
   const supabase = getSupabase();
 
   // ── Resolve slugs → IDs once, reused by all query branches ───────────────
-  let categoryId:    string | null = null;
+  let categoryId: string | null = null;
   let subcategoryId: string | null = null;
-  let locationId:    string | null = null;
+  let locationId: string | null = null;
 
   if (category) {
     const { data } = await supabase
-      .from("categories").select("id").eq("slug", category).single();
+      .from("categories")
+      .select("id")
+      .eq("slug", category)
+      .single();
     categoryId = data?.id ?? null;
   }
   if (subcategory) {
     const { data } = await supabase
-      .from("subcategories").select("id").eq("slug", subcategory).single();
+      .from("subcategories")
+      .select("id")
+      .eq("slug", subcategory)
+      .single();
     subcategoryId = data?.id ?? null;
   }
   if (location) {
     const { data } = await supabase
-      .from("locations").select("id").eq("slug", location).single();
+      .from("locations")
+      .select("id")
+      .eq("slug", location)
+      .single();
     locationId = data?.id ?? null;
   }
 
@@ -59,19 +69,23 @@ export async function GET(req: NextRequest) {
 
     if (embedding) {
       const { data, error } = await supabase.rpc("match_listings", {
-        query_embedding:  embedding,
-        match_count:      limit,
-        filter_category:  category  || null,
-        filter_location:  location  || null,
-        filter_price_min: priceMin  ? Number(priceMin)  : null,
-        filter_price_max: priceMax  ? Number(priceMax)  : null,
+        query_embedding: embedding,
+        match_count: limit,
+        filter_category: category || null,
+        filter_location: location || null,
+        filter_price_min: priceMin ? Number(priceMin) : null,
+        filter_price_max: priceMax ? Number(priceMax) : null,
       });
 
       if (!error && data && data.length > 0) {
         const hits = data.map((r: any) => ({
           ...r,
           category: r.category_name
-            ? { name: r.category_name, slug: r.category_slug, icon: r.category_icon }
+            ? {
+                name: r.category_name,
+                slug: r.category_slug,
+                icon: r.category_icon,
+              }
             : null,
           location: r.location_name
             ? { name: r.location_name, slug: r.location_slug }
@@ -82,9 +96,15 @@ export async function GET(req: NextRequest) {
           const tierA = a.is_promoted ? 0 : a.is_urgent ? 1 : 2;
           const tierB = b.is_promoted ? 0 : b.is_urgent ? 1 : 2;
           if (tierA !== tierB) return tierA - tierB;
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
         });
-        return NextResponse.json({ hits, totalHits: hits.length, source: "vector" });
+        return NextResponse.json({
+          hits,
+          totalHits: hits.length,
+          source: "vector",
+        });
       }
       // Fall through to full-text if vector search returns nothing
     }
@@ -96,16 +116,16 @@ export async function GET(req: NextRequest) {
       .eq("status", "active")
       .textSearch("search_vector", q, { type: "websearch", config: "english" });
 
-    if (categoryId)    ftq = ftq.eq("category_id",    categoryId);
+    if (categoryId) ftq = ftq.eq("category_id", categoryId);
     if (subcategoryId) ftq = ftq.eq("subcategory_id", subcategoryId);
-    if (locationId)    ftq = ftq.eq("location_id",    locationId);
-    if (priceMin)      ftq = ftq.gte("price", Number(priceMin));
-    if (priceMax)      ftq = ftq.lte("price", Number(priceMax));
+    if (locationId) ftq = ftq.eq("location_id", locationId);
+    if (priceMin) ftq = ftq.gte("price", Number(priceMin));
+    if (priceMax) ftq = ftq.lte("price", Number(priceMax));
 
     const { data: ftData } = await ftq
       .order("is_promoted", { ascending: false })
-      .order("is_urgent",   { ascending: false })
-      .order("created_at",  { ascending: false })
+      .order("is_urgent", { ascending: false })
+      .order("created_at", { ascending: false })
       .limit(limit);
 
     // ilike fallback if full-text returns nothing
@@ -116,53 +136,71 @@ export async function GET(req: NextRequest) {
         .eq("status", "active")
         .or(`title.ilike.%${q}%,description.ilike.%${q}%`);
 
-      if (categoryId)    ilikeQ = ilikeQ.eq("category_id",    categoryId);
+      if (categoryId) ilikeQ = ilikeQ.eq("category_id", categoryId);
       if (subcategoryId) ilikeQ = ilikeQ.eq("subcategory_id", subcategoryId);
-      if (locationId)    ilikeQ = ilikeQ.eq("location_id",    locationId);
-      if (priceMin)      ilikeQ = ilikeQ.gte("price", Number(priceMin));
-      if (priceMax)      ilikeQ = ilikeQ.lte("price", Number(priceMax));
+      if (locationId) ilikeQ = ilikeQ.eq("location_id", locationId);
+      if (priceMin) ilikeQ = ilikeQ.gte("price", Number(priceMin));
+      if (priceMax) ilikeQ = ilikeQ.lte("price", Number(priceMax));
 
       const { data: ilikeData } = await ilikeQ
         .order("is_promoted", { ascending: false })
-        .order("is_urgent",   { ascending: false })
-        .order("created_at",  { ascending: false })
+        .order("is_urgent", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(limit);
 
       const hits = ilikeData || [];
-      return NextResponse.json({ hits, totalHits: hits.length, source: "ilike" });
+      return NextResponse.json({
+        hits,
+        totalHits: hits.length,
+        source: "ilike",
+      });
     }
 
-    return NextResponse.json({ hits: ftData, totalHits: ftData.length, source: "fulltext" });
+    return NextResponse.json({
+      hits: ftData,
+      totalHits: ftData.length,
+      source: "fulltext",
+    });
   }
 
   // ── Browse / filter-only mode (no query) ──────────────────────────────────
   let browseQ = supabase
     .from("listings")
-    .select(`*, categories(name, slug, icon), locations(name, slug)`, { count: "exact" })
+    .select(`*, categories(name, slug, icon), locations(name, slug)`, {
+      count: "exact",
+    })
     .eq("status", "active");
 
-  if (categoryId)    browseQ = browseQ.eq("category_id",    categoryId);
+  if (categoryId) browseQ = browseQ.eq("category_id", categoryId);
   if (subcategoryId) browseQ = browseQ.eq("subcategory_id", subcategoryId);
-  if (locationId)    browseQ = browseQ.eq("location_id",    locationId);
-  if (priceMin)      browseQ = browseQ.gte("price", Number(priceMin));
-  if (priceMax)      browseQ = browseQ.lte("price", Number(priceMax));
+  if (locationId) browseQ = browseQ.eq("location_id", locationId);
+  if (priceMin) browseQ = browseQ.gte("price", Number(priceMin));
+  if (priceMax) browseQ = browseQ.lte("price", Number(priceMax));
 
   const sortMap: Record<string, { col: string; asc: boolean }> = {
-    newest:     { col: "created_at", asc: false },
-    oldest:     { col: "created_at", asc: true  },
-    price_low:  { col: "price",      asc: true  },
-    price_high: { col: "price",      asc: false },
-    popular:    { col: "view_count", asc: false },
+    newest: { col: "created_at", asc: false },
+    oldest: { col: "created_at", asc: true },
+    price_low: { col: "price", asc: true },
+    price_high: { col: "price", asc: false },
+    popular: { col: "view_count", asc: false },
   };
   const s = sortMap[sort] ?? sortMap.newest;
   // 3-tier boost: featured → urgent → normal, then the user's chosen sort within each tier
   browseQ = browseQ
     .order("is_promoted", { ascending: false })
-    .order("is_urgent",   { ascending: false })
-    .order(s.col,         { ascending: s.asc });
+    .order("is_urgent", { ascending: false })
+    .order(s.col, { ascending: s.asc });
 
-  const { data, count, error } = await browseQ.range(offset, offset + limit - 1);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { data, count, error } = await browseQ.range(
+    offset,
+    offset + limit - 1,
+  );
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ hits: data || [], totalHits: count ?? (data || []).length, source: "browse" });
+  return NextResponse.json({
+    hits: data || [],
+    totalHits: count ?? (data || []).length,
+    source: "browse",
+  });
 }

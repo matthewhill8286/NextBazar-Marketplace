@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
 import {
   Bell,
-  TrendingDown,
-  Tag,
-  CheckCheck,
-  MessageCircle,
   Check,
+  CheckCheck,
   Loader2,
+  MessageCircle,
+  Tag,
   Trash2,
+  TrendingDown,
 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
@@ -66,10 +66,7 @@ export default function NotificationsClient({
   const unread = notifications.filter((n) => !n.read);
 
   async function markRead(id: string) {
-    await supabase
-      .from("notifications")
-      .update({ read: true })
-      .eq("id", id);
+    await supabase.from("notifications").update({ read: true }).eq("id", id);
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
@@ -79,10 +76,7 @@ export default function NotificationsClient({
     setMarkingAll(true);
     const ids = unread.map((n) => n.id);
     if (ids.length) {
-      await supabase
-        .from("notifications")
-        .update({ read: true })
-        .in("id", ids);
+      await supabase.from("notifications").update({ read: true }).in("id", ids);
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     }
     setMarkingAll(false);

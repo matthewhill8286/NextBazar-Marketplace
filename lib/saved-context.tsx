@@ -61,16 +61,22 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
     }
 
     // Fire once on mount with whoever is currently logged in
-    supabase.auth.getUser().then(({ data: { user } }) => init(user?.id ?? null));
+    supabase.auth
+      .getUser()
+      .then(({ data: { user } }) => init(user?.id ?? null));
 
     // Re-fire on every auth change: login, logout, or user switch.
     // Without this, a second user logging in would see the previous user's
     // saved listings because the context never re-initialised.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       init(session?.user?.id ?? null);
     });
 
-    return () => { subscription.unsubscribe(); };
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Keep in sync with other tabs / devices via realtime
@@ -88,7 +94,9 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          setSavedIds((prev) => new Set([...prev, payload.new.listing_id as string]));
+          setSavedIds(
+            (prev) => new Set([...prev, payload.new.listing_id as string]),
+          );
         },
       )
       .on(
@@ -109,7 +117,9 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   const toggle = useCallback(
@@ -139,12 +149,16 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
           .delete()
           .eq("user_id", userId)
           .eq("listing_id", listingId);
-        try { await supabase.rpc("decrement_favorite_count", { lid: listingId }); } catch {}
+        try {
+          await supabase.rpc("decrement_favorite_count", { lid: listingId });
+        } catch {}
       } else {
         await supabase
           .from("favorites")
           .insert({ user_id: userId, listing_id: listingId });
-        try { await supabase.rpc("increment_favorite_count", { lid: listingId }); } catch {}
+        try {
+          await supabase.rpc("increment_favorite_count", { lid: listingId });
+        } catch {}
       }
     },
     [userId, savedIds, supabase],
@@ -160,7 +174,9 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
     [savedIds, loading, toggle, isSaved],
   );
 
-  return <SavedContext.Provider value={value}>{children}</SavedContext.Provider>;
+  return (
+    <SavedContext.Provider value={value}>{children}</SavedContext.Provider>
+  );
 }
 
 export function useSaved() {

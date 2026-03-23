@@ -6,10 +6,10 @@ import { createClient } from "@/lib/supabase/client";
 
 export type UploadedVideo = {
   file: File | null;
-  previewUrl: string;   // object URL for local preview
-  url?: string;         // public Supabase storage URL
+  previewUrl: string; // object URL for local preview
+  url?: string; // public Supabase storage URL
   uploading: boolean;
-  progress: number;     // 0–100
+  progress: number; // 0–100
 };
 
 type VideoUploadProps = {
@@ -21,13 +21,20 @@ type VideoUploadProps = {
 const MAX_SIZE_MB = 200;
 const ACCEPTED = ["video/mp4", "video/quicktime", "video/webm", "video/mov"];
 
-export default function VideoUpload({ userId, video, onChangeAction }: VideoUploadProps) {
+export default function VideoUpload({
+  userId,
+  video,
+  onChangeAction,
+}: VideoUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const supabase = createClient();
 
   async function handleFile(file: File) {
-    if (!ACCEPTED.includes(file.type) && !file.name.match(/\.(mp4|mov|webm)$/i)) {
+    if (
+      !ACCEPTED.includes(file.type) &&
+      !file.name.match(/\.(mp4|mov|webm)$/i)
+    ) {
       alert("Please upload an MP4, MOV, or WebM video.");
       return;
     }
@@ -37,7 +44,12 @@ export default function VideoUpload({ userId, video, onChangeAction }: VideoUplo
     }
 
     const previewUrl = URL.createObjectURL(file);
-    const draft: UploadedVideo = { file, previewUrl, uploading: true, progress: 0 };
+    const draft: UploadedVideo = {
+      file,
+      previewUrl,
+      uploading: true,
+      progress: 0,
+    };
     onChangeAction(draft);
 
     // Simulate early progress pulse while Supabase uploads
@@ -59,8 +71,16 @@ export default function VideoUpload({ userId, video, onChangeAction }: VideoUplo
 
       if (error) throw error;
 
-      const { data: { publicUrl } } = supabase.storage.from("listings").getPublicUrl(path);
-      onChangeAction({ file, previewUrl, url: publicUrl, uploading: false, progress: 100 });
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("listings").getPublicUrl(path);
+      onChangeAction({
+        file,
+        previewUrl,
+        url: publicUrl,
+        uploading: false,
+        progress: 100,
+      });
     } catch (err) {
       clearInterval(ticker);
       console.error("Video upload failed:", err);
@@ -128,7 +148,10 @@ export default function VideoUpload({ userId, video, onChangeAction }: VideoUplo
   // ── State: empty — drop zone ──────────────────────────────────────────────
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setDragOver(true);
+      }}
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
@@ -143,9 +166,12 @@ export default function VideoUpload({ userId, video, onChangeAction }: VideoUplo
       </div>
       <div className="text-center">
         <p className="text-sm font-semibold text-gray-700">
-          <span className="text-violet-600">Click to upload</span> or drag &amp; drop
+          <span className="text-violet-600">Click to upload</span> or drag &amp;
+          drop
         </p>
-        <p className="text-xs text-gray-400 mt-0.5">MP4, MOV or WebM · max {MAX_SIZE_MB}MB</p>
+        <p className="text-xs text-gray-400 mt-0.5">
+          MP4, MOV or WebM · max {MAX_SIZE_MB}MB
+        </p>
       </div>
       <div className="flex items-center gap-1.5 text-xs text-violet-600 font-medium">
         <Play className="w-3 h-3" />
