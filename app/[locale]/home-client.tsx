@@ -8,7 +8,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import { createClient } from "@/lib/supabase/client";
-import type { Category, ListingCardRow } from "@/lib/supabase/types";
+import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
 
 const LISTING_SELECT = `
   *,

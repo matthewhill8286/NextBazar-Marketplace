@@ -23,7 +23,7 @@ import CategoryIcon, {
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
 import { createClient } from "@/lib/supabase/client";
-import type { ListingCardRow, ListingDetailRow } from "@/lib/supabase/types";
+import type { ListingCardRow, ListingDetailRow } from "@/lib/supabase/supabase.types";
 import AiInsights, { type InsightsPriceSummaryAction } from "./ai-insights";
 import ImageGallery from "./image-gallery";
 import {

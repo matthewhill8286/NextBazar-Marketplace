@@ -7,7 +7,7 @@ import type {
   ListingDetailRow,
   Location,
   Subcategory,
-} from "./types";
+} from "./supabase.types";
 
 // ─── Public (no-auth) Supabase client ────────────────────────────────────────
 // Used inside unstable_cache wrappers so the cache key is stable and we don't

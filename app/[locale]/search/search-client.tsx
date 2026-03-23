@@ -24,7 +24,7 @@ import type {
   LocationJoin,
   SearchListing,
   Subcategory,
-} from "@/lib/supabase/types";
+} from "@/lib/supabase/supabase.types";
 
 type Props = {
   initialCategories?: Category[];
