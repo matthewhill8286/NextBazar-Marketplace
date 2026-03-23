@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -62,8 +63,16 @@ export default function ListingsClient({
   initialListings: Listing[];
 }) {
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  const validTabs = ["active", "sold", "expired", "draft"];
+
+  function tabFromParams() {
+    const t = searchParams.get("tab") ?? "";
+    return validTabs.includes(t) ? t : "active";
+  }
+
   const [listings, setListings] = useState(initialListings);
-  const [tab, setTab] = useState("active");
+  const [tab, setTab] = useState(tabFromParams);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
 
@@ -104,6 +113,13 @@ export default function ListingsClient({
   function clearSelection() {
     setSelected(new Set());
   }
+
+  // Keep tab in sync when the URL ?tab= param changes (sidebar stat card clicks)
+  useEffect(() => {
+    setTab(tabFromParams());
+    setSelected(new Set());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get("tab")]);
 
   // ── Single-item actions ──────────────────────────────────────────────────
 

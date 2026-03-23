@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -12,16 +13,16 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-extrabold text-sm shadow-md shadow-indigo-900/40">
-                N
-              </div>
-              <span className="font-extrabold text-white text-lg tracking-tight">
-                Next
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-indigo-400">
-                  Bazar
-                </span>
-              </span>
+            <div className="mb-4">
+              <Link href="/">
+                <Image
+                  src="/nextbazar-logo-dark.svg"
+                  alt="NextBazar"
+                  width={160}
+                  height={40}
+                  priority
+                />
+              </Link>
             </div>
             <p className="text-sm leading-relaxed text-gray-500 max-w-[200px]">
               {t("tagline")}
@@ -77,7 +78,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link
-                  href="/dashboard/listings"
+                  href="/dashboard"
                   className="hover:text-white transition-colors"
                 >
                   {t("myListings")}
@@ -117,22 +118,22 @@ export default function Footer() {
             </p>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
+                <Link href="/about" className="hover:text-white transition-colors">
                   {t("aboutUs")}
                 </Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
+                <Link href="/safety" className="hover:text-white transition-colors">
                   {t("safetyTips")}
                 </Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
+                <Link href="/dealers" className="hover:text-white transition-colors">
                   {t("forDealers")}
                 </Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-white transition-colors">
+                <Link href="/contact" className="hover:text-white transition-colors">
                   {t("contact")}
                 </Link>
               </li>
