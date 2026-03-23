@@ -10,4 +10,7 @@ export const FEATURE_FLAGS = {
 
   /** Crypto payments via Coinbase Commerce. Flip to true once API keys are configured. */
   CRYPTO_PAYMENTS: false,
+
+  /** For Dealers landing page + footer link. Hidden until dealer billing is ready. */
+  DEALERS_PAGE: false,
 } as const;

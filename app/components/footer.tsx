@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 export default function Footer() {
   const t = useTranslations("footer");
@@ -127,11 +128,13 @@ export default function Footer() {
                   {t("safetyTips")}
                 </Link>
               </li>
-              <li>
-                <Link href="/dealers" className="hover:text-white transition-colors">
-                  {t("forDealers")}
-                </Link>
-              </li>
+              {FEATURE_FLAGS.DEALERS_PAGE && (
+                <li>
+                  <Link href="/dealers" className="hover:text-white transition-colors">
+                    {t("forDealers")}
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
                   {t("contact")}

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import {
   ArrowRight,
   BarChart2,
@@ -139,6 +141,8 @@ const TESTIMONIALS = [
 ];
 
 export default function DealersPage() {
+  if (!FEATURE_FLAGS.DEALERS_PAGE) notFound();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero */}
