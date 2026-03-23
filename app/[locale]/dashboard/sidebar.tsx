@@ -97,36 +97,48 @@ export default function DashboardSidebar({
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-gray-50 rounded-lg p-2.5 text-center">
-            <div className="text-lg font-bold text-gray-900">
+          <Link
+            href="/dashboard?tab=active"
+            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
+          >
+            <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
               {stats.active}
             </div>
-            <div className="text-[10px] text-gray-500 font-medium">Active</div>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-2.5 text-center">
-            <div className="text-lg font-bold text-gray-900">{stats.sold}</div>
-            <div className="text-[10px] text-gray-500 font-medium">Sold</div>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">Active</div>
+          </Link>
+          <Link
+            href="/dashboard?tab=sold"
+            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
+          >
+            <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">{stats.sold}</div>
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">Sold</div>
+          </Link>
+          <Link
+            href="/dashboard/analytics"
+            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
+          >
             <div className="flex items-center justify-center gap-1">
-              <Eye className="w-3 h-3 text-gray-400" />
-              <span className="text-lg font-bold text-gray-900">
+              <Eye className="w-3 h-3 text-gray-400 group-hover:text-indigo-500" />
+              <span className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
                 {stats.views >= 1000
                   ? `${(stats.views / 1000).toFixed(1)}k`
                   : stats.views}
               </span>
             </div>
-            <div className="text-[10px] text-gray-500 font-medium">Views</div>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-2.5 text-center">
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">Views</div>
+          </Link>
+          <Link
+            href="/saved"
+            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-rose-50 hover:ring-1 hover:ring-rose-200 transition-all group"
+          >
             <div className="flex items-center justify-center gap-1">
-              <Heart className="w-3 h-3 text-gray-400" />
-              <span className="text-lg font-bold text-gray-900">
+              <Heart className="w-3 h-3 text-gray-400 group-hover:text-rose-400" />
+              <span className="text-lg font-bold text-gray-900 group-hover:text-rose-600">
                 {stats.favorites}
               </span>
             </div>
-            <div className="text-[10px] text-gray-500 font-medium">Saved</div>
-          </div>
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-rose-400">Saved</div>
+          </Link>
         </div>
       </div>
 
