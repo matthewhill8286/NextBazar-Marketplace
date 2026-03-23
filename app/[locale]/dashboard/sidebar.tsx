@@ -67,7 +67,7 @@ export default function DashboardSidebar({
       {/* Profile Card */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0">
+          <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0">
             {profile.avatar_url ? (
               <img
                 src={profile.avatar_url}
@@ -84,7 +84,7 @@ export default function DashboardSidebar({
                 {profile.display_name}
               </p>
               {profile.verified && (
-                <Shield className="w-4 h-4 text-blue-500 shrink-0" />
+                <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
               )}
             </div>
             <p className="text-xs text-gray-500 truncate">{profile.email}</p>
@@ -149,7 +149,7 @@ export default function DashboardSidebar({
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-blue-50 text-blue-700"
+                  ? "bg-indigo-50 text-indigo-700"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
               )}
             >

@@ -92,7 +92,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </label>
           <input
             type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="Your name"
             value={formData.display_name}
             onChange={(e) => update("display_name", e.target.value)}
@@ -105,7 +105,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </label>
           <input
             type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="username"
             value={formData.username}
             onChange={(e) =>
@@ -126,7 +126,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </label>
           <input
             type="tel"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="+357 99 123456"
             value={formData.phone}
             onChange={(e) => update("phone", e.target.value)}
@@ -206,7 +206,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
             <FileText className="w-3.5 h-3.5" /> Bio
           </label>
           <textarea
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm h-24 resize-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-24 resize-none"
             placeholder="Tell buyers about yourself..."
             value={formData.bio}
             onChange={(e) => update("bio", e.target.value)}
@@ -232,7 +232,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-blue-200"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

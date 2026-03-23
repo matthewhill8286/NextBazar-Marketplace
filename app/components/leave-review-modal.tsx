@@ -139,7 +139,7 @@ export default function LeaveReviewModal({
                   onChange={(e) => setComment(e.target.value)}
                   maxLength={500}
                   placeholder={`Share details about your experience with ${revieweeName}…`}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 resize-none"
                 />
                 <div className="text-right text-xs text-gray-400 mt-1">
                   {comment.length}/500
@@ -155,7 +155,7 @@ export default function LeaveReviewModal({
               <button
                 onClick={submit}
                 disabled={!rating || loading}
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-indigo-600 text-white font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

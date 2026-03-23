@@ -28,9 +28,9 @@ export interface CategoryConfig {
 const CONFIG: Record<string, CategoryConfig> = {
   electronics: {
     Icon: Laptop,
-    bg: "bg-blue-50",
-    color: "text-blue-500",
-    gradient: "from-blue-500 to-cyan-400",
+    bg: "bg-indigo-50",
+    color: "text-indigo-500",
+    gradient: "from-indigo-500 to-cyan-400",
     accent: "#3B82F6",
   },
   fashion: {

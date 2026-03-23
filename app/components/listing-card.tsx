@@ -139,7 +139,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors duration-150">
+        <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-indigo-600 transition-colors duration-150">
           {listing.title}
         </h3>
 

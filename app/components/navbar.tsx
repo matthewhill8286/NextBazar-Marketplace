@@ -117,7 +117,7 @@ export default function Navbar() {
           {/* Post Ad — primary CTA */}
           <Link
             href="/post"
-            className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center gap-1.5 shadow-md shadow-blue-200 hover:shadow-lg hover:shadow-blue-300"
+            className="bg-linear-to-r from-indigo-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-indigo-700 transition-all flex items-center gap-1.5 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">{t("postAd")}</span>

@@ -263,6 +263,14 @@ export default function ListingDetail({ slug }: { slug: string }) {
 
       setListing(data);
 
+      // Track recently viewed (store up to 12 listing IDs, newest first)
+      try {
+        const stored = localStorage.getItem("recentlyViewed");
+        const prev: string[] = stored ? JSON.parse(stored) : [];
+        const updated = [data.id, ...prev.filter((id: string) => id !== data.id)].slice(0, 12);
+        localStorage.setItem("recentlyViewed", JSON.stringify(updated));
+      } catch {}
+
       // Check buyer's offer history on this listing
       if (user && user.id !== data.user_id) {
         supabase
@@ -327,7 +335,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
         <p className="text-gray-500 mb-6">{t("notFoundDesc")}</p>
         <Link
           href="/"
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
         >
           {t("browseListings")}
         </Link>
@@ -458,7 +466,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     </span>
                   </span>
                   {listing.condition && (
-                    <span className="bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
                       {conditionLabel(listing.condition)}
                     </span>
                   )}
@@ -515,7 +523,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 {price && isOwner && (
                   <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
                     <span className="flex items-center gap-1">
-                      <Shield className="w-3 h-3 text-blue-500" />
+                      <Shield className="w-3 h-3 text-indigo-500" />
                       {t("marketValue")}
                     </span>
                     {aiMarketLoading ? (
@@ -534,7 +542,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                                   ? "bg-green-100 text-green-700"
                                   : aiPrice.price_verdict === "overpriced"
                                     ? "bg-red-100 text-red-700"
-                                    : "bg-blue-100 text-blue-700"
+                                    : "bg-indigo-100 text-indigo-700"
                               }`}
                             >
                               {aiPrice.price_verdict === "underpriced"
@@ -626,7 +634,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                             qualityScore >= 80
                               ? "text-green-500"
                               : qualityScore >= 50
-                                ? "text-blue-500"
+                                ? "text-indigo-500"
                                 : "text-amber-500"
                           }`}
                         />
@@ -681,7 +689,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
               {/* Seller card */}
               <div className="bg-white rounded-2xl p-6 border border-gray-100 sticky top-20">
                 <div className="flex items-center gap-3.5 mb-5">
-                  <div className="w-14 h-14 bg-linear-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md shadow-blue-100">
+                  <div className="w-14 h-14 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md shadow-indigo-100">
                     {profile?.avatar_url ? (
                       <img
                         src={profile.avatar_url}
@@ -697,12 +705,12 @@ export default function ListingDetail({ slug }: { slug: string }) {
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/profile/${listing.user_id}`}
-                        className="font-semibold text-gray-900 truncate hover:text-blue-600 transition-colors"
+                        className="font-semibold text-gray-900 truncate hover:text-indigo-600 transition-colors"
                       >
                         {profile?.display_name || "Seller"}
                       </Link>
                       {profile?.verified && (
-                        <Shield className="w-4 h-4 text-blue-500 shrink-0" />
+                        <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
                       )}
                       {profile?.is_dealer && (
                         <span className="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full shrink-0">
@@ -764,7 +772,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                   ) : (
                     <button
                       onClick={() => setShowOfferModal(true)}
-                      className="w-full mt-3 py-3 rounded-xl border-2 border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold hover:bg-blue-100 hover:border-blue-300 transition-all flex items-center justify-center gap-2"
+                      className="w-full mt-3 py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center justify-center gap-2"
                     >
                       <Tag className="w-4 h-4" />
                       {t("makeOffer")}
@@ -774,7 +782,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                   <Link
                     href={`/profile/${listing.user_id}`}
-                    className="text-sm text-blue-600 font-medium hover:underline"
+                    className="text-sm text-indigo-600 font-medium hover:underline"
                   >
                     {t("viewSellerProfile")}
                   </Link>
@@ -835,7 +843,7 @@ export default function ListingDetail({ slug }: { slug: string }) {
                 </h2>
                 <Link
                   href={`/search?category=${listing.categories?.slug || ""}`}
-                  className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
+                  className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1"
                 >
                   {t("viewMore")} <ChevronRight className="w-3.5 h-3.5" />
                 </Link>

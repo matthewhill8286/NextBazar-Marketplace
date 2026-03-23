@@ -36,19 +36,28 @@ export default function SaveSearchButton({
     });
   }, []);
 
-  // Check if this exact search is already saved
+  // Check if this exact search is already saved.
+  // Must use .is("field", null) for null values — .eq("field", "") does NOT
+  // match NULL rows in PostgreSQL and will always return no results.
   useEffect(() => {
     if (!userId) return;
     const params = buildParams();
-    supabase
+
+    let q = supabase
       .from("saved_searches")
       .select("id")
-      .eq("user_id", userId)
-      .eq("query", params.query ?? "")
-      .eq("category_slug", params.category_slug ?? "")
-      .eq("location_slug", params.location_slug ?? "")
-      .maybeSingle()
-      .then(({ data }) => setSavedId(data?.id ?? null));
+      .eq("user_id", userId);
+
+    if (params.query)         q = q.eq("query",         params.query);
+    else                      q = q.is("query",          null);
+
+    if (params.category_slug) q = q.eq("category_slug", params.category_slug);
+    else                      q = q.is("category_slug",  null);
+
+    if (params.location_slug) q = q.eq("location_slug", params.location_slug);
+    else                      q = q.is("location_slug",  null);
+
+    q.maybeSingle().then(({ data }) => setSavedId(data?.id ?? null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, query, categorySlug, locationSlug]);
 
@@ -114,7 +123,7 @@ export default function SaveSearchButton({
         onClick={handleRemove}
         disabled={saving}
         title="Remove saved search"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors disabled:opacity-50"
       >
         {saving ? (
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -131,7 +140,7 @@ export default function SaveSearchButton({
       onClick={handleSave}
       disabled={saving}
       title="Save this search & get alerts"
-      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 text-sm font-medium hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-colors disabled:opacity-50"
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-gray-200 text-gray-600 text-sm font-medium hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-colors disabled:opacity-50"
     >
       {saving ? (
         <Loader2 className="w-3.5 h-3.5 animate-spin" />

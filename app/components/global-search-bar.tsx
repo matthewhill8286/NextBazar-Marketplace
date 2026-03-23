@@ -112,7 +112,7 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
         </button>
         <button
           onClick={() => goToSearch(query)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md hover:from-blue-600 hover:to-indigo-700 transition-all"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
         >
           Search
         </button>
@@ -127,7 +127,7 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   const activeCategory = categories.find((c) => c.slug === selectedCategory);
 
   return (
-    <div className="flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-white focus-within:border-blue-400 focus-within:bg-white transition-all overflow-hidden">
+    <div className="flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-indigo-300 hover:bg-white focus-within:border-indigo-400 focus-within:bg-white transition-all overflow-hidden">
       {/* Category picker */}
       <div className="relative shrink-0">
         <select

@@ -52,7 +52,7 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -64,7 +64,7 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
         <p className="text-gray-500 mb-4">Listing not found</p>
         <Link
           href="/dashboard/listings"
-          className="text-blue-600 font-medium hover:underline"
+          className="text-indigo-600 font-medium hover:underline"
         >
           Back to listings
         </Link>

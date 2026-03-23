@@ -62,7 +62,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -73,7 +73,7 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <Link
           href="/post"
-          className="bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors flex items-center gap-1.5 shadow-sm shadow-blue-200"
+          className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-1.5 shadow-sm shadow-indigo-200"
         >
           <Plus className="w-4 h-4" /> New Listing
         </Link>
@@ -83,8 +83,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Package className="w-4 h-4 text-blue-600" />
+            <div className="p-2 bg-indigo-50 rounded-lg">
+              <Package className="w-4 h-4 text-indigo-600" />
             </div>
             <span className="text-xs font-medium text-gray-500">Active</span>
           </div>
@@ -134,7 +134,7 @@ export default function DashboardPage() {
           {listings.length > 0 && (
             <Link
               href="/dashboard/listings"
-              className="text-sm text-blue-600 font-medium hover:underline flex items-center gap-1"
+              className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1"
             >
               View all <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -166,7 +166,7 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/listing/${listing.slug}`}
-                    className="font-medium text-gray-900 text-sm hover:text-blue-600 truncate block"
+                    className="font-medium text-gray-900 text-sm hover:text-indigo-600 truncate block"
                   >
                     {listing.title}
                   </Link>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                     listing.status === "active"
                       ? "bg-green-50 text-green-700"
                       : listing.status === "sold"
-                        ? "bg-blue-50 text-blue-700"
+                        ? "bg-indigo-50 text-indigo-700"
                         : "bg-gray-100 text-gray-600"
                   }`}
                 >
@@ -201,7 +201,7 @@ export default function DashboardPage() {
                 </span>
                 <Link
                   href={`/dashboard/edit/${listing.id}`}
-                  className="text-xs text-blue-600 font-medium hover:underline shrink-0"
+                  className="text-xs text-indigo-600 font-medium hover:underline shrink-0"
                 >
                   Edit
                 </Link>
@@ -219,7 +219,7 @@ export default function DashboardPage() {
             </p>
             <Link
               href="/post"
-              className="inline-flex bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors"
+              className="inline-flex bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors"
             >
               <Plus className="w-4 h-4 mr-1.5" /> Post an Ad
             </Link>

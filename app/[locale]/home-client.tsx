@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, MessageCircle, Shield, Sparkles, TrendingUp } from "lucide-react";
+import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CategoryIcon, {
@@ -21,6 +21,10 @@ export default function HomeClient() {
   const [categories, setCategories] = useState<any[]>([]);
   const [featured, setFeatured] = useState<any[]>([]);
   const [recent, setRecent] = useState<any[]>([]);
+  const [trending, setTrending] = useState<any[]>([]);
+  const [trendingLocationName, setTrendingLocationName] = useState<string | null>(null);
+  const [trendingLocationSlug, setTrendingLocationSlug] = useState<string | null>(null);
+  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
@@ -72,6 +76,77 @@ export default function HomeClient() {
         if (favs) setSavedIds(new Set(favs.map((f: any) => f.listing_id)));
       }
 
+      // ── Trending in your area ─────────────────────────────────────────
+      let locationId: string | null = null;
+      let locationName: string | null = null;
+      let locationSlug: string | null = null;
+      try {
+        const storedSlug = localStorage.getItem("lastSearchLocation");
+        if (storedSlug) {
+          const { data: loc } = await supabase
+            .from("locations")
+            .select("id, name, slug")
+            .eq("slug", storedSlug)
+            .single();
+          if (loc) {
+            locationId = loc.id;
+            locationName = loc.name;
+            locationSlug = loc.slug;
+          }
+        }
+      } catch {}
+
+      // Query: top listings by view_count in that area (fall back to all Cyprus)
+      let trendingQ = supabase
+        .from("listings")
+        .select(LISTING_SELECT)
+        .eq("status", "active")
+        .order("view_count", { ascending: false })
+        .limit(8);
+
+      if (locationId) trendingQ = trendingQ.eq("location_id", locationId);
+
+      const { data: trendData } = await trendingQ;
+
+      // If the area has fewer than 3 listings, fall back to all-Cyprus trending
+      if (!trendData || trendData.length < 3) {
+        const { data: fallback } = await supabase
+          .from("listings")
+          .select(LISTING_SELECT)
+          .eq("status", "active")
+          .order("view_count", { ascending: false })
+          .limit(8);
+        setTrending(fallback || []);
+        setTrendingLocationName(null);
+        setTrendingLocationSlug(null);
+      } else {
+        setTrending(trendData);
+        setTrendingLocationName(locationName);
+        setTrendingLocationSlug(locationSlug);
+      }
+
+      // ── Recently Viewed ───────────────────────────────────────────────
+      try {
+        const stored = localStorage.getItem("recentlyViewed");
+        if (stored) {
+          const ids: string[] = JSON.parse(stored);
+          if (ids.length > 0) {
+            const { data: rvData } = await supabase
+              .from("listings")
+              .select(LISTING_SELECT)
+              .in("id", ids.slice(0, 8));
+            if (rvData && rvData.length > 0) {
+              // Preserve the localStorage order (most recently viewed first)
+              const idOrder = ids.slice(0, 8);
+              const sorted = idOrder
+                .map((id) => rvData.find((l: any) => l.id === id))
+                .filter(Boolean);
+              setRecentlyViewed(sorted);
+            }
+          }
+        }
+      } catch {}
+
       setLoading(false);
     }
     load();
@@ -80,7 +155,7 @@ export default function HomeClient() {
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white">
         {/* Dot mesh overlay */}
         <div
           className="absolute inset-0 opacity-[0.12]"
@@ -91,7 +166,7 @@ export default function HomeClient() {
           }}
         />
         {/* Ambient glow blobs */}
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-blue-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-violet-500 rounded-full blur-3xl opacity-25 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
@@ -111,7 +186,7 @@ export default function HomeClient() {
             in Cyprus
           </h1>
 
-          <p className="text-blue-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-indigo-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
             AI-powered search, instant messaging, and verified sellers — all in
             one place.
           </p>
@@ -131,7 +206,7 @@ export default function HomeClient() {
                 key={label}
                 className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 px-4 py-2 rounded-full text-sm text-white/90 font-medium"
               >
-                <Icon className="w-3.5 h-3.5 text-blue-200" />
+                <Icon className="w-3.5 h-3.5 text-indigo-200" />
                 {label}
               </div>
             ))}
@@ -165,7 +240,7 @@ export default function HomeClient() {
             <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
               {categories.map((cat, i) => {
                 const palettes = [
-                  "from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-blue-100",
+                  "from-indigo-50 to-indigo-50 hover:from-indigo-100 hover:to-indigo-100 border-indigo-100",
                   "from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-amber-100",
                   "from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border-emerald-100",
                   "from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border-rose-100",
@@ -215,7 +290,7 @@ export default function HomeClient() {
               </div>
               <Link
                 href="/search"
-                className="text-sm text-blue-600 font-semibold hover:underline"
+                className="text-sm text-indigo-600 font-semibold hover:underline"
               >
                 View all →
               </Link>
@@ -233,11 +308,86 @@ export default function HomeClient() {
           </section>
         )}
 
+        {/* ── Trending in Your Area ────────────────────────────────────── */}
+        {!loading && trending.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-6 bg-gradient-to-b from-orange-400 to-red-500 rounded-full" />
+                <h2 className="text-xl font-bold text-gray-900">
+                  {trendingLocationName
+                    ? `Trending in ${trendingLocationName}`
+                    : "Trending Now"}
+                </h2>
+                <span className="flex items-center gap-1 bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                  <Flame className="w-3 h-3" />
+                  Hot
+                </span>
+              </div>
+              <Link
+                href={trendingLocationSlug
+                  ? `/search?location=${trendingLocationSlug}&sort=popular`
+                  : "/search?sort=popular"}
+                className="text-sm text-indigo-600 font-semibold hover:underline"
+              >
+                View all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {trending.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  userId={userId}
+                  isSaved={savedIds.has(listing.id)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Recently Viewed ──────────────────────────────────────────── */}
+        {!loading && recentlyViewed.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-6 bg-gradient-to-b from-violet-500 to-purple-600 rounded-full" />
+                <h2 className="text-xl font-bold text-gray-900">
+                  Recently Viewed
+                </h2>
+                <span className="flex items-center gap-1 bg-violet-50 border border-violet-100 text-violet-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                  <Clock className="w-3 h-3" />
+                  History
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  try { localStorage.removeItem("recentlyViewed"); } catch {}
+                  setRecentlyViewed([]);
+                }}
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Clear history
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {recentlyViewed.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  userId={userId}
+                  isSaved={savedIds.has(listing.id)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ── Recently Added ───────────────────────────────────────────── */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+              <div className="w-1 h-6 bg-gradient-to-b from-indigo-500 to-indigo-500 rounded-full" />
               <h2 className="text-xl font-bold text-gray-900">
                 {!loading && recent.length === 0
                   ? "No listings yet"
@@ -247,7 +397,7 @@ export default function HomeClient() {
             {recent.length > 0 && (
               <Link
                 href="/search"
-                className="text-sm text-blue-600 font-semibold hover:underline"
+                className="text-sm text-indigo-600 font-semibold hover:underline"
               >
                 View all →
               </Link>
@@ -291,7 +441,7 @@ export default function HomeClient() {
               </p>
               <Link
                 href="/post"
-                className="inline-flex bg-linear-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md shadow-blue-200"
+                className="inline-flex bg-linear-to-r from-indigo-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-700 transition-all shadow-md shadow-indigo-200"
               >
                 Post Your First Ad
               </Link>
@@ -311,7 +461,7 @@ export default function HomeClient() {
           />
           <div className="relative">
             <div className="text-center mb-10">
-              <p className="text-xs font-bold tracking-widest text-blue-400 uppercase mb-3">
+              <p className="text-xs font-bold tracking-widest text-indigo-400 uppercase mb-3">
                 Why NextBazar
               </p>
               <h2 className="text-2xl md:text-3xl font-bold">
@@ -322,7 +472,7 @@ export default function HomeClient() {
               {[
                 {
                   icon: Bot,
-                  color: "from-blue-500 to-indigo-600",
+                  color: "from-indigo-500 to-indigo-600",
                   title: "AI-Powered Listings",
                   desc: "Upload photos and let AI auto-fill your listing details. Get smart pricing suggestions based on live market data.",
                 },
@@ -355,7 +505,7 @@ export default function HomeClient() {
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Link
                 href="/post"
-                className="bg-linear-to-r from-blue-500 to-indigo-600 text-white px-7 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all shadow-lg shadow-blue-900/30"
+                className="bg-linear-to-r from-indigo-500 to-indigo-600 text-white px-7 py-3 rounded-xl font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all shadow-lg shadow-indigo-900/30"
               >
                 Post a Free Ad
               </Link>

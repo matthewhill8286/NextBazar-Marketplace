@@ -131,7 +131,7 @@ export default function ProfileClient({
         <div className="max-w-5xl mx-auto px-4 py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-3xl font-bold shrink-0 overflow-hidden shadow-lg">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-3xl font-bold shrink-0 overflow-hidden shadow-lg">
               {profile.avatar_url ? (
                 <Image
                   src={profile.avatar_url}
@@ -152,7 +152,7 @@ export default function ProfileClient({
                   {profile.display_name}
                 </h1>
                 {profile.verified && (
-                  <span className="flex items-center gap-1 bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
+                  <span className="flex items-center gap-1 bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-indigo-100">
                     <Shield className="w-3.5 h-3.5" />
                     Verified
                   </span>
@@ -277,7 +277,7 @@ export default function ProfileClient({
                     key={review.id}
                     className="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4"
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
                       {rev?.avatar_url ? (
                         <img
                           src={rev.avatar_url}
@@ -312,7 +312,7 @@ export default function ProfileClient({
             {reviews.length > 4 && (
               <button
                 onClick={() => setShowAllReviews((v) => !v)}
-                className="mt-4 flex items-center gap-1 text-sm text-blue-600 font-medium hover:underline mx-auto"
+                className="mt-4 flex items-center gap-1 text-sm text-indigo-600 font-medium hover:underline mx-auto"
               >
                 {showAllReviews
                   ? "Show fewer reviews"

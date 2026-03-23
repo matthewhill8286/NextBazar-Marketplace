@@ -130,9 +130,9 @@ const METRICS = [
     label: "Views",
     icon: Eye,
     color: "#3b82f6",
-    bg: "bg-blue-50",
-    text: "text-blue-600",
-    border: "border-blue-200",
+    bg: "bg-indigo-50",
+    text: "text-indigo-600",
+    border: "border-indigo-200",
   },
   {
     key: "favorites" as const,
@@ -265,7 +265,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
         </div>
         <Link
           href="/post"
-          className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
         >
           + New Listing
         </Link>
@@ -282,7 +282,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
           </p>
           <Link
             href="/post"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             Post a Listing
           </Link>
@@ -296,8 +296,8 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                 label: "Active Listings",
                 value: totalActive,
                 icon: BarChart2,
-                color: "text-blue-600",
-                bg: "bg-blue-50",
+                color: "text-indigo-600",
+                bg: "bg-indigo-50",
               },
               {
                 label: "Total Views",
@@ -350,7 +350,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                       onClick={() => setSelectedId(l.id)}
                       className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
                         isSelected
-                          ? "border-blue-200 bg-blue-50 ring-2 ring-blue-100"
+                          ? "border-indigo-200 bg-indigo-50 ring-2 ring-indigo-100"
                           : "border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50/80"
                       }`}
                     >
@@ -431,7 +431,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                   <Link
                     href={`/listing/${selectedListing.slug}`}
                     target="_blank"
-                    className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Link>

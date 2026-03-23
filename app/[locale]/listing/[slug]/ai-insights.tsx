@@ -92,7 +92,7 @@ export default function AiInsights({
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-2xl p-6 border border-indigo-100">
+      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-2xl p-6 border border-indigo-100">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-5 h-5 text-indigo-600 animate-pulse" />
           <span className="font-semibold text-indigo-900">
@@ -120,7 +120,7 @@ export default function AiInsights({
       ? "text-green-600"
       : insights.price_verdict === "overpriced"
         ? "text-red-600"
-        : "text-blue-600";
+        : "text-indigo-600";
 
   const VerdictIcon =
     insights.price_verdict === "underpriced"
@@ -146,7 +146,7 @@ export default function AiInsights({
         : "text-gray-600 bg-gray-100";
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-2xl p-6 border border-indigo-100">
+    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-2xl p-6 border border-indigo-100">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-5 h-5 text-indigo-600" />
         <h2 className="text-lg font-semibold text-indigo-900">AI Insights</h2>

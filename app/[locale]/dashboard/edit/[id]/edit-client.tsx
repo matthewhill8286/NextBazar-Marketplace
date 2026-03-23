@@ -227,7 +227,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           </label>
           <input
             type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             value={formData.title}
             onChange={(e) => update("title", e.target.value)}
           />
@@ -239,7 +239,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
             Description
           </label>
           <textarea
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm h-32 resize-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-32 resize-none"
             value={formData.description}
             onChange={(e) => update("description", e.target.value)}
           />
@@ -257,7 +257,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               </span>
               <input
                 type="number"
-                className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
                 value={formData.price}
                 onChange={(e) => update("price", e.target.value)}
               />
@@ -268,7 +268,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Price Type
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
               value={formData.price_type}
               onChange={(e) => update("price_type", e.target.value)}
             >
@@ -287,7 +287,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Category
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
               value={formData.category_id}
               onChange={(e) => update("category_id", e.target.value)}
             >
@@ -303,7 +303,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Location
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
               value={formData.location_id}
               onChange={(e) => update("location_id", e.target.value)}
             >
@@ -320,7 +320,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Condition
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
               value={formData.condition}
               onChange={(e) => update("condition", e.target.value)}
             >
@@ -341,7 +341,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           </label>
           <input
             type="tel"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="+357 99 123456"
             value={formData.contact_phone}
             onChange={(e) => update("contact_phone", e.target.value)}
@@ -356,7 +356,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           <button
             onClick={handleSave}
             disabled={loading || !formData.title}
-            className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-blue-200"
+            className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

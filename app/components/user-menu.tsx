@@ -198,7 +198,7 @@ export default function UserMenu() {
       {/* Avatar button — shows a dot if there are unread alerts */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative w-9 h-9 bg-linear-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
+        className="relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
           <img
@@ -210,7 +210,7 @@ export default function UserMenu() {
           initials
         )}
         {notifCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-blue-600 rounded-full border-2 border-white" />
+          <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-indigo-600 rounded-full border-2 border-white" />
         )}
       </button>
 
@@ -251,7 +251,7 @@ export default function UserMenu() {
                 {t("alerts")}
               </span>
               {notifCount > 0 && (
-                <span className="text-xs bg-blue-50 text-blue-600 font-semibold px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2 py-0.5 rounded-full">
                   {notifCount > 9 ? "9+" : notifCount}
                 </span>
               )}
@@ -289,7 +289,7 @@ export default function UserMenu() {
                   onClick={() => switchLocale("en")}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                     currentLocale === "en"
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      ? "bg-indigo-50 text-indigo-700 border-indigo-200"
                       : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300"
                   }`}
                 >
@@ -299,7 +299,7 @@ export default function UserMenu() {
                   onClick={() => switchLocale("el")}
                   className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                     currentLocale === "el"
-                      ? "bg-blue-50 text-blue-700 border-blue-200"
+                      ? "bg-indigo-50 text-indigo-700 border-indigo-200"
                       : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300"
                   }`}
                 >

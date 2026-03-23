@@ -26,8 +26,8 @@ function MessageToast({
   onNavigate: () => void;
 }) {
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-blue-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-linear-to-b from-blue-500 to-indigo-600 shrink-0" />
+    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-indigo-500 to-indigo-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -39,12 +39,12 @@ function MessageToast({
                 className="w-8 h-8 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
-                <MessageCircle className="w-4 h-4 text-blue-600" />
+              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
+                <MessageCircle className="w-4 h-4 text-indigo-600" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
                 {isOffer ? "In-chat offer" : "New message"}
               </p>
               <p className="text-sm font-bold text-gray-900 truncate">
@@ -72,7 +72,7 @@ function MessageToast({
 
         <button
           onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl py-1.5 transition-colors"
+          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
         >
           View conversation →
         </button>

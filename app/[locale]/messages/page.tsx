@@ -187,7 +187,7 @@ export default function MessagesPage() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -202,7 +202,7 @@ export default function MessagesPage() {
           <input
             type="text"
             placeholder="Search conversations..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -238,7 +238,7 @@ export default function MessagesPage() {
                   className="flex items-center gap-3.5 p-4 flex-1 min-w-0"
                 >
                   {/* Avatar */}
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0">
                     {otherUser?.avatar_url ? (
                       <img
                         src={otherUser.avatar_url}
@@ -266,7 +266,7 @@ export default function MessagesPage() {
                       </span>
                     </div>
                     {conv.listings?.title && (
-                      <p className="text-xs text-blue-600 truncate mb-0.5">
+                      <p className="text-xs text-indigo-600 truncate mb-0.5">
                         Re: {conv.listings.title}
                       </p>
                     )}
@@ -348,7 +348,7 @@ export default function MessagesPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-flex bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors"
           >
             Browse Listings
           </Link>

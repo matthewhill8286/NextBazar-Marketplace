@@ -192,6 +192,26 @@ export async function mockSupabase(page: Page) {
       });
     }
 
+    // Profiles — return a stub (needed by DashboardShell)
+    if (url.includes("/rest/v1/profiles")) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([
+          {
+            id: "user-test-1",
+            display_name: "Test User",
+            avatar_url: null,
+            verified: false,
+            is_dealer: false,
+            rating: 0,
+            total_reviews: 0,
+          },
+        ]),
+        headers: { "Content-Range": "0-0/1" },
+      });
+    }
+
     // Auth — no user signed in
     if (url.includes("/auth/v1/user")) {
       return route.fulfill({
@@ -209,29 +229,86 @@ export async function mockSupabase(page: Page) {
   await page.route(`${SUPABASE_URL}/realtime/**`, (route) => route.abort());
 }
 
-/** Mock a signed-in user session */
+/** Mock a signed-in user session.
+ *
+ * @supabase/ssr's createBrowserClient reads auth state from document.cookie
+ * (not localStorage). The cookie value must be in the format:
+ *   "base64url-" + base64url(JSON.stringify(session))
+ *
+ * We also mock the network endpoints that getUser() calls to validate the JWT,
+ * and the token-refresh endpoint in case the client tries to refresh.
+ */
 export async function mockAuthUser(page: Page, userId = "user-test-1") {
-  await page.route(`${SUPABASE_URL}/auth/v1/user`, (route) =>
+  const fakeUser = {
+    id: userId,
+    aud: "authenticated",
+    role: "authenticated",
+    email: "test@example.com",
+    app_metadata: { provider: "email" },
+    user_metadata: { display_name: "Test User" },
+    created_at: "2024-01-01T00:00:00Z",
+  };
+  const fakeTokenResponse = {
+    access_token: "fake-access-token",
+    refresh_token: "fake-refresh-token",
+    expires_in: 3600,
+    token_type: "bearer",
+    user: fakeUser,
+  };
+
+  // Intercept token refresh (POST /auth/v1/token?grant_type=*)
+  await page.route(`${SUPABASE_URL}/auth/v1/token**`, (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({
-        id: userId,
-        email: "test@example.com",
-        user_metadata: { display_name: "Test User" },
-      }),
+      body: JSON.stringify(fakeTokenResponse),
     }),
   );
 
-  // Seed localStorage with a fake session so createClient sees it
-  await page.addInitScript((id) => {
-    const fakeSession = {
+  // Intercept getUser validation (GET /auth/v1/user)
+  await page.route(`${SUPABASE_URL}/auth/v1/user**`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(fakeUser),
+    }),
+  );
+
+  // Set a cookie in the format @supabase/ssr createBrowserClient expects:
+  //   name  = sb-{project_ref}-auth-token
+  //   value = "base64url-" + base64url( JSON.stringify(session) )
+  //
+  // @supabase/ssr reads document.cookie via the `cookie` package (no URL decoding
+  // by default in newer versions), so we set the raw encoded value.
+  await page.addInitScript(({ id }) => {
+    const session = {
       access_token: "fake-access-token",
-      refresh_token: "fake-refresh-token",
+      token_type: "bearer",
+      expires_in: 3600,
       expires_at: Math.floor(Date.now() / 1000) + 3600,
-      user: { id, email: "test@example.com" },
+      refresh_token: "fake-refresh-token",
+      user: {
+        id,
+        aud: "authenticated",
+        role: "authenticated",
+        email: "test@example.com",
+        app_metadata: { provider: "email" },
+        user_metadata: {},
+        created_at: "2024-01-01T00:00:00Z",
+      },
     };
-    const key = `sb-giseotbdmhdsxgjilrqk-auth-token`;
-    localStorage.setItem(key, JSON.stringify(fakeSession));
-  }, userId);
+
+    // @supabase/ssr uses the prefix "base64-" (not "base64url-") and then
+    // decodes the remainder with its own stringFromBase64URL implementation.
+    // btoa is safe here because the JSON contains only ASCII characters.
+    const json = JSON.stringify(session);
+    const b64 = btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    const cookieValue = "base64-" + b64;
+    const cookieName = "sb-giseotbdmhdsxgjilrqk-auth-token";
+
+    document.cookie = `${cookieName}=${cookieValue}; path=/; max-age=3600; SameSite=Lax`;
+
+    // Also keep the legacy localStorage key as a fallback for any code that reads it
+    localStorage.setItem(cookieName, JSON.stringify(session));
+  }, { id: userId });
 }

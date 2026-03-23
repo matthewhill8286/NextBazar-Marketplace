@@ -70,7 +70,7 @@ export default function SavedSearchesClient({
         </div>
         <Link
           href="/search"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
         >
           <Search className="w-4 h-4" />
           New Search
@@ -79,8 +79,8 @@ export default function SavedSearchesClient({
 
       {searches.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-7 h-7 text-blue-400" />
+          <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bell className="w-7 h-7 text-indigo-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">
             No saved searches yet
@@ -91,7 +91,7 @@ export default function SavedSearchesClient({
           </p>
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             <Search className="w-4 h-4" />
             Go to Search
@@ -106,14 +106,14 @@ export default function SavedSearchesClient({
                 key={s.id}
                 className="flex items-center gap-4 p-4 hover:bg-gray-50/50 transition-colors"
               >
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
-                  <Bell className="w-5 h-5 text-blue-500" />
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                  <Bell className="w-5 h-5 text-indigo-500" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <Link
                     href={buildSearchUrl(s)}
-                    className="font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                    className="font-medium text-gray-900 hover:text-indigo-600 transition-colors"
                   >
                     {s.name}
                   </Link>
@@ -152,7 +152,7 @@ export default function SavedSearchesClient({
                 <div className="flex items-center gap-2 shrink-0">
                   <Link
                     href={buildSearchUrl(s)}
-                    className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
                     title="Run search"
                   >
                     <ExternalLink className="w-4 h-4" />

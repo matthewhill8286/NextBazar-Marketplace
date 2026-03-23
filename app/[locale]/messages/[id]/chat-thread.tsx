@@ -389,7 +389,7 @@ export default function ChatThread({
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -425,7 +425,7 @@ export default function ChatThread({
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0">
+        <div className="w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs shrink-0">
           {otherUser?.avatar_url ? (
             <img
               src={otherUser.avatar_url}
@@ -442,13 +442,13 @@ export default function ChatThread({
               {otherUser?.display_name || "User"}
             </span>
             {otherUser?.verified && (
-              <Shield className="w-3.5 h-3.5 text-blue-500" />
+              <Shield className="w-3.5 h-3.5 text-indigo-500" />
             )}
           </div>
           {listing?.title && (
             <Link
               href={`/listing/${listing.slug}`}
-              className="text-xs text-blue-600 hover:underline truncate block"
+              className="text-xs text-indigo-600 hover:underline truncate block"
             >
               {listing.title}
             </Link>
@@ -479,12 +479,12 @@ export default function ChatThread({
 
       {/* Listing info bar */}
       {listing && (
-        <div className="bg-blue-50 border-b border-blue-100 px-4 py-2.5 flex items-center gap-3 shrink-0">
+        <div className="bg-indigo-50 border-b border-indigo-100 px-4 py-2.5 flex items-center gap-3 shrink-0">
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-blue-800 font-medium truncate">
+            <p className="text-xs text-indigo-800 font-medium truncate">
               {listing.title}
             </p>
-            <p className="text-xs text-blue-600">
+            <p className="text-xs text-indigo-600">
               {listing.price
                 ? `${listing.currency === "EUR" ? "€" : listing.currency}${listing.price.toLocaleString()}`
                 : "Contact for price"}
@@ -492,7 +492,7 @@ export default function ChatThread({
           </div>
           <Link
             href={`/listing/${listing.slug}`}
-            className="text-xs text-blue-600 font-medium hover:underline flex items-center gap-1 shrink-0"
+            className="text-xs text-indigo-600 font-medium hover:underline flex items-center gap-1 shrink-0"
           >
             View <ExternalLink className="w-3 h-3" />
           </Link>
@@ -638,7 +638,7 @@ export default function ChatThread({
                         ? "border-green-200"
                         : msg.offer_status === "declined"
                           ? "border-red-200"
-                          : "border-blue-200"
+                          : "border-indigo-200"
                     } bg-white`}
                   >
                     <div
@@ -647,7 +647,7 @@ export default function ChatThread({
                           ? "bg-green-50 text-green-700"
                           : msg.offer_status === "declined"
                             ? "bg-red-50 text-red-600"
-                            : "bg-blue-50 text-blue-700"
+                            : "bg-indigo-50 text-indigo-700"
                       }`}
                     >
                       <Tag className="w-3.5 h-3.5" />
@@ -683,7 +683,7 @@ export default function ChatThread({
                         </div>
                       )}
                       {msg.offer_status === "pending" && isMe && (
-                        <p className="text-xs text-blue-500 mt-2 font-medium">
+                        <p className="text-xs text-indigo-500 mt-2 font-medium">
                           Awaiting response…
                         </p>
                       )}
@@ -698,7 +698,7 @@ export default function ChatThread({
                       isDeleted
                         ? "bg-gray-100 text-gray-400 italic border border-gray-200"
                         : isMe
-                          ? `bg-blue-600 text-white rounded-br-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
+                          ? `bg-indigo-600 text-white rounded-br-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
                           : `bg-white border border-gray-100 text-gray-900 rounded-bl-md ${msg.is_pinned ? "ring-2 ring-amber-400 ring-offset-1" : ""}`
                     }`}
                   >
@@ -711,7 +711,7 @@ export default function ChatThread({
                     )}
                     {!isDeleted && (
                       <p
-                        className={`text-[10px] mt-1 ${isMe ? "text-blue-200" : "text-gray-400"}`}
+                        className={`text-[10px] mt-1 ${isMe ? "text-indigo-200" : "text-gray-400"}`}
                       >
                         {formatTime(msg.created_at)}
                       </p>
@@ -746,7 +746,7 @@ export default function ChatThread({
           <textarea
             ref={inputRef}
             rows={1}
-            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm resize-none max-h-32"
+            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm resize-none max-h-32"
             placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
@@ -756,7 +756,7 @@ export default function ChatThread({
           <button
             onClick={handleSend}
             disabled={!newMessage.trim() || sending}
-            className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            className="p-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           >
             {sending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
