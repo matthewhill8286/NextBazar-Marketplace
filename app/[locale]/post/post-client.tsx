@@ -37,6 +37,11 @@ export default function PostClient() {
   const supabase = createClient();
 
   const [step, setStep] = useState(1);
+
+  function goToStep(n: number) {
+    setStep(n);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
@@ -54,6 +59,7 @@ export default function PostClient() {
   const [descLoading, setDescLoading] = useState(false);
   const [pricingLoading, setPricingLoading] = useState(false);
   const [pricingData, setPricingData] = useState<any>(null);
+  const [selectedPriceKey, setSelectedPriceKey] = useState<"low" | "suggested" | "high" | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<
     "free" | "featured" | "urgent"
   >("free");
@@ -140,13 +146,12 @@ export default function PostClient() {
       if (!res.ok) throw new Error();
       const data = await res.json();
 
+      // Step 1 only fills title + category — description and pricing
+      // have dedicated AI buttons on step 2.
       setFormData((prev) => ({
         ...prev,
         title: data.title || prev.title,
-        description: data.description || prev.description,
         category_id: data.category_id || prev.category_id,
-        condition: data.condition || prev.condition,
-        price: data.suggested_price?.toString() || prev.price,
       }));
       setAiFilled(true);
     } catch {
@@ -185,6 +190,7 @@ export default function PostClient() {
     if (!formData.title) return;
     setPricingLoading(true);
     setPricingData(null);
+    setSelectedPriceKey(null);
     try {
       const res = await fetch("/api/ai/pricing", {
         method: "POST",
@@ -240,7 +246,8 @@ export default function PostClient() {
         price_type: formData.price_type,
         condition: formData.condition || null,
         contact_phone: formData.contact_phone || null,
-        status: "active",
+        // Paid listings start as draft — activated by Stripe webhook on payment success
+        status: selectedPackage === "free" ? "active" : "draft",
         primary_image_url: uploadedUrls[0] || null,
         image_count: uploadedUrls.length,
         video_url: video?.url || null,
@@ -338,12 +345,12 @@ export default function PostClient() {
               {aiLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  AI is analyzing your photo...
+                  Detecting title &amp; category...
                 </>
               ) : (
                 <>
                   <Wand2 className="w-4 h-4" />
-                  Auto-fill with AI
+                  Suggest title &amp; category with AI
                 </>
               )}
             </button>
@@ -351,7 +358,7 @@ export default function PostClient() {
           {aiFilled && (
             <div className="flex items-center gap-2 bg-green-50 text-green-700 text-sm px-4 py-2.5 rounded-xl border border-green-100">
               <Sparkles className="w-4 h-4" />
-              AI filled in your listing details — review and adjust below
+              AI suggested a title and category — review and adjust below
             </div>
           )}
 
@@ -432,7 +439,7 @@ export default function PostClient() {
 
           <button
             type="button"
-            onClick={() => setStep(2)}
+            onClick={() => goToStep(2)}
             disabled={!formData.title || !formData.category_id}
             className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
@@ -580,30 +587,42 @@ export default function PostClient() {
 
               {/* Price suggestions */}
               <div className="grid grid-cols-3 gap-3">
+                {/* Quick Sale */}
                 <button
                   type="button"
-                  onClick={() =>
-                    update("price", pricingData.price_low?.toString() || "")
-                  }
-                  className="bg-white/80 rounded-lg p-3 text-center hover:ring-2 hover:ring-indigo-200 transition-all cursor-pointer"
+                  onClick={() => {
+                    update("price", pricingData.price_low?.toString() || "");
+                    setSelectedPriceKey("low");
+                  }}
+                  className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
+                    selectedPriceKey === "low"
+                      ? "bg-green-50 ring-2 ring-green-400 shadow-sm shadow-green-100"
+                      : "bg-white/80 hover:ring-2 hover:ring-indigo-200"
+                  }`}
                 >
-                  <div className="text-[10px] text-gray-500 font-medium mb-0.5">
+                  <div className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "low" ? "text-green-700" : "text-gray-500"}`}>
                     Quick Sale
                   </div>
                   <div className="text-lg font-bold text-gray-900">
                     €{pricingData.price_low?.toLocaleString()}
                   </div>
-                  <div className="text-[10px] text-green-600">Competitive</div>
+                  <div className={`text-[10px] ${selectedPriceKey === "low" ? "text-green-700 font-semibold" : "text-green-600"}`}>
+                    {selectedPriceKey === "low" ? "✓ Selected" : "Competitive"}
+                  </div>
                 </button>
+
+                {/* Recommended */}
                 <button
                   type="button"
-                  onClick={() =>
-                    update(
-                      "price",
-                      pricingData.suggested_price?.toString() || "",
-                    )
-                  }
-                  className="bg-white rounded-lg p-3 text-center ring-2 ring-indigo-300 cursor-pointer"
+                  onClick={() => {
+                    update("price", pricingData.suggested_price?.toString() || "");
+                    setSelectedPriceKey("suggested");
+                  }}
+                  className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
+                    selectedPriceKey === "suggested" || selectedPriceKey === null
+                      ? "bg-white ring-2 ring-indigo-400 shadow-sm shadow-indigo-100"
+                      : "bg-white/80 ring-2 ring-indigo-200"
+                  }`}
                 >
                   <div className="text-[10px] text-indigo-600 font-semibold mb-0.5">
                     Recommended
@@ -611,22 +630,33 @@ export default function PostClient() {
                   <div className="text-lg font-bold text-gray-900">
                     €{pricingData.suggested_price?.toLocaleString()}
                   </div>
-                  <div className="text-[10px] text-indigo-600">Fair value</div>
+                  <div className="text-[10px] text-indigo-600">
+                    {selectedPriceKey === "suggested" ? "✓ Selected" : "Fair value"}
+                  </div>
                 </button>
+
+                {/* Premium */}
                 <button
                   type="button"
-                  onClick={() =>
-                    update("price", pricingData.price_high?.toString() || "")
-                  }
-                  className="bg-white/80 rounded-lg p-3 text-center hover:ring-2 hover:ring-indigo-200 transition-all cursor-pointer"
+                  onClick={() => {
+                    update("price", pricingData.price_high?.toString() || "");
+                    setSelectedPriceKey("high");
+                  }}
+                  className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
+                    selectedPriceKey === "high"
+                      ? "bg-amber-50 ring-2 ring-amber-400 shadow-sm shadow-amber-100"
+                      : "bg-white/80 hover:ring-2 hover:ring-indigo-200"
+                  }`}
                 >
-                  <div className="text-[10px] text-gray-500 font-medium mb-0.5">
+                  <div className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "high" ? "text-amber-700" : "text-gray-500"}`}>
                     Premium
                   </div>
                   <div className="text-lg font-bold text-gray-900">
                     €{pricingData.price_high?.toLocaleString()}
                   </div>
-                  <div className="text-[10px] text-amber-600">Patient sell</div>
+                  <div className={`text-[10px] ${selectedPriceKey === "high" ? "text-amber-700 font-semibold" : "text-amber-600"}`}>
+                    {selectedPriceKey === "high" ? "✓ Selected" : "Patient sell"}
+                  </div>
                 </button>
               </div>
 
@@ -652,9 +682,9 @@ export default function PostClient() {
                 </div>
               )}
 
-              {/* Click to apply */}
+              {/* Selection hint */}
               <p className="text-[10px] text-indigo-400 text-center">
-                Click a price above to apply it
+                {selectedPriceKey ? "Price applied — you can change it anytime above" : "Click a price above to apply it"}
               </p>
             </div>
           )}
@@ -681,14 +711,14 @@ export default function PostClient() {
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => goToStep(1)}
               className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" /> Back
             </button>
             <button
               type="button"
-              onClick={() => setStep(3)}
+              onClick={() => goToStep(3)}
               className="flex-1 bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
             >
               Continue <ArrowRight className="w-4 h-4" />
@@ -839,7 +869,7 @@ export default function PostClient() {
           <div className="flex gap-3">
             <button
               type="button"
-              onClick={() => setStep(2)}
+              onClick={() => goToStep(2)}
               className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" /> Back
@@ -883,8 +913,8 @@ export default function PostClient() {
           listingId={checkoutListing.id}
           promotionType={selectedPackage as "featured" | "urgent"}
           onCloseAction={() => {
-            // User dismissed without paying — go to listing (it's live, just unpromoted)
-            router.push(`/listing/${checkoutListing.slug}`);
+            // User dismissed without paying — listing saved as draft, send to dashboard
+            router.push("/dashboard?tab=active");
           }}
         />
       )}

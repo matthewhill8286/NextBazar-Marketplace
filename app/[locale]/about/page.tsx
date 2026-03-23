@@ -53,9 +53,8 @@ const VALUES = [
 ];
 
 const TEAM = [
-  { initials: "MH", name: "Matt Hill", role: "Co-founder & CEO", color: "from-indigo-400 to-indigo-600" },
-  { initials: "YD", name: "Yaroslava D.", role: "Co-founder & CTO", color: "from-violet-400 to-violet-600" },
-  { initials: "AC", name: "Alex C.", role: "Head of Product", color: "from-emerald-400 to-emerald-600" },
+  { initials: "MH", name: "Matt Hill", role: "Co-founder & CTO", color: "from-indigo-400 to-indigo-600" },
+  { initials: "YD", name: "Yaroslava D.", role: "Co-founder & Head Designer", color: "from-violet-400 to-violet-600" },
 ];
 
 export default function AboutPage() {
