@@ -204,9 +204,12 @@ export default function ListingDetail({
   );
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showOfferModal, setShowOfferModal] = useState(false);
-  const [existingOffer, setExistingOffer] = useState<{ status: string } | null>(
-    null,
-  );
+  const [existingOffer, setExistingOffer] = useState<{
+    status: string;
+    amount: number | null;
+    counter_amount: number | null;
+    currency: string;
+  } | null>(null);
   const [offerCount, setOfferCount] = useState(0);
 
   const dateLocale = locale === "el" ? "el-GR" : "en-GB";
@@ -251,9 +254,10 @@ export default function ListingDetail({
   useEffect(() => {
     async function load() {
       let data = listing; // may already be hydrated from server
+      let userId: string | null = null;
 
       if (!data) {
-        // Client-side fallback: fetch listing + auth in parallel
+        // Client-side fallback: fetch listing + auth in parallel — single getUser call
         const [
           {
             data: { user: u },
@@ -268,7 +272,8 @@ export default function ListingDetail({
             .single(),
         ]);
 
-        setCurrentUserId(u?.id ?? null);
+        userId = u?.id ?? null;
+        setCurrentUserId(userId);
 
         if (error || !fetched) {
           setNotFound(true);
@@ -290,11 +295,12 @@ export default function ListingDetail({
           .limit(4);
         setRelated((rel || []) as ListingCardRow[]);
       } else {
-        // Data came from server — just get the current user
+        // Data came from server — single getUser call, reused below
         const {
           data: { user: u },
         } = await supabase.auth.getUser();
-        setCurrentUserId(u?.id ?? null);
+        userId = u?.id ?? null;
+        setCurrentUserId(userId);
       }
 
       // Track recently viewed (store up to 12 listing IDs, newest first)
@@ -305,24 +311,41 @@ export default function ListingDetail({
         localStorage.setItem("recentlyViewed", JSON.stringify(updated));
       } catch {}
 
-      // Lazy-load auth-dependent data (offer history)
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (user && user.id !== data.user_id) {
-          supabase
-            .from("offers")
-            .select("status")
-            .eq("listing_id", data.id)
-            .eq("buyer_id", user.id)
-            .then(({ data: allOffers }) => {
-              if (!allOffers) return;
-              setOfferCount(allOffers.length);
-              const active = allOffers.find(
-                (o) => o.status === "pending" || o.status === "countered",
-              );
-              if (active) setExistingOffer(active);
-            });
-        }
-      });
+      // Reuse userId resolved above — no extra getUser() call needed
+      if (userId && userId !== data.user_id) {
+        // Fetch offer history and record analytics in parallel
+        const offersPromise = supabase
+          .from("offers")
+          .select("status, amount, counter_amount, currency")
+          .eq("listing_id", data.id)
+          .eq("buyer_id", userId)
+          .then(({ data: allOffers }) => {
+            if (!allOffers) return;
+            setOfferCount(allOffers.length);
+            const active = allOffers.find(
+              (o) =>
+                o.status === "pending" ||
+                o.status === "countered" ||
+                o.status === "accepted",
+            );
+            if (active)
+              setExistingOffer({
+                status: active.status,
+                amount: active.amount ?? null,
+                counter_amount: active.counter_amount ?? null,
+                currency: active.currency ?? "EUR",
+              });
+          });
+
+        const analyticsPromise = fetch("/api/analytics/view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ listing_id: data.id }),
+        }).catch(() => {});
+
+        // Fire both without blocking the loading state
+        Promise.all([offersPromise, analyticsPromise]);
+      }
 
       // Increment view count on the listing row
       supabase
@@ -331,23 +354,80 @@ export default function ListingDetail({
         .eq("id", data.id)
         .then();
 
-      // Record daily analytics (non-owner only)
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        const viewerId = user?.id ?? null;
-        if (!viewerId || viewerId !== data.user_id) {
-          fetch("/api/analytics/view", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ listing_id: data.id }),
-          }).catch(() => {});
-        }
-      });
-
       setLoading(false);
     }
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
+
+  // ── Realtime: listing status (e.g. active → sold) ────────────────────────
+  // Fires when the seller marks the item sold or the status changes for any
+  // other reason (expiry, moderation, etc.).  Keyed on the listing id so the
+  // subscription is torn down and recreated if the slug ever changes.
+  useEffect(() => {
+    if (!listing?.id) return;
+    const channel = supabase
+      .channel(`listing-status-${listing.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "listings", filter: `id=eq.${listing.id}` },
+        (payload) => {
+          const patch = payload.new as Partial<typeof listing> & { id: string };
+          setListing((prev) => prev ? { ...prev, ...patch } : prev);
+        },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [listing?.id]);
+
+  // ── Realtime: buyer's offer on this listing ──────────────────────────────
+  // Updates existingOffer.status live so the CTA button (Pending / Countered)
+  // reflects the current state without a page reload.  Only runs when we know
+  // the current user is the buyer (currentUserId set and != seller).
+  useEffect(() => {
+    if (!listing?.id || !currentUserId || currentUserId === listing.user_id) return;
+
+    const channel = supabase
+      .channel(`listing-offer-${listing.id}-${currentUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "offers",
+          filter: `buyer_id=eq.${currentUserId}`,
+        },
+        (payload) => {
+          const patch = payload.new as {
+            id: string;
+            listing_id: string;
+            status: string;
+            amount: number;
+            counter_amount: number | null;
+            currency: string;
+          };
+          if (patch.listing_id !== listing.id) return;
+          const { status } = patch;
+          if (
+            status === "pending" ||
+            status === "countered" ||
+            status === "accepted"
+          ) {
+            setExistingOffer({
+              status,
+              amount: patch.amount ?? null,
+              counter_amount: patch.counter_amount ?? null,
+              currency: patch.currency ?? "EUR",
+            });
+          } else {
+            // declined / withdrawn → clear the offer state
+            setExistingOffer(null);
+          }
+        },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [listing?.id, listing?.user_id, currentUserId]);
 
   if (loading) {
     return <ListingDetailSkeleton />;
@@ -459,6 +539,8 @@ export default function ListingDetail({
             images={galleryImages}
             title={listing.title}
             videoUrl={listing.video_url}
+            listingStatus={listing.status}
+            offerStatus={existingOffer?.status ?? null}
           />
         </div>
 
@@ -467,13 +549,19 @@ export default function ListingDetail({
             {/* ═══ LEFT COLUMN ═══ */}
             <div className="lg:col-span-2 space-y-6">
               {/* Title card */}
-              <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  {listing.status === "sold" && (
-                    <span className="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full tracking-wide uppercase">
+              <div className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}>
+                {/* Sold banner — full-width strip at the very top of the card */}
+                {listing.status === "sold" && (
+                  <div className="flex items-center justify-center gap-3 bg-gray-900 text-white py-3 px-6">
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">━━━</span>
+                    <span className="text-sm font-black uppercase tracking-[0.2em]">
                       {t("sold")}
                     </span>
-                  )}
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">━━━</span>
+                  </div>
+                )}
+                <div className="p-6">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
                   {listing.is_promoted && (
                     <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
                       {t("featured")}
@@ -595,6 +683,7 @@ export default function ListingDetail({
                   <FavoriteAction listingId={listing.id} />
                   <ShareAction title={listing.title} slug={listing.slug} />
                 </div>
+                </div>{/* end p-6 wrapper */}
               </div>
 
               {/* Details grid */}
@@ -780,35 +869,123 @@ export default function ListingDetail({
                 />
 
                 {/* Make an Offer / Offer state — non-owners only */}
-                {!isOwner &&
-                  listing.price &&
-                  listing.status === "active" &&
-                  (existingOffer ? (
-                    // Active offer always takes priority over the count check
-                    <Link
-                      href="/dashboard/offers"
-                      className="w-full mt-3 py-3 rounded-xl border-2 border-amber-200 bg-amber-50 text-amber-700 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-amber-100 transition-colors"
-                    >
-                      <Tag className="w-4 h-4" />
-                      {existingOffer.status === "countered"
-                        ? t("offerCountered")
-                        : t("offerPending")}
-                    </Link>
-                  ) : offerCount >= 2 ? (
-                    // No active offer but limit exhausted (both were withdrawn/declined)
-                    <div className="w-full mt-3 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
-                      <Tag className="w-4 h-4" />
-                      {t("offerLimitReached")}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => setShowOfferModal(true)}
-                      className="w-full mt-3 py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center justify-center gap-2"
-                    >
-                      <Tag className="w-4 h-4" />
-                      {t("makeOffer")}
-                    </button>
-                  ))}
+                {!isOwner && listing.price && listing.status === "active" && (
+                  <div className="mt-3">
+                    {existingOffer ? (
+                      existingOffer.status === "accepted" ? (
+                        // ── Offer accepted ───────────────────────────────
+                        <div className="w-full rounded-xl overflow-hidden border-2 border-emerald-200">
+                          <div className="bg-emerald-500 px-4 py-2 flex items-center gap-2">
+                            <Tag className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
+                            <span className="text-xs font-bold text-white uppercase tracking-wide">
+                              Offer accepted!
+                            </span>
+                          </div>
+                          <div className="bg-emerald-50 px-4 py-3 flex items-center justify-between gap-3">
+                            <div className="text-xs text-emerald-700">
+                              <span className="block text-[11px] text-emerald-500 mb-0.5">Accepted amount</span>
+                              <span className="font-extrabold text-emerald-800 text-base">
+                                {existingOffer.amount != null
+                                  ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
+                                  : "—"}
+                              </span>
+                            </div>
+                            <Link
+                              href="/dashboard/offers"
+                              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+                            >
+                              View →
+                            </Link>
+                          </div>
+                        </div>
+                      ) : existingOffer.status === "countered" ? (
+                        // ── Counter offer received ────────────────────────
+                        <Link
+                          href="/dashboard/offers"
+                          className="block w-full rounded-xl overflow-hidden border-2 border-indigo-200 hover:border-indigo-300 transition-all group"
+                        >
+                          <div className="bg-indigo-600 px-4 py-2 flex items-center gap-2">
+                            <Tag className="w-3.5 h-3.5 text-indigo-200 shrink-0" />
+                            <span className="text-xs font-bold text-white uppercase tracking-wide">
+                              Counter offer received
+                            </span>
+                          </div>
+                          <div className="bg-indigo-50 group-hover:bg-indigo-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
+                            <div className="text-xs text-indigo-600">
+                              <span className="block text-[11px] text-indigo-400 mb-0.5">Your offer</span>
+                              <span className="font-bold">
+                                {existingOffer.amount != null
+                                  ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
+                                  : "—"}
+                              </span>
+                            </div>
+                            <div className="w-px h-6 bg-indigo-200" />
+                            <div className="text-xs text-indigo-600">
+                              <span className="block text-[11px] text-indigo-400 mb-0.5">Counter</span>
+                              <span className="font-extrabold text-indigo-700">
+                                {existingOffer.counter_amount != null
+                                  ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.counter_amount.toLocaleString()}`
+                                  : "—"}
+                              </span>
+                            </div>
+                            <span className="ml-auto text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
+                              Respond →
+                            </span>
+                          </div>
+                        </Link>
+                      ) : (
+                        // ── Offer pending ─────────────────────────────────
+                        <Link
+                          href="/dashboard/offers"
+                          className="block w-full rounded-xl overflow-hidden border-2 border-amber-200 hover:border-amber-300 transition-all group"
+                        >
+                          <div className="bg-amber-500 px-4 py-2 flex items-center gap-2">
+                            <Tag className="w-3.5 h-3.5 text-amber-100 shrink-0" />
+                            <span className="text-xs font-bold text-white uppercase tracking-wide">
+                              Offer pending
+                            </span>
+                          </div>
+                          <div className="bg-amber-50 group-hover:bg-amber-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
+                            <div className="text-xs text-amber-700">
+                              <span className="block text-[11px] text-amber-500 mb-0.5">Your offer</span>
+                              <span className="font-extrabold text-amber-800 text-base">
+                                {existingOffer.amount != null
+                                  ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
+                                  : "—"}
+                              </span>
+                            </div>
+                            <span className="ml-auto text-xs font-semibold text-amber-600 group-hover:text-amber-700">
+                              View →
+                            </span>
+                          </div>
+                        </Link>
+                      )
+                    ) : offerCount >= 2 ? (
+                      // ── Offer limit reached ───────────────────────────
+                      <div className="w-full py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+                        <Tag className="w-4 h-4" />
+                        {t("offerLimitReached")}
+                      </div>
+                    ) : (
+                      // ── Make an offer ─────────────────────────────────
+                      <button
+                        onClick={() => setShowOfferModal(true)}
+                        className="w-full py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Tag className="w-4 h-4" />
+                        {t("makeOffer")}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* Sold state — shown instead of CTA when listing is no longer active */}
+                {!isOwner && listing.status === "sold" && (
+                  <div className="mt-3 w-full py-3 px-4 rounded-xl bg-gray-100 border-2 border-gray-200 text-gray-500 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
+                    <span className="text-base">🏷️</span>
+                    This item has been sold
+                  </div>
+                )}
 
                 <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                   <Link
@@ -898,8 +1075,8 @@ export default function ListingDetail({
           listingPrice={listing.price}
           currency={listing.currency || "EUR"}
           onCloseAction={() => setShowOfferModal(false)}
-          onOfferSentAction={() => {
-            setExistingOffer({ status: "pending" });
+          onOfferSentAction={(amt, cur) => {
+            setExistingOffer({ status: "pending", amount: amt, counter_amount: null, currency: cur });
             setOfferCount((c) => c + 1);
             setShowOfferModal(false);
           }}
