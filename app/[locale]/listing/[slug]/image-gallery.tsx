@@ -17,10 +17,16 @@ export default function ImageGallery({
   images,
   title,
   videoUrl,
+  listingStatus,
+  offerStatus,
 }: {
   images: GalleryImage[];
   title: string;
   videoUrl?: string | null;
+  /** e.g. "active" | "sold" | "expired" */
+  listingStatus?: string | null;
+  /** e.g. "pending" | "countered" | "accepted" — buyer's current offer state */
+  offerStatus?: string | null;
 }) {
   // Build unified media list: video first (if present), then images
   const media: MediaItem[] = [
@@ -73,6 +79,43 @@ export default function ImageGallery({
             priority={activeIndex === 0}
             sizes="(max-width: 1280px) 100vw, 1280px"
           />
+        )}
+
+          {/* ── Status overlays ────────────────────────────────────────── */}
+        {listingStatus === "sold" && (
+          <>
+            {/* Dim the image */}
+            <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+            {/* Centered SOLD stamp */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="border-4 border-white/80 rounded-xl px-8 py-3 rotate-[-12deg] select-none">
+                <span className="text-white font-black text-4xl uppercase tracking-[0.25em] drop-shadow-lg">
+                  Sold
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Offer-state badge — top-left pill (only when listing is active) */}
+        {listingStatus !== "sold" && offerStatus && (
+          <div className="absolute top-3 left-3 pointer-events-none">
+            {offerStatus === "accepted" && (
+              <span className="flex items-center gap-1.5 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                ✓ Offer Accepted
+              </span>
+            )}
+            {offerStatus === "countered" && (
+              <span className="flex items-center gap-1.5 bg-indigo-600/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                ↔ Counter Offer
+              </span>
+            )}
+            {offerStatus === "pending" && (
+              <span className="flex items-center gap-1.5 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                ⏳ Offer Pending
+              </span>
+            )}
+          </div>
         )}
 
         {/* Nav arrows — hide over video controls */}

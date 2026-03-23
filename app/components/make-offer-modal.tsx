@@ -11,7 +11,7 @@ type Props = {
   listingPrice: number | null;
   currency: string;
   onCloseAction: () => void;
-  onOfferSentAction?: () => void;
+  onOfferSentAction?: (amount: number, currency: string) => void;
 };
 
 export default function MakeOfferModal({
@@ -74,7 +74,7 @@ export default function MakeOfferModal({
 
     setState("success");
     setLoading(false);
-    onOfferSentAction?.();
+    onOfferSentAction?.(Number(amount), currency);
   }
 
   const pct = listingPrice

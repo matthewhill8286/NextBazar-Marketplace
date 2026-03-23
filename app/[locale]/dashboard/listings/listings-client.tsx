@@ -345,8 +345,6 @@ export default function ListingsClient({
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900">My Listings</h1>
-
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
         {TABS.map((t) => {

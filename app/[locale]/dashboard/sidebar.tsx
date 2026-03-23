@@ -4,11 +4,11 @@ import clsx from "clsx";
 import {
   BarChart2,
   Bell,
+  BookMarked,
   Eye,
   Flag,
   Heart,
   LayoutDashboard,
-  Package,
   Settings,
   Shield,
   ShoppingBag,
@@ -36,12 +36,11 @@ type SidebarProps = {
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/listings", label: "My Listings", icon: Package },
   { href: "/dashboard/offers", label: "Offers", icon: Tag },
   { href: "/dashboard/purchases", label: "Purchases", icon: ShoppingBag },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  { href: "/dashboard/saved-searches", label: "Saved Searches", icon: Bell },
+  { href: "/dashboard/saved-searches", label: "Saved Searches", icon: BookMarked },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
