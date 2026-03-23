@@ -40,7 +40,11 @@ export async function POST(request: NextRequest) {
       const promotedUntil = new Date();
       promotedUntil.setDate(promotedUntil.getDate() + durationDays);
 
-      const updateData: Record<string, any> = {};
+      const updateData: Record<string, any> = {
+        // Ensure listing is live — handles the case where it was created as a
+        // draft pending payment, and also harmlessly re-confirms active listings.
+        status: "active",
+      };
 
       if (promotionType === "featured") {
         updateData.is_promoted = true;
