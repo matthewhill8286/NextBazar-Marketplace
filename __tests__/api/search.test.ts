@@ -245,7 +245,7 @@ describe("GET /api/search", () => {
     });
 
     it("does NOT add category_id filter when slug is not found in DB", async () => {
-      state.categoryLookup = { data: null, error: { message: "not found" } };
+      state.categoryLookup = { data: null, error:  null };
       await GET(makeRequest({ q: "sea", category: "nonexistent" }));
       const chain = state.listingsChains[0];
       const categoryEq = chain.eqs.find(([col]) => col === "category_id");

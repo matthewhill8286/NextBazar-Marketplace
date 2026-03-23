@@ -2,6 +2,7 @@
 
 import {
   Loader2,
+  MapPin,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -16,17 +17,26 @@ import CategoryIcon, {
 import ListingCard from "@/app/components/listing-card";
 import SaveSearchButton from "@/app/components/save-search-button";
 import { createClient } from "@/lib/supabase/client";
+import type {
+  Category,
+  CategoryJoin,
+  Location,
+  LocationJoin,
+  SearchListing,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
-type Category = { id: string; name: string; slug: string; icon: string };
-type Subcategory = {
-  id: string;
-  category_id: string;
-  name: string;
-  slug: string;
+type Props = {
+  initialCategories?: Category[];
+  initialSubcategories?: Subcategory[];
+  initialLocations?: Location[];
 };
-type Location = { id: string; name: string; slug: string };
 
-export default function SearchClient() {
+export default function SearchClient({
+  initialCategories = [],
+  initialSubcategories = [],
+  initialLocations = [],
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -56,10 +66,11 @@ export default function SearchClient() {
   const [priceMax, setPriceMax] = useState(initialPriceMax);
   const [showFilters, setShowFilters] = useState(false);
 
-  const [listings, setListings] = useState<any[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [listings, setListings] = useState<SearchListing[]>([]);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [subcategories, setSubcategories] =
+    useState<Subcategory[]>(initialSubcategories);
+  const [locations, setLocations] = useState<Location[]>(initialLocations);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
@@ -69,11 +80,9 @@ export default function SearchClient() {
   const [aiSearching, setAiSearching] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState("");
   const [wasAiSearch, setWasAiSearch] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   // ─── Featured/promoted listings shown when no search is active ────────────
-  const [featuredListings, setFeaturedListings] = useState<any[]>([]);
+  const [featuredListings, setFeaturedListings] = useState<SearchListing[]>([]);
   const [featuredLoading, setFeaturedLoading] = useState(
     !initialQuery && !initialCategory && !initialLocation,
   );
@@ -117,58 +126,36 @@ export default function SearchClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ─── Load meta once ───────────────────────────────────────────────────────
+  // ─── Load auth once (categories/locations already hydrated from server) ─────
   useEffect(() => {
-    async function loadMeta() {
-      const [
-        { data: cats },
-        { data: subs },
-        { data: locs },
-        {
-          data: { user },
-        },
-      ] = await Promise.all([
-        supabase
-          .from("categories")
-          .select("id, name, slug, icon")
-          .order("sort_order"),
-        supabase
-          .from("subcategories")
-          .select("id, category_id, name, slug")
-          .order("sort_order"),
-        supabase.from("locations").select("id, name, slug").order("sort_order"),
-        supabase.auth.getUser(),
-      ]);
-      if (cats) setCategories(cats);
-      if (subs) setSubcategories(subs);
-      if (locs) setLocations(locs);
-      if (user) {
-        setUserId(user.id);
-        const { data: favs } = await supabase
-          .from("favorites")
-          .select("listing_id")
-          .eq("user_id", user.id);
-        if (favs) setSavedIds(new Set(favs.map((f: any) => f.listing_id)));
-      }
+    async function loadAuth() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      // Auth state is managed by SavedProvider in the layout —
+      // nothing more to do here; categories/locs came in as props.
+      void user;
     }
-    loadMeta();
+    loadAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ─── Normalise hit shape ──────────────────────────────────────────────────
-  function normalise(h: any) {
+  // Accepts both full Supabase rows (categories/locations objects) and flat
+  // vector-search RPC results (category_name / location_name columns).
+  function normalise(h: Record<string, unknown>): SearchListing {
     return {
-      ...h,
+      ...(h as SearchListing),
       category: h.category_name
         ? {
-            name: h.category_name,
-            slug: h.category_slug,
-            icon: h.category_icon,
+            name: h.category_name as string,
+            slug: h.category_slug as string,
+            icon: h.category_icon as string | null,
           }
-        : (h.categories ?? h.category ?? null),
+        : ((h.categories ?? h.category ?? null) as CategoryJoin | null),
       location: h.location_name
-        ? { name: h.location_name, slug: h.location_slug }
-        : (h.locations ?? h.location ?? null),
+        ? { name: h.location_name as string, slug: h.location_slug as string }
+        : ((h.locations ?? h.location ?? null) as LocationJoin | null),
     };
   }
 
@@ -341,6 +328,7 @@ export default function SearchClient() {
   const activeSubcategory = subcategories.find(
     (s) => s.slug === subcategorySlug,
   );
+  const activeLocation = locations.find((l) => l.slug === locationSlug);
   const visibleSubcategories = subcategories.filter(
     (s) => s.category_id === activeCategory?.id,
   );
@@ -618,6 +606,16 @@ export default function SearchClient() {
                 <X className="w-3 h-3" />
               </button>
             )}
+            {activeLocation && (
+              <button
+                onClick={() => setLocationSlug("")}
+                className="flex items-center gap-1.5 bg-sky-50 text-sky-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-sky-100 transition-colors"
+              >
+                <MapPin className="w-3 h-3" />
+                {activeLocation.name}
+                <X className="w-3 h-3" />
+              </button>
+            )}
             {submittedQuery && (
               <button
                 onClick={() => {
@@ -808,8 +806,6 @@ export default function SearchClient() {
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
                 />
               ))}
             </div>
@@ -865,8 +861,6 @@ export default function SearchClient() {
                   <ListingCard
                     key={listing.id}
                     listing={listing}
-                    userId={userId}
-                    isSaved={savedIds.has(listing.id)}
                   />
                 ))}
               </div>

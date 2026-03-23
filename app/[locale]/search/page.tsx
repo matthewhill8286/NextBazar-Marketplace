@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import {
+  getCategoriesCached,
+  getLocationsCached,
+  getSubcategoriesCached,
+} from "@/lib/supabase/queries";
 import SearchClient from "./search-client";
 
 export const metadata: Metadata = {
@@ -7,7 +12,13 @@ export const metadata: Metadata = {
   description: "Search and browse thousands of listings on NextBazar.",
 };
 
-export default function SearchPage() {
+export default async function SearchPage() {
+  const [categories, subcategories, locations] = await Promise.all([
+    getCategoriesCached(),
+    getSubcategoriesCached(),
+    getLocationsCached(),
+  ]);
+
   return (
     <Suspense
       fallback={
@@ -16,7 +27,11 @@ export default function SearchPage() {
         </div>
       }
     >
-      <SearchClient />
+      <SearchClient
+        initialCategories={categories}
+        initialSubcategories={subcategories}
+        initialLocations={locations}
+      />
     </Suspense>
   );
 }

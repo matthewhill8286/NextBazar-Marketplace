@@ -1,4 +1,154 @@
+import { unstable_cache } from "next/cache";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./server";
+import type {
+  Category,
+  ListingCardRow,
+  ListingDetailRow,
+  Location,
+  Subcategory,
+} from "./supabase.types";
+
+// ─── Public (no-auth) Supabase client ────────────────────────────────────────
+// Used inside unstable_cache wrappers so the cache key is stable and we don't
+// pull in the cookies() dynamic API (which would bust the cache every request).
+function publicClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
+
+// Shared select fragment used across home page and listing cards
+const CARD_SELECT = `
+  *,
+  categories(name, slug, icon),
+  locations(name, slug),
+  profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews)
+`;
+
+// ─── Cached reference data (revalidate: 1 hour) ───────────────────────────────
+
+export const getCategoriesCached = unstable_cache(
+  async (): Promise<Category[]> => {
+    const { data } = await publicClient()
+      .from("categories")
+      .select("*")
+      .order("sort_order");
+    return (data ?? []) as Category[];
+  },
+  ["categories"],
+  { revalidate: 3600, tags: ["categories"] },
+);
+
+export const getSubcategoriesCached = unstable_cache(
+  async (): Promise<Subcategory[]> => {
+    const { data } = await publicClient()
+      .from("subcategories")
+      .select("id, category_id, name, slug")
+      .order("sort_order");
+    return (data ?? []) as Subcategory[];
+  },
+  ["subcategories"],
+  { revalidate: 3600, tags: ["subcategories"] },
+);
+
+export const getLocationsCached = unstable_cache(
+  async (): Promise<Location[]> => {
+    const { data } = await publicClient()
+      .from("locations")
+      .select("id, name, slug")
+      .order("sort_order");
+    return (data ?? []) as Location[];
+  },
+  ["locations"],
+  { revalidate: 3600, tags: ["locations"] },
+);
+
+// ─── Cached home-page listing data (revalidate: 60 s) ────────────────────────
+
+export const getFeaturedListingsCached = unstable_cache(
+  async (): Promise<ListingCardRow[]> => {
+    const { data } = await publicClient()
+      .from("listings")
+      .select(CARD_SELECT)
+      .eq("status", "active")
+      .eq("is_promoted", true)
+      .order("created_at", { ascending: false })
+      .limit(4);
+    return (data ?? []) as ListingCardRow[];
+  },
+  ["featured-listings"],
+  { revalidate: 60, tags: ["listings"] },
+);
+
+export const getRecentListingsCached = unstable_cache(
+  async (): Promise<ListingCardRow[]> => {
+    const { data } = await publicClient()
+      .from("listings")
+      .select(CARD_SELECT)
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(8);
+    return (data ?? []) as ListingCardRow[];
+  },
+  ["recent-listings"],
+  { revalidate: 60, tags: ["listings"] },
+);
+
+export const getActiveListingCountCached = unstable_cache(
+  async (): Promise<number> => {
+    const { count } = await publicClient()
+      .from("listings")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active");
+    return count ?? 0;
+  },
+  ["listing-count"],
+  { revalidate: 300, tags: ["listings"] },
+);
+
+// ─── Cached listing detail + related (revalidate: 60 s) ──────────────────────
+
+const LISTING_DETAIL_SELECT = `
+  *,
+  categories(name, slug, icon),
+  subcategories(name, slug),
+  locations(name, slug),
+  profiles!listings_user_id_fkey(id, display_name, avatar_url, verified, rating, total_reviews, is_dealer, created_at, whatsapp_number, telegram_username),
+  listing_images(id, url, thumbnail_url, sort_order)
+`;
+
+export const getListingBySlugCached = unstable_cache(
+  async (slug: string): Promise<ListingDetailRow | null> => {
+    const { data } = await publicClient()
+      .from("listings")
+      .select(LISTING_DETAIL_SELECT)
+      .eq("slug", slug)
+      .single();
+    return (data ?? null) as ListingDetailRow | null;
+  },
+  ["listing-by-slug"],
+  { revalidate: 60, tags: ["listings"] },
+);
+
+export const getRelatedListingsCached = unstable_cache(
+  async (categoryId: string, excludeId: string): Promise<ListingCardRow[]> => {
+    const { data } = await publicClient()
+      .from("listings")
+      .select(`*, categories(name, slug, icon), locations(name, slug)`)
+      .eq("status", "active")
+      .eq("category_id", categoryId)
+      .neq("id", excludeId)
+      .order("created_at", { ascending: false })
+      .limit(4);
+    return (data ?? []) as ListingCardRow[];
+  },
+  ["related-listings"],
+  { revalidate: 60, tags: ["listings"] },
+);
+
+// ─── Non-cached helpers (used server-side with auth context) ─────────────────
 
 export async function getCategories() {
   const supabase = await createClient();

@@ -8,6 +8,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import { createClient } from "@/lib/supabase/client";
+import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
 
 const LISTING_SELECT = `
   *,
@@ -16,66 +17,34 @@ const LISTING_SELECT = `
   profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews)
 `;
 
-export default function HomeClient() {
+type Props = {
+  initialCategories?: Category[];
+  initialFeatured?: ListingCardRow[];
+  initialRecent?: ListingCardRow[];
+  initialTotalCount?: number;
+};
+
+export default function HomeClient({
+  initialCategories = [],
+  initialFeatured = [],
+  initialRecent = [],
+  initialTotalCount = 0,
+}: Props) {
   const supabase = createClient();
-  const [categories, setCategories] = useState<any[]>([]);
-  const [featured, setFeatured] = useState<any[]>([]);
-  const [recent, setRecent] = useState<any[]>([]);
-  const [trending, setTrending] = useState<any[]>([]);
+  const [categories] = useState<Category[]>(initialCategories);
+  const [featured] = useState<ListingCardRow[]>(initialFeatured);
+  const [recent] = useState<ListingCardRow[]>(initialRecent);
+  const [trending, setTrending] = useState<ListingCardRow[]>([]);
   const [trendingLocationName, setTrendingLocationName] = useState<string | null>(null);
   const [trendingLocationSlug, setTrendingLocationSlug] = useState<string | null>(null);
-  const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [recentlyViewed, setRecentlyViewed] = useState<ListingCardRow[]>([]);
+  const [totalCount] = useState(initialTotalCount);
+  // Public data (categories, featured, recent) comes from the server.
+  // Only user-personalised data (trending, recently viewed) needs to load client-side.
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     async function load() {
-      const [
-        { data: cats },
-        { data: feat },
-        { data: rec },
-        { count },
-        {
-          data: { user },
-        },
-      ] = await Promise.all([
-        supabase.from("categories").select("*").order("sort_order"),
-        supabase
-          .from("listings")
-          .select(LISTING_SELECT)
-          .eq("status", "active")
-          .eq("is_promoted", true)
-          .order("created_at", { ascending: false })
-          .limit(4),
-        supabase
-          .from("listings")
-          .select(LISTING_SELECT)
-          .eq("status", "active")
-          .order("created_at", { ascending: false })
-          .limit(8),
-        supabase
-          .from("listings")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "active"),
-        supabase.auth.getUser(),
-      ]);
-
-      setCategories(cats || []);
-      setFeatured(feat || []);
-      setRecent(rec || []);
-      setTotalCount(count || 0);
-
-      if (user) {
-        setUserId(user.id);
-        const { data: favs } = await supabase
-          .from("favorites")
-          .select("listing_id")
-          .eq("user_id", user.id);
-        if (favs) setSavedIds(new Set(favs.map((f: any) => f.listing_id)));
-      }
-
       // ── Trending in your area ─────────────────────────────────────────
       let locationId: string | null = null;
       let locationName: string | null = null;
@@ -116,11 +85,11 @@ export default function HomeClient() {
           .eq("status", "active")
           .order("view_count", { ascending: false })
           .limit(8);
-        setTrending(fallback || []);
+        setTrending((fallback || []) as ListingCardRow[]);
         setTrendingLocationName(null);
         setTrendingLocationSlug(null);
       } else {
-        setTrending(trendData);
+        setTrending(trendData as ListingCardRow[]);
         setTrendingLocationName(locationName);
         setTrendingLocationSlug(locationSlug);
       }
@@ -139,8 +108,8 @@ export default function HomeClient() {
               // Preserve the localStorage order (most recently viewed first)
               const idOrder = ids.slice(0, 8);
               const sorted = idOrder
-                .map((id) => rvData.find((l: any) => l.id === id))
-                .filter(Boolean);
+                .map((id) => rvData.find((l) => l.id === id))
+                .filter((l): l is ListingCardRow => l != null);
               setRecentlyViewed(sorted);
             }
           }
@@ -150,12 +119,12 @@ export default function HomeClient() {
       setLoading(false);
     }
     load();
-  }, [supabase.from, supabase.auth.getUser]);
+  }, [supabase]);
 
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white">
+      <section className="relative overflow-hidden bg-linear-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white">
         {/* Dot mesh overlay */}
         <div
           className="absolute inset-0 opacity-[0.12]"
@@ -166,7 +135,7 @@ export default function HomeClient() {
           }}
         />
         {/* Ambient glow blobs */}
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div className="absolute -top-40 -left-40 w-125 h-125 bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-violet-500 rounded-full blur-3xl opacity-25 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
@@ -231,7 +200,7 @@ export default function HomeClient() {
             <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
-                  key={i}
+                  key={`${Math.random() + i}`}
                   className="bg-white rounded-2xl p-3 border border-gray-100 h-24 animate-pulse"
                 />
               ))}
@@ -253,7 +222,7 @@ export default function HomeClient() {
                   <Link
                     key={cat.id}
                     href={`/search?category=${cat.slug}`}
-                    className={`bg-gradient-to-br ${palettes[i % palettes.length]} rounded-2xl p-3 border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center group`}
+                    className={`bg-linear-to-br ${palettes[i % palettes.length]} rounded-2xl p-3 border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center group`}
                   >
                     <div
                       className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1.5 mx-auto group-hover:scale-110 transition-transform duration-200`}
@@ -280,7 +249,7 @@ export default function HomeClient() {
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full" />
+                <div className="w-1 h-6 bg-linear-to-b from-amber-400 to-orange-500 rounded-full" />
                 <h2 className="text-xl font-bold text-gray-900">
                   Featured Listings
                 </h2>
@@ -300,8 +269,7 @@ export default function HomeClient() {
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
+
                 />
               ))}
             </div>
@@ -313,7 +281,7 @@ export default function HomeClient() {
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-gradient-to-b from-orange-400 to-red-500 rounded-full" />
+                <div className="w-1 h-6 bg-linear-to-b from-orange-400 to-red-500 rounded-full" />
                 <h2 className="text-xl font-bold text-gray-900">
                   {trendingLocationName
                     ? `Trending in ${trendingLocationName}`
@@ -338,8 +306,7 @@ export default function HomeClient() {
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
+
                 />
               ))}
             </div>
@@ -351,7 +318,7 @@ export default function HomeClient() {
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-gradient-to-b from-violet-500 to-purple-600 rounded-full" />
+                <div className="w-1 h-6 bg-linear-to-b from-violet-500 to-purple-600 rounded-full" />
                 <h2 className="text-xl font-bold text-gray-900">
                   Recently Viewed
                 </h2>
@@ -361,6 +328,7 @@ export default function HomeClient() {
                 </span>
               </div>
               <button
+                  type="button"
                 onClick={() => {
                   try { localStorage.removeItem("recentlyViewed"); } catch {}
                   setRecentlyViewed([]);
@@ -375,8 +343,7 @@ export default function HomeClient() {
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
+
                 />
               ))}
             </div>
@@ -387,7 +354,7 @@ export default function HomeClient() {
         <section className="mb-12">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-1 h-6 bg-gradient-to-b from-indigo-500 to-indigo-500 rounded-full" />
+              <div className="w-1 h-6 bg-linear-to-b from-indigo-500 to-indigo-500 rounded-full" />
               <h2 className="text-xl font-bold text-gray-900">
                 {!loading && recent.length === 0
                   ? "No listings yet"
@@ -407,7 +374,7 @@ export default function HomeClient() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
-                  key={i}
+                    key={`${Math.random() + i}`}
                   className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
                 >
                   <div className="aspect-4/3 bg-gray-100 animate-pulse" />
@@ -425,8 +392,7 @@ export default function HomeClient() {
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-                  userId={userId}
-                  isSaved={savedIds.has(listing.id)}
+
                 />
               ))}
             </div>
@@ -450,7 +416,7 @@ export default function HomeClient() {
         </section>
 
         {/* ── Why NextBazar ─────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-white mb-4">
+        <section className="relative overflow-hidden bg-linear-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 text-white mb-4">
           <div
             className="absolute inset-0 opacity-[0.06]"
             style={{
@@ -491,7 +457,7 @@ export default function HomeClient() {
               ].map(({ icon: Icon, color, title, desc }) => (
                 <div key={title} className="text-center group">
                   <div
-                    className={`w-14 h-14 bg-gradient-to-br ${color} rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform duration-200`}
+                    className={`w-14 h-14 bg-linear-to-br ${color} rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 transition-transform duration-200`}
                   >
                     <Icon className="w-7 h-7 text-white" />
                   </div>

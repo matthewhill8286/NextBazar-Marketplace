@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
 import FavoriteButton from "./favorite-button";
 
-type CatLike = { name: string; slug?: string; icon?: string };
+type CatLike = { name: string; slug?: string; icon?: string | null };
 type LocLike = { name: string; slug?: string };
 
 type ListingCardProps = {
