@@ -66,7 +66,7 @@ export default function SavedPage() {
   if (savedLoading || pageLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function SavedPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-flex bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-colors"
           >
             Browse Listings
           </Link>

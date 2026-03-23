@@ -11,7 +11,7 @@ export default function SignupPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 shadow-lg shadow-blue-200">
+          <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-4 shadow-lg shadow-indigo-200">
             N
           </div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -28,7 +28,7 @@ export default function SignupPage() {
           Already have an account?{" "}
           <Link
             href="/auth/login"
-            className="text-blue-600 font-medium hover:underline"
+            className="text-indigo-600 font-medium hover:underline"
           >
             Sign in
           </Link>

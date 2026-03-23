@@ -161,7 +161,7 @@ function PurchaseCard({
               <div className="min-w-0">
                 <Link
                   href={listing ? `/listing/${listing.slug}` : "#"}
-                  className="font-semibold text-gray-900 text-sm hover:text-blue-600 transition-colors block truncate"
+                  className="font-semibold text-gray-900 text-sm hover:text-indigo-600 transition-colors block truncate"
                 >
                   {listing?.title || "Listing"}
                 </Link>
@@ -200,7 +200,7 @@ function PurchaseCard({
                 href={`/profile/${seller.id}`}
                 className="flex items-center gap-1.5 mt-2 w-fit group"
               >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-[9px] font-bold shrink-0 overflow-hidden">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-[9px] font-bold shrink-0 overflow-hidden">
                   {seller.avatar_url ? (
                     <img
                       src={seller.avatar_url}
@@ -211,11 +211,11 @@ function PurchaseCard({
                     seller.display_name[0].toUpperCase()
                   )}
                 </div>
-                <span className="text-xs text-gray-500 group-hover:text-blue-600 transition-colors">
+                <span className="text-xs text-gray-500 group-hover:text-indigo-600 transition-colors">
                   {seller.display_name}
                 </span>
                 {seller.verified && (
-                  <Shield className="w-3 h-3 text-blue-500" />
+                  <Shield className="w-3 h-3 text-indigo-500" />
                 )}
               </Link>
             )}
@@ -258,7 +258,7 @@ function PurchaseCard({
 
           <Link
             href={listing ? `/listing/${listing.slug}` : "#"}
-            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors"
           >
             <ExternalLink className="w-3 h-3" />
             View listing
@@ -375,7 +375,7 @@ export default function PurchasesClient({
           </p>
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
           >
             Browse Listings
           </Link>

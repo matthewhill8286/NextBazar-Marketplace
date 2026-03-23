@@ -75,8 +75,8 @@ function SuccessContent() {
     return (
       <div className="min-h-[70vh] flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
-          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+          <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 mb-2">
             Activating your promotion…
@@ -110,7 +110,7 @@ function SuccessContent() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/dashboard/listings"
-              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
             >
               My Listings <ArrowRight className="w-4 h-4" />
             </Link>
@@ -210,7 +210,7 @@ export default function PromoteSuccessPage() {
     <Suspense
       fallback={
         <div className="min-h-[70vh] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
         </div>
       }
     >

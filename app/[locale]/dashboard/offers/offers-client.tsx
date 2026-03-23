@@ -60,7 +60,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }>
   pending:   { label: "Pending",   bg: "bg-amber-50",  text: "text-amber-700" },
   accepted:  { label: "Accepted",  bg: "bg-green-50",  text: "text-green-700" },
   declined:  { label: "Declined",  bg: "bg-red-50",    text: "text-red-600"   },
-  countered: { label: "Countered", bg: "bg-blue-50",   text: "text-blue-700"  },
+  countered: { label: "Countered", bg: "bg-indigo-50",   text: "text-indigo-700"  },
   withdrawn: { label: "Withdrawn", bg: "bg-gray-100",  text: "text-gray-500"  },
   expired:   { label: "Expired",   bg: "bg-gray-100",  text: "text-gray-500"  },
 };
@@ -68,7 +68,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }>
 function Avatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
   const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
   return (
-    <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
+    <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
       {avatarUrl ? (
         <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
       ) : (
@@ -130,7 +130,7 @@ function Pagination({
             onClick={() => onPage(i)}
             className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
               i === page
-                ? "bg-blue-600 text-white"
+                ? "bg-indigo-600 text-white"
                 : "border border-gray-200 text-gray-600 hover:bg-gray-50"
             }`}
           >
@@ -241,7 +241,7 @@ function OfferCard({
       <div
         ref={cardRef}
         className={`bg-white rounded-xl border overflow-hidden transition-colors ${
-          focused ? "border-blue-300 ring-2 ring-blue-100" : "border-gray-100"
+          focused ? "border-indigo-300 ring-2 ring-indigo-100" : "border-gray-100"
         }`}
       >
         <div
@@ -266,7 +266,7 @@ function OfferCard({
           <div className="flex-1 min-w-0">
             <Link
               href={listing ? `/listing/${listing.slug}` : "#"}
-              className="font-medium text-gray-900 hover:text-blue-600 transition-colors text-sm truncate block"
+              className="font-medium text-gray-900 hover:text-indigo-600 transition-colors text-sm truncate block"
               onClick={(e) => e.stopPropagation()}
             >
               {listing?.title || "Listing"}
@@ -324,12 +324,12 @@ function OfferCard({
             )}
 
             {offer.counter_amount && (
-              <div className="bg-blue-50 rounded-xl p-3">
-                <p className="text-xs text-blue-600 mb-1 font-medium">
+              <div className="bg-indigo-50 rounded-xl p-3">
+                <p className="text-xs text-indigo-600 mb-1 font-medium">
                   Counter offer: {sym}{offer.counter_amount.toLocaleString()}
                 </p>
                 {offer.counter_message && (
-                  <p className="text-sm text-blue-700">{offer.counter_message}</p>
+                  <p className="text-sm text-indigo-700">{offer.counter_message}</p>
                 )}
               </div>
             )}
@@ -382,7 +382,7 @@ function OfferCard({
                     <button
                       onClick={() => setShowCounter(true)}
                       disabled={!!loading}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-sm font-medium hover:bg-blue-100 transition-colors disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-medium hover:bg-indigo-100 transition-colors disabled:opacity-50"
                     >
                       <RotateCcw className="w-4 h-4" />
                       Counter
@@ -408,7 +408,7 @@ function OfferCard({
                         min="1"
                         value={counterAmount}
                         onChange={(e) => setCounterAmount(e.target.value)}
-                        className="w-full pl-7 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-full pl-7 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         placeholder="Amount"
                       />
                     </div>
@@ -417,7 +417,7 @@ function OfferCard({
                       value={counterMessage}
                       onChange={(e) => setCounterMessage(e.target.value)}
                       placeholder="Optional message"
-                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 resize-none"
+                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-400 resize-none"
                     />
                     <div className="flex gap-2">
                       <button
@@ -426,7 +426,7 @@ function OfferCard({
                           counter_message: counterMessage || null,
                         })}
                         disabled={!counterAmount || !!loading}
-                        className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
                       >
                         {loading === "countered" ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Send Counter"}
                       </button>
@@ -635,7 +635,7 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
         >
           Received
           {pendingReceivedCount > 0 && (
-            <span className="bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="bg-indigo-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
               {pendingReceivedCount}
             </span>
           )}
@@ -657,12 +657,12 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
 
       {pageLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+          <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
         </div>
       ) : offers.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-blue-50" : "bg-gray-50"}`}>
-            <Tag className={`w-7 h-7 ${isSeller ? "text-blue-400" : "text-gray-400"}`} />
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-indigo-50" : "bg-gray-50"}`}>
+            <Tag className={`w-7 h-7 ${isSeller ? "text-indigo-400" : "text-gray-400"}`} />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">
             {isSeller ? "No offers yet" : "No offers sent"}
@@ -675,7 +675,7 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
           {!isSeller && (
             <Link
               href="/search"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
             >
               Browse Listings
             </Link>

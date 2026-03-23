@@ -28,20 +28,24 @@ type Notification = {
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
   price_drop: <TrendingDown className="w-4 h-4 text-green-600" />,
-  offer_received: <Tag className="w-4 h-4 text-blue-600" />,
+  offer_received: <Tag className="w-4 h-4 text-indigo-600" />,
   offer_accepted: <Check className="w-4 h-4 text-green-600" />,
   offer_declined: <Tag className="w-4 h-4 text-red-500" />,
   offer_countered: <Tag className="w-4 h-4 text-amber-600" />,
   new_message: <MessageCircle className="w-4 h-4 text-indigo-600" />,
+  saved_search_match: <Bell className="w-4 h-4 text-violet-600" />,
+  listing_expired: <Bell className="w-4 h-4 text-red-500" />,
 };
 
 const TYPE_BG: Record<string, string> = {
   price_drop: "bg-green-50",
-  offer_received: "bg-blue-50",
+  offer_received: "bg-indigo-50",
   offer_accepted: "bg-green-50",
   offer_declined: "bg-red-50",
   offer_countered: "bg-amber-50",
   new_message: "bg-indigo-50",
+  saved_search_match: "bg-violet-50",
+  listing_expired: "bg-red-50",
 };
 
 function timeAgo(d: string) {
@@ -103,7 +107,7 @@ export default function NotificationsClient({
           <button
             onClick={markAllRead}
             disabled={markingAll}
-            className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 disabled:opacity-50"
+            className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-50"
           >
             {markingAll ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -138,7 +142,7 @@ export default function NotificationsClient({
             const inner = (
               <div
                 className={`flex items-start gap-4 p-4 transition-colors ${
-                  !n.read ? "bg-blue-50/30" : "hover:bg-gray-50/50"
+                  !n.read ? "bg-indigo-50/30" : "hover:bg-gray-50/50"
                 }`}
               >
                 {/* Icon */}
@@ -176,7 +180,7 @@ export default function NotificationsClient({
                         e.stopPropagation();
                         markRead(n.id);
                       }}
-                      className="p-1.5 rounded-lg text-gray-300 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                      className="p-1.5 rounded-lg text-gray-300 hover:text-indigo-500 hover:bg-indigo-50 transition-colors"
                       title="Mark as read"
                     >
                       <Check className="w-3.5 h-3.5" />
@@ -197,7 +201,7 @@ export default function NotificationsClient({
 
                 {/* Unread dot */}
                 {!n.read && (
-                  <div className="w-2 h-2 bg-blue-600 rounded-full shrink-0 mt-1.5" />
+                  <div className="w-2 h-2 bg-indigo-600 rounded-full shrink-0 mt-1.5" />
                 )}
               </div>
             );

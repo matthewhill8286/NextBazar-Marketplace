@@ -78,6 +78,13 @@ export default function SearchClient() {
     !initialQuery && !initialCategory && !initialLocation,
   );
 
+  // ─── Persist last-used location slug so the home page can show trending ────
+  useEffect(() => {
+    if (locationSlug) {
+      try { localStorage.setItem("lastSearchLocation", locationSlug); } catch {}
+    }
+  }, [locationSlug]);
+
   // ─── Ref: suppress filterKey re-trigger after AI search sets filters ──────
   // When AI search calls setCategorySlug / setLocationSlug to update the UI,
   // that would normally re-fire the filter effect and wipe the AI results.
@@ -350,7 +357,7 @@ export default function SearchClient() {
   return (
     <>
       {/* ── Hero search header ───────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700 text-white py-8 px-4">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white py-8 px-4">
         {/* Dot mesh */}
         <div
           className="absolute inset-0 opacity-[0.10] pointer-events-none"
@@ -361,7 +368,7 @@ export default function SearchClient() {
           }}
         />
         {/* Ambient blobs */}
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
         <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-violet-500 rounded-full blur-3xl opacity-20 pointer-events-none" />
 
         <div className="relative max-w-3xl mx-auto">
@@ -377,14 +384,14 @@ export default function SearchClient() {
                 </>
               ) : activeCategory ? (
                 <>
-                  <span className="text-blue-200">Browse</span>{" "}
+                  <span className="text-indigo-200">Browse</span>{" "}
                   {activeCategory.name}
                 </>
               ) : (
                 "Browse Listings"
               )}
             </h1>
-            <p className="text-blue-200 text-sm mt-1.5">
+            <p className="text-indigo-200 text-sm mt-1.5">
               {loading ? (
                 "Finding listings…"
               ) : totalHits > 0 ? (
@@ -469,7 +476,7 @@ export default function SearchClient() {
                   Category
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400"
                   value={categorySlug}
                   onChange={(e) => {
                     setCategorySlug(e.target.value);
@@ -489,7 +496,7 @@ export default function SearchClient() {
                   Location
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400"
                   value={locationSlug}
                   onChange={(e) => setLocationSlug(e.target.value)}
                 >
@@ -506,7 +513,7 @@ export default function SearchClient() {
                   Sort By
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -533,7 +540,7 @@ export default function SearchClient() {
                     placeholder="Min"
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
                 <span className="text-gray-400 text-sm shrink-0">–</span>
@@ -547,7 +554,7 @@ export default function SearchClient() {
                     placeholder="Max"
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -569,8 +576,8 @@ export default function SearchClient() {
                       }
                       className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                         subcategorySlug === sub.slug
-                          ? "border-blue-400 bg-blue-50 text-blue-700 ring-2 ring-blue-100"
-                          : "border-gray-200 bg-white text-gray-600 hover:border-blue-300 hover:text-blue-600"
+                          ? "border-indigo-400 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600"
                       }`}
                     >
                       {sub.name}
@@ -591,7 +598,7 @@ export default function SearchClient() {
                   setCategorySlug("");
                   setSubcategorySlug("");
                 }}
-                className="flex items-center gap-1.5 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors"
+                className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
               >
                 <span
                   className={`w-4 h-4 ${getCategoryConfig(activeCategory.slug).bg} rounded flex items-center justify-center`}
@@ -700,7 +707,7 @@ export default function SearchClient() {
             </div>
             {!showFilters && (
               <select
-                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white"
+                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-400 bg-white"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -789,7 +796,7 @@ export default function SearchClient() {
                 lastInternalQuery.current = "";
                 router.replace("/search", { scroll: false });
               }}
-              className="text-blue-600 font-medium hover:underline text-sm"
+              className="text-indigo-600 font-medium hover:underline text-sm"
             >
               Clear all filters
             </button>

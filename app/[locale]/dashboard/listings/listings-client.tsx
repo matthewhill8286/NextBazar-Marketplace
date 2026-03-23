@@ -3,6 +3,7 @@
 import {
   CheckCircle,
   CheckSquare,
+  Clock,
   Eye,
   Heart,
   Loader2,
@@ -38,6 +39,7 @@ type Listing = {
   is_promoted: boolean;
   is_urgent: boolean;
   created_at: string;
+  expires_at: string | null;
   category_id?: string | null;
   location_id?: string | null;
   categories:
@@ -122,6 +124,17 @@ export default function ListingsClient({
     if (hrs < 1) return "Just now";
     if (hrs < 24) return `${hrs}h ago`;
     return `${Math.floor(hrs / 24)}d ago`;
+  }
+
+  function expiryBadge(expiresAt: string | null, status: string) {
+    if (status !== "active" || !expiresAt) return null;
+    const ms = new Date(expiresAt).getTime() - Date.now();
+    const days = Math.ceil(ms / 86_400_000);
+    if (days > 7) return null;
+    if (days <= 0) return null;
+    const label = days === 1 ? "Expires today" : `Expires in ${days}d`;
+    const critical = days <= 3;
+    return { label, critical };
   }
 
   async function updateStatus(id: string, status: string) {
@@ -214,6 +227,23 @@ export default function ListingsClient({
     setLoadingAction(null);
   }
 
+  async function renewListing(id: string) {
+    setLoadingAction(id);
+    const newExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    await supabase
+      .from("listings")
+      .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
+      .eq("id", id);
+    setListings((prev) =>
+      prev.map((l) =>
+        l.id === id ? { ...l, status: "active", expires_at: newExpiresAt } : l,
+      ),
+    );
+    setOpenMenu(null);
+    setLoadingAction(null);
+    if (tab === "expired") setTab("active");
+  }
+
   // ── Bulk actions ─────────────────────────────────────────────────────────
 
   async function bulkDelete() {
@@ -293,6 +323,24 @@ export default function ListingsClient({
     setTab("active");
   }
 
+  async function bulkRenew() {
+    setBulkLoading(true);
+    const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
+    const newExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    await supabase
+      .from("listings")
+      .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
+      .in("id", ids);
+    setListings((prev) =>
+      prev.map((l) =>
+        ids.includes(l.id) ? { ...l, status: "active", expires_at: newExpiresAt } : l,
+      ),
+    );
+    clearSelection();
+    setBulkLoading(false);
+    setTab("active");
+  }
+
   const SelectIcon = allSelected ? CheckSquare : Square;
 
   return (
@@ -329,24 +377,38 @@ export default function ListingsClient({
 
       {/* Bulk action bar */}
       {selectedInTab.length > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-100 rounded-xl">
-          <span className="text-sm font-medium text-blue-800">
+        <div className="flex items-center gap-3 px-4 py-3 bg-indigo-50 border border-indigo-100 rounded-xl">
+          <span className="text-sm font-medium text-indigo-800">
             {selectedInTab.length} selected
           </span>
           <div className="flex items-center gap-2 ml-auto flex-wrap">
             {tab === "expired" && (
-              <button
-                onClick={bulkRelist}
-                disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
-              >
-                {bulkLoading ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-3 h-3" />
-                )}
-                Relist All
-              </button>
+              <>
+                <button
+                  onClick={bulkRenew}
+                  disabled={bulkLoading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                >
+                  {bulkLoading ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Clock className="w-3 h-3" />
+                  )}
+                  Renew All
+                </button>
+                <button
+                  onClick={bulkRelist}
+                  disabled={bulkLoading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-colors disabled:opacity-50"
+                >
+                  {bulkLoading ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-3 h-3" />
+                  )}
+                  Relist All
+                </button>
+              </>
             )}
             {tab === "active" && (
               <button
@@ -399,15 +461,15 @@ export default function ListingsClient({
             return (
               <div
                 key={listing.id}
-                className={`flex items-center gap-3 p-4 hover:bg-gray-50/50 transition-colors ${isSelected ? "bg-blue-50/40" : ""}`}
+                className={`flex items-center gap-3 p-4 hover:bg-gray-50/50 transition-colors ${isSelected ? "bg-indigo-50/40" : ""}`}
               >
                 {/* Checkbox */}
                 <button
                   onClick={() => toggleSelect(listing.id)}
-                  className="shrink-0 text-gray-400 hover:text-blue-600 transition-colors"
+                  className="shrink-0 text-gray-400 hover:text-indigo-600 transition-colors"
                 >
                   {isSelected ? (
-                    <CheckSquare className="w-5 h-5 text-blue-600" />
+                    <CheckSquare className="w-5 h-5 text-indigo-600" />
                   ) : (
                     <Square className="w-5 h-5" />
                   )}
@@ -451,11 +513,11 @@ export default function ListingsClient({
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/listing/${listing.slug}`}
-                    className="font-medium text-gray-900 text-sm hover:text-blue-600 truncate block"
+                    className="font-medium text-gray-900 text-sm hover:text-indigo-600 truncate block"
                   >
                     {listing.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 flex-wrap">
                     <span className="font-semibold text-gray-900">
                       {formatPrice(listing.price, listing.currency)}
                     </span>
@@ -463,6 +525,19 @@ export default function ListingsClient({
                     <span>{unwrap(listing.locations)?.name || "Cyprus"}</span>
                     <span>·</span>
                     <span>{timeAgo(listing.created_at)}</span>
+                    {(() => {
+                      const badge = expiryBadge(listing.expires_at, listing.status);
+                      if (!badge) return null;
+                      return (
+                        <>
+                          <span>·</span>
+                          <span className={`flex items-center gap-0.5 font-medium ${badge.critical ? "text-red-500" : "text-amber-500"}`}>
+                            <Clock className="w-3 h-3" />
+                            {badge.label}
+                          </span>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -478,20 +553,46 @@ export default function ListingsClient({
                   </div>
                 </div>
 
-                {/* Relist CTA */}
-                {listing.status === "expired" && (
+                {/* Renew CTA — expiring-soon active listings */}
+                {listing.status === "active" && expiryBadge(listing.expires_at, listing.status) && (
                   <button
-                    onClick={() => relistListing(listing.id)}
+                    onClick={() => renewListing(listing.id)}
                     disabled={loadingAction === listing.id}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 shrink-0"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 shrink-0"
                   >
                     {loadingAction === listing.id ? (
                       <Loader2 className="w-3 h-3 animate-spin" />
                     ) : (
-                      <RefreshCw className="w-3 h-3" />
+                      <Clock className="w-3 h-3" />
                     )}
-                    Relist
+                    Renew
                   </button>
+                )}
+
+                {/* Renew + Relist CTAs — expired listings */}
+                {listing.status === "expired" && (
+                  <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                    <button
+                      onClick={() => renewListing(listing.id)}
+                      disabled={loadingAction === listing.id}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                    >
+                      {loadingAction === listing.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Clock className="w-3 h-3" />
+                      )}
+                      Renew
+                    </button>
+                    <button
+                      onClick={() => relistListing(listing.id)}
+                      disabled={loadingAction === listing.id}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-colors disabled:opacity-50"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Relist
+                    </button>
+                  </div>
                 )}
 
                 {/* Actions Menu */}
@@ -543,13 +644,29 @@ export default function ListingsClient({
                           <RotateCcw className="w-3.5 h-3.5" /> Reactivate
                         </button>
                       )}
-                      {listing.status === "expired" && (
+                      {listing.status === "active" && (
                         <button
-                          onClick={() => relistListing(listing.id)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full"
+                          onClick={() => renewListing(listing.id)}
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 w-full"
                         >
-                          <RefreshCw className="w-3.5 h-3.5" /> Relist
+                          <Clock className="w-3.5 h-3.5" /> Renew (30 days)
                         </button>
+                      )}
+                      {listing.status === "expired" && (
+                        <>
+                          <button
+                            onClick={() => renewListing(listing.id)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 w-full"
+                          >
+                            <Clock className="w-3.5 h-3.5" /> Renew listing
+                          </button>
+                          <button
+                            onClick={() => relistListing(listing.id)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" /> Relist as new
+                          </button>
+                        </>
                       )}
                       <button
                         onClick={() => deleteListing(listing.id)}

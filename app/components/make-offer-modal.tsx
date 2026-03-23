@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, CheckCircle, DollarSign, Loader2, X } from "lucide-react";
+import { AlertCircle, CheckCircle, Euro, Loader2, X } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -154,7 +154,7 @@ export default function MakeOfferModal({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   required
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="0"
                 />
               </div>
@@ -189,7 +189,7 @@ export default function MakeOfferModal({
                 onChange={(e) => setMessage(e.target.value)}
                 maxLength={500}
                 placeholder="Why you're interested, pickup availability, etc."
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm resize-none"
               />
               <p className="text-xs text-gray-400 text-right mt-1">
                 {message.length}/500
@@ -214,13 +214,13 @@ export default function MakeOfferModal({
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 py-3 rounded-xl bg-linear-to-r from-indigo-600 to-indigo-600 text-white text-sm font-medium hover:from-indigo-700 hover:to-indigo-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <DollarSign className="w-4 h-4" />
+                    <Euro className="w-4 h-4" />
                     Send Offer
                   </>
                 )}

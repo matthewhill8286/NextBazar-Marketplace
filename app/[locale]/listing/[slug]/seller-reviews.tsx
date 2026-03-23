@@ -148,13 +148,13 @@ export function LeaveReviewPrompt({
           placeholder="Share your experience (optional)"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm resize-none"
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm resize-none"
         />
 
         <button
           type="submit"
           disabled={rating === 0 || submitting}
-          className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {submitting ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -264,7 +264,7 @@ export function SellerReviews({
 
           return (
             <div key={review.id} className="flex gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden">
                 {review.reviewer?.avatar_url ? (
                   <img
                     src={review.reviewer.avatar_url}
@@ -308,7 +308,7 @@ export function SellerReviews({
       {reviews.length > 3 && (
         <button
           onClick={() => setShowAll((v) => !v)}
-          className="mt-4 text-sm text-blue-600 font-medium hover:underline w-full text-center"
+          className="mt-4 text-sm text-indigo-600 font-medium hover:underline w-full text-center"
         >
           {showAll ? "Show less" : `Show all ${reviews.length} reviews`}
         </button>

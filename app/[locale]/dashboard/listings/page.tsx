@@ -23,7 +23,7 @@ export default function MyListingsPage() {
           `
           id, title, slug, price, currency, price_type, condition, status,
           primary_image_url, view_count, favorite_count,
-          is_promoted, is_urgent, created_at,
+          is_promoted, is_urgent, created_at, expires_at,
           category_id, location_id,
           categories(name, slug, icon),
           locations(name)
@@ -41,7 +41,7 @@ export default function MyListingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
       </div>
     );
   }

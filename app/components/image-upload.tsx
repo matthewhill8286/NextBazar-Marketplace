@@ -182,8 +182,8 @@ export default function ImageUpload({
         onClick={() => fileInputRef.current?.click()}
         className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors bg-white ${
           dragOver
-            ? "border-blue-400 bg-blue-50"
-            : "border-gray-300 hover:border-blue-400"
+            ? "border-indigo-400 bg-indigo-50"
+            : "border-gray-300 hover:border-indigo-400"
         }`}
       >
         <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
@@ -239,7 +239,7 @@ export default function ImageUpload({
 
               {/* Cover badge */}
               {idx === 0 && (
-                <span className="absolute bottom-1.5 left-1.5 bg-blue-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                <span className="absolute bottom-1.5 left-1.5 bg-indigo-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                   Cover
                 </span>
               )}

@@ -192,7 +192,7 @@ export default function StripeCheckoutModal({
               onClick={() => setPaymentMethod("card")}
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
                 paymentMethod === "card"
-                  ? "text-blue-600 border-b-2 border-blue-600 -mb-px"
+                  ? "text-indigo-600 border-b-2 border-indigo-600 -mb-px"
                   : "text-gray-400 hover:text-gray-600"
               }`}
             >

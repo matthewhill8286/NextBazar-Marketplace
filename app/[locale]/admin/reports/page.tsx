@@ -42,7 +42,7 @@ const REASON_LABELS: Record<string, string> = {
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
-  reviewing: "bg-blue-50 text-blue-700 border-blue-200",
+  reviewing: "bg-indigo-50 text-indigo-700 border-indigo-200",
   resolved: "bg-green-50 text-green-700 border-green-200",
   dismissed: "bg-gray-50 text-gray-500 border-gray-200",
 };
@@ -174,7 +174,7 @@ export default function AdminReportsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-gray-100">
@@ -227,7 +227,7 @@ export default function AdminReportsPage() {
                       <Link
                         href={`/listing/${report.listing?.slug || "#"}`}
                         target="_blank"
-                        className="font-medium text-gray-900 hover:text-blue-600 flex items-center gap-1 text-sm"
+                        className="font-medium text-gray-900 hover:text-indigo-600 flex items-center gap-1 text-sm"
                       >
                         {report.listing?.title || "Deleted listing"}
                         <ExternalLink className="w-3 h-3 shrink-0" />
@@ -252,7 +252,7 @@ export default function AdminReportsPage() {
                       <button
                         onClick={() => updateStatus(report.id, "reviewing")}
                         disabled={updating === report.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100 transition-colors disabled:opacity-40"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-medium hover:bg-indigo-100 transition-colors disabled:opacity-40"
                       >
                         <Eye className="w-3.5 h-3.5" /> Mark Reviewing
                       </button>
@@ -299,7 +299,7 @@ export default function AdminReportsPage() {
                     </div>
                   )}
                   {updating === report.id && (
-                    <Loader2 className="w-4 h-4 animate-spin text-blue-500 mt-2" />
+                    <Loader2 className="w-4 h-4 animate-spin text-indigo-500 mt-2" />
                   )}
                 </div>
               </div>

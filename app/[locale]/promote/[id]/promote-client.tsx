@@ -79,7 +79,7 @@ export default function PromoteClient({ listingId }: { listingId: string }) {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
       </div>
     );
   }
@@ -144,14 +144,14 @@ export default function PromoteClient({ listingId }: { listingId: string }) {
       )}
 
       {/* Stats callout */}
-      <div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100 mb-8">
+      <div className="bg-linear-to-r from-indigo-50 to-indigo-50 rounded-xl p-5 border border-indigo-100 mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
-          <span className="font-semibold text-blue-900">
+          <TrendingUp className="w-5 h-5 text-indigo-600" />
+          <span className="font-semibold text-indigo-900">
             Promoted listings get up to 5x more views
           </span>
         </div>
-        <p className="text-sm text-blue-700">
+        <p className="text-sm text-indigo-700">
           Stand out from the crowd and reach more buyers. Promoted listings
           appear at the top of search results and on the homepage.
         </p>
@@ -175,7 +175,7 @@ export default function PromoteClient({ listingId }: { listingId: string }) {
                 alreadyActive
                   ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
                   : isSelected
-                    ? "border-blue-500 bg-blue-50/50 ring-2 ring-blue-200"
+                    ? "border-indigo-500 bg-indigo-50/50 ring-2 ring-indigo-200"
                     : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >
@@ -228,7 +228,7 @@ export default function PromoteClient({ listingId }: { listingId: string }) {
       {/* Checkout button */}
       <button
         onClick={() => handleCheckout(selected)}
-        className="w-full bg-blue-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200"
+        className="w-full bg-indigo-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-indigo-200"
       >
         Pay Now — {PROMOTIONS.find((p) => p.key === selected)?.price}
       </button>

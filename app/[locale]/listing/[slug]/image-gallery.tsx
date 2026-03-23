@@ -128,7 +128,7 @@ export default function ImageGallery({
               onClick={() => setActiveIndex(idx)}
               className={`relative w-20 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
                 idx === activeIndex
-                  ? "border-blue-500 ring-2 ring-blue-200"
+                  ? "border-indigo-500 ring-2 ring-indigo-200"
                   : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >

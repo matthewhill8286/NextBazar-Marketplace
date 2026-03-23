@@ -287,7 +287,7 @@ export default function PostClient() {
         {[1, 2, 3].map((s) => (
           <div key={s} className="flex-1">
             <div
-              className={`h-2 rounded-full transition-colors ${s <= step ? "bg-blue-500" : "bg-gray-200"}`}
+              className={`h-2 rounded-full transition-colors ${s <= step ? "bg-indigo-500" : "bg-gray-200"}`}
             />
           </div>
         ))}
@@ -318,7 +318,7 @@ export default function PostClient() {
               <p className="text-gray-500 text-sm">
                 <a
                   href="/auth/login?redirect=/post"
-                  className="text-blue-600 font-medium hover:underline"
+                  className="text-indigo-600 font-medium hover:underline"
                 >
                   Sign in
                 </a>{" "}
@@ -362,7 +362,7 @@ export default function PostClient() {
             </label>
             <input
               type="text"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
               placeholder="e.g. iPhone 15 Pro Max 256GB Blue"
               value={formData.title}
               onChange={(e) => update("title", e.target.value)}
@@ -382,7 +382,7 @@ export default function PostClient() {
                   onClick={() => selectCategory(cat.id)}
                   className={`p-3 rounded-xl border text-center transition-all ${
                     formData.category_id === cat.id
-                      ? "border-blue-400 bg-blue-50 ring-2 ring-blue-100"
+                      ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-100"
                       : "border-gray-200 hover:border-gray-300 bg-white"
                   }`}
                 >
@@ -418,7 +418,7 @@ export default function PostClient() {
                       }
                       className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                         formData.subcategory_id === sub.id
-                          ? "border-blue-400 bg-blue-50 text-blue-700 ring-2 ring-blue-100"
+                          ? "border-indigo-400 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
                           : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
                       }`}
                     >
@@ -434,7 +434,7 @@ export default function PostClient() {
             type="button"
             onClick={() => setStep(2)}
             disabled={!formData.title || !formData.category_id}
-            className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
           >
             Continue <ArrowRight className="w-4 h-4" />
           </button>
@@ -469,7 +469,7 @@ export default function PostClient() {
               </button>
             </div>
             <textarea
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm h-32 resize-none"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-32 resize-none"
               placeholder="Describe your item — or click 'Write with AI' to generate a description..."
               value={formData.description}
               onChange={(e) => update("description", e.target.value)}
@@ -503,7 +503,7 @@ export default function PostClient() {
                 </span>
                 <input
                   type="number"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
                   placeholder="0.00"
                   value={formData.price}
                   onChange={(e) => update("price", e.target.value)}
@@ -515,7 +515,7 @@ export default function PostClient() {
                 Condition
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
                 value={formData.condition}
                 onChange={(e) => update("condition", e.target.value)}
               >
@@ -534,7 +534,7 @@ export default function PostClient() {
                 Location
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
                 value={formData.location_id}
                 onChange={(e) => update("location_id", e.target.value)}
               >
@@ -551,7 +551,7 @@ export default function PostClient() {
                 Price Type
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
                 value={formData.price_type}
                 onChange={(e) => update("price_type", e.target.value)}
               >
@@ -565,7 +565,7 @@ export default function PostClient() {
 
           {/* AI Pricing Guide Panel */}
           {pricingData && (
-            <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-xl p-5 border border-indigo-100 space-y-4">
+            <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-xl p-5 border border-indigo-100 space-y-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-indigo-600" />
                 <span className="font-semibold text-indigo-900 text-sm">
@@ -667,7 +667,7 @@ export default function PostClient() {
             </label>
             <input
               type="tel"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
               placeholder="+357 99 123456"
               value={formData.contact_phone}
               onChange={(e) => update("contact_phone", e.target.value)}
@@ -689,7 +689,7 @@ export default function PostClient() {
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              className="flex-1 bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
             >
               Continue <ArrowRight className="w-4 h-4" />
             </button>
@@ -738,7 +738,7 @@ export default function PostClient() {
               onClick={() => setSelectedPackage("free")}
               className={`w-full text-left rounded-xl border-2 p-5 transition-all ${
                 selectedPackage === "free"
-                  ? "border-blue-400 bg-blue-50/50 ring-2 ring-blue-100"
+                  ? "border-indigo-400 bg-indigo-50/50 ring-2 ring-indigo-100"
                   : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >

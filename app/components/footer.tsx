@@ -13,12 +13,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-extrabold text-sm shadow-md shadow-blue-900/40">
+              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-extrabold text-sm shadow-md shadow-indigo-900/40">
                 N
               </div>
               <span className="font-extrabold text-white text-lg tracking-tight">
                 Next
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-indigo-400">
                   Bazar
                 </span>
               </span>
