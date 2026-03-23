@@ -639,27 +639,32 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
   // ── Realtime offer updates ──────────────────────────────────────────────
   // Without this, the buyer's "Sent" tab stays stale after the seller counters
   // (or vice-versa) because router.refresh() doesn't re-run fetchPage effects.
-  // We subscribe to postgres_changes for both sides of the current user so
-  // any status / amount change is reflected immediately without a page reload.
+  //
+  // We intentionally do NOT use server-side column filters like
+  // `buyer_id=eq.${userId}` on UPDATE events.  PostgreSQL's WAL record for an
+  // UPDATE only contains changed columns + the primary key (without REPLICA
+  // IDENTITY FULL), so the Supabase server-side filter silently drops events
+  // where `buyer_id`/`seller_id` wasn't one of the modified columns — which is
+  // exactly the case when only `status`, `counter_amount`, etc. change.
+  //
+  // Instead, we subscribe to all offer UPDATEs that RLS allows and route them
+  // to the correct list client-side based on the user's role in the offer.
+  // The migration 20260323000002 adds REPLICA IDENTITY FULL for belt-and-suspenders.
   useEffect(() => {
     const channel = supabase
       .channel(`offers-realtime-${userId}`)
-      // Offers where this user is the BUYER (visible in "Sent" tab)
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "offers", filter: `buyer_id=eq.${userId}` },
+        { event: "UPDATE", schema: "public", table: "offers" },
         (payload) => {
-          const patch = payload.new as Partial<Offer> & { id: string };
-          setSent((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
-        },
-      )
-      // Offers where this user is the SELLER (visible in "Received" tab)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "offers", filter: `seller_id=eq.${userId}` },
-        (payload) => {
-          const patch = payload.new as Partial<Offer> & { id: string };
-          setReceived((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
+          const patch = payload.new as Partial<Offer> & { id: string; buyer_id: string; seller_id: string };
+          // Route to the correct list based on which side of the offer we're on
+          if (patch.buyer_id === userId) {
+            setSent((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
+          }
+          if (patch.seller_id === userId) {
+            setReceived((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
+          }
         },
       )
       .subscribe();
