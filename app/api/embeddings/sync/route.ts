@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
 import { embed, listingToText } from "@/lib/embeddings";
 
 export const runtime = "nodejs";
@@ -10,7 +10,8 @@ const SYNC_SECRET = process.env.SYNC_SECRET;
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
 
@@ -52,25 +53,32 @@ export async function POST(req: NextRequest) {
     // Fetch joined data for better embedding text
     const { data: full } = await supabase
       .from("listings")
-      .select(`title, description, condition, categories(name), locations(name)`)
+      .select(
+        `title, description, condition, categories(name), locations(name)`,
+      )
       .eq("id", record.id)
       .single();
 
     if (!full) return NextResponse.json({ skipped: record.id });
 
-    const cat = Array.isArray(full.categories) ? full.categories[0] : full.categories;
-    const loc = Array.isArray(full.locations)  ? full.locations[0]  : full.locations;
+    const cat = Array.isArray(full.categories)
+      ? full.categories[0]
+      : full.categories;
+    const loc = Array.isArray(full.locations)
+      ? full.locations[0]
+      : full.locations;
 
     const text = listingToText({
-      title:         full.title,
-      description:   full.description,
+      title: full.title,
+      description: full.description,
       category_name: cat?.name,
       location_name: loc?.name,
-      condition:     full.condition,
+      condition: full.condition,
     });
 
     const embedding = await embed(text);
-    if (!embedding) return NextResponse.json({ error: "embedding failed" }, { status: 500 });
+    if (!embedding)
+      return NextResponse.json({ error: "embedding failed" }, { status: 500 });
 
     await supabase
       .from("listings")
@@ -89,28 +97,38 @@ export async function POST(req: NextRequest) {
   while (true) {
     const { data, error } = await supabase
       .from("listings")
-      .select(`id, title, description, condition, categories(name), locations(name)`)
+      .select(
+        `id, title, description, condition, categories(name), locations(name)`,
+      )
       .eq("status", "active")
-      .is("embedding", null)          // only listings without an embedding yet
+      .is("embedding", null) // only listings without an embedding yet
       .range(offset, offset + BATCH - 1);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error)
+      return NextResponse.json({ error: error.message }, { status: 500 });
     if (!data || data.length === 0) break;
 
     for (const listing of data) {
-      const cat = Array.isArray(listing.categories) ? listing.categories[0] : listing.categories;
-      const loc = Array.isArray(listing.locations)  ? listing.locations[0]  : listing.locations;
+      const cat = Array.isArray(listing.categories)
+        ? listing.categories[0]
+        : listing.categories;
+      const loc = Array.isArray(listing.locations)
+        ? listing.locations[0]
+        : listing.locations;
 
       const text = listingToText({
-        title:         listing.title,
-        description:   listing.description,
+        title: listing.title,
+        description: listing.description,
         category_name: (cat as any)?.name,
         location_name: (loc as any)?.name,
-        condition:     listing.condition,
+        condition: listing.condition,
       });
 
       const embedding = await embed(text);
-      if (!embedding) { totalSkipped++; continue; }
+      if (!embedding) {
+        totalSkipped++;
+        continue;
+      }
 
       await supabase
         .from("listings")

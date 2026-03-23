@@ -2,17 +2,17 @@
 
 import { Check, Flag, Heart, Loader2, Share2, X } from "lucide-react";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useSaved } from "@/lib/saved-context";
+import { createClient } from "@/lib/supabase/client";
 
 const REPORT_REASONS: { value: string; label: string }[] = [
-  { value: "scam",           label: "Scam or fraud" },
-  { value: "spam",           label: "Spam or duplicate" },
-  { value: "counterfeit",    label: "Counterfeit / fake item" },
+  { value: "scam", label: "Scam or fraud" },
+  { value: "spam", label: "Spam or duplicate" },
+  { value: "counterfeit", label: "Counterfeit / fake item" },
   { value: "wrong_category", label: "Wrong category" },
-  { value: "offensive",      label: "Offensive or inappropriate" },
-  { value: "already_sold",   label: "Already sold / unavailable" },
-  { value: "other",          label: "Other" },
+  { value: "offensive", label: "Offensive or inappropriate" },
+  { value: "already_sold", label: "Already sold / unavailable" },
+  { value: "other", label: "Other" },
 ];
 
 export function FavoriteAction({ listingId }: { listingId: string }) {
@@ -83,18 +83,20 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
 
 export function ReportAction({ listingId }: { listingId: string }) {
   const supabase = createClient();
-  const [open, setOpen]       = useState(false);
-  const [reason, setReason]   = useState("");
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone]       = useState(false);
+  const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!reason || submitting) return;
     setSubmitting(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       window.location.href = `/auth/login?redirect=${window.location.pathname}`;
       return;
@@ -132,13 +134,18 @@ export function ReportAction({ listingId }: { listingId: string }) {
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
         >
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h2 className="font-semibold text-gray-900">Report Listing</h2>
-              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400">
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -174,7 +181,8 @@ export function ReportAction({ listingId }: { listingId: string }) {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Additional details <span className="text-gray-400 font-normal">(optional)</span>
+                  Additional details{" "}
+                  <span className="text-gray-400 font-normal">(optional)</span>
                 </label>
                 <textarea
                   rows={3}
@@ -198,7 +206,11 @@ export function ReportAction({ listingId }: { listingId: string }) {
                   disabled={!reason || submitting}
                   className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit Report"}
+                  {submitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Submit Report"
+                  )}
                 </button>
               </div>
             </form>

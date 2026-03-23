@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, act } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Hoisted shared state — must be declared before vi.mock factories run
@@ -23,7 +23,10 @@ const {
   const mockFromImpl = vi.fn((table: string) => {
     const resolvedData =
       table === "profiles"
-        ? { data: { display_name: "Alice Smith", avatar_url: null }, error: null }
+        ? {
+            data: { display_name: "Alice Smith", avatar_url: null },
+            error: null,
+          }
         : table === "conversations"
           ? { data: { listings: { title: "iPhone 14 Pro" } }, error: null }
           : { data: { title: "iPhone 14 Pro" }, error: null }; // listings
@@ -87,9 +90,10 @@ vi.mock("next/navigation", () => ({
 // ---------------------------------------------------------------------------
 
 // Flush all microtasks/promises so async useEffect setup completes
-const flushAsync = () => act(async () => {
-  await new Promise((r) => setTimeout(r, 0));
-});
+const flushAsync = () =>
+  act(async () => {
+    await new Promise((r) => setTimeout(r, 0));
+  });
 
 import RealtimeToasts from "@/app/components/realtime-toasts";
 
@@ -149,7 +153,7 @@ describe("RealtimeToasts", () => {
       await capturedCallbacks.messages({
         new: {
           id: "msg-1",
-          sender_id: "user-buyer-1",        // not the logged-in seller
+          sender_id: "user-buyer-1", // not the logged-in seller
           conversation_id: "conv-1",
           content: "Is this still available?",
           message_type: "text",
@@ -169,7 +173,7 @@ describe("RealtimeToasts", () => {
       await capturedCallbacks.messages({
         new: {
           id: "msg-2",
-          sender_id: "user-seller-1",       // same as logged-in user
+          sender_id: "user-seller-1", // same as logged-in user
           conversation_id: "conv-1",
           content: "Here is my reply",
           message_type: "text",
@@ -182,7 +186,7 @@ describe("RealtimeToasts", () => {
   });
 
   it("suppresses toast when user is already viewing that conversation", async () => {
-    mockPathname = "/en/messages/conv-1";   // user is on this page
+    mockPathname = "/en/messages/conv-1"; // user is on this page
     render(<RealtimeToasts />);
     await flushAsync();
 
@@ -191,7 +195,7 @@ describe("RealtimeToasts", () => {
         new: {
           id: "msg-3",
           sender_id: "user-buyer-1",
-          conversation_id: "conv-1",        // same conversation
+          conversation_id: "conv-1", // same conversation
           content: "Hello?",
           message_type: "text",
           offer_price: null,
@@ -203,7 +207,7 @@ describe("RealtimeToasts", () => {
   });
 
   it("allows toast when user is viewing a DIFFERENT conversation", async () => {
-    mockPathname = "/en/messages/conv-99";  // different conversation
+    mockPathname = "/en/messages/conv-99"; // different conversation
     render(<RealtimeToasts />);
     await flushAsync();
 
@@ -212,7 +216,7 @@ describe("RealtimeToasts", () => {
         new: {
           id: "msg-4",
           sender_id: "user-buyer-1",
-          conversation_id: "conv-1",        // different from current page
+          conversation_id: "conv-1", // different from current page
           content: "Hi there",
           message_type: "text",
           offer_price: null,
@@ -266,7 +270,9 @@ describe("RealtimeToasts", () => {
     expect(mockToastCustom).toHaveBeenCalledOnce();
 
     // Render the JSX returned by the custom toast render function
-    const renderFn = mockToastCustom.mock.calls[0][0] as (id: string) => React.ReactElement;
+    const renderFn = mockToastCustom.mock.calls[0][0] as (
+      id: string,
+    ) => React.ReactElement;
     const { getByText } = render(renderFn("toast-id-1"));
 
     expect(getByText("Alice Smith")).toBeInTheDocument();
@@ -291,7 +297,9 @@ describe("RealtimeToasts", () => {
       });
     });
 
-    const renderFn = mockToastCustom.mock.calls[0][0] as (id: string) => React.ReactElement;
+    const renderFn = mockToastCustom.mock.calls[0][0] as (
+      id: string,
+    ) => React.ReactElement;
     const { getByText } = render(renderFn("toast-id-2"));
     expect(getByText(/In-chat offer/i)).toBeInTheDocument();
     expect(getByText(/€750/)).toBeInTheDocument();
@@ -314,7 +322,9 @@ describe("RealtimeToasts", () => {
       });
     });
 
-    const renderFn = mockToastCustom.mock.calls[0][0] as (id: string) => React.ReactElement;
+    const renderFn = mockToastCustom.mock.calls[0][0] as (
+      id: string,
+    ) => React.ReactElement;
     const { getByRole: getButton } = render(renderFn("toast-id-3"));
 
     const btn = getButton("button", { name: /view conversation/i });
@@ -362,7 +372,9 @@ describe("RealtimeToasts", () => {
       });
     });
 
-    const renderFn = mockToastCustom.mock.calls[0][0] as (id: string) => React.ReactElement;
+    const renderFn = mockToastCustom.mock.calls[0][0] as (
+      id: string,
+    ) => React.ReactElement;
     const { getByText } = render(renderFn("toast-id-4"));
 
     expect(getByText("Alice Smith")).toBeInTheDocument();
@@ -409,7 +421,9 @@ describe("RealtimeToasts", () => {
       });
     });
 
-    const renderFn = mockToastCustom.mock.calls[0][0] as (id: string) => React.ReactElement;
+    const renderFn = mockToastCustom.mock.calls[0][0] as (
+      id: string,
+    ) => React.ReactElement;
     const { getByRole } = render(renderFn("toast-id-5"));
 
     getByRole("button", { name: /review offer/i }).click();
@@ -434,7 +448,9 @@ describe("RealtimeToasts", () => {
       });
     });
 
-    const renderFn = mockToastCustom.mock.calls[0][0] as (id: string) => React.ReactElement;
+    const renderFn = mockToastCustom.mock.calls[0][0] as (
+      id: string,
+    ) => React.ReactElement;
     const { getByText } = render(renderFn("toast-id-6"));
     expect(getByText("€999")).toBeInTheDocument();
   });

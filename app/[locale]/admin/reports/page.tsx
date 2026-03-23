@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import {
+  CheckCircle,
+  ExternalLink,
+  Eye,
+  Flag,
+  Loader2,
+  XCircle,
+} from "lucide-react";
 import Image from "next/image";
-import { Flag, CheckCircle, XCircle, Eye, Loader2, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Report = {
@@ -24,20 +31,20 @@ type Report = {
 };
 
 const REASON_LABELS: Record<string, string> = {
-  scam:           "Scam / fraud",
-  spam:           "Spam / duplicate",
-  counterfeit:    "Counterfeit / fake",
+  scam: "Scam / fraud",
+  spam: "Spam / duplicate",
+  counterfeit: "Counterfeit / fake",
   wrong_category: "Wrong category",
-  offensive:      "Offensive content",
-  already_sold:   "Already sold",
-  other:          "Other",
+  offensive: "Offensive content",
+  already_sold: "Already sold",
+  other: "Other",
 };
 
 const STATUS_STYLES: Record<string, string> = {
-  pending:    "bg-amber-50 text-amber-700 border-amber-200",
-  reviewing:  "bg-blue-50 text-blue-700 border-blue-200",
-  resolved:   "bg-green-50 text-green-700 border-green-200",
-  dismissed:  "bg-gray-50 text-gray-500 border-gray-200",
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  reviewing: "bg-blue-50 text-blue-700 border-blue-200",
+  resolved: "bg-green-50 text-green-700 border-green-200",
+  dismissed: "bg-gray-50 text-gray-500 border-gray-200",
 };
 
 function timeAgo(d: string) {
@@ -59,8 +66,13 @@ export default function AdminReportsPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/auth/login"); return; }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.push("/auth/login");
+        return;
+      }
 
       // Simple admin check — only allow specific emails
       // Replace with your actual admin email(s) or a proper role check
@@ -71,7 +83,10 @@ export default function AdminReportsPage() {
         .single();
 
       // TODO: replace this with a proper admin check once you add an is_admin column
-      if (!profile) { router.push("/"); return; }
+      if (!profile) {
+        router.push("/");
+        return;
+      }
 
       fetchReports();
     }
@@ -97,17 +112,31 @@ export default function AdminReportsPage() {
 
   async function updateStatus(reportId: string, newStatus: string) {
     setUpdating(reportId);
-    await supabase.from("reports").update({ status: newStatus }).eq("id", reportId);
+    await supabase
+      .from("reports")
+      .update({ status: newStatus })
+      .eq("id", reportId);
     setReports((prev) => prev.filter((r) => r.id !== reportId));
     setUpdating(null);
   }
 
   async function removeListing(report: Report) {
     if (!report.listing) return;
-    if (!confirm(`Remove listing "${report.listing.title}"? This cannot be undone.`)) return;
+    if (
+      !confirm(
+        `Remove listing "${report.listing.title}"? This cannot be undone.`,
+      )
+    )
+      return;
     setUpdating(report.id);
-    await supabase.from("listings").update({ status: "removed" }).eq("id", report.listing.id);
-    await supabase.from("reports").update({ status: "resolved" }).eq("id", report.id);
+    await supabase
+      .from("listings")
+      .update({ status: "removed" })
+      .eq("id", report.listing.id);
+    await supabase
+      .from("reports")
+      .update({ status: "resolved" })
+      .eq("id", report.id);
     setReports((prev) => prev.filter((r) => r.id !== report.id));
     setUpdating(null);
   }
@@ -133,7 +162,9 @@ export default function AdminReportsPage() {
             key={t}
             onClick={() => handleFilterChange(t)}
             className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
-              filter === t ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              filter === t
+                ? "bg-white text-gray-900 shadow-sm"
+                : "text-gray-500 hover:text-gray-700"
             }`}
           >
             {t}
@@ -153,7 +184,10 @@ export default function AdminReportsPage() {
       ) : (
         <div className="space-y-3">
           {reports.map((report) => (
-            <div key={report.id} className="bg-white rounded-xl border border-gray-100 p-5">
+            <div
+              key={report.id}
+              className="bg-white rounded-xl border border-gray-100 p-5"
+            >
               <div className="flex items-start gap-4">
                 {/* Listing thumbnail */}
                 <Link
@@ -162,9 +196,17 @@ export default function AdminReportsPage() {
                   className="w-20 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative hover:opacity-80 transition-opacity"
                 >
                   {report.listing?.primary_image_url ? (
-                    <Image src={report.listing.primary_image_url} alt="" fill className="object-cover" sizes="80px" />
+                    <Image
+                      src={report.listing.primary_image_url}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="80px"
+                    />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">📦</div>
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xl">
+                      📦
+                    </div>
                   )}
                 </Link>
 
@@ -173,7 +215,9 @@ export default function AdminReportsPage() {
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[report.status]}`}>
+                        <span
+                          className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${STATUS_STYLES[report.status]}`}
+                        >
                           {report.status}
                         </span>
                         <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2.5 py-0.5 rounded-full">
@@ -189,7 +233,9 @@ export default function AdminReportsPage() {
                         <ExternalLink className="w-3 h-3 shrink-0" />
                       </Link>
                       <p className="text-xs text-gray-400 mt-0.5">
-                        Reported by {report.reporter?.display_name || "Anonymous"} · {timeAgo(report.created_at)}
+                        Reported by{" "}
+                        {report.reporter?.display_name || "Anonymous"} ·{" "}
+                        {timeAgo(report.created_at)}
                       </p>
                     </div>
                   </div>
@@ -212,7 +258,11 @@ export default function AdminReportsPage() {
                       </button>
                       <button
                         onClick={() => removeListing(report)}
-                        disabled={updating === report.id || !report.listing || report.listing.status === "removed"}
+                        disabled={
+                          updating === report.id ||
+                          !report.listing ||
+                          report.listing.status === "removed"
+                        }
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-medium hover:bg-red-100 transition-colors disabled:opacity-40"
                       >
                         <XCircle className="w-3.5 h-3.5" /> Remove Listing
@@ -230,7 +280,11 @@ export default function AdminReportsPage() {
                     <div className="flex flex-wrap gap-2 mt-3">
                       <button
                         onClick={() => removeListing(report)}
-                        disabled={updating === report.id || !report.listing || report.listing.status === "removed"}
+                        disabled={
+                          updating === report.id ||
+                          !report.listing ||
+                          report.listing.status === "removed"
+                        }
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-700 text-xs font-medium hover:bg-red-100 transition-colors disabled:opacity-40"
                       >
                         <XCircle className="w-3.5 h-3.5" /> Remove Listing

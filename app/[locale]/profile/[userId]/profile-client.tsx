@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import {
+  Calendar,
+  ChevronRight,
+  MapPin,
+  Package,
+  Shield,
+  Star,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Star,
-  Shield,
-  MapPin,
-  Calendar,
-  Package,
-  ChevronRight,
-} from "lucide-react";
+import { useState } from "react";
 import ListingCard from "@/app/components/listing-card";
 
 type Profile = {
@@ -72,10 +72,19 @@ function timeAgo(d: string) {
 }
 
 function memberSince(d: string) {
-  return new Date(d).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  return new Date(d).toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
 }
 
-function StarRow({ rating, size = "sm" }: { rating: number; size?: "sm" | "lg" }) {
+function StarRow({
+  rating,
+  size = "sm",
+}: {
+  rating: number;
+  size?: "sm" | "lg";
+}) {
   const cls = size === "lg" ? "w-5 h-5" : "w-3.5 h-3.5";
   return (
     <div className="flex items-center gap-0.5">
@@ -110,7 +119,9 @@ export default function ProfileClient({
   const dist = [5, 4, 3, 2, 1].map((star) => ({
     star,
     count: reviews.filter((r) => r.rating === star).length,
-    pct: reviews.length ? (reviews.filter((r) => r.rating === star).length / reviews.length) * 100 : 0,
+    pct: reviews.length
+      ? (reviews.filter((r) => r.rating === star).length / reviews.length) * 100
+      : 0,
   }));
 
   return (
@@ -157,7 +168,9 @@ export default function ProfileClient({
               {reviewCount > 0 && (
                 <div className="flex items-center gap-2 mt-1.5">
                   <StarRow rating={avgRating} size="sm" />
-                  <span className="font-bold text-gray-900">{avgRating.toFixed(1)}</span>
+                  <span className="font-bold text-gray-900">
+                    {avgRating.toFixed(1)}
+                  </span>
                   <span className="text-sm text-gray-400">
                     ({reviewCount} review{reviewCount !== 1 ? "s" : ""})
                   </span>
@@ -165,7 +178,9 @@ export default function ProfileClient({
               )}
 
               {profile.bio && (
-                <p className="text-sm text-gray-600 mt-2 max-w-lg">{profile.bio}</p>
+                <p className="text-sm text-gray-600 mt-2 max-w-lg">
+                  {profile.bio}
+                </p>
               )}
 
               <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
@@ -175,7 +190,8 @@ export default function ProfileClient({
                 </span>
                 <span className="flex items-center gap-1">
                   <Package className="w-3.5 h-3.5" />
-                  {listings.length} active listing{listings.length !== 1 ? "s" : ""}
+                  {listings.length} active listing
+                  {listings.length !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
@@ -191,7 +207,9 @@ export default function ProfileClient({
               <h2 className="text-lg font-bold text-gray-900">
                 Active Listings
               </h2>
-              <span className="text-sm text-gray-400">{listings.length} item{listings.length !== 1 ? "s" : ""}</span>
+              <span className="text-sm text-gray-400">
+                {listings.length} item{listings.length !== 1 ? "s" : ""}
+              </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {listings.map((listing) => (
@@ -235,7 +253,9 @@ export default function ProfileClient({
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="w-5 text-right text-gray-400 text-xs">{count}</span>
+                    <span className="w-5 text-right text-gray-400 text-xs">
+                      {count}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -245,17 +265,25 @@ export default function ProfileClient({
             <div className="space-y-4">
               {displayedReviews.map((review) => {
                 const rev = review.reviewer;
-                const initials2 = rev?.display_name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2) || "?";
+                const initials2 =
+                  rev?.display_name
+                    ?.split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2) || "?";
                 return (
-                  <div key={review.id} className="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4">
+                  <div
+                    key={review.id}
+                    className="bg-white rounded-2xl border border-gray-100 p-5 flex gap-4"
+                  >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
                       {rev?.avatar_url ? (
-                        <img src={rev.avatar_url} alt="" className="w-full h-full object-cover" />
+                        <img
+                          src={rev.avatar_url}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         initials2
                       )}
@@ -289,7 +317,9 @@ export default function ProfileClient({
                 {showAllReviews
                   ? "Show fewer reviews"
                   : `Show all ${reviews.length} reviews`}
-                <ChevronRight className={`w-4 h-4 transition-transform ${showAllReviews ? "rotate-90" : ""}`} />
+                <ChevronRight
+                  className={`w-4 h-4 transition-transform ${showAllReviews ? "rotate-90" : ""}`}
+                />
               </button>
             )}
           </section>
@@ -298,7 +328,9 @@ export default function ProfileClient({
         {listings.length === 0 && reviewCount === 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 p-16 text-center">
             <div className="text-4xl mb-3">🏪</div>
-            <p className="text-gray-500 text-sm">This seller hasn't posted any listings yet.</p>
+            <p className="text-gray-500 text-sm">
+              This seller hasn't posted any listings yet.
+            </p>
           </div>
         )}
       </div>

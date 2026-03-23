@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Hoisted shared mock state
@@ -36,9 +36,18 @@ const { state } = vi.hoisted(() => ({
     },
 
     // Slug → id lookup results (null means not found)
-    categoryLookup: { data: { id: "cat-prop-id" } as { id: string } | null, error: null },
-    subcategoryLookup: { data: { id: "sub-apt-id" } as { id: string } | null, error: null },
-    locationLookup: { data: { id: "loc-nic-id" } as { id: string } | null, error: null },
+    categoryLookup: {
+      data: { id: "cat-prop-id" } as { id: string } | null,
+      error: null,
+    },
+    subcategoryLookup: {
+      data: { id: "sub-apt-id" } as { id: string } | null,
+      error: null,
+    },
+    locationLookup: {
+      data: { id: "loc-nic-id" } as { id: string } | null,
+      error: null,
+    },
 
     // Captured per-call listings chain records (one entry per from("listings") call)
     listingsChains: [] as ChainRecord[],
@@ -244,7 +253,9 @@ describe("GET /api/search", () => {
     });
 
     it("resolves subcategory slug to an id in browse mode", async () => {
-      await GET(makeRequest({ category: "property", subcategory: "apartments" }));
+      await GET(
+        makeRequest({ category: "property", subcategory: "apartments" }),
+      );
       const chain = state.listingsChains[0];
       expect(chain.eqs).toContainEqual(["subcategory_id", "sub-apt-id"]);
     });
@@ -271,7 +282,15 @@ describe("GET /api/search", () => {
     it("passes the query embedding and filters to match_listings", async () => {
       state.embedResult = [0.1, 0.2, 0.3];
       state.rpcResult = { data: [MOCK_VECTOR_ROW], error: null };
-      await GET(makeRequest({ q: "villa", category: "property", location: "paphos", priceMin: "100000", priceMax: "900000" }));
+      await GET(
+        makeRequest({
+          q: "villa",
+          category: "property",
+          location: "paphos",
+          priceMin: "100000",
+          priceMax: "900000",
+        }),
+      );
       expect(state.rpcArgs).toMatchObject({
         filter_category: "property",
         filter_location: "paphos",
@@ -285,14 +304,36 @@ describe("GET /api/search", () => {
       state.rpcResult = { data: [MOCK_VECTOR_ROW], error: null };
       const res = await GET(makeRequest({ q: "penthouse" }));
       const { hits } = await res.json();
-      expect(hits[0].category).toEqual({ name: "Property", slug: "property", icon: "🏠" });
+      expect(hits[0].category).toEqual({
+        name: "Property",
+        slug: "property",
+        icon: "🏠",
+      });
       expect(hits[0].location).toEqual({ name: "Limassol", slug: "limassol" });
     });
 
     it("sorts featured > urgent > normal in vector results", async () => {
-      const normal   = { ...MOCK_VECTOR_ROW, id: "normal",   is_promoted: false, is_urgent: false, created_at: "2024-06-03T00:00:00Z" };
-      const urgent   = { ...MOCK_VECTOR_ROW, id: "urgent",   is_promoted: false, is_urgent: true,  created_at: "2024-06-02T00:00:00Z" };
-      const featured = { ...MOCK_VECTOR_ROW, id: "featured", is_promoted: true,  is_urgent: false, created_at: "2024-06-01T00:00:00Z" };
+      const normal = {
+        ...MOCK_VECTOR_ROW,
+        id: "normal",
+        is_promoted: false,
+        is_urgent: false,
+        created_at: "2024-06-03T00:00:00Z",
+      };
+      const urgent = {
+        ...MOCK_VECTOR_ROW,
+        id: "urgent",
+        is_promoted: false,
+        is_urgent: true,
+        created_at: "2024-06-02T00:00:00Z",
+      };
+      const featured = {
+        ...MOCK_VECTOR_ROW,
+        id: "featured",
+        is_promoted: true,
+        is_urgent: false,
+        created_at: "2024-06-01T00:00:00Z",
+      };
       state.embedResult = [0.1];
       // Arrive out-of-order: normal, featured, urgent
       state.rpcResult = { data: [normal, featured, urgent], error: null };
@@ -304,8 +345,20 @@ describe("GET /api/search", () => {
     });
 
     it("sorts by recency within the same tier in vector results", async () => {
-      const older  = { ...MOCK_VECTOR_ROW, id: "older",  is_promoted: true, is_urgent: false, created_at: "2024-01-01T00:00:00Z" };
-      const newer  = { ...MOCK_VECTOR_ROW, id: "newer",  is_promoted: true, is_urgent: false, created_at: "2024-06-01T00:00:00Z" };
+      const older = {
+        ...MOCK_VECTOR_ROW,
+        id: "older",
+        is_promoted: true,
+        is_urgent: false,
+        created_at: "2024-01-01T00:00:00Z",
+      };
+      const newer = {
+        ...MOCK_VECTOR_ROW,
+        id: "newer",
+        is_promoted: true,
+        is_urgent: false,
+        created_at: "2024-06-01T00:00:00Z",
+      };
       state.embedResult = [0.1];
       state.rpcResult = { data: [older, newer], error: null };
       const res = await GET(makeRequest({ q: "sea" }));
@@ -360,7 +413,9 @@ describe("GET /api/search", () => {
     });
 
     it("applies priceMin and priceMax in full-text query", async () => {
-      await GET(makeRequest({ q: "villa", priceMin: "50000", priceMax: "700000" }));
+      await GET(
+        makeRequest({ q: "villa", priceMin: "50000", priceMax: "700000" }),
+      );
       const chain = state.listingsChains[0];
       expect(chain.gtes).toContainEqual(["price", 50000]);
       expect(chain.ltes).toContainEqual(["price", 700000]);
@@ -426,7 +481,9 @@ describe("GET /api/search", () => {
     });
 
     it("applies priceMin and priceMax in the ilike fallback", async () => {
-      await GET(makeRequest({ q: "sea", priceMin: "200000", priceMax: "800000" }));
+      await GET(
+        makeRequest({ q: "sea", priceMin: "200000", priceMax: "800000" }),
+      );
       const ilikeChain = state.listingsChains[1];
       expect(ilikeChain.gtes).toContainEqual(["price", 200000]);
       expect(ilikeChain.ltes).toContainEqual(["price", 800000]);
@@ -472,7 +529,9 @@ describe("GET /api/search", () => {
     });
 
     it("filters by subcategory_id when a subcategory slug is provided", async () => {
-      await GET(makeRequest({ category: "property", subcategory: "apartments" }));
+      await GET(
+        makeRequest({ category: "property", subcategory: "apartments" }),
+      );
       const chain = state.listingsChains[0];
       expect(chain.eqs).toContainEqual(["subcategory_id", "sub-apt-id"]);
     });
@@ -532,7 +591,11 @@ describe("GET /api/search", () => {
     });
 
     it("returns 500 when Supabase returns an error in browse mode", async () => {
-      state.browseResult = { data: null, count: 0, error: { message: "DB error" } };
+      state.browseResult = {
+        data: null,
+        count: 0,
+        error: { message: "DB error" },
+      };
       const res = await GET(makeRequest({}));
       expect(res.status).toBe(500);
     });

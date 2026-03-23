@@ -4,8 +4,8 @@ import { Clock, Eye, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import FavoriteButton from "./favorite-button";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
+import FavoriteButton from "./favorite-button";
 
 type CatLike = { name: string; slug?: string; icon?: string };
 type LocLike = { name: string; slug?: string };
@@ -100,7 +100,9 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
         {/* Category icon */}
         {cat?.slug && (
-          <span className={`absolute top-2.5 right-2.5 ${getCategoryConfig(cat.slug).bg} w-7 h-7 flex items-center justify-center rounded-full shadow-sm z-10`}>
+          <span
+            className={`absolute top-2.5 right-2.5 ${getCategoryConfig(cat.slug).bg} w-7 h-7 flex items-center justify-center rounded-full shadow-sm z-10`}
+          >
             <CategoryIcon slug={cat.slug} size={14} />
           </span>
         )}
@@ -147,13 +149,17 @@ export default function ListingCard({ listing }: ListingCardProps) {
           {listing.condition && (
             <>
               <span className="text-gray-200">·</span>
-              <span className="shrink-0">{formatCondition(listing.condition)}</span>
+              <span className="shrink-0">
+                {formatCondition(listing.condition)}
+              </span>
             </>
           )}
         </div>
 
         <div className="flex items-center justify-between">
-          <span className={`font-extrabold ${listing.price === null ? "text-gray-500 text-sm" : "text-gray-900 text-lg"}`}>
+          <span
+            className={`font-extrabold ${listing.price === null ? "text-gray-500 text-sm" : "text-gray-900 text-lg"}`}
+          >
             {formatPrice(listing.price, listing.currency)}
           </span>
           <span className="flex items-center gap-1 text-[11px] text-gray-400">

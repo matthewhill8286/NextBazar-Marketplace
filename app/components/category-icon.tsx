@@ -1,14 +1,14 @@
 import {
-  Laptop,
-  Shirt,
-  Sofa,
   Briefcase,
   Building2,
-  Wrench,
-  Dumbbell,
   Car,
-  Tag,
+  Dumbbell,
+  Laptop,
   type LucideIcon,
+  Shirt,
+  Sofa,
+  Tag,
+  Wrench,
 } from "lucide-react";
 
 // ─── Per-category config ─────────────────────────────────────────────────────
@@ -92,7 +92,9 @@ const FALLBACK: CategoryConfig = {
   accent: "#9CA3AF",
 };
 
-export function getCategoryConfig(slug: string | null | undefined): CategoryConfig {
+export function getCategoryConfig(
+  slug: string | null | undefined,
+): CategoryConfig {
   if (!slug) return FALLBACK;
   return CONFIG[slug.toLowerCase()] ?? FALLBACK;
 }
@@ -107,7 +109,11 @@ interface CategoryIconProps {
   className?: string;
 }
 
-export default function CategoryIcon({ slug, size = 20, className = "" }: CategoryIconProps) {
+export default function CategoryIcon({
+  slug,
+  size = 20,
+  className = "",
+}: CategoryIconProps) {
   const { Icon, color } = getCategoryConfig(slug);
   return <Icon size={size} className={`${color} ${className}`.trim()} />;
 }

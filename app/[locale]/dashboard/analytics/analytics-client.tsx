@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import {
+  BarChart2,
+  ExternalLink,
   Eye,
   Heart,
   MessageCircle,
-  TrendingUp,
   TrendingDown,
-  BarChart2,
-  ExternalLink,
+  TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 type Listing = {
   id: string;
@@ -56,7 +56,13 @@ function distributeEven(total: number, days: number): number[] {
     .map((v, i) => (i === days - 1 ? v + remainder : v));
 }
 
-function Sparkline({ data, color = "#3b82f6" }: { data: number[]; color?: string }) {
+function Sparkline({
+  data,
+  color = "#3b82f6",
+}: {
+  data: number[];
+  color?: string;
+}) {
   const max = Math.max(...data, 1);
   const w = 96;
   const h = 32;
@@ -81,7 +87,15 @@ function Sparkline({ data, color = "#3b82f6" }: { data: number[]; color?: string
   );
 }
 
-function BarChart({ dates, values, color }: { dates: string[]; values: number[]; color: string }) {
+function BarChart({
+  dates,
+  values,
+  color,
+}: {
+  dates: string[];
+  values: number[];
+  color: string;
+}) {
   const max = Math.max(...values, 1);
   return (
     <div className="flex items-end gap-px h-24">
@@ -111,14 +125,42 @@ const RANGES = [
 ];
 
 const METRICS = [
-  { key: "views" as const, label: "Views", icon: Eye, color: "#3b82f6", bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-200" },
-  { key: "favorites" as const, label: "Saves", icon: Heart, color: "#ec4899", bg: "bg-pink-50", text: "text-pink-600", border: "border-pink-200" },
-  { key: "messages" as const, label: "Messages", icon: MessageCircle, color: "#10b981", bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-200" },
+  {
+    key: "views" as const,
+    label: "Views",
+    icon: Eye,
+    color: "#3b82f6",
+    bg: "bg-blue-50",
+    text: "text-blue-600",
+    border: "border-blue-200",
+  },
+  {
+    key: "favorites" as const,
+    label: "Saves",
+    icon: Heart,
+    color: "#ec4899",
+    bg: "bg-pink-50",
+    text: "text-pink-600",
+    border: "border-pink-200",
+  },
+  {
+    key: "messages" as const,
+    label: "Messages",
+    icon: MessageCircle,
+    color: "#10b981",
+    bg: "bg-emerald-50",
+    text: "text-emerald-600",
+    border: "border-emerald-200",
+  },
 ];
 
 export default function AnalyticsClient({ listings, analytics }: Props) {
-  const [selectedId, setSelectedId] = useState<string | null>(listings[0]?.id ?? null);
-  const [metric, setMetric] = useState<"views" | "favorites" | "messages">("views");
+  const [selectedId, setSelectedId] = useState<string | null>(
+    listings[0]?.id ?? null,
+  );
+  const [metric, setMetric] = useState<"views" | "favorites" | "messages">(
+    "views",
+  );
   const [rangeDays, setRangeDays] = useState(30);
 
   const dates = useMemo(() => buildDateRange(rangeDays), [rangeDays]);
@@ -159,13 +201,20 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
     if (realTotal > 0) return real;
 
     // Synthetic fallback: spread all-time count evenly
-    const allTime = m === "views" ? listing.view_count : m === "favorites" ? listing.favorite_count : 0;
+    const allTime =
+      m === "views"
+        ? listing.view_count
+        : m === "favorites"
+          ? listing.favorite_count
+          : 0;
     if (allTime === 0) return Array(rangeDays).fill(0);
 
     // Only distribute across days the listing has existed
     const listingAge = Math.max(
       1,
-      Math.floor((Date.now() - new Date(listing.created_at).getTime()) / 86400000),
+      Math.floor(
+        (Date.now() - new Date(listing.created_at).getTime()) / 86400000,
+      ),
     );
     const activeDays = Math.min(rangeDays, listingAge);
     const distributed = distributeEven(allTime, activeDays);
@@ -178,16 +227,22 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
   }
 
   const selectedListing = listings.find((l) => l.id === selectedId);
-  const selectedSeries = selectedId ? getSeries(selectedId, metric) : Array(rangeDays).fill(0);
+  const selectedSeries = selectedId
+    ? getSeries(selectedId, metric)
+    : Array(rangeDays).fill(0);
   const totalForPeriod = selectedSeries.reduce((a, b) => a + b, 0);
 
   // Compare to the previous same-length period
   const prevDates = buildDateRange(rangeDays * 2).slice(0, rangeDays);
   const prevTotal = selectedId
-    ? prevDates.map((d) => getValue(selectedId, d, metric)).reduce((a, b) => a + b, 0)
+    ? prevDates
+        .map((d) => getValue(selectedId, d, metric))
+        .reduce((a, b) => a + b, 0)
     : 0;
   const pctChange =
-    prevTotal > 0 ? Math.round(((totalForPeriod - prevTotal) / prevTotal) * 100) : null;
+    prevTotal > 0
+      ? Math.round(((totalForPeriod - prevTotal) / prevTotal) * 100)
+      : null;
 
   const isSynthetic = selectedId ? !hasRealData(selectedId) : false;
 
@@ -204,7 +259,9 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Track performance across all your listings.</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Track performance across all your listings.
+          </p>
         </div>
         <Link
           href="/post"
@@ -217,9 +274,16 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
       {listings.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
           <BarChart2 className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No listings yet</h3>
-          <p className="text-gray-500 text-sm mb-6">Post your first listing to start tracking performance.</p>
-          <Link href="/post" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            No listings yet
+          </h3>
+          <p className="text-gray-500 text-sm mb-6">
+            Post your first listing to start tracking performance.
+          </p>
+          <Link
+            href="/post"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
+          >
             Post a Listing
           </Link>
         </div>
@@ -228,16 +292,41 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
           {/* Summary row */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "Active Listings", value: totalActive, icon: BarChart2, color: "text-blue-600", bg: "bg-blue-50" },
-              { label: "Total Views", value: totalViews, icon: Eye, color: "text-indigo-600", bg: "bg-indigo-50" },
-              { label: "Total Saves", value: totalFavs, icon: Heart, color: "text-pink-600", bg: "bg-pink-50" },
+              {
+                label: "Active Listings",
+                value: totalActive,
+                icon: BarChart2,
+                color: "text-blue-600",
+                bg: "bg-blue-50",
+              },
+              {
+                label: "Total Views",
+                value: totalViews,
+                icon: Eye,
+                color: "text-indigo-600",
+                bg: "bg-indigo-50",
+              },
+              {
+                label: "Total Saves",
+                value: totalFavs,
+                icon: Heart,
+                color: "text-pink-600",
+                bg: "bg-pink-50",
+              },
             ].map((s) => (
-              <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
-                <div className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center shrink-0`}>
+              <div
+                key={s.label}
+                className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3"
+              >
+                <div
+                  className={`w-10 h-10 ${s.bg} rounded-xl flex items-center justify-center shrink-0`}
+                >
                   <s.icon className={`w-5 h-5 ${s.color}`} />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-gray-900">{s.value.toLocaleString()}</div>
+                  <div className="text-xl font-bold text-gray-900">
+                    {s.value.toLocaleString()}
+                  </div>
                   <div className="text-xs text-gray-500">{s.label}</div>
                 </div>
               </div>
@@ -247,7 +336,9 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-5">
             {/* Left — listing list */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1">Your Listings</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1">
+                Your Listings
+              </p>
               <div className="space-y-1.5">
                 {listings.map((l) => {
                   const spark = getSparkline(l.id);
@@ -265,24 +356,40 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     >
                       <div className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
                         {l.primary_image_url ? (
-                          <Image src={l.primary_image_url} alt={l.title} fill className="object-cover" sizes="44px" />
+                          <Image
+                            src={l.primary_image_url}
+                            alt={l.title}
+                            fill
+                            className="object-cover"
+                            sizes="44px"
+                          />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">📦</div>
+                          <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">
+                            📦
+                          </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{l.title}</p>
+                        <p className="text-sm font-medium text-gray-900 truncate">
+                          {l.title}
+                        </p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="flex items-center gap-0.5 text-xs text-gray-500">
-                            <Eye className="w-3 h-3" />{(l.view_count || 0).toLocaleString()}
+                            <Eye className="w-3 h-3" />
+                            {(l.view_count || 0).toLocaleString()}
                           </span>
                           <span className="flex items-center gap-0.5 text-xs text-gray-500">
-                            <Heart className="w-3 h-3" />{l.favorite_count || 0}
+                            <Heart className="w-3 h-3" />
+                            {l.favorite_count || 0}
                           </span>
                         </div>
                       </div>
                       <Sparkline
-                        data={sparkTotal > 0 ? spark : distributeEven(l.view_count, 7)}
+                        data={
+                          sparkTotal > 0
+                            ? spark
+                            : distributeEven(l.view_count, 7)
+                        }
                         color={isSelected ? "#3b82f6" : "#9ca3af"}
                       />
                     </button>
@@ -298,18 +405,34 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                 <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative">
                     {selectedListing.primary_image_url ? (
-                      <Image src={selectedListing.primary_image_url} alt={selectedListing.title} fill className="object-cover" sizes="56px" />
+                      <Image
+                        src={selectedListing.primary_image_url}
+                        alt={selectedListing.title}
+                        fill
+                        className="object-cover"
+                        sizes="56px"
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-2xl">📦</div>
+                      <div className="w-full h-full flex items-center justify-center text-2xl">
+                        📦
+                      </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="font-semibold text-gray-900 truncate">{selectedListing.title}</h2>
-                    <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${selectedListing.status === "active" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600"}`}>
+                    <h2 className="font-semibold text-gray-900 truncate">
+                      {selectedListing.title}
+                    </h2>
+                    <span
+                      className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${selectedListing.status === "active" ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-600"}`}
+                    >
                       {selectedListing.status}
                     </span>
                   </div>
-                  <Link href={`/listing/${selectedListing.slug}`} target="_blank" className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                  <Link
+                    href={`/listing/${selectedListing.slug}`}
+                    target="_blank"
+                    className="p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                  >
                     <ExternalLink className="w-4 h-4" />
                   </Link>
                 </div>
@@ -319,19 +442,32 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                   {METRICS.map((m) => {
                     const series = getSeries(selectedListing.id, m.key);
                     const total = series.reduce((a, b) => a + b, 0);
-                    const allTime = m.key === "views" ? selectedListing.view_count : m.key === "favorites" ? selectedListing.favorite_count : total;
+                    const allTime =
+                      m.key === "views"
+                        ? selectedListing.view_count
+                        : m.key === "favorites"
+                          ? selectedListing.favorite_count
+                          : total;
                     return (
                       <button
                         key={m.key}
                         onClick={() => setMetric(m.key)}
                         className={`p-4 rounded-xl border transition-all text-left ${metric === m.key ? `${m.bg} ${m.border} ring-2 ring-current/10` : "bg-white border-gray-100 hover:border-gray-200"}`}
                       >
-                        <div className={`w-8 h-8 ${m.bg} rounded-lg flex items-center justify-center mb-2`}>
+                        <div
+                          className={`w-8 h-8 ${m.bg} rounded-lg flex items-center justify-center mb-2`}
+                        >
                           <m.icon className={`w-4 h-4 ${m.text}`} />
                         </div>
-                        <div className="text-2xl font-bold text-gray-900">{total.toLocaleString()}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">{m.label} ({rangeDays}d)</div>
-                        <div className="text-xs text-gray-400 mt-0.5">{allTime.toLocaleString()} all-time</div>
+                        <div className="text-2xl font-bold text-gray-900">
+                          {total.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {m.label} ({rangeDays}d)
+                        </div>
+                        <div className="text-xs text-gray-400 mt-0.5">
+                          {allTime.toLocaleString()} all-time
+                        </div>
                       </button>
                     );
                   })}
@@ -353,12 +489,21 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     </div>
                     <div className="flex items-center gap-3">
                       {pctChange !== null && !isSynthetic && (
-                        <span className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${pctChange >= 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>
-                          {pctChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                          {pctChange >= 0 ? "+" : ""}{pctChange}%
+                        <span
+                          className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${pctChange >= 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}
+                        >
+                          {pctChange >= 0 ? (
+                            <TrendingUp className="w-3 h-3" />
+                          ) : (
+                            <TrendingDown className="w-3 h-3" />
+                          )}
+                          {pctChange >= 0 ? "+" : ""}
+                          {pctChange}%
                         </span>
                       )}
-                      <span className="text-xl font-bold text-gray-900">{totalForPeriod.toLocaleString()}</span>
+                      <span className="text-xl font-bold text-gray-900">
+                        {totalForPeriod.toLocaleString()}
+                      </span>
                       {/* Range picker */}
                       <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
                         {RANGES.map((r) => (
@@ -374,17 +519,28 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     </div>
                   </div>
 
-                  <BarChart dates={dates} values={selectedSeries} color={activeMetric.color} />
+                  <BarChart
+                    dates={dates}
+                    values={selectedSeries}
+                    color={activeMetric.color}
+                  />
 
                   <div className="flex justify-between mt-2 text-xs text-gray-400">
-                    <span>{new Date(dates[0]).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
+                    <span>
+                      {new Date(dates[0]).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </span>
                     <span>Today</span>
                   </div>
                 </div>
 
                 {isSynthetic && (
                   <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-xl px-4 py-2.5">
-                    Estimated distribution based on total views — live day-by-day tracking started today and will populate over time.
+                    Estimated distribution based on total views — live
+                    day-by-day tracking started today and will populate over
+                    time.
                   </p>
                 )}
               </div>

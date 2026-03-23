@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,17 +41,19 @@ export async function POST(request: NextRequest) {
       .map((l) => l.price)
       .filter((p): p is number => p !== null);
 
-    const avgPrice = prices.length > 0
-      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-      : null;
+    const avgPrice =
+      prices.length > 0
+        ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+        : null;
     const minPrice = prices.length > 0 ? Math.min(...prices) : null;
     const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
-    const avgViews = similarListings.length > 0
-      ? Math.round(
-          similarListings.reduce((a, b) => a + (b.view_count || 0), 0) /
-            similarListings.length,
-        )
-      : 0;
+    const avgViews =
+      similarListings.length > 0
+        ? Math.round(
+            similarListings.reduce((a, b) => a + (b.view_count || 0), 0) /
+              similarListings.length,
+          )
+        : 0;
 
     // Build context for GPT
     const prompt = `You are a marketplace pricing analyst for NextBazar, a classifieds marketplace in Cyprus. Analyze this listing and provide insights.
@@ -92,9 +94,7 @@ Respond in JSON format with these exact fields:
       max_tokens: 500,
     });
 
-    const insights = JSON.parse(
-      response.choices[0].message.content || "{}",
-    );
+    const insights = JSON.parse(response.choices[0].message.content || "{}");
 
     return NextResponse.json({
       insights,

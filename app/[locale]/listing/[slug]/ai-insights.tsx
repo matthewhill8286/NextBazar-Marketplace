@@ -1,7 +1,16 @@
 "use client";
 
-import {BarChart3, Clock, Lightbulb, Shield, Sparkles, Target, TrendingDown, TrendingUp,} from "lucide-react";
-import {useEffect, useState} from "react";
+import {
+  BarChart3,
+  Clock,
+  Lightbulb,
+  Shield,
+  Sparkles,
+  Target,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 type InsightsData = {
   insights: {
@@ -44,7 +53,12 @@ export default function AiInsights({
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    onInsightsAction?.({ price_low: 0, price_high: 0, price_verdict: "", loading: true });
+    onInsightsAction?.({
+      price_low: 0,
+      price_high: 0,
+      price_verdict: "",
+      loading: true,
+    });
     async function load() {
       try {
         const res = await fetch("/api/ai/insights", {
@@ -63,12 +77,17 @@ export default function AiInsights({
         });
       } catch {
         setError(true);
-        onInsightsAction?.({ price_low: 0, price_high: 0, price_verdict: "", loading: false });
+        onInsightsAction?.({
+          price_low: 0,
+          price_high: 0,
+          price_verdict: "",
+          loading: false,
+        });
       }
       setLoading(false);
     }
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listingId]);
 
   if (loading) {
@@ -103,11 +122,12 @@ export default function AiInsights({
         ? "text-red-600"
         : "text-blue-600";
 
-  const VerdictIcon = insights.price_verdict === "underpriced"
+  const VerdictIcon =
+    insights.price_verdict === "underpriced"
       ? TrendingDown
       : insights.price_verdict === "overpriced"
-          ? TrendingUp
-          : Shield;
+        ? TrendingUp
+        : Shield;
 
   const verdictLabel =
     insights.price_verdict === "underpriced"

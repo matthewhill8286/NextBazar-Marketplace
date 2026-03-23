@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,10 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const { imageUrl } = await request.json();
     if (!imageUrl) {
-      return NextResponse.json(
-        { error: "Missing imageUrl" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing imageUrl" }, { status: 400 });
     }
 
     // Fetch categories for matching

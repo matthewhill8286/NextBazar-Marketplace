@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
-import { createClient } from "@/lib/supabase/client";
 import { useSaved } from "@/lib/saved-context";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SavedPage() {
   const router = useRouter();
@@ -51,13 +51,13 @@ export default function SavedPage() {
   }, [savedIds, savedLoading]);
 
   // Derive ordered list — only IDs currently in savedIds, preserving insertion order
-  const listings = [...savedIds]
-    .map((id) => listingMap[id])
-    .filter(Boolean);
+  const listings = [...savedIds].map((id) => listingMap[id]).filter(Boolean);
 
   async function handleClearAll() {
     if (!confirm("Remove all saved listings?")) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
     // Toggle off each saved item through context so count stays in sync
     await Promise.all([...savedIds].map((id) => toggle(id)));

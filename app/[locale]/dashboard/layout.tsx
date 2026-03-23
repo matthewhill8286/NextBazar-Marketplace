@@ -1,5 +1,5 @@
+import type { Metadata } from "next";
 import DashboardShell from "./dashboard-shell";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Dashboard — NextBazar",

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import OffersClient from "./offers-client";
 
@@ -11,34 +11,13 @@ export default function OffersPage() {
   const focusOfferId = searchParams.get("offer") ?? undefined;
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
-  const [received, setReceived] = useState<any[]>([]);
-  const [sent, setSent] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
-      setUserId(user.id);
-
-      const [{ data: rec }, { data: snt }] = await Promise.all([
-        supabase
-          .from("offers")
-          .select(`*, listings(id,title,slug,primary_image_url,price,currency), buyer:profiles!offers_buyer_id_fkey(id,display_name,avatar_url)`)
-          .eq("seller_id", user.id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("offers")
-          .select(`*, listings(id,title,slug,primary_image_url,price,currency), seller:profiles!offers_seller_id_fkey(id,display_name,avatar_url)`)
-          .eq("buyer_id", user.id)
-          .order("created_at", { ascending: false }),
-      ]);
-
-      setReceived(rec || []);
-      setSent(snt || []);
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id ?? null);
       setLoading(false);
-    }
-    load();
+    });
   }, []);
 
   if (loading) {
@@ -49,11 +28,11 @@ export default function OffersPage() {
     );
   }
 
+  if (!userId) return null;
+
   return (
     <OffersClient
-      userId={userId || ""}
-      receivedOffers={received}
-      sentOffers={sent}
+      userId={userId}
       focusOfferId={focusOfferId}
     />
   );

@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
 // POST /api/notify/price-drop
@@ -15,12 +16,17 @@ export async function POST(req: NextRequest) {
   try {
     // Verify the caller is the listing owner
     const supabase = await createServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ ok: false }, { status: 401 });
 
     const { listing_id, old_price, new_price } = await req.json();
     if (!listing_id || old_price == null || new_price == null) {
-      return NextResponse.json({ ok: false, error: "Missing fields" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Missing fields" },
+        { status: 400 },
+      );
     }
 
     if (new_price >= old_price) {
@@ -35,7 +41,10 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (!listing || listing.user_id !== user.id) {
-      return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+      return NextResponse.json(
+        { ok: false, error: "Forbidden" },
+        { status: 403 },
+      );
     }
 
     // Find users who have favourited this listing (excluding the owner)

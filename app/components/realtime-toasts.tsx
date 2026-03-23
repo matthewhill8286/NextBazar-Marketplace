@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { MessageCircle, Tag, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 
 // ─── Custom toast UIs ────────────────────────────────────────────────────────
@@ -47,7 +47,9 @@ function MessageToast({
               <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">
                 {isOffer ? "In-chat offer" : "New message"}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">{senderName}</p>
+              <p className="text-sm font-bold text-gray-900 truncate">
+                {senderName}
+              </p>
             </div>
           </div>
           <button
@@ -116,7 +118,9 @@ function OfferToast({
               <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
                 New offer received
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">{buyerName}</p>
+              <p className="text-sm font-bold text-gray-900 truncate">
+                {buyerName}
+              </p>
             </div>
           </div>
           <button
@@ -127,10 +131,14 @@ function OfferToast({
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">{listingTitle}</p>
+        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+          {listingTitle}
+        </p>
 
         <div className="flex items-center justify-center bg-emerald-50 border border-emerald-100 rounded-xl py-2 mb-3">
-          <span className="text-xl font-extrabold text-emerald-600">{amount}</span>
+          <span className="text-xl font-extrabold text-emerald-600">
+            {amount}
+          </span>
         </div>
 
         <button
@@ -162,7 +170,9 @@ export default function RealtimeToasts() {
     const channels: ReturnType<typeof supabase.channel>[] = [];
 
     async function setup() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user || !mounted) return;
       const userId = user.id;
 
@@ -180,7 +190,10 @@ export default function RealtimeToasts() {
             if (msg.sender_id === userId) return;
 
             // Suppress if already viewing that conversation
-            if (pathnameRef.current.includes(`/messages/${msg.conversation_id}`)) return;
+            if (
+              pathnameRef.current.includes(`/messages/${msg.conversation_id}`)
+            )
+              return;
 
             // Fetch sender profile + conversation/listing title in parallel
             const [{ data: sender }, { data: conv }] = await Promise.all([
@@ -254,7 +267,8 @@ export default function RealtimeToasts() {
 
             const buyerName = buyer?.display_name || "Someone";
             const listingTitle = listing?.title || "your listing";
-            const sym = offer.currency === "EUR" ? "€" : (offer.currency ?? "€");
+            const sym =
+              offer.currency === "EUR" ? "€" : (offer.currency ?? "€");
             const amount = `${sym}${Number(offer.amount).toLocaleString()}`;
 
             toast.custom(
@@ -286,7 +300,7 @@ export default function RealtimeToasts() {
       mounted = false;
       channels.forEach((ch) => supabase.removeChannel(ch));
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;

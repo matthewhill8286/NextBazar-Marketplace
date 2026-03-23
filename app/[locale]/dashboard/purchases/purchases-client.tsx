@@ -1,19 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import {
-  ShoppingBag,
-  Star,
-  Shield,
   CheckCircle,
   ExternalLink,
+  Shield,
+  ShoppingBag,
+  Star,
   Tag,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
+import { createClient } from "@/lib/supabase/client";
 
 type Purchase = {
   id: string; // offer id
@@ -33,7 +35,10 @@ type Purchase = {
     price: number | null;
     currency: string;
     status: string;
-    categories: { name: string; slug: string; icon?: string } | { name: string; slug: string; icon?: string }[] | null;
+    categories:
+      | { name: string; slug: string; icon?: string }
+      | { name: string; slug: string; icon?: string }[]
+      | null;
     locations: { name: string } | { name: string }[] | null;
   } | null;
   seller: {
@@ -71,7 +76,9 @@ function StarRow({ rating }: { rating: number }) {
         <Star
           key={n}
           className={`w-3.5 h-3.5 ${
-            n <= rating ? "text-amber-400 fill-amber-400" : "text-gray-200 fill-gray-200"
+            n <= rating
+              ? "text-amber-400 fill-amber-400"
+              : "text-gray-200 fill-gray-200"
           }`}
         />
       ))}
@@ -133,7 +140,9 @@ function PurchaseCard({
                 sizes="80px"
               />
             ) : (
-              <div className={`w-full h-full flex items-center justify-center ${getCategoryConfig(cat?.slug).bg}`}>
+              <div
+                className={`w-full h-full flex items-center justify-center ${getCategoryConfig(cat?.slug).bg}`}
+              >
                 <CategoryIcon slug={cat?.slug} size={20} />
               </div>
             )}
@@ -163,7 +172,12 @@ function PurchaseCard({
                       {cat.name}
                     </span>
                   )}
-                  {loc && <><span>·</span><span>{loc.name}</span></>}
+                  {loc && (
+                    <>
+                      <span>·</span>
+                      <span>{loc.name}</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -188,7 +202,11 @@ function PurchaseCard({
               >
                 <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-[9px] font-bold shrink-0 overflow-hidden">
                   {seller.avatar_url ? (
-                    <img src={seller.avatar_url} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={seller.avatar_url}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     seller.display_name[0].toUpperCase()
                   )}
@@ -196,7 +214,9 @@ function PurchaseCard({
                 <span className="text-xs text-gray-500 group-hover:text-blue-600 transition-colors">
                   {seller.display_name}
                 </span>
-                {seller.verified && <Shield className="w-3 h-3 text-blue-500" />}
+                {seller.verified && (
+                  <Shield className="w-3 h-3 text-blue-500" />
+                )}
               </Link>
             )}
 
@@ -274,7 +294,8 @@ export default function PurchasesClient({
     return sum + (p.counter_amount ?? p.amount);
   }, 0);
 
-  const currencySymbol = purchases[0]?.currency === "EUR" ? "€" : (purchases[0]?.currency ?? "€");
+  const currencySymbol =
+    purchases[0]?.currency === "EUR" ? "€" : (purchases[0]?.currency ?? "€");
 
   return (
     <div className="space-y-6">
@@ -288,7 +309,8 @@ export default function PurchasesClient({
         {purchases.length > 0 && (
           <div className="text-right shrink-0">
             <div className="text-2xl font-extrabold text-gray-900">
-              {currencySymbol}{totalSpent.toLocaleString()}
+              {currencySymbol}
+              {totalSpent.toLocaleString()}
             </div>
             <div className="text-xs text-gray-400">total spent</div>
           </div>
@@ -299,16 +321,22 @@ export default function PurchasesClient({
       {purchases.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
           <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-            <div className="text-2xl font-bold text-gray-900">{purchases.length}</div>
-            <div className="text-xs text-gray-500 mt-0.5">Item{purchases.length !== 1 ? "s" : ""} bought</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {purchases.length}
+            </div>
+            <div className="text-xs text-gray-500 mt-0.5">
+              Item{purchases.length !== 1 ? "s" : ""} bought
+            </div>
           </div>
           <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
             <div className="text-2xl font-bold text-gray-900">
-              {purchases.filter((p) => {
-                // reviewed = has offer in reviewed state, we check via hasReviewed in each card
-                // just show pending reviews as a nudge
-                return true;
-              }).length}
+              {
+                purchases.filter((p) => {
+                  // reviewed = has offer in reviewed state, we check via hasReviewed in each card
+                  // just show pending reviews as a nudge
+                  return true;
+                }).length
+              }
             </div>
             <div className="text-xs text-gray-500 mt-0.5">Transactions</div>
           </div>
@@ -319,11 +347,13 @@ export default function PurchasesClient({
                 const paid = p.counter_amount ?? p.amount;
                 return savings + Math.max(0, listed - paid);
               }, 0) > 0
-                ? `${currencySymbol}${purchases.reduce((savings, p) => {
-                    const listed = p.listings?.price ?? 0;
-                    const paid = p.counter_amount ?? p.amount;
-                    return savings + Math.max(0, listed - paid);
-                  }, 0).toLocaleString()}`
+                ? `${currencySymbol}${purchases
+                    .reduce((savings, p) => {
+                      const listed = p.listings?.price ?? 0;
+                      const paid = p.counter_amount ?? p.amount;
+                      return savings + Math.max(0, listed - paid);
+                    }, 0)
+                    .toLocaleString()}`
                 : "—"}
             </div>
             <div className="text-xs text-gray-500 mt-0.5">Saved vs asking</div>
@@ -337,7 +367,9 @@ export default function PurchasesClient({
           <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShoppingBag className="w-7 h-7 text-gray-300" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">No purchases yet</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+            No purchases yet
+          </h3>
           <p className="text-gray-500 text-sm mb-6">
             When a seller accepts one of your offers, it will appear here.
           </p>
@@ -351,7 +383,11 @@ export default function PurchasesClient({
       ) : (
         <div className="space-y-3">
           {purchases.map((purchase) => (
-            <PurchaseCard key={purchase.id} purchase={purchase} userId={userId} />
+            <PurchaseCard
+              key={purchase.id}
+              purchase={purchase}
+              userId={userId}
+            />
           ))}
         </div>
       )}

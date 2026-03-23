@@ -17,7 +17,10 @@ export default function Footer() {
                 N
               </div>
               <span className="font-extrabold text-white text-lg tracking-tight">
-                Next<span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">Bazar</span>
+                Next
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">
+                  Bazar
+                </span>
               </span>
             </div>
             <p className="text-sm leading-relaxed text-gray-500 max-w-[200px]">
@@ -27,34 +30,112 @@ export default function Footer() {
 
           {/* Marketplace */}
           <div>
-            <p className="text-white font-semibold text-sm mb-4">{t("marketplace")}</p>
+            <p className="text-white font-semibold text-sm mb-4">
+              {t("marketplace")}
+            </p>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/search" className="hover:text-white transition-colors">{t("browseListings")}</Link></li>
-              <li><Link href="/post" className="hover:text-white transition-colors">{t("postAd")}</Link></li>
-              <li><Link href="/search?sort=newest" className="hover:text-white transition-colors">{t("recentlyAdded")}</Link></li>
-              <li><Link href="/search?promoted=true" className="hover:text-white transition-colors">{t("featuredListings")}</Link></li>
+              <li>
+                <Link
+                  href="/search"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("browseListings")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/post"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("postAd")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/search?sort=newest"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("recentlyAdded")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/search?promoted=true"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("featuredListings")}
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Account */}
           <div>
-            <p className="text-white font-semibold text-sm mb-4">{t("account")}</p>
+            <p className="text-white font-semibold text-sm mb-4">
+              {t("account")}
+            </p>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/dashboard/listings" className="hover:text-white transition-colors">{t("myListings")}</Link></li>
-              <li><Link href="/messages" className="hover:text-white transition-colors">{t("messages")}</Link></li>
-              <li><Link href="/saved" className="hover:text-white transition-colors">{t("savedItems")}</Link></li>
-              <li><Link href="/dashboard/settings" className="hover:text-white transition-colors">{t("settings")}</Link></li>
+              <li>
+                <Link
+                  href="/dashboard/listings"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("myListings")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/messages"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("messages")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/saved"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("savedItems")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard/settings"
+                  className="hover:text-white transition-colors"
+                >
+                  {t("settings")}
+                </Link>
+              </li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <p className="text-white font-semibold text-sm mb-4">{t("company")}</p>
+            <p className="text-white font-semibold text-sm mb-4">
+              {t("company")}
+            </p>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/" className="hover:text-white transition-colors">{t("aboutUs")}</Link></li>
-              <li><Link href="/" className="hover:text-white transition-colors">{t("safetyTips")}</Link></li>
-              <li><Link href="/" className="hover:text-white transition-colors">{t("forDealers")}</Link></li>
-              <li><Link href="/" className="hover:text-white transition-colors">{t("contact")}</Link></li>
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  {t("aboutUs")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  {t("safetyTips")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  {t("forDealers")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="hover:text-white transition-colors">
+                  {t("contact")}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -63,9 +144,15 @@ export default function Footer() {
         <div className="border-t border-gray-800 pt-6 flex flex-wrap items-center justify-between gap-4">
           <p className="text-xs text-gray-600">{t("rights")}</p>
           <div className="flex gap-5 text-xs text-gray-600">
-            <Link href="/" className="hover:text-gray-400 transition-colors">{t("privacy")}</Link>
-            <Link href="/" className="hover:text-gray-400 transition-colors">{t("terms")}</Link>
-            <Link href="/" className="hover:text-gray-400 transition-colors">{t("cookies")}</Link>
+            <Link href="/" className="hover:text-gray-400 transition-colors">
+              {t("privacy")}
+            </Link>
+            <Link href="/" className="hover:text-gray-400 transition-colors">
+              {t("terms")}
+            </Link>
+            <Link href="/" className="hover:text-gray-400 transition-colors">
+              {t("cookies")}
+            </Link>
           </div>
         </div>
       </div>

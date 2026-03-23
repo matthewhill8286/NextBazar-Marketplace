@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { createHmac } from "node:crypto";
 import { NextRequest } from "next/server";
-import { createHmac } from "crypto";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -38,7 +38,9 @@ function makeWebhookRequest(
   const body = JSON.stringify(event);
   const sig =
     options.signature ??
-    (options.sign !== false ? signBody(body, options.secret ?? WEBHOOK_SECRET) : "bad-sig");
+    (options.sign !== false
+      ? signBody(body, options.secret ?? WEBHOOK_SECRET)
+      : "bad-sig");
 
   return new NextRequest("http://localhost/api/webhooks/coinbase", {
     method: "POST",
@@ -111,7 +113,9 @@ describe("POST /api/webhooks/coinbase", () => {
   });
 
   it("returns 200 when a valid HMAC-SHA256 signature is provided", async () => {
-    const res = await POST(makeWebhookRequest(makeChargeEvent("charge:confirmed")));
+    const res = await POST(
+      makeWebhookRequest(makeChargeEvent("charge:confirmed")),
+    );
     expect(res.status).toBe(200);
   });
 
@@ -127,7 +131,9 @@ describe("POST /api/webhooks/coinbase", () => {
   // ── charge:confirmed ──────────────────────────────────────────────────────
 
   it("returns { received: true } for charge:confirmed", async () => {
-    const res = await POST(makeWebhookRequest(makeChargeEvent("charge:confirmed")));
+    const res = await POST(
+      makeWebhookRequest(makeChargeEvent("charge:confirmed")),
+    );
     expect(res.status).toBe(200);
     expect((await res.json()).received).toBe(true);
   });
@@ -138,7 +144,9 @@ describe("POST /api/webhooks/coinbase", () => {
     const updateArg = mockUpdate.mock.calls[0][0];
     expect(updateArg.is_promoted).toBe(true);
     expect(updateArg.promoted_until).toBeDefined();
-    expect(new Date(updateArg.promoted_until).getTime()).toBeGreaterThan(Date.now());
+    expect(new Date(updateArg.promoted_until).getTime()).toBeGreaterThan(
+      Date.now(),
+    );
   });
 
   it("calls .eq('id', listingId) for charge:confirmed", async () => {
@@ -165,7 +173,9 @@ describe("POST /api/webhooks/coinbase", () => {
   });
 
   it("returns { received: true } for charge:completed", async () => {
-    const res = await POST(makeWebhookRequest(makeChargeEvent("charge:completed")));
+    const res = await POST(
+      makeWebhookRequest(makeChargeEvent("charge:completed")),
+    );
     expect((await res.json()).received).toBe(true);
   });
 
@@ -184,7 +194,9 @@ describe("POST /api/webhooks/coinbase", () => {
   });
 
   it("calls .eq('id', listing-1) for urgent promotion", async () => {
-    const event = makeChargeEvent("charge:confirmed", { promotion_type: "urgent" });
+    const event = makeChargeEvent("charge:confirmed", {
+      promotion_type: "urgent",
+    });
     await POST(makeWebhookRequest(event));
     expect(mockEq).toHaveBeenCalledWith("id", "listing-1");
   });
@@ -192,7 +204,9 @@ describe("POST /api/webhooks/coinbase", () => {
   // ── charge:failed ─────────────────────────────────────────────────────────
 
   it("returns { received: true } for charge:failed without touching DB", async () => {
-    const res = await POST(makeWebhookRequest(makeChargeEvent("charge:failed")));
+    const res = await POST(
+      makeWebhookRequest(makeChargeEvent("charge:failed")),
+    );
     expect(res.status).toBe(200);
     expect((await res.json()).received).toBe(true);
     expect(mockUpdate).not.toHaveBeenCalled();
@@ -201,7 +215,9 @@ describe("POST /api/webhooks/coinbase", () => {
   // ── Unknown / irrelevant event types ─────────────────────────────────────
 
   it("returns { received: true } for an unknown event type without touching DB", async () => {
-    const res = await POST(makeWebhookRequest(makeChargeEvent("charge:pending")));
+    const res = await POST(
+      makeWebhookRequest(makeChargeEvent("charge:pending")),
+    );
     expect(res.status).toBe(200);
     expect(mockUpdate).not.toHaveBeenCalled();
   });

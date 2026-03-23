@@ -1,6 +1,9 @@
 "use client";
 
-import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
+import {
+  EmbeddedCheckout,
+  EmbeddedCheckoutProvider,
+} from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Bitcoin, CreditCard, ExternalLink, Loader2, X } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -80,8 +83,12 @@ function CryptoTab({
                 {coin.symbol.slice(0, 1)}
               </span>
               <div className="min-w-0">
-                <div className="text-xs font-semibold text-gray-800 leading-none">{coin.symbol}</div>
-                <div className="text-[10px] text-gray-400 truncate">{coin.name}</div>
+                <div className="text-xs font-semibold text-gray-800 leading-none">
+                  {coin.symbol}
+                </div>
+                <div className="text-[10px] text-gray-400 truncate">
+                  {coin.name}
+                </div>
               </div>
             </div>
           ))}
@@ -90,9 +97,10 @@ function CryptoTab({
 
       {/* Info */}
       <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-5 text-xs text-amber-800 leading-relaxed">
-        <span className="font-semibold">Note:</span> You&apos;ll be redirected to Coinbase
-        Commerce to complete payment. Your promotion activates automatically once
-        the transaction is confirmed on-chain (usually within a few minutes).
+        <span className="font-semibold">Note:</span> You&apos;ll be redirected
+        to Coinbase Commerce to complete payment. Your promotion activates
+        automatically once the transaction is confirmed on-chain (usually within
+        a few minutes).
       </div>
 
       {error && (
@@ -127,7 +135,11 @@ function CryptoTab({
   );
 }
 
-export default function StripeCheckoutModal({ listingId, promotionType, onCloseAction }: Props) {
+export default function StripeCheckoutModal({
+  listingId,
+  promotionType,
+  onCloseAction,
+}: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "crypto">("card");
   const cryptoEnabled = FEATURE_FLAGS.CRYPTO_PAYMENTS;
 
@@ -153,14 +165,17 @@ export default function StripeCheckoutModal({ listingId, promotionType, onCloseA
     /* Backdrop */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <div>
             <p className="font-semibold text-gray-900 text-sm">
-              {promotionType === "featured" ? "✨ Featured Listing — €4.99" : "⚡ Urgent Badge — €2.99"}
+              {promotionType === "featured"
+                ? "✨ Featured Listing — €4.99"
+                : "⚡ Urgent Badge — €2.99"}
             </p>
-            <p className="text-xs text-gray-400 mt-0.5">Choose your payment method below</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Choose your payment method below
+            </p>
           </div>
           <button
             onClick={onCloseAction}
@@ -213,7 +228,6 @@ export default function StripeCheckoutModal({ listingId, promotionType, onCloseA
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

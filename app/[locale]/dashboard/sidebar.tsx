@@ -45,7 +45,11 @@ const NAV_ITEMS = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
-export default function DashboardSidebar({ profile, stats, isAdmin }: SidebarProps) {
+export default function DashboardSidebar({
+  profile,
+  stats,
+  isAdmin,
+}: SidebarProps) {
   const rawPathname = usePathname();
   // Strip locale prefix (/en/ or /el/) so href comparisons work correctly
   const pathname = rawPathname.replace(/^\/(en|el)(\/|$)/, "/");
@@ -129,7 +133,12 @@ export default function DashboardSidebar({ profile, stats, isAdmin }: SidebarPro
 
       {/* Navigation */}
       <nav className="bg-white rounded-xl border border-gray-100 p-2">
-        {[...NAV_ITEMS, ...(isAdmin ? [{ href: "/admin/reports", label: "Reports Queue", icon: Flag }] : [])].map((item) => {
+        {[
+          ...NAV_ITEMS,
+          ...(isAdmin
+            ? [{ href: "/admin/reports", label: "Reports Queue", icon: Flag }]
+            : []),
+        ].map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));

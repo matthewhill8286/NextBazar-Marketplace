@@ -174,13 +174,19 @@ export default function ImageGallery({
           {media.length > 1 && (
             <>
               <button
-                onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goPrev();
+                }}
                 className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 z-10"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); goNext(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goNext();
+                }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 z-10"
               >
                 <ChevronRight className="w-6 h-6" />

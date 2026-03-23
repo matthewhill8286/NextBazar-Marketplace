@@ -1,7 +1,7 @@
 "use client";
 
+import { CheckCircle, Loader2, Star, X } from "lucide-react";
 import { useState } from "react";
-import { Star, X, Loader2, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
@@ -39,7 +39,10 @@ export default function LeaveReviewModal({
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     const { error: err } = await supabase.from("reviews").insert({
       reviewer_id: user.id,
@@ -51,7 +54,9 @@ export default function LeaveReviewModal({
     });
 
     if (err) {
-      setError("Couldn't submit review. You may have already reviewed this transaction.");
+      setError(
+        "Couldn't submit review. You may have already reviewed this transaction.",
+      );
       setLoading(false);
       return;
     }

@@ -1,5 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import ProfileClient from "./profile-client";
 
 export default async function ProfilePage({
@@ -13,7 +13,9 @@ export default async function ProfilePage({
   // Fetch profile
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, display_name, avatar_url, bio, verified, is_dealer, created_at, rating, total_reviews")
+    .select(
+      "id, display_name, avatar_url, bio, verified, is_dealer, created_at, rating, total_reviews",
+    )
     .eq("id", userId)
     .single();
 

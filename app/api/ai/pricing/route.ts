@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,10 +12,7 @@ export async function POST(request: NextRequest) {
     const { title, categoryId, condition } = await request.json();
 
     if (!title) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     // Fetch similar listings from the database
@@ -34,10 +31,13 @@ export async function POST(request: NextRequest) {
       .limit(30);
 
     const listings = similar || [];
-    const prices = listings.map((l) => l.price).filter((p): p is number => p !== null);
-    const avgPrice = prices.length > 0
-      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-      : null;
+    const prices = listings
+      .map((l) => l.price)
+      .filter((p): p is number => p !== null);
+    const avgPrice =
+      prices.length > 0
+        ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+        : null;
     const minPrice = prices.length > 0 ? Math.min(...prices) : null;
     const maxPrice = prices.length > 0 ? Math.max(...prices) : null;
 
@@ -50,7 +50,10 @@ A seller is listing this item:
 MARKET DATA from ${listings.length} similar listings in this category:
 - Average price: ${avgPrice ? `€${avgPrice}` : "No data"}
 - Price range: ${minPrice && maxPrice ? `€${minPrice} — €${maxPrice}` : "No data"}
-- Sample listings: ${listings.slice(0, 5).map((l) => `"${l.title}" at €${l.price}`).join(", ")}
+- Sample listings: ${listings
+      .slice(0, 5)
+      .map((l) => `"${l.title}" at €${l.price}`)
+      .join(", ")}
 
 Give pricing guidance in JSON:
 {
@@ -71,9 +74,7 @@ Give pricing guidance in JSON:
       max_tokens: 400,
     });
 
-    const guidance = JSON.parse(
-      response.choices[0].message.content || "{}",
-    );
+    const guidance = JSON.parse(response.choices[0].message.content || "{}");
 
     return NextResponse.json({
       ...guidance,

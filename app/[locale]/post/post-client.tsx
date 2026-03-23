@@ -12,13 +12,15 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
+import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
-import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { createClient } from "@/lib/supabase/client";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 type Category = { id: string; name: string; slug: string; icon: string };
 type Subcategory = {
@@ -43,7 +45,10 @@ export default function PostClient() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [video, setVideo] = useState<UploadedVideo | null>(null);
-  const [checkoutListing, setCheckoutListing] = useState<{ id: string; slug: string } | null>(null);
+  const [checkoutListing, setCheckoutListing] = useState<{
+    id: string;
+    slug: string;
+  } | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiFilled, setAiFilled] = useState(false);
   const [descLoading, setDescLoading] = useState(false);
@@ -381,7 +386,9 @@ export default function PostClient() {
                       : "border-gray-200 hover:border-gray-300 bg-white"
                   }`}
                 >
-                  <div className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1 mx-auto`}>
+                  <div
+                    className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1 mx-auto`}
+                  >
                     <CategoryIcon slug={cat.slug} size={20} />
                   </div>
                   <div className="text-xs font-medium text-gray-700">
@@ -809,16 +816,23 @@ export default function PostClient() {
             <div className="rounded-2xl border-2 border-violet-200 bg-violet-50/50 p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">🎬 Video Tour</p>
+                  <p className="font-semibold text-gray-900 text-sm">
+                    🎬 Video Tour
+                  </p>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Add a short video to showcase your item — included with your paid listing
+                    Add a short video to showcase your item — included with your
+                    paid listing
                   </p>
                 </div>
                 <span className="text-[10px] font-bold bg-violet-600 text-white px-2 py-0.5 rounded-full">
                   INCLUDED
                 </span>
               </div>
-              <VideoUpload userId={userId} video={video} onChangeAction={setVideo} />
+              <VideoUpload
+                userId={userId}
+                video={video}
+                onChangeAction={setVideo}
+              />
             </div>
           )}
 
@@ -856,7 +870,8 @@ export default function PostClient() {
 
           {selectedPackage !== "free" && (
             <p className="text-center text-xs text-gray-400">
-              Your listing will be published, then pay to activate your promotion.
+              Your listing will be published, then pay to activate your
+              promotion.
             </p>
           )}
         </div>

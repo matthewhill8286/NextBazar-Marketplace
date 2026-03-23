@@ -18,8 +18,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import { createClient } from "@/lib/supabase/client";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
 
 type Listing = {
   id: string;
@@ -143,10 +145,18 @@ export default function ListingsClient({
   async function relistListing(id: string) {
     setLoadingAction(id);
     const original = listings.find((l) => l.id === id);
-    if (!original) { setLoadingAction(null); return; }
+    if (!original) {
+      setLoadingAction(null);
+      return;
+    }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoadingAction(null); return; }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setLoadingAction(null);
+      return;
+    }
 
     const suffix = Date.now().toString(36);
     const baseSlug = original.slug.replace(/-[a-z0-9]{6,}$/, "");
@@ -182,11 +192,19 @@ export default function ListingsClient({
         .eq("listing_id", id);
       if (imgs && imgs.length > 0) {
         await supabase.from("listing_images").insert(
-          imgs.map((img) => ({ listing_id: newListing.id, url: img.url, sort_order: img.sort_order }))
+          imgs.map((img) => ({
+            listing_id: newListing.id,
+            url: img.url,
+            sort_order: img.sort_order,
+          })),
         );
       }
       setListings((prev) => [
-        { ...newListing, categories: original.categories, locations: original.locations },
+        {
+          ...newListing,
+          categories: original.categories,
+          locations: original.locations,
+        },
         ...prev,
       ]);
       setTab("active");
@@ -222,8 +240,13 @@ export default function ListingsClient({
 
   async function bulkRelist() {
     setBulkLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setBulkLoading(false); return; }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setBulkLoading(false);
+      return;
+    }
 
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
     const newListings: Listing[] = [];
@@ -231,7 +254,8 @@ export default function ListingsClient({
     for (const id of ids) {
       const original = listings.find((l) => l.id === id);
       if (!original) continue;
-      const suffix = Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+      const suffix =
+        Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
       const baseSlug = original.slug.replace(/-[a-z0-9]{6,}$/, "");
       const { data: nl } = await supabase
         .from("listings")
@@ -255,7 +279,11 @@ export default function ListingsClient({
         .select()
         .single();
       if (nl) {
-        newListings.push({ ...nl, categories: original.categories, locations: original.locations });
+        newListings.push({
+          ...nl,
+          categories: original.categories,
+          locations: original.locations,
+        });
       }
     }
 
@@ -278,7 +306,10 @@ export default function ListingsClient({
           return (
             <button
               key={t.key}
-              onClick={() => { setTab(t.key); clearSelection(); }}
+              onClick={() => {
+                setTab(t.key);
+                clearSelection();
+              }}
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
                 tab === t.key
                   ? "bg-white text-gray-900 shadow-sm"
@@ -309,7 +340,11 @@ export default function ListingsClient({
                 disabled={bulkLoading}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
               >
-                {bulkLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+                {bulkLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-3 h-3" />
+                )}
                 Relist All
               </button>
             )}
@@ -319,7 +354,11 @@ export default function ListingsClient({
                 disabled={bulkLoading}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
               >
-                {bulkLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />}
+                {bulkLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <CheckCircle className="w-3 h-3" />
+                )}
                 Mark Sold
               </button>
             )}
@@ -385,8 +424,13 @@ export default function ListingsClient({
                       sizes="80px"
                     />
                   ) : (
-                    <div className={`w-full h-full flex items-center justify-center ${getCategoryConfig(unwrap(listing.categories)?.slug).bg}`}>
-                      <CategoryIcon slug={unwrap(listing.categories)?.slug} size={20} />
+                    <div
+                      className={`w-full h-full flex items-center justify-center ${getCategoryConfig(unwrap(listing.categories)?.slug).bg}`}
+                    >
+                      <CategoryIcon
+                        slug={unwrap(listing.categories)?.slug}
+                        size={20}
+                      />
                     </div>
                   )}
                   {listing.is_promoted && listing.status !== "sold" && (
@@ -545,7 +589,8 @@ export default function ListingsClient({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Delete {selectedInTab.length} listing{selectedInTab.length !== 1 ? "s" : ""}?
+              Delete {selectedInTab.length} listing
+              {selectedInTab.length !== 1 ? "s" : ""}?
             </h3>
             <p className="text-sm text-gray-500 mb-6">
               This action is permanent and cannot be undone.
@@ -562,7 +607,11 @@ export default function ListingsClient({
                 disabled={bulkLoading}
                 className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {bulkLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+                {bulkLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Delete"
+                )}
               </button>
             </div>
           </div>

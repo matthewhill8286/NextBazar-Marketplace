@@ -41,7 +41,7 @@ export function listingToText(listing: {
     listing.description,
     listing.category_name ? `Category: ${listing.category_name}` : null,
     listing.location_name ? `Location: ${listing.location_name}` : null,
-    listing.condition     ? `Condition: ${listing.condition}`    : null,
+    listing.condition ? `Condition: ${listing.condition}` : null,
   ]
     .filter(Boolean)
     .join(". ");

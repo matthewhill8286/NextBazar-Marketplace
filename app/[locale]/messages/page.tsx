@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
 import {
-  MessageCircle,
+  AlertTriangle,
   Loader2,
-  Search,
+  MessageCircle,
+  MoreHorizontal,
   Pin,
   PinOff,
+  Search,
   Trash2,
-  MoreHorizontal,
-  AlertTriangle,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 type Conversation = {
   id: string;
@@ -23,9 +23,22 @@ type Conversation = {
   last_message_at: string | null;
   last_message_preview: string | null;
   is_pinned: boolean;
-  listings: { id: string; title: string; slug: string; primary_image_url: string | null } | null;
-  buyer: { id: string; display_name: string | null; avatar_url: string | null } | null;
-  seller: { id: string; display_name: string | null; avatar_url: string | null } | null;
+  listings: {
+    id: string;
+    title: string;
+    slug: string;
+    primary_image_url: string | null;
+  } | null;
+  buyer: {
+    id: string;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
+  seller: {
+    id: string;
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
 };
 
 export default function MessagesPage() {
@@ -39,23 +52,26 @@ export default function MessagesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Conversation | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const loadConversations = useCallback(async (uid: string) => {
-    const { data } = await supabase
-      .from("conversations")
-      .select(
-        `
+  const loadConversations = useCallback(
+    async (uid: string) => {
+      const { data } = await supabase
+        .from("conversations")
+        .select(
+          `
         id, buyer_id, seller_id, last_message_at, last_message_preview, is_pinned,
         listings(id, title, slug, primary_image_url),
         buyer:profiles!conversations_buyer_id_fkey(id, display_name, avatar_url),
         seller:profiles!conversations_seller_id_fkey(id, display_name, avatar_url)
       `,
-      )
-      .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
-      .order("is_pinned", { ascending: false })
-      .order("last_message_at", { ascending: false, nullsFirst: false });
+        )
+        .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
+        .order("is_pinned", { ascending: false })
+        .order("last_message_at", { ascending: false, nullsFirst: false });
 
-    setConversations((data as unknown as Conversation[]) || []);
-  }, [supabase]);
+      setConversations((data as unknown as Conversation[]) || []);
+    },
+    [supabase],
+  );
 
   useEffect(() => {
     async function load() {
@@ -80,18 +96,29 @@ export default function MessagesPage() {
       .channel("conversations-list")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "conversations", filter: `buyer_id=eq.${userId}` },
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+          filter: `buyer_id=eq.${userId}`,
+        },
         () => loadConversations(userId),
       )
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "conversations", filter: `seller_id=eq.${userId}` },
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+          filter: `seller_id=eq.${userId}`,
+        },
         () => loadConversations(userId),
       )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId, loadConversations]);
-
 
   async function handlePin(conv: Conversation, e: React.MouseEvent) {
     e.preventDefault();
@@ -104,12 +131,19 @@ export default function MessagesPage() {
         .map((c) => (c.id === conv.id ? { ...c, is_pinned: next } : c))
         .sort((a, b) => {
           if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
-          const aT = a.last_message_at ? new Date(a.last_message_at).getTime() : 0;
-          const bT = b.last_message_at ? new Date(b.last_message_at).getTime() : 0;
+          const aT = a.last_message_at
+            ? new Date(a.last_message_at).getTime()
+            : 0;
+          const bT = b.last_message_at
+            ? new Date(b.last_message_at).getTime()
+            : 0;
           return bT - aT;
         }),
     );
-    await supabase.from("conversations").update({ is_pinned: next }).eq("id", conv.id);
+    await supabase
+      .from("conversations")
+      .update({ is_pinned: next })
+      .eq("id", conv.id);
   }
 
   async function handleDelete(conv: Conversation, e: React.MouseEvent) {
@@ -178,7 +212,8 @@ export default function MessagesPage() {
       {filtered.length > 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
           {filtered.map((conv) => {
-            const otherUser = conv.buyer_id === userId ? conv.seller : conv.buyer;
+            const otherUser =
+              conv.buyer_id === userId ? conv.seller : conv.buyer;
             const initials =
               otherUser?.display_name
                 ?.split(" ")
@@ -189,7 +224,10 @@ export default function MessagesPage() {
             const menuOpen = activeMenu === conv.id;
 
             return (
-              <div key={conv.id} className="relative group flex items-center hover:bg-gray-50 transition-colors">
+              <div
+                key={conv.id}
+                className="relative group flex items-center hover:bg-gray-50 transition-colors"
+              >
                 {/* Pin indicator strip */}
                 {conv.is_pinned && (
                   <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-400 rounded-l" />
@@ -273,9 +311,15 @@ export default function MessagesPage() {
                           className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                         >
                           {conv.is_pinned ? (
-                            <><PinOff className="w-3.5 h-3.5 text-amber-500" /> Unpin conversation</>
+                            <>
+                              <PinOff className="w-3.5 h-3.5 text-amber-500" />{" "}
+                              Unpin conversation
+                            </>
                           ) : (
-                            <><Pin className="w-3.5 h-3.5 text-amber-500" /> Pin conversation</>
+                            <>
+                              <Pin className="w-3.5 h-3.5 text-amber-500" /> Pin
+                              conversation
+                            </>
                           )}
                         </button>
                         <button
@@ -299,7 +343,8 @@ export default function MessagesPage() {
             No messages yet
           </h2>
           <p className="text-sm text-gray-500 mb-4">
-            When you contact a seller or someone messages you, it&apos;ll appear here
+            When you contact a seller or someone messages you, it&apos;ll appear
+            here
           </p>
           <Link
             href="/"
@@ -323,11 +368,16 @@ export default function MessagesPage() {
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
               <AlertTriangle className="w-6 h-6 text-red-500" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">Delete conversation?</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+              Delete conversation?
+            </h2>
             <p className="text-sm text-gray-500 mb-6">
               This will permanently remove the conversation with{" "}
               <span className="font-medium text-gray-700">
-                {(deleteTarget.buyer_id === userId ? deleteTarget.seller : deleteTarget.buyer)?.display_name || "this user"}
+                {(deleteTarget.buyer_id === userId
+                  ? deleteTarget.seller
+                  : deleteTarget.buyer
+                )?.display_name || "this user"}
               </span>
               . This cannot be undone.
             </p>
@@ -344,7 +394,11 @@ export default function MessagesPage() {
                 disabled={deleting}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                {deleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
                 {deleting ? "Deleting…" : "Delete"}
               </button>
             </div>

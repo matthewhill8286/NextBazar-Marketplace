@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import DashboardSidebar from "./sidebar";
 
 export default function DashboardShell({
@@ -15,7 +15,12 @@ export default function DashboardShell({
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
-  const [stats, setStats] = useState({ active: 0, sold: 0, views: 0, favorites: 0 });
+  const [stats, setStats] = useState({
+    active: 0,
+    sold: 0,
+    views: 0,
+    favorites: 0,
+  });
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -38,8 +43,7 @@ export default function DashboardShell({
       ]);
 
       setProfile({
-        display_name:
-          prof?.display_name || user.email?.split("@")[0] || "User",
+        display_name: prof?.display_name || user.email?.split("@")[0] || "User",
         email: user.email || "",
         avatar_url: prof?.avatar_url || null,
         verified: prof?.verified || false,
@@ -74,7 +78,9 @@ export default function DashboardShell({
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-        {profile && <DashboardSidebar profile={profile} stats={stats} isAdmin={isAdmin} />}
+        {profile && (
+          <DashboardSidebar profile={profile} stats={stats} isAdmin={isAdmin} />
+        )}
         <div className="min-w-0">{children}</div>
       </div>
     </div>

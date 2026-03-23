@@ -1,7 +1,7 @@
 "use client";
 
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { TrendingDown, TrendingUp, Minus } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type PricePoint = {
@@ -17,7 +17,11 @@ type Props = {
   currency: string;
 };
 
-export default function PriceHistory({ listingId, currentPrice, currency }: Props) {
+export default function PriceHistory({
+  listingId,
+  currentPrice,
+  currency,
+}: Props) {
   const supabase = createClient();
   const [history, setHistory] = useState<PricePoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,13 +97,12 @@ export default function PriceHistory({ listingId, currentPrice, currency }: Prop
     return { x, y, ...p };
   });
 
-  const pathD =
-    pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+  const pathD = pts
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+    .join(" ");
 
   // Fill under the line
-  const fillD =
-    pathD +
-    ` L ${pts[pts.length - 1].x} ${H} L ${pts[0].x} ${H} Z`;
+  const fillD = pathD + ` L ${pts[pts.length - 1].x} ${H} L ${pts[0].x} ${H} Z`;
 
   const firstPrice = allPoints[0].price;
   const lastPrice = allPoints[allPoints.length - 1].price;
@@ -144,7 +147,11 @@ export default function PriceHistory({ listingId, currentPrice, currency }: Prop
           ) : (
             <Minus className="w-3 h-3" />
           )}
-          {isDown ? `${Math.abs(pctChange)}% drop` : isUp ? `${pctChange}% rise` : "No change"}
+          {isDown
+            ? `${Math.abs(pctChange)}% drop`
+            : isUp
+              ? `${pctChange}% rise`
+              : "No change"}
         </div>
       </div>
 

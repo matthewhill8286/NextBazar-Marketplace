@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 // POST /api/analytics/view  { listing_id }
@@ -20,15 +20,13 @@ export async function POST(req: NextRequest) {
 
     // If the RPC doesn't exist yet, fall back to a simple upsert
     if (error) {
-      await supabase
-        .from("listing_analytics")
-        .upsert(
-          { listing_id, date: today, views: 1 },
-          {
-            onConflict: "listing_id,date",
-            ignoreDuplicates: false,
-          },
-        );
+      await supabase.from("listing_analytics").upsert(
+        { listing_id, date: today, views: 1 },
+        {
+          onConflict: "listing_id,date",
+          ignoreDuplicates: false,
+        },
+      );
     }
 
     return NextResponse.json({ ok: true });

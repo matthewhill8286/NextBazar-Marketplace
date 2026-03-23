@@ -1,12 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/checkout/route";
 
 // ---------------------------------------------------------------------------
 // Mock Stripe and PROMOTION_PRICES
 // ---------------------------------------------------------------------------
 
-const { mockSessionCreate } = vi.hoisted(() => ({ mockSessionCreate: vi.fn() }));
+const { mockSessionCreate } = vi.hoisted(() => ({
+  mockSessionCreate: vi.fn(),
+}));
 
 vi.mock("@/lib/stripe", () => ({
   stripe: {
@@ -44,13 +46,18 @@ function makeRequest(body: object): NextRequest {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockSessionCreate.mockResolvedValue({ url: "https://checkout.stripe.com/pay/test_session" });
+  mockSessionCreate.mockResolvedValue({
+    url: "https://checkout.stripe.com/pay/test_session",
+  });
 });
 
 describe("POST /api/checkout", () => {
   it("returns 400 when listingId is missing", async () => {
     const res = await POST(
-      makeRequest({ promotionType: "featured", origin: "https://nextbazar.com" }),
+      makeRequest({
+        promotionType: "featured",
+        origin: "https://nextbazar.com",
+      }),
     );
     expect(res.status).toBe(400);
     const body = await res.json();

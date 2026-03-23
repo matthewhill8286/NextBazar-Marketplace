@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ListingCard from "@/app/components/listing-card";
 
 // next-intl — return simple key-based translations so no provider is needed
@@ -44,7 +44,11 @@ vi.mock("@/lib/supabase/client", () => ({
 
 // Next.js Image → plain <img> so jsdom can handle it
 vi.mock("next/image", () => ({
-  default: ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
+  default: ({
+    src,
+    alt,
+    ...props
+  }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
     // biome-ignore lint/a11y/useAltText
     <img src={src as string} alt={alt} />
   ),
@@ -113,7 +117,11 @@ describe("ListingCard", () => {
   });
 
   it("falls back to 'Cyprus' when no location is provided", () => {
-    render(<ListingCard listing={{ ...baseListing, location: null, locations: null }} />);
+    render(
+      <ListingCard
+        listing={{ ...baseListing, location: null, locations: null }}
+      />,
+    );
     expect(screen.getByText("Cyprus")).toBeInTheDocument();
   });
 
@@ -128,12 +136,20 @@ describe("ListingCard", () => {
   });
 
   it("shows 'Urgent' badge when is_urgent is true and not promoted", () => {
-    render(<ListingCard listing={{ ...baseListing, is_urgent: true, is_promoted: false }} />);
+    render(
+      <ListingCard
+        listing={{ ...baseListing, is_urgent: true, is_promoted: false }}
+      />,
+    );
     expect(screen.getByText(/Urgent/)).toBeInTheDocument();
   });
 
   it("does NOT show 'Urgent' badge when is_promoted is also true (Featured takes priority)", () => {
-    render(<ListingCard listing={{ ...baseListing, is_urgent: true, is_promoted: true }} />);
+    render(
+      <ListingCard
+        listing={{ ...baseListing, is_urgent: true, is_promoted: true }}
+      />,
+    );
     expect(screen.queryByText(/Urgent/)).toBeNull();
     expect(screen.getByText(/Featured/)).toBeInTheDocument();
   });
@@ -163,7 +179,9 @@ describe("ListingCard", () => {
   it("passes userId and isSaved to FavoriteButton without triggering extra network calls", () => {
     // If userId is provided, the FavoriteButton skips its own auth fetch.
     // This test just verifies the card renders without errors when both props are present.
-    render(<ListingCard listing={baseListing} userId="user-abc" isSaved={true} />);
+    render(
+      <ListingCard listing={baseListing} userId="user-abc" isSaved={true} />,
+    );
     expect(screen.getByRole("link")).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Bell, BellOff, Loader2, Check } from "lucide-react";
+import { Bell, BellOff, Check, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
@@ -49,7 +49,7 @@ export default function SaveSearchButton({
       .eq("location_slug", params.location_slug ?? "")
       .maybeSingle()
       .then(({ data }) => setSavedId(data?.id ?? null));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, query, categorySlug, locationSlug]);
 
   function buildParams() {
@@ -77,7 +77,8 @@ export default function SaveSearchButton({
   if (!userId) return null;
 
   // Nothing to save
-  const hasFilters = query || categorySlug || locationSlug || priceMin || priceMax;
+  const hasFilters =
+    query || categorySlug || locationSlug || priceMin || priceMax;
   if (!hasFilters) return null;
 
   async function handleSave() {

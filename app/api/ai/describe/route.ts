@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 
 export async function POST(request: NextRequest) {
@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
       await request.json();
 
     if (!title) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
     const messages: any[] = [

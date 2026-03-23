@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { openai } from "@/lib/openai";
 import { createClient } from "@supabase/supabase-js";
+import { type NextRequest, NextResponse } from "next/server";
+import { openai } from "@/lib/openai";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -52,9 +52,7 @@ Respond in JSON:
       max_tokens: 300,
     });
 
-    const parsed = JSON.parse(
-      response.choices[0].message.content || "{}",
-    );
+    const parsed = JSON.parse(response.choices[0].message.content || "{}");
 
     // Map slugs to IDs
     const category = (categories || []).find(

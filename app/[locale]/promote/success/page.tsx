@@ -1,13 +1,26 @@
 "use client";
 
-import { AlertCircle, ArrowRight, CheckCircle, Loader2, Sparkles, Star } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle,
+  Loader2,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 type ActivateResult = {
   success: boolean;
-  listing?: { id: string; slug: string; title: string; is_promoted: boolean; is_urgent: boolean };
+  listing?: {
+    id: string;
+    slug: string;
+    title: string;
+    is_promoted: boolean;
+    is_urgent: boolean;
+  };
   promotionType?: string;
   durationDays?: number;
   error?: string;
@@ -18,7 +31,9 @@ function SuccessContent() {
   const sessionId = searchParams.get("session_id");
   const listingId = searchParams.get("listing_id");
 
-  const [status, setStatus] = useState<"activating" | "active" | "error">("activating");
+  const [status, setStatus] = useState<"activating" | "active" | "error">(
+    "activating",
+  );
   const [result, setResult] = useState<ActivateResult | null>(null);
 
   useEffect(() => {
@@ -44,7 +59,10 @@ function SuccessContent() {
           setStatus("error");
         }
       } catch {
-        setResult({ success: false, error: "Could not reach the server. Please check your dashboard." });
+        setResult({
+          success: false,
+          error: "Could not reach the server. Please check your dashboard.",
+        });
         setStatus("error");
       }
     }
@@ -60,7 +78,9 @@ function SuccessContent() {
           <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Activating your promotion…</h1>
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
+            Activating your promotion…
+          </h1>
           <p className="text-gray-400 text-sm">Verifying payment with Stripe</p>
         </div>
       </div>
@@ -75,12 +95,17 @@ function SuccessContent() {
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            Something went wrong
+          </h1>
           <p className="text-gray-500 mb-2">
-            {result?.error || "We couldn't activate your promotion automatically."}
+            {result?.error ||
+              "We couldn't activate your promotion automatically."}
           </p>
           <p className="text-sm text-gray-400 mb-8">
-            Don't worry — if your payment was successful, your listing will be upgraded within a few minutes. Check your dashboard or contact support.
+            Don't worry — if your payment was successful, your listing will be
+            upgraded within a few minutes. Check your dashboard or contact
+            support.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
@@ -113,8 +138,12 @@ function SuccessContent() {
           <CheckCircle className="w-10 h-10 text-green-600" />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment confirmed!</h1>
-        <p className="text-gray-500 mb-6">Your listing is now live with its new boost.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          Payment confirmed!
+        </h1>
+        <p className="text-gray-500 mb-6">
+          Your listing is now live with its new boost.
+        </p>
 
         {/* Promotion badge */}
         <div
@@ -124,11 +153,19 @@ function SuccessContent() {
               : "bg-linear-to-r from-red-50 to-rose-50 border-red-200"
           }`}
         >
-          <div className={`flex items-center justify-center gap-2 font-semibold mb-1 ${isFeatured ? "text-amber-800" : "text-red-700"}`}>
-            {isFeatured ? <Sparkles className="w-5 h-5" /> : <Star className="w-5 h-5" />}
+          <div
+            className={`flex items-center justify-center gap-2 font-semibold mb-1 ${isFeatured ? "text-amber-800" : "text-red-700"}`}
+          >
+            {isFeatured ? (
+              <Sparkles className="w-5 h-5" />
+            ) : (
+              <Star className="w-5 h-5" />
+            )}
             {isFeatured ? "Featured Listing Active" : "Urgent Badge Active"}
           </div>
-          <p className={`text-sm ${isFeatured ? "text-amber-600" : "text-red-500"}`}>
+          <p
+            className={`text-sm ${isFeatured ? "text-amber-600" : "text-red-500"}`}
+          >
             {isFeatured
               ? `Top placement + highlighted badge for ${result?.durationDays} days`
               : `Urgent badge + priority in search for ${result?.durationDays} days`}
