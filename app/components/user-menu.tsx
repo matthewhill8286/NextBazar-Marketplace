@@ -1,18 +1,12 @@
 "use client";
 
-import {
-  Bell,
-  Bookmark,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-} from "lucide-react";
+import { LayoutDashboard, LogOut, Settings } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
-import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
 
 type UserProfile = {
@@ -25,16 +19,13 @@ type UserProfile = {
 export default function UserMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const { count: savedCount } = useSaved();
   const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const tDash = useTranslations("dashboard");
 
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [notifCount, setNotifCount] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const currentLocale = pathname.startsWith("/el") ? "el" : "en";
@@ -56,18 +47,11 @@ export default function UserMenu() {
       } = await supabase.auth.getUser();
 
       if (authUser) {
-        const [{ data: profile }, { count: nCount }] = await Promise.all([
-          supabase
-            .from("profiles")
-            .select("display_name, avatar_url")
-            .eq("id", authUser.id)
-            .single(),
-          supabase
-            .from("notifications")
-            .select("id", { count: "exact", head: true })
-            .eq("user_id", authUser.id)
-            .eq("read", false),
-        ]);
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("display_name, avatar_url")
+          .eq("id", authUser.id)
+          .single();
 
         setUser({
           id: authUser.id,
@@ -75,11 +59,8 @@ export default function UserMenu() {
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
         });
-        setUserId(authUser.id);
-        setNotifCount(nCount || 0);
       } else {
         setUser(null);
-        setUserId(null);
       }
       setLoading(false);
     }
@@ -91,7 +72,6 @@ export default function UserMenu() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
         setUser(null);
-        setUserId(null);
       } else {
         loadUser();
       }
@@ -101,54 +81,6 @@ export default function UserMenu() {
       subscription.unsubscribe();
     };
   }, []);
-
-  // ── Realtime: re-fetch unread count on any notification change ────────────
-  // Only set up after userId is resolved so we can use a row-level filter,
-  // which is required for postgres_changes to fire through RLS.
-  useEffect(() => {
-    if (!userId) return;
-    const supabase = createClient();
-
-    async function refreshCount() {
-      const { count } = await supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId!)
-        .eq("read", false);
-      setNotifCount(count || 0);
-    }
-
-    const channel = supabase
-      .channel(`usermenu-notifs-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        refreshCount,
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId]);
-
-  // ── Refresh count whenever the menu is opened ─────────────────────────────
-  // Belt-and-suspenders: catches any changes Realtime may have missed.
-  useEffect(() => {
-    if (!open || !userId) return;
-    const supabase = createClient();
-    supabase
-      .from("notifications")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .eq("read", false)
-      .then(({ count }) => setNotifCount(count || 0));
-  }, [open, userId]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -191,8 +123,6 @@ export default function UserMenu() {
       .toUpperCase()
       .slice(0, 2) || user.email[0].toUpperCase();
 
-  const totalBadge = (savedCount > 0 ? 1 : 0) + (notifCount > 0 ? 1 : 0);
-
   return (
     <div className="relative" ref={menuRef}>
       {/* Avatar button — shows a dot if there are unread alerts */}
@@ -201,16 +131,13 @@ export default function UserMenu() {
         className="relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
-          <img
+          <Image
             src={user.avatar_url}
             alt=""
             className="w-full h-full rounded-full object-cover"
           />
         ) : (
           initials
-        )}
-        {notifCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-indigo-600 rounded-full border-2 border-white" />
         )}
       </button>
 
@@ -222,40 +149,6 @@ export default function UserMenu() {
               {user.display_name || "User"}
             </p>
             <p className="text-xs text-gray-500 truncate">{user.email}</p>
-          </div>
-
-          {/* Saved & Alerts */}
-          <div className="py-1 border-b border-gray-100">
-            <Link
-              href="/saved"
-              onClick={() => setOpen(false)}
-              className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <span className="flex items-center gap-2.5">
-                <Bookmark className="w-4 h-4 text-gray-400" />
-                {t("saved")}
-              </span>
-              {savedCount > 0 && (
-                <span className="text-xs bg-rose-50 text-rose-600 font-semibold px-2 py-0.5 rounded-full">
-                  {savedCount > 99 ? "99+" : savedCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              href="/dashboard/notifications"
-              onClick={() => setOpen(false)}
-              className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              <span className="flex items-center gap-2.5">
-                <Bell className="w-4 h-4 text-gray-400" />
-                {t("alerts")}
-              </span>
-              {notifCount > 0 && (
-                <span className="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2 py-0.5 rounded-full">
-                  {notifCount > 9 ? "9+" : notifCount}
-                </span>
-              )}
-            </Link>
           </div>
 
           {/* Navigation */}

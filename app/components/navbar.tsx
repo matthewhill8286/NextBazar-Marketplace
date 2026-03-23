@@ -1,17 +1,21 @@
 "use client";
 
-import { Bell, Heart, MessageCircle, Plus, Search } from "lucide-react";
+import { Bell, Bookmark, MessageCircle, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useSaved } from "@/lib/saved-context";
 import GlobalSearchBar from "./global-search-bar";
 import UserMenu from "./user-menu";
 
 export default function Navbar() {
   const supabase = createClient();
+  const { count: savedCount } = useSaved();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifCount, setNotifCount] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
   const t = useTranslations("nav");
 
   useEffect(() => {
@@ -20,14 +24,23 @@ export default function Navbar() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
+      setUserId(user.id);
 
-      const { count: msgCount } = await supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .neq("sender_id", user.id)
-        .is("read_at", null);
+      const [{ count: msgCount }, { count: nCount }] = await Promise.all([
+        supabase
+          .from("messages")
+          .select("id", { count: "exact", head: true })
+          .neq("sender_id", user.id)
+          .is("read_at", null),
+        supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("read", false),
+      ]);
 
       setUnreadCount(msgCount || 0);
+      setNotifCount(nCount || 0);
     }
     loadCounts();
 
@@ -48,7 +61,39 @@ export default function Navbar() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [supabase]);
+
+  // Realtime notification count — row-level filter requires userId to be set first
+  useEffect(() => {
+    if (!userId) return;
+
+    async function refreshNotifCount() {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId!)
+        .eq("read", false);
+      setNotifCount(count || 0);
+    }
+
+    const channel = supabase
+      .channel(`nav-notifs-${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        refreshNotifCount,
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, userId]);
 
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm">
@@ -98,18 +143,46 @@ export default function Navbar() {
             <Search className="w-5 h-5" />
           </Link>
 
-          {/* Messages — kept top-level for quick access to unread badge */}
+          {/* Messages */}
           <Link
             href="/messages"
             className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
           >
             <MessageCircle className="w-4 h-4" />
-            <span className="hidden lg:inline font-medium">
+            <span className="hidden font-medium">
               {t("messages")}
             </span>
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
                 {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Saved */}
+          <Link
+            href="/saved"
+            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+          >
+            <Bookmark className="w-4 h-4" />
+            <span className="hidden font-medium">{t("saved")}</span>
+            {savedCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
+                {savedCount > 9 ? "9+" : savedCount}
+              </span>
+            )}
+          </Link>
+
+          {/* Notifications */}
+          <Link
+            href="/dashboard/notifications"
+            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+          >
+            <Bell className="w-4 h-4" />
+            <span className="hidden font-medium">{t("alerts")}</span>
+            {notifCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-indigo-600 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
+                {notifCount > 9 ? "9+" : notifCount}
               </span>
             )}
           </Link>
