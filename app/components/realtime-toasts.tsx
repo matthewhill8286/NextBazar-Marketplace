@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 // ─── Custom toast UIs ────────────────────────────────────────────────────────
 
@@ -31,7 +32,7 @@ function CounterOfferToast({
           <div className="flex items-center gap-2.5">
             {avatarUrl ? (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img
+              <Image
                 src={avatarUrl}
                 alt={sellerName}
                 className="w-8 h-8 rounded-full object-cover shrink-0"
@@ -102,8 +103,7 @@ function OfferStatusToast({
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
             {avatarUrl ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
+              <Image
                 src={avatarUrl}
                 alt={personName}
                 className="w-8 h-8 rounded-full object-cover shrink-0"
@@ -169,8 +169,7 @@ function MessageToast({
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
             {avatarUrl ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
+              <Image
                 src={avatarUrl}
                 alt={senderName}
                 className="w-8 h-8 rounded-full object-cover shrink-0"
@@ -240,8 +239,7 @@ function OfferToast({
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
             {avatarUrl ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
+              <Image
                 src={avatarUrl}
                 alt={buyerName}
                 className="w-8 h-8 rounded-full object-cover shrink-0"
@@ -525,10 +523,11 @@ export default function RealtimeToasts() {
 
     return () => {
       mounted = false;
-      channels.forEach((ch) => supabase.removeChannel(ch));
+      channels.forEach(async (ch) => {
+        await supabase.removeChannel(ch)
+      });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase, router]);
 
   return null;
 }
