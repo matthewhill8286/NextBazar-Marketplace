@@ -636,6 +636,37 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
   useEffect(() => { fetchPage("received", receivedPage); }, [fetchPage, receivedPage]);
   useEffect(() => { fetchPage("sent",     sentPage);     }, [fetchPage, sentPage]);
 
+  // ── Realtime offer updates ──────────────────────────────────────────────
+  // Without this, the buyer's "Sent" tab stays stale after the seller counters
+  // (or vice-versa) because router.refresh() doesn't re-run fetchPage effects.
+  // We subscribe to postgres_changes for both sides of the current user so
+  // any status / amount change is reflected immediately without a page reload.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`offers-realtime-${userId}`)
+      // Offers where this user is the BUYER (visible in "Sent" tab)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "offers", filter: `buyer_id=eq.${userId}` },
+        (payload) => {
+          const patch = payload.new as Partial<Offer> & { id: string };
+          setSent((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
+        },
+      )
+      // Offers where this user is the SELLER (visible in "Received" tab)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "offers", filter: `seller_id=eq.${userId}` },
+        (payload) => {
+          const patch = payload.new as Partial<Offer> & { id: string };
+          setReceived((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
+        },
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [supabase, userId]);
+
   // If there's a focused offer and it's in the sent list, switch to that tab
   useEffect(() => {
     if (!focusOfferId) return;
