@@ -62,8 +62,10 @@ vi.mock("@/lib/supabase/client", () => ({
     channel: vi.fn((name: string) => {
       const ch = {
         on: vi.fn((event: string, filter: any, cb: (p: any) => void) => {
-          // Key by table name so tests can fire message vs offer callbacks
-          capturedCallbacks[filter.table] = cb;
+          // Key by "filterEvent:table" so INSERT and UPDATE subscriptions on the
+          // same table don't overwrite each other.
+          const filterEvent: string = filter.event ?? "INSERT";
+          capturedCallbacks[`${filterEvent}:${filter.table}`] = cb;
           return ch;
         }),
         subscribe: vi.fn(() => ch),
@@ -132,15 +134,15 @@ describe("RealtimeToasts", () => {
     render(<RealtimeToasts />);
     await flushAsync();
     // Neither callback should be captured
-    expect(capturedCallbacks.messages).toBeUndefined();
-    expect(capturedCallbacks.offers).toBeUndefined();
+    expect(capturedCallbacks["INSERT:messages"]).toBeUndefined();
+    expect(capturedCallbacks["INSERT:offers"]).toBeUndefined();
   });
 
   it("subscribes to messages and offers channels when authenticated", async () => {
     render(<RealtimeToasts />);
     await flushAsync();
-    expect(capturedCallbacks.messages).toBeTypeOf("function");
-    expect(capturedCallbacks.offers).toBeTypeOf("function");
+    expect(capturedCallbacks["INSERT:messages"]).toBeTypeOf("function");
+    expect(capturedCallbacks["INSERT:offers"]).toBeTypeOf("function");
   });
 
   // ── Message toasts ────────────────────────────────────────────────────────
@@ -150,7 +152,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-1",
           sender_id: "user-buyer-1", // not the logged-in seller
@@ -170,7 +172,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-2",
           sender_id: "user-seller-1", // same as logged-in user
@@ -191,7 +193,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-3",
           sender_id: "user-buyer-1",
@@ -212,7 +214,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-4",
           sender_id: "user-buyer-1",
@@ -232,7 +234,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-5",
           sender_id: "user-buyer-1",
@@ -255,7 +257,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-6",
           sender_id: "user-buyer-1",
@@ -285,7 +287,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-7",
           sender_id: "user-buyer-1",
@@ -310,7 +312,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-8",
           sender_id: "user-buyer-1",
@@ -340,7 +342,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.offers({
+      await capturedCallbacks["INSERT:offers"]({
         new: {
           id: "offer-1",
           buyer_id: "user-buyer-1",
@@ -360,7 +362,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.offers({
+      await capturedCallbacks["INSERT:offers"]({
         new: {
           id: "offer-2",
           buyer_id: "user-buyer-1",
@@ -387,7 +389,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.offers({
+      await capturedCallbacks["INSERT:offers"]({
         new: {
           id: "offer-3",
           buyer_id: "user-buyer-2",
@@ -409,7 +411,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.offers({
+      await capturedCallbacks["INSERT:offers"]({
         new: {
           id: "offer-99",
           buyer_id: "user-buyer-1",
@@ -436,7 +438,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.offers({
+      await capturedCallbacks["INSERT:offers"]({
         new: {
           id: "offer-4",
           buyer_id: "user-buyer-1",
@@ -462,7 +464,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.offers({
+      await capturedCallbacks["INSERT:offers"]({
         new: {
           id: "offer-5",
           buyer_id: "user-buyer-1",
@@ -483,7 +485,7 @@ describe("RealtimeToasts", () => {
     await flushAsync();
 
     await act(async () => {
-      await capturedCallbacks.messages({
+      await capturedCallbacks["INSERT:messages"]({
         new: {
           id: "msg-dur",
           sender_id: "user-buyer-1",

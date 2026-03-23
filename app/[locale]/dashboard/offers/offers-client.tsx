@@ -209,31 +209,42 @@ function OfferCard({
   async function respond(status: string, extras: Record<string, unknown> = {}) {
     setLoading(status);
     setActionError(null);
-    const { error } = await supabase
-      .from("offers")
-      .update({ status, responded_at: new Date().toISOString(), ...extras })
-      .eq("id", offer.id);
-    if (error) {
+    try {
+      const { error } = await supabase
+        .from("offers")
+        .update({ status, responded_at: new Date().toISOString(), ...extras })
+        .eq("id", offer.id);
+      if (error) {
+        setActionError("Couldn't update offer. Please try again.");
+        return;
+      }
+      onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
+      setShowCounter(false);
+      router.refresh();
+    } catch {
       setActionError("Couldn't update offer. Please try again.");
+    } finally {
       setLoading(null);
-      return;
     }
-    onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
-    setLoading(null);
-    setShowCounter(false);
-    router.refresh();
   }
 
   async function handleDelete() {
     setLoading("delete");
-    const { error } = await supabase.from("offers").delete().eq("id", offer.id);
-    if (error) {
+    setActionError(null);
+    try {
+      const { error } = await supabase.from("offers").delete().eq("id", offer.id);
+      if (error) {
+        setActionError("Couldn't delete offer. Please try again.");
+        setDeleteConfirm(false);
+        return;
+      }
+      onDelete(offer.id);
+    } catch {
       setActionError("Couldn't delete offer. Please try again.");
-      setLoading(null);
       setDeleteConfirm(false);
-      return;
+    } finally {
+      setLoading(null);
     }
-    onDelete(offer.id);
   }
 
   return (
@@ -454,7 +465,7 @@ function OfferCard({
               </button>
             )}
 
-            {!isSeller && offer.status === "countered" && offer.counter_amount && (
+            {!isSeller && offer.status === "countered" && offer.counter_amount != null && (
               <div className="flex gap-2">
                 <button
                   onClick={() => respond("accepted")}
