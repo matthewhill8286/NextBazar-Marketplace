@@ -3,10 +3,12 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
+import CompareBar from "@/app/components/compare-bar";
 import Footer from "@/app/components/footer";
 import Navbar from "@/app/components/navbar";
 import RealtimeToasts from "@/app/components/realtime-toasts";
 import { routing } from "@/i18n/routing";
+import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
 
 type Messages = Record<string, unknown>;
@@ -61,16 +63,19 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-gray-50">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <SavedProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <RealtimeToasts />
-            <Toaster
-              position="top-right"
-              visibleToasts={4}
-              gap={8}
-              toastOptions={{ unstyled: true, classNames: { toast: "" } }}
-            />
+            <CompareProvider>
+              <Navbar />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <CompareBar />
+              <RealtimeToasts />
+              <Toaster
+                position="top-right"
+                visibleToasts={4}
+                gap={8}
+                toastOptions={{ unstyled: true, classNames: { toast: "" } }}
+              />
+            </CompareProvider>
           </SavedProvider>
         </NextIntlClientProvider>
       </body>

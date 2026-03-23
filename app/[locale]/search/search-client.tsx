@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  LayoutGrid,
   Loader2,
+  Map,
   MapPin,
   Search,
   SlidersHorizontal,
@@ -9,8 +11,18 @@ import {
   Wand2,
   X,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { MapLocation } from "@/app/components/listings-map";
+
+// Leaflet uses browser-only APIs — must be dynamically imported
+const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full rounded-2xl bg-gray-100 animate-pulse" style={{ height: 420 }} />
+  ),
+});
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -80,6 +92,9 @@ export default function SearchClient({
   const [aiSearching, setAiSearching] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState("");
   const [wasAiSearch, setWasAiSearch] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
+  const [mapLocations, setMapLocations] = useState<MapLocation[]>([]);
+  const [mapLoading, setMapLoading] = useState(false);
 
   // ─── Featured/promoted listings shown when no search is active ────────────
   const [featuredListings, setFeaturedListings] = useState<SearchListing[]>([]);
@@ -125,6 +140,76 @@ export default function SearchClient({
     loadFeatured();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // ─── Load location listing counts for the map ─────────────────────────────
+  // Re-runs whenever the map is visible OR any active filter changes so that
+  // the pin counts always reflect exactly what the grid is showing.
+  useEffect(() => {
+    if (viewMode !== "map") return;
+    setMapLoading(true);
+    async function loadMap() {
+      // Fetch all locations that have coordinates
+      const { data: locs } = await supabase
+        .from("locations")
+        .select("id, name, slug, lat, lng")
+        .not("lat", "is", null)
+        .not("lng", "is", null);
+
+      if (!locs || locs.length === 0) return;
+
+      // Build a filtered count query that mirrors the grid filters
+      let query = supabase
+        .from("listings")
+        .select("location_id")
+        .eq("status", "active")
+        .not("location_id", "is", null);
+
+      // Category filter — look up the id from the slug in local state
+      if (categorySlug) {
+        const cat = categories.find((c) => c.slug === categorySlug);
+        if (cat) query = query.eq("category_id", cat.id);
+      }
+
+      // Subcategory filter
+      if (subcategorySlug) {
+        const sub = subcategories.find((s) => s.slug === subcategorySlug);
+        if (sub) query = query.eq("subcategory_id", sub.id);
+      }
+
+      // Price range
+      if (priceMin) query = query.gte("price", Number(priceMin));
+      if (priceMax) query = query.lte("price", Number(priceMax));
+
+      // Text search — ilike on title gives a close approximation of grid results
+      if (submittedQuery.trim()) {
+        query = query.ilike("title", `%${submittedQuery.trim()}%`);
+      }
+
+      const { data: counts } = await query;
+
+      const countMap: Record<string, number> = {};
+      for (const row of counts ?? []) {
+        if (row.location_id)
+          countMap[row.location_id] = (countMap[row.location_id] ?? 0) + 1;
+      }
+
+      const pins: MapLocation[] = locs
+        .filter((l) => (countMap[l.id] ?? 0) > 0)
+        .map((l) => ({
+          id: l.id,
+          name: l.name,
+          slug: l.slug,
+          lat: l.lat as number,
+          lng: l.lng as number,
+          count: countMap[l.id] ?? 0,
+        }));
+
+      setMapLocations(pins);
+      setMapLoading(false);
+    }
+    loadMap();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMode, submittedQuery, categorySlug, subcategorySlug, priceMin, priceMax, categories, subcategories]);
 
   // ─── Load auth once (categories/locations already hydrated from server) ─────
   useEffect(() => {
@@ -703,17 +788,68 @@ export default function SearchClient({
                 sortBy={sortBy}
               />
             </div>
-            {!showFilters && (
-              <select
-                className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-400 bg-white"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+            <div className="flex items-center gap-2">
+              {/* View mode toggle */}
+              <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
+                  title="Grid view"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("map")}
+                  className={`p-1.5 rounded-md transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
+                  title="Map view"
+                >
+                  <Map className="w-4 h-4" />
+                </button>
+              </div>
+              {!showFilters && (
+                <select
+                  className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-400 bg-white"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="price_low">Price: Low → High</option>
+                  <option value="price_high">Price: High → Low</option>
+                  <option value="popular">Most Popular</option>
+                </select>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Map view ──────────────────────────────────────────────────────── */}
+        {viewMode === "map" && (
+          <div className="mb-6">
+            {mapLoading ? (
+              <div
+                className="w-full rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center"
+                style={{ height: 420 }}
               >
-                <option value="newest">Newest First</option>
-                <option value="price_low">Price: Low → High</option>
-                <option value="price_high">Price: High → Low</option>
-                <option value="popular">Most Popular</option>
-              </select>
+                <p className="text-sm text-gray-400">Updating map…</p>
+              </div>
+            ) : (
+              <>
+                <ListingsMap
+                  locations={mapLocations}
+                  selectedSlug={locationSlug}
+                  onSelectLocation={(slug) => {
+                    setLocationSlug(slug === locationSlug ? "" : slug);
+                    setViewMode("grid");
+                  }}
+                />
+                {mapLocations.length === 0 && (
+                  <p className="text-center text-sm text-gray-400 mt-3">
+                    No listings match your search in any mapped location.
+                  </p>
+                )}
+              </>
             )}
           </div>
         )}
