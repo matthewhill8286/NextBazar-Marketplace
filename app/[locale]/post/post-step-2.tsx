@@ -4,12 +4,13 @@ import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  Car,
   Lightbulb,
   Loader2,
   PenLine,
   Sparkles,
 } from "lucide-react";
-import type { FormData, Location, PricingData } from "./post-types";
+import type { FormData, Location, PricingData, VehicleAttributes } from "./post-types";
 
 type Props = {
   formData: Pick<
@@ -21,13 +22,31 @@ type Props = {
   pricingLoading: boolean;
   selectedPriceKey: "low" | "suggested" | "high" | null;
   descLoading: boolean;
+  isVehicle: boolean;
+  vehicleAttrs: VehicleAttributes;
   onUpdate: (key: string, value: string) => void;
   onSelectPriceKey: (key: "low" | "suggested" | "high") => void;
   onAiDescription: () => void;
   onAiPricing: () => void;
+  onVehicleAttrUpdate: (key: keyof VehicleAttributes, value: string) => void;
   onBack: () => void;
   onNext: () => void;
 };
+
+const FUEL_TYPES = ["petrol", "diesel", "electric", "hybrid", "lpg"] as const;
+const TRANSMISSIONS = ["automatic", "manual"] as const;
+const BODY_TYPES = ["sedan", "suv", "hatchback", "coupe", "convertible", "wagon", "van", "truck", "pickup"] as const;
+const DRIVE_TYPES = [
+  { value: "fwd", label: "FWD" },
+  { value: "rwd", label: "RWD" },
+  { value: "awd", label: "AWD" },
+  { value: "4wd", label: "4WD" },
+] as const;
+const SERVICE_HISTORY = ["full", "partial", "none"] as const;
+
+function capitalize(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 export default function PostStep2({
   formData,
@@ -36,10 +55,13 @@ export default function PostStep2({
   pricingLoading,
   selectedPriceKey,
   descLoading,
+  isVehicle,
+  vehicleAttrs,
   onUpdate,
   onSelectPriceKey,
   onAiDescription,
   onAiPricing,
+  onVehicleAttrUpdate,
   onBack,
   onNext,
 }: Props) {
@@ -76,6 +98,183 @@ export default function PostStep2({
           onChange={(e) => onUpdate("description", e.target.value)}
         />
       </div>
+
+      {/* Vehicle-specific attributes */}
+      {isVehicle && (
+        <div className="bg-gradient-to-br from-blue-50 via-slate-50 to-blue-50 rounded-xl p-5 border border-blue-100 space-y-4">
+          <div className="flex items-center gap-2">
+            <Car className="w-4 h-4 text-blue-600" />
+            <span className="font-semibold text-blue-900 text-sm">
+              Vehicle Details
+            </span>
+          </div>
+
+          {/* Row 1: Make, Model, Year */}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Make</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. Toyota"
+                value={vehicleAttrs.make}
+                onChange={(e) => onVehicleAttrUpdate("make", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Model</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. Corolla"
+                value={vehicleAttrs.model}
+                onChange={(e) => onVehicleAttrUpdate("model", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Year</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. 2020"
+                value={vehicleAttrs.year}
+                onChange={(e) => onVehicleAttrUpdate("year", e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Row 2: Mileage, Fuel Type, Transmission */}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Mileage (km)</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. 45000"
+                value={vehicleAttrs.mileage}
+                onChange={(e) => onVehicleAttrUpdate("mileage", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Fuel Type</label>
+              <select
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                value={vehicleAttrs.fuel_type}
+                onChange={(e) => onVehicleAttrUpdate("fuel_type", e.target.value)}
+              >
+                <option value="">Select</option>
+                {FUEL_TYPES.map((ft) => (
+                  <option key={ft} value={ft}>{capitalize(ft)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Transmission</label>
+              <select
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                value={vehicleAttrs.transmission}
+                onChange={(e) => onVehicleAttrUpdate("transmission", e.target.value)}
+              >
+                <option value="">Select</option>
+                {TRANSMISSIONS.map((t) => (
+                  <option key={t} value={t}>{capitalize(t)}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Row 3: Color, Body Type, Engine Size */}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Color</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. Black"
+                value={vehicleAttrs.color}
+                onChange={(e) => onVehicleAttrUpdate("color", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Body Type</label>
+              <select
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                value={vehicleAttrs.body_type}
+                onChange={(e) => onVehicleAttrUpdate("body_type", e.target.value)}
+              >
+                <option value="">Select</option>
+                {BODY_TYPES.map((bt) => (
+                  <option key={bt} value={bt}>{capitalize(bt)}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Engine (L)</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. 2.0"
+                value={vehicleAttrs.engine_size}
+                onChange={(e) => onVehicleAttrUpdate("engine_size", e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Row 4: Doors, Drive Type, Owners, Service History */}
+          <div className="grid grid-cols-4 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Doors</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. 4"
+                value={vehicleAttrs.doors}
+                onChange={(e) => onVehicleAttrUpdate("doors", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Drive</label>
+              <select
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                value={vehicleAttrs.drive_type}
+                onChange={(e) => onVehicleAttrUpdate("drive_type", e.target.value)}
+              >
+                <option value="">Select</option>
+                {DRIVE_TYPES.map((dt) => (
+                  <option key={dt.value} value={dt.value}>{dt.label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Owners</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                placeholder="e.g. 1"
+                value={vehicleAttrs.owners}
+                onChange={(e) => onVehicleAttrUpdate("owners", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Service</label>
+              <select
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                value={vehicleAttrs.service_history}
+                onChange={(e) => onVehicleAttrUpdate("service_history", e.target.value)}
+              >
+                <option value="">Select</option>
+                {SERVICE_HISTORY.map((sh) => (
+                  <option key={sh} value={sh}>{capitalize(sh)}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <p className="text-[10px] text-blue-400 text-center">
+            These details help buyers find your vehicle and improve your listing quality
+          </p>
+        </div>
+      )}
 
       {/* Price with AI pricing guide */}
       <div className="grid grid-cols-2 gap-4">

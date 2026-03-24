@@ -58,33 +58,42 @@ export type Database = {
       conversations: {
         Row: {
           buyer_id: string
+          buyer_unread: number
           created_at: string
           id: string
           is_pinned: boolean
+          last_message: string | null
           last_message_at: string | null
           last_message_preview: string | null
           listing_id: string | null
           seller_id: string
+          seller_unread: number
         }
         Insert: {
           buyer_id: string
+          buyer_unread?: number
           created_at?: string
           id?: string
           is_pinned?: boolean
+          last_message?: string | null
           last_message_at?: string | null
           last_message_preview?: string | null
           listing_id?: string | null
           seller_id: string
+          seller_unread?: number
         }
         Update: {
           buyer_id?: string
+          buyer_unread?: number
           created_at?: string
           id?: string
           is_pinned?: boolean
+          last_message?: string | null
           last_message_at?: string | null
           last_message_preview?: string | null
           listing_id?: string | null
           seller_id?: string
+          seller_unread?: number
         }
         Relationships: [
           {
@@ -105,6 +114,83 @@ export type Database = {
             foreignKeyName: "conversations_seller_id_fkey"
             columns: ["seller_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dealer_shops: {
+        Row: {
+          accent_color: string | null
+          banner_url: string | null
+          created_at: string
+          custom_domain: string | null
+          description: string | null
+          facebook: string | null
+          id: string
+          instagram: string | null
+          logo_url: string | null
+          plan_expires_at: string | null
+          plan_started_at: string | null
+          plan_status: string
+          shop_name: string
+          slug: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          tiktok: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          banner_url?: string | null
+          created_at?: string
+          custom_domain?: string | null
+          description?: string | null
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          logo_url?: string | null
+          plan_expires_at?: string | null
+          plan_started_at?: string | null
+          plan_status?: string
+          shop_name: string
+          slug: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tiktok?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          banner_url?: string | null
+          created_at?: string
+          custom_domain?: string | null
+          description?: string | null
+          facebook?: string | null
+          id?: string
+          instagram?: string | null
+          logo_url?: string | null
+          plan_expires_at?: string | null
+          plan_started_at?: string | null
+          plan_status?: string
+          shop_name?: string
+          slug?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          tiktok?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dealer_shops_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -178,6 +264,35 @@ export type Database = {
           },
         ]
       }
+      listing_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_favorites_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listing_images: {
         Row: {
           created_at: string
@@ -224,6 +339,7 @@ export type Database = {
           description: string | null
           embedding: string | null
           expires_at: string | null
+          expiry_warning_sent: boolean
           favorite_count: number
           id: string
           image_count: number
@@ -255,6 +371,7 @@ export type Database = {
           description?: string | null
           embedding?: string | null
           expires_at?: string | null
+          expiry_warning_sent?: boolean
           favorite_count?: number
           id?: string
           image_count?: number
@@ -286,6 +403,7 @@ export type Database = {
           description?: string | null
           embedding?: string | null
           expires_at?: string | null
+          expiry_warning_sent?: boolean
           favorite_count?: number
           id?: string
           image_count?: number
@@ -598,9 +716,16 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          facebook_username: string | null
           id: string
+          instagram_username: string | null
           is_dealer: boolean
+          location_id: string | null
+          location_lat: number | null
+          location_lng: number | null
+          onboarding_completed: boolean
           phone: string | null
+          push_token: string | null
           rating: number
           telegram_username: string | null
           total_reviews: number
@@ -614,9 +739,16 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          facebook_username?: string | null
           id: string
+          instagram_username?: string | null
           is_dealer?: boolean
+          location_id?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          onboarding_completed?: boolean
           phone?: string | null
+          push_token?: string | null
           rating?: number
           telegram_username?: string | null
           total_reviews?: number
@@ -630,9 +762,16 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          facebook_username?: string | null
           id?: string
+          instagram_username?: string | null
           is_dealer?: boolean
+          location_id?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          onboarding_completed?: boolean
           phone?: string | null
+          push_token?: string | null
           rating?: number
           telegram_username?: string | null
           total_reviews?: number
@@ -884,6 +1023,8 @@ export type Database = {
           view_count: number
         }[]
       }
+      process_listing_expiry: { Args: never; Returns: undefined }
+      process_saved_search_notifications: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

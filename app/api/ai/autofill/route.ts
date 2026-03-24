@@ -49,7 +49,24 @@ Respond in JSON format:
   "suggested_price": <number in EUR, or null if can't determine>,
   "price_confidence": "high" | "medium" | "low",
   "tags": ["<tag1>", "<tag2>", "<tag3>"]
-}`,
+}
+
+IMPORTANT: If the image is a vehicle (car, motorcycle, van, truck, etc.) and category_slug is "vehicles", also include a "vehicle_attributes" object with any details you can determine from the image:
+{
+  "vehicle_attributes": {
+    "make": "<manufacturer, e.g. Toyota, BMW>",
+    "model": "<model name>",
+    "year": "<4-digit year if visible/estimable>",
+    "color": "<exterior color>",
+    "body_type": "<sedan|suv|hatchback|coupe|convertible|wagon|van|truck|pickup>",
+    "doors": "<number of doors if visible>",
+    "fuel_type": "<petrol|diesel|electric|hybrid|lpg if determinable>",
+    "transmission": "<automatic|manual if determinable>",
+    "engine_size": "<in litres if determinable>",
+    "drive_type": "<fwd|rwd|awd|4wd if determinable>"
+  }
+}
+Only include vehicle_attributes fields you can confidently determine from the image. Omit fields you cannot infer.`,
             },
             {
               type: "image_url",

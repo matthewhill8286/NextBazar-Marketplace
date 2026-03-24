@@ -23,3 +23,15 @@ export const PROMOTION_PRICES = {
 } as const;
 
 export type PromotionType = keyof typeof PROMOTION_PRICES;
+
+// ─── Dealer subscription ────────────────────────────────────────────────────
+// Create this product+price in your Stripe dashboard, then paste the price ID.
+// For now we use a placeholder that the checkout route will create on-the-fly
+// if it doesn't exist yet.
+export const DEALER_PLAN = {
+  priceId: process.env.STRIPE_DEALER_PRICE_ID || "",
+  name: "Dealer Pro",
+  description: "Unlimited listings, branded shop page, analytics & inventory tools",
+  amount: 3500, // €35.00
+  interval: "month" as const,
+} as const;

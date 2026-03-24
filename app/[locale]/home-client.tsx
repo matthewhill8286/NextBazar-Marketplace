@@ -1,22 +1,26 @@
 "use client";
 
-import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, TrendingUp } from "lucide-react";
+import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, Store, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
-import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
+import { ShopCardCompact } from "@/app/[locale]/shops/shops-client";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
-import { CARD_SELECT } from "@/lib/supabase/constants";
+import { CARD_SELECT } from "@/lib/supabase/selects";
+import type { ShopCardRow } from "@/lib/supabase/queries";
 import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
+import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
 
 type Props = {
   initialCategories?: Category[];
   initialFeatured?: ListingCardRow[];
   initialRecent?: ListingCardRow[];
   initialTotalCount?: number;
+  initialFeaturedShops?: ShopCardRow[];
 };
 
 export default function HomeClient({
@@ -24,6 +28,7 @@ export default function HomeClient({
   initialFeatured = [],
   initialRecent = [],
   initialTotalCount = 0,
+  initialFeaturedShops = [],
 }: Props) {
   const supabase = createClient();
   const [categories] = useState<Category[]>(initialCategories);
@@ -80,11 +85,11 @@ export default function HomeClient({
           .eq("status", "active")
           .order("view_count", { ascending: false })
           .limit(8);
-        setTrending((fallback || []) as ListingCardRow[]);
+        setTrending((fallback || []) as unknown as ListingCardRow[]);
         setTrendingLocationName(null);
         setTrendingLocationSlug(null);
       } else {
-        setTrending(trendData as ListingCardRow[]);
+        setTrending(trendData as unknown as ListingCardRow[]);
         setTrendingLocationName(locationName);
         setTrendingLocationSlug(locationSlug);
       }
@@ -104,7 +109,7 @@ export default function HomeClient({
               const idOrder = ids.slice(0, 8);
               const sorted = idOrder
                 .map((id) => rvData.find((l) => l.id === id))
-                .filter((l): l is ListingCardRow => l != null);
+                .filter((l) => l != null) as unknown as ListingCardRow[];
               setRecentlyViewed(sorted);
             }
           }
@@ -213,10 +218,16 @@ export default function HomeClient({
                   "from-lime-50 to-green-50 hover:from-lime-100 hover:to-green-100 border-lime-100",
                   "from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 border-orange-100",
                 ];
+                // Dedicated landing pages for property & vehicles
+                const LANDING_PAGES: Record<string, string> = {
+                  property: "/properties",
+                  vehicles: "/vehicles",
+                };
+                const href = LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
                 return (
                   <Link
                     key={cat.id}
-                    href={`/search?category=${cat.slug}`}
+                    href={href}
                     className={`bg-linear-to-br ${palettes[i % palettes.length]} rounded-2xl p-3 border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center group`}
                   >
                     <div
@@ -266,6 +277,35 @@ export default function HomeClient({
                   listing={listing}
 
                 />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Featured Shops ───────────────────────────────────────────── */}
+        {FEATURE_FLAGS.DEALERS && !loading && initialFeaturedShops.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
+                <h2 className="text-xl font-bold text-gray-900">
+                  Dealer Shops
+                </h2>
+                <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                  <Store className="w-3 h-3" />
+                  Premium
+                </span>
+              </div>
+              <Link
+                href="/shops"
+                className="text-sm text-indigo-600 font-semibold hover:underline"
+              >
+                View all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {initialFeaturedShops.map((shop) => (
+                <ShopCardCompact key={shop.id} shop={shop} />
               ))}
             </div>
           </section>

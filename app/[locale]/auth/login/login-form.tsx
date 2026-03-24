@@ -22,7 +22,7 @@ export default function LoginForm() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -31,6 +31,21 @@ export default function LoginForm() {
       setError(error.message);
       setLoading(false);
       return;
+    }
+
+    // Check if user has completed onboarding
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profile && !profile.onboarding_completed) {
+        router.push("/onboarding");
+        router.refresh();
+        return;
+      }
     }
 
     router.push(redirect);
