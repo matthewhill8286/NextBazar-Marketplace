@@ -8,6 +8,10 @@ import type {
   Location,
   Subcategory,
 } from "./supabase.types";
+import { CARD_SELECT } from "./constants";
+
+// Re-export so existing server-side consumers keep working.
+export { CARD_SELECT };
 
 // ─── Public (no-auth) Supabase client ────────────────────────────────────────
 // Used inside unstable_cache wrappers so the cache key is stable and we don't
@@ -18,18 +22,6 @@ function publicClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
-
-// ─── Shared select fragments ─────────────────────────────────────────────────
-// Export these so client components can reuse the exact same column set without
-// copy-pasting the string.
-
-/** Select fragment for listing card data (home, search, profile, related). */
-export const CARD_SELECT = `
-  *,
-  categories(name, slug, icon),
-  locations(name, slug),
-  profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews)
-`;
 
 // ─── Cached reference data (revalidate: 1 hour) ───────────────────────────────
 

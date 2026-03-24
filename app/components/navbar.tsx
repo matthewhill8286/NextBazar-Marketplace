@@ -82,9 +82,7 @@ export default function Navbar() {
         <div className="flex-1 max-w-xl hidden md:block">
           <Suspense
             fallback={
-              <div className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-400">
-                {t("searchPlaceholder")}
-              </div>
+              <div className="w-full h-[42px] rounded-xl border border-gray-100 bg-gray-50/50 animate-pulse" />
             }
           >
             <GlobalSearchBar variant="navbar" />

@@ -284,7 +284,7 @@ export default function SearchClient({
     [buildParams],
   );
 
-  // ─── Filter-change effect (NOT fired by text input) ───────────────────────
+  // ─── Filter-change effect (Debounced to avoid jumping on rapid price input) ───
   const filterKey = `${categorySlug}|${subcategorySlug}|${locationSlug}|${sortBy}|${priceMin}|${priceMax}`;
   useEffect(() => {
     if (categories.length === 0) return;
@@ -303,8 +303,12 @@ export default function SearchClient({
       return;
     }
 
-    doSearch(submittedQuery);
-    syncUrl(submittedQuery);
+    const timer = setTimeout(() => {
+      doSearch(submittedQuery);
+      syncUrl(submittedQuery);
+    }, 400);
+
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKey, categories.length]);
 
@@ -432,7 +436,7 @@ export default function SearchClient({
   return (
     <>
       {/* ── Hero search header ───────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white py-8 px-4">
+      <section className="relative overflow-clip bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white py-8 px-4">
         {/* Dot mesh */}
         <div
           className="absolute inset-0 opacity-[0.10] pointer-events-none"
@@ -499,6 +503,7 @@ export default function SearchClient({
             <div className="absolute right-2 flex items-center gap-1.5">
               {inputValue && (
                 <button
+                  type="button"
                   onClick={() => {
                     setInputValue("");
                     executeSearch("");
@@ -509,6 +514,7 @@ export default function SearchClient({
                 </button>
               )}
               <button
+                type="button"
                 onClick={() => handleAiSearch()}
                 disabled={aiSearching || !inputValue.trim()}
                 className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
@@ -521,6 +527,7 @@ export default function SearchClient({
                 )}
               </button>
               <button
+                type="button"
                 onClick={() => setShowFilters(!showFilters)}
                 className={`p-2 rounded-xl transition-colors ${showFilters ? "bg-white/30 text-white" : "bg-white/20 hover:bg-white/30 text-white"}`}
               >

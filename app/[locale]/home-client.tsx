@@ -7,10 +7,10 @@ import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
-import { createClient } from "@/lib/supabase/client";
-import { CARD_SELECT } from "@/lib/supabase/queries";
-import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
 import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/client";
+import { CARD_SELECT } from "@/lib/supabase/constants";
+import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
 
 type Props = {
   initialCategories?: Category[];
@@ -301,7 +301,6 @@ export default function HomeClient({
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-
                 />
               ))}
             </div>
@@ -338,7 +337,6 @@ export default function HomeClient({
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-
                 />
               ))}
             </div>
@@ -387,7 +385,6 @@ export default function HomeClient({
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-
                 />
               ))}
             </div>
