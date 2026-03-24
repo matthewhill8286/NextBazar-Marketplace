@@ -149,7 +149,7 @@ export default function DashboardSidebar({
       <nav className="bg-white rounded-xl border border-gray-100 p-2">
         {[
           ...NAV_ITEMS,
-          ...(isAdmin
+          ...(isAdmin && FEATURE_FLAGS.REPORTS
             ? [{ href: "/admin/reports", label: "Reports Queue", icon: Flag }]
             : []),
         ].map((item) => {

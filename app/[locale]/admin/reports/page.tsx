@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { timeAgo } from "@/lib/format-helpers";
 
 type Report = {
@@ -50,6 +51,13 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default function AdminReportsPage() {
   const router = useRouter();
+
+  /* ── Feature-gated: redirect if reports dashboard is not enabled ── */
+  if (!FEATURE_FLAGS.REPORTS) {
+    router.replace("/dashboard");
+    return null;
+  }
+
   const supabase = createClient();
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
