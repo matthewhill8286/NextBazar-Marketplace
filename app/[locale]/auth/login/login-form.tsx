@@ -4,6 +4,7 @@ import { Loader2, Lock, Mail } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ErrorBanner } from "@/app/components/ui";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -87,11 +88,7 @@ export default function LoginForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-100">
-            {error}
-          </div>
-        )}
+        <ErrorBanner message={error} />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">

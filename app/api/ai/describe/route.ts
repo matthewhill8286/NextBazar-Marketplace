@@ -67,10 +67,10 @@ ${price ? `Asking price: €${price}` : ""}`,
     const description = response.choices[0].message.content?.trim() || "";
 
     return NextResponse.json({ description });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("AI describe error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to generate description" },
+      { error: err instanceof Error ? err.message : "Failed to generate description" },
       { status: 500 },
     );
   }

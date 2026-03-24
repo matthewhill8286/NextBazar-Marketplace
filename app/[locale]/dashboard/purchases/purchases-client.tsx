@@ -16,6 +16,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
 import { createClient } from "@/lib/supabase/client";
+import { formatPrice } from "@/lib/format-helpers";
 
 type Purchase = {
   id: string; // offer id
@@ -55,10 +56,6 @@ function unwrap<T>(v: T | T[] | null | undefined): T | null {
   return v;
 }
 
-function formatPrice(amount: number, currency: string) {
-  const sym = currency === "EUR" ? "€" : currency;
-  return `${sym}${amount.toLocaleString()}`;
-}
 
 function formatDate(d: string | null) {
   if (!d) return "—";

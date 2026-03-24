@@ -3,6 +3,7 @@
 import { CheckCircle, Loader2, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { timeAgo } from "@/lib/format-helpers";
 
 type Review = {
   id: string;
@@ -168,16 +169,6 @@ export function LeaveReviewPrompt({
 }
 
 // ─── Seller Reviews List ──────────────────────────────────────────────────────
-
-function timeAgo(d: string) {
-  const diff = Date.now() - new Date(d).getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days < 1) return "Today";
-  if (days < 7) return `${days}d ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w ago`;
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-  return `${Math.floor(days / 365)}y ago`;
-}
 
 export function SellerReviews({
   sellerId,

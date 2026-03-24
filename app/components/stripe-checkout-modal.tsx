@@ -57,8 +57,8 @@ function CryptoTab({
         throw new Error(data.error || "Failed to create crypto payment");
       }
       window.location.href = data.hosted_url;
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
     }
   }

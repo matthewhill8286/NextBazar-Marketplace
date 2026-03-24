@@ -5,11 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCompare } from "@/lib/compare-context";
+import { CONDITION_KEYS, unwrap } from "@/lib/format-helpers";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
 import FavoriteButton from "./favorite-button";
+import {FALLBACK_LISTING_IMAGE} from "@/lib/constants";
 
-type CatLike = { name: string; slug?: string; icon?: string | null };
-type LocLike = { name: string; slug?: string };
+export type CatLike = { name: string; slug?: string; icon?: string | null };
+export type LocLike = { name: string; slug?: string };
 
 type ListingCardProps = {
   listing: {
@@ -35,20 +37,6 @@ type ListingCardProps = {
   onUnsave?: () => void;
 };
 
-function unwrap<T>(v: T | T[] | null | undefined): T | null {
-  if (!v) return null;
-  if (Array.isArray(v)) return v[0] || null;
-  return v;
-}
-
-const conditionKeys: Record<string, string> = {
-  new: "condition_new",
-  like_new: "condition_like_new",
-  good: "condition_good",
-  fair: "condition_fair",
-  for_parts: "condition_for_parts",
-};
-
 export default function ListingCard({ listing }: ListingCardProps) {
   const t = useTranslations("listing");
   const { add, remove, isCompared, isFull } = useCompare();
@@ -58,9 +46,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
   const isSold = listing.status === "sold";
   const compared = isCompared(listing.id);
 
-  const imageSrc =
-    listing.primary_image_url ||
-    "https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop";
+  const imageSrc = listing.primary_image_url || FALLBACK_LISTING_IMAGE;
 
   function formatPrice(price: number | null, currency: string): string {
     if (price === null) return t("contact");
@@ -79,7 +65,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
   }
 
   function formatCondition(condition: string): string {
-    const key = conditionKeys[condition];
+    const key = CONDITION_KEYS[condition];
     return key ? t(key) : condition.replace(/_/g, " ");
   }
 

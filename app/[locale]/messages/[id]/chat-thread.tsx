@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 
 type Message = {
   id: string;
@@ -119,56 +120,41 @@ export default function ChatThread({
     load();
   }, [conversationId]);
 
-  // Subscribe to new messages and updates in real-time
-  useEffect(() => {
-    if (!conversationId || !userId) return;
+  // Subscribe to new messages in real-time
+  useRealtimeTable<Message>({
+    channelName: `chat-${conversationId}-insert`,
+    table: "messages",
+    event: "INSERT",
+    filter: `conversation_id=eq.${conversationId}`,
+    onPayload: ({ new: newMsg }) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === newMsg.id)) return prev;
+        return [...prev, newMsg as Message];
+      });
+      if (newMsg.sender_id !== userId) {
+        supabase
+          .from("messages")
+          .update({ read_at: new Date().toISOString() })
+          .eq("id", newMsg.id)
+          .then();
+      }
+    },
+    enabled: !!conversationId && !!userId,
+  });
 
-    const channel = supabase
-      .channel(`chat-${conversationId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const newMsg = payload.new as Message;
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === newMsg.id)) return prev;
-            return [...prev, newMsg];
-          });
-          if (newMsg.sender_id !== userId) {
-            supabase
-              .from("messages")
-              .update({ read_at: new Date().toISOString() })
-              .eq("id", newMsg.id)
-              .then();
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const updated = payload.new as Message;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === updated.id ? { ...m, ...updated } : m)),
-          );
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [conversationId, userId]);
+  // Subscribe to message updates (edits, pin, offer status) in real-time
+  useRealtimeTable<Message>({
+    channelName: `chat-${conversationId}-update`,
+    table: "messages",
+    event: "UPDATE",
+    filter: `conversation_id=eq.${conversationId}`,
+    onPayload: ({ new: updated }) => {
+      setMessages((prev) =>
+        prev.map((m) => (m.id === updated.id ? { ...m, ...(updated as Message) } : m)),
+      );
+    },
+    enabled: !!conversationId && !!userId,
+  });
 
   // Auto-scroll to bottom
   useEffect(() => {

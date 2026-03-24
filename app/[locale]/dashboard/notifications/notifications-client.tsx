@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { timeAgo } from "@/lib/format-helpers";
 
 type Notification = {
   id: string;
@@ -48,15 +49,6 @@ const TYPE_BG: Record<string, string> = {
   listing_expired: "bg-red-50",
 };
 
-function timeAgo(d: string) {
-  const diff = Date.now() - new Date(d).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
 
 export default function NotificationsClient({
   initialNotifications,

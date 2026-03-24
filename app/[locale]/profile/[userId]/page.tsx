@@ -53,10 +53,17 @@ export default async function ProfilePage({
     .eq("user_id", userId)
     .maybeSingle();
 
+  // Supabase returns join columns as arrays; unwrap to match SearchListing type
+  const normalisedListings = (listings || []).map((l) => ({
+    ...l,
+    categories: Array.isArray(l.categories) ? (l.categories[0] ?? null) : l.categories,
+    locations: Array.isArray(l.locations) ? (l.locations[0] ?? null) : l.locations,
+  }));
+
   return (
     <ProfileClient
       profile={profile}
-      listings={listings || []}
+      listings={normalisedListings}
       reviews={(reviews as any) || []}
       reviewCount={Number(stats?.review_count ?? profile.total_reviews ?? 0)}
       avgRating={Number(stats?.avg_rating ?? profile.rating ?? 0)}

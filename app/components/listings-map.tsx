@@ -68,7 +68,10 @@ export default function ListingsMap({
     if (!map) return;
 
     // Clear old markers
-    markersRef.current.forEach((m) => m.remove());
+    markersRef.current.forEach((m) => {
+      m.remove();
+    });
+
     markersRef.current = [];
 
     locations.forEach((loc) => {

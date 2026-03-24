@@ -82,10 +82,10 @@ Respond in JSON format:
       category_id: matchedCategory?.id || null,
       category_name: matchedCategory?.name || null,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("AI autofill error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to analyze image" },
+      { error: err instanceof Error ? err.message : "Failed to analyze image" },
       { status: 500 },
     );
   }

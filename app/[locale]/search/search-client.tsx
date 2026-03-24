@@ -28,6 +28,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import SaveSearchButton from "@/app/components/save-search-button";
+import { LAST_SEARCH_LOCATION_KEY, SEARCH_PAGE_SIZE } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import type {
   Category,
@@ -87,7 +88,7 @@ export default function SearchClient({
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
   const [offset, setOffset] = useState(0);
-  const PAGE_SIZE = 24;
+  const PAGE_SIZE = SEARCH_PAGE_SIZE;
 
   const [aiSearching, setAiSearching] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState("");
@@ -105,7 +106,7 @@ export default function SearchClient({
   // ─── Persist last-used location slug so the home page can show trending ────
   useEffect(() => {
     if (locationSlug) {
-      try { localStorage.setItem("lastSearchLocation", locationSlug); } catch {}
+      try { localStorage.setItem(LAST_SEARCH_LOCATION_KEY, locationSlug); } catch {}
     }
   }, [locationSlug]);
 
@@ -139,7 +140,7 @@ export default function SearchClient({
     }
     loadFeatured();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase.from]);
 
   // ─── Load location listing counts for the map ─────────────────────────────
   // Re-runs whenever the map is visible OR any active filter changes so that
@@ -209,7 +210,7 @@ export default function SearchClient({
     }
     loadMap();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode, submittedQuery, categorySlug, subcategorySlug, priceMin, priceMax, categories, subcategories]);
+  }, [viewMode, submittedQuery, categorySlug, subcategorySlug, priceMin, priceMax, categories, subcategories, supabase.from]);
 
   // ─── Load auth once (categories/locations already hydrated from server) ─────
   useEffect(() => {
@@ -223,7 +224,7 @@ export default function SearchClient({
     }
     loadAuth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase.auth.getUser]);
 
   // ─── Normalise hit shape ──────────────────────────────────────────────────
   // Accepts both full Supabase rows (categories/locations objects) and flat
@@ -259,10 +260,11 @@ export default function SearchClient({
       p.set("offset", String(pageOffset));
       return p;
     },
-    [categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax],
+    [categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax, PAGE_SIZE],
   );
 
   // ─── Core search ──────────────────────────────────────────────────────────
+  // biome-ignore lint/correctness/useExhaustiveDependencies:
   const doSearch = useCallback(
     async (q: string) => {
       setLoading(true);
@@ -979,7 +981,7 @@ export default function SearchClient({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
-                    key={i}
+                    key={`${Math.random() + i}`}
                     className="bg-white rounded-xl border border-gray-100 overflow-hidden"
                   >
                     <div className="aspect-4/3 bg-gray-100 animate-pulse" />

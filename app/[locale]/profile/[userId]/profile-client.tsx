@@ -12,6 +12,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import ListingCard from "@/app/components/listing-card";
+import type { SearchListing } from "@/lib/supabase/supabase.types";
+import { timeAgo } from "@/lib/format-helpers";
 
 type Profile = {
   id: string;
@@ -25,26 +27,6 @@ type Profile = {
   total_reviews: number | null;
 };
 
-type CatLike = { name: string; slug?: string; icon?: string };
-type LocLike = { name: string; slug?: string };
-
-type Listing = {
-  id: string;
-  slug: string;
-  title: string;
-  price: number | null;
-  currency: string;
-  primary_image_url: string | null;
-  is_promoted: boolean;
-  is_urgent: boolean;
-  condition: string | null;
-  view_count: number;
-  created_at: string;
-  status: string;
-  categories?: CatLike | CatLike[] | null;
-  locations?: LocLike | LocLike[] | null;
-};
-
 type Review = {
   id: string;
   rating: number;
@@ -55,21 +37,11 @@ type Review = {
 
 type Props = {
   profile: Profile;
-  listings: Listing[];
+  listings: SearchListing[];
   reviews: Review[];
   reviewCount: number;
   avgRating: number;
 };
-
-function timeAgo(d: string) {
-  const diff = Date.now() - new Date(d).getTime();
-  const days = Math.floor(diff / 86400000);
-  if (days < 1) return "Today";
-  if (days < 7) return `${days}d ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w ago`;
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-  return `${Math.floor(days / 365)}y ago`;
-}
 
 function memberSince(d: string) {
   return new Date(d).toLocaleDateString("en-GB", {

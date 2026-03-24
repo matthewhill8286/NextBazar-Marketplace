@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { CONDITION_LABELS } from "@/lib/format-helpers";
 
 type CompareListing = {
   id: string;
@@ -22,14 +23,6 @@ type CompareListing = {
   created_at: string;
   categories: { name: string; slug: string; icon: string } | null;
   locations: { name: string; slug: string } | null;
-};
-
-const CONDITION_LABELS: Record<string, string> = {
-  new: "New",
-  like_new: "Like New",
-  good: "Good",
-  fair: "Fair",
-  for_parts: "For Parts",
 };
 
 function ConditionDot({ condition }: { condition: string | null }) {
@@ -75,10 +68,16 @@ export default function ComparePage() {
       )
       .in("id", ids)
       .then(({ data }) => {
-        // Preserve the order of the URL ids
+        if (!data) { setLoading(false); return; }
+        // Preserve the order of the URL ids and unwrap Supabase join arrays
         const sorted = ids
-          .map((id) => data?.find((l) => l.id === id))
-          .filter(Boolean) as CompareListing[];
+          .map((id) => data.find((l) => l.id === id))
+          .filter((l): l is NonNullable<typeof l> => Boolean(l))
+          .map((l) => ({
+            ...l,
+            categories: Array.isArray(l.categories) ? (l.categories[0] ?? null) : l.categories,
+            locations: Array.isArray(l.locations) ? (l.locations[0] ?? null) : l.locations,
+          })) as CompareListing[];
         setListings(sorted);
         setLoading(false);
       });

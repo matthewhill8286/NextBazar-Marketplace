@@ -3,7 +3,6 @@
 import {
   Eye,
   Heart,
-  Loader2,
   MessageCircle,
   Package,
   Plus,
@@ -11,11 +10,13 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { DashboardListing } from "@/lib/supabase/supabase.types";
+import { LoadingSpinner } from "@/app/components/ui";
 import ListingsClient from "./listings/listings-client";
 
 export default function DashboardPage() {
   const supabase = createClient();
-  const [listings, setListings] = useState<any[]>([]);
+  const [listings, setListings] = useState<DashboardListing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,11 +55,7 @@ export default function DashboardPage() {
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (

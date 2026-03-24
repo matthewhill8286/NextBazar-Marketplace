@@ -106,10 +106,10 @@ Respond in JSON format with these exact fields:
         avg_views: avgViews,
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("AI insights error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to generate insights" },
+      { error: err instanceof Error ? err.message : "Failed to generate insights" },
       { status: 500 },
     );
   }
