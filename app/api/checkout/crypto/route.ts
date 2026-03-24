@@ -70,10 +70,10 @@ export async function POST(request: NextRequest) {
       charge_id: data.data.id,
       expires_at: data.data.expires_at,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Crypto checkout error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to create crypto charge" },
+      { error: err instanceof Error ? err.message : "Failed to create crypto charge" },
       { status: 500 },
     );
   }

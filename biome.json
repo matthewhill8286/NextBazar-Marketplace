@@ -30,6 +30,9 @@
       "a11y": {
         "useButtonType": "off"
       },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
       "suspicious": {
         "noUnknownAtRules": "off"
       }

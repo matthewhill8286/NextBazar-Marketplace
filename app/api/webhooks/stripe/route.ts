@@ -25,8 +25,9 @@ export async function POST(request: NextRequest) {
     } else {
       event = JSON.parse(body);
     }
-  } catch (err: any) {
-    console.error("Webhook signature verification failed:", err.message);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("Webhook signature verification failed:", message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -40,7 +41,14 @@ export async function POST(request: NextRequest) {
       const promotedUntil = new Date();
       promotedUntil.setDate(promotedUntil.getDate() + durationDays);
 
-      const updateData: Record<string, any> = {
+      type ListingUpdate = {
+        status: string;
+        is_promoted?: boolean;
+        promoted_until?: string;
+        is_urgent?: boolean;
+      };
+
+      const updateData: ListingUpdate = {
         // Ensure listing is live — handles the case where it was created as a
         // draft pending payment, and also harmlessly re-confirms active listings.
         status: "active",

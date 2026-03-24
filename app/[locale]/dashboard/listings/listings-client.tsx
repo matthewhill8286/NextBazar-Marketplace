@@ -23,32 +23,20 @@ import { useEffect, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
+import { EmptyState } from "@/app/components/ui";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { LISTING_ACTIVE_MS } from "@/lib/constants";
+import {
+  expiryBadge,
+  formatPrice,
+  timeAgo,
+  unwrap,
+} from "@/lib/format-helpers";
+import type { DashboardListing } from "@/lib/supabase/supabase.types";
 
-type Listing = {
-  id: string;
-  title: string;
-  slug: string;
-  price: number | null;
-  currency: string;
-  price_type?: string;
-  condition?: string | null;
-  status: string;
-  primary_image_url: string | null;
-  view_count: number;
-  favorite_count: number;
-  is_promoted: boolean;
-  is_urgent: boolean;
-  created_at: string;
-  expires_at: string | null;
-  category_id?: string | null;
-  location_id?: string | null;
-  categories:
-    | { name: string; slug: string; icon?: string }[]
-    | { name: string; slug: string; icon?: string }
-    | null;
-  locations: { name: string }[] | { name: string } | null;
-};
+/** Re-export so dashboard/page.tsx can import the canonical type. */
+export type { DashboardListing as Listing };
 
 const TABS = [
   { key: "active", label: "Active" },
@@ -60,7 +48,7 @@ const TABS = [
 export default function ListingsClient({
   initialListings,
 }: {
-  initialListings: Listing[];
+  initialListings: DashboardListing[];
 }) {
   const supabase = createClient();
   const searchParams = useSearchParams();
@@ -123,50 +111,28 @@ export default function ListingsClient({
 
   // ── Single-item actions ──────────────────────────────────────────────────
 
-  function unwrap<T>(val: T | T[] | null): T | null {
-    if (!val) return null;
-    if (Array.isArray(val)) return val[0] || null;
-    return val;
-  }
-
-  function formatPrice(p: number | null, c: string) {
-    if (!p) return "Contact";
-    return `${c === "EUR" ? "€" : c}${p.toLocaleString()}`;
-  }
-
-  function timeAgo(d: string) {
-    const diff = Date.now() - new Date(d).getTime();
-    const hrs = Math.floor(diff / 3600000);
-    if (hrs < 1) return "Just now";
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.floor(hrs / 24)}d ago`;
-  }
-
-  function expiryBadge(expiresAt: string | null, status: string) {
-    if (status !== "active" || !expiresAt) return null;
-    const ms = new Date(expiresAt).getTime() - Date.now();
-    const days = Math.ceil(ms / 86_400_000);
-    if (days > 7) return null;
-    if (days <= 0) return null;
-    const label = days === 1 ? "Expires today" : `Expires in ${days}d`;
-    const critical = days <= 3;
-    return { label, critical };
-  }
-
   async function updateStatus(id: string, status: string) {
     setLoadingAction(id);
-    await supabase.from("listings").update({ status }).eq("id", id);
-    setListings((prev) =>
-      prev.map((l) => (l.id === id ? { ...l, status } : l)),
-    );
+    const { error } = await supabase.from("listings").update({ status }).eq("id", id);
+    if (error) {
+      toast.error("Failed to update listing status.");
+    } else {
+      setListings((prev) =>
+        prev.map((l) => (l.id === id ? { ...l, status } : l)),
+      );
+    }
     setOpenMenu(null);
     setLoadingAction(null);
   }
 
   async function deleteListing(id: string) {
     setLoadingAction(id);
-    await supabase.from("listings").delete().eq("id", id);
-    setListings((prev) => prev.filter((l) => l.id !== id));
+    const { error } = await supabase.from("listings").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to delete listing.");
+    } else {
+      setListings((prev) => prev.filter((l) => l.id !== id));
+    }
     setOpenMenu(null);
     setLoadingAction(null);
   }
@@ -245,19 +211,23 @@ export default function ListingsClient({
 
   async function renewListing(id: string) {
     setLoadingAction(id);
-    const newExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-    await supabase
+    const newExpiresAt = new Date(Date.now() + LISTING_ACTIVE_MS).toISOString();
+    const { error } = await supabase
       .from("listings")
       .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
       .eq("id", id);
-    setListings((prev) =>
-      prev.map((l) =>
-        l.id === id ? { ...l, status: "active", expires_at: newExpiresAt } : l,
-      ),
-    );
+    if (error) {
+      toast.error("Failed to renew listing.");
+    } else {
+      setListings((prev) =>
+        prev.map((l) =>
+          l.id === id ? { ...l, status: "active", expires_at: newExpiresAt } : l,
+        ),
+      );
+      if (tab === "expired") setTab("active");
+    }
     setOpenMenu(null);
     setLoadingAction(null);
-    if (tab === "expired") setTab("active");
   }
 
   // ── Bulk actions ─────────────────────────────────────────────────────────
@@ -295,7 +265,7 @@ export default function ListingsClient({
     }
 
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
-    const newListings: Listing[] = [];
+    const newListings: DashboardListing[] = [];
 
     for (const id of ids) {
       const original = listings.find((l) => l.id === id);
@@ -342,7 +312,7 @@ export default function ListingsClient({
   async function bulkRenew() {
     setBulkLoading(true);
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
-    const newExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    const newExpiresAt = new Date(Date.now() + LISTING_ACTIVE_MS).toISOString();
     await supabase
       .from("listings")
       .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
@@ -707,12 +677,10 @@ export default function ListingsClient({
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
-          <div className="text-4xl mb-3">
-            {tab === "active" ? "📦" : tab === "sold" ? "✅" : "⏳"}
-          </div>
-          <p className="text-gray-500 text-sm">No {tab} listings</p>
-        </div>
+        <EmptyState
+          emoji={tab === "active" ? "📦" : tab === "sold" ? "✅" : "⏳"}
+          title={`No ${tab} listings`}
+        />
       )}
 
       {/* Bulk delete confirmation modal */}

@@ -3,15 +3,13 @@
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
+import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
-
-type Category = { id: string; name: string; slug: string; icon: string };
-type Location = { id: string; name: string; slug: string };
 
 type ListingData = {
   id: string;
@@ -33,12 +31,11 @@ type ListingData = {
 export default function EditClient({ listing }: { listing: ListingData }) {
   const router = useRouter();
   const supabase = createClient();
+  const { categories, locations } = useReferenceData();
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
   const [images, setImages] = useState<UploadedImage[]>(
     listing.images.map((img) => ({
       id: img.id,
@@ -72,21 +69,6 @@ export default function EditClient({ listing }: { listing: ListingData }) {
     category_id: listing.category_id,
     location_id: listing.location_id || "",
   });
-
-  useEffect(() => {
-    async function load() {
-      const [{ data: cats }, { data: locs }] = await Promise.all([
-        supabase
-          .from("categories")
-          .select("id, name, slug, icon")
-          .order("sort_order"),
-        supabase.from("locations").select("id, name, slug").order("sort_order"),
-      ]);
-      if (cats) setCategories(cats);
-      if (locs) setLocations(locs);
-    }
-    load();
-  }, [supabase.from]);
 
   const update = (key: string, value: string) =>
     setFormData((prev) => ({ ...prev, [key]: value }));

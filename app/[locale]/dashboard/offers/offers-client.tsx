@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
 import { createClient } from "@/lib/supabase/client";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 
 const PAGE_SIZE = 10;
 const TERMINAL_STATUSES = ["withdrawn", "declined", "expired"];
@@ -650,27 +651,20 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
   // Instead, we subscribe to all offer UPDATEs that RLS allows and route them
   // to the correct list client-side based on the user's role in the offer.
   // The migration 20260323000002 adds REPLICA IDENTITY FULL for belt-and-suspenders.
-  useEffect(() => {
-    const channel = supabase
-      .channel(`offers-realtime-${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "offers" },
-        (payload) => {
-          const patch = payload.new as Partial<Offer> & { id: string; buyer_id: string; seller_id: string };
-          // Route to the correct list based on which side of the offer we're on
-          if (patch.buyer_id === userId) {
-            setSent((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
-          }
-          if (patch.seller_id === userId) {
-            setReceived((prev) => prev.map((o) => (o.id === patch.id ? { ...o, ...patch } : o)));
-          }
-        },
-      )
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, [supabase, userId]);
+  // Route offer UPDATE events to sent/received lists based on the user's role.
+  // No server-side column filter: buyer_id/seller_id are dropped from WAL UPDATE
+  // changesets when those columns aren't modified — we filter client-side instead.
+  useRealtimeTable<Offer>({
+    channelName: `offers-realtime-${userId}`,
+    table: "offers",
+    event: "UPDATE",
+    onPayload: ({ new: patch }) => {
+      const p = patch as Partial<Offer> & { id: string; buyer_id: string; seller_id: string };
+      if (p.buyer_id === userId) setSent((prev) => prev.map((o) => (o.id === p.id ? { ...o, ...p } : o)));
+      if (p.seller_id === userId) setReceived((prev) => prev.map((o) => (o.id === p.id ? { ...o, ...p } : o)));
+    },
+    enabled: !!userId,
+  });
 
   // If there's a focused offer and it's in the sent list, switch to that tab
   useEffect(() => {

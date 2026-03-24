@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { timeAgo } from "@/lib/format-helpers";
 
 type Report = {
   id: string;
@@ -46,15 +47,6 @@ const STATUS_STYLES: Record<string, string> = {
   resolved: "bg-green-50 text-green-700 border-green-200",
   dismissed: "bg-gray-50 text-gray-500 border-gray-200",
 };
-
-function timeAgo(d: string) {
-  const diff = Date.now() - new Date(d).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
 
 export default function AdminReportsPage() {
   const router = useRouter();

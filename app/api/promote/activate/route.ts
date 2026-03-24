@@ -76,10 +76,10 @@ export async function POST(request: NextRequest) {
       promotionType,
       durationDays,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Activate promotion error:", err);
     return NextResponse.json(
-      { error: err.message || "Failed to activate promotion" },
+      { error: err instanceof Error ? err.message : "Failed to activate promotion" },
       { status: 500 },
     );
   }

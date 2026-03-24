@@ -3,6 +3,7 @@
 import { Loader2, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ErrorBanner } from "@/app/components/ui";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -104,11 +105,7 @@ export default function SignupForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-100">
-            {error}
-          </div>
-        )}
+        <ErrorBanner message={error} />
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">

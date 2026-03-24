@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { ErrorBanner, FormInput, FormTextarea, SuccessBanner } from "@/app/components/ui";
 
 type ProfileData = {
   id: string;
@@ -74,25 +75,16 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
 
-      {error && (
-        <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-100">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-50 text-green-700 text-sm px-4 py-3 rounded-xl border border-green-100">
-          Profile updated!
-        </div>
-      )}
+      <ErrorBanner message={error} />
+      <SuccessBanner message={success ? "Profile updated!" : null} />
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
         <div>
           <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
             <User className="w-3.5 h-3.5" /> Display Name
           </label>
-          <input
+          <FormInput
             type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="Your name"
             value={formData.display_name}
             onChange={(e) => update("display_name", e.target.value)}
@@ -103,9 +95,8 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
             <Mail className="w-3.5 h-3.5" /> Username
           </label>
-          <input
+          <FormInput
             type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="username"
             value={formData.username}
             onChange={(e) =>
@@ -124,9 +115,8 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
             <Phone className="w-3.5 h-3.5" /> Phone Number
           </label>
-          <input
+          <FormInput
             type="tel"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
             placeholder="+357 99 123456"
             value={formData.phone}
             onChange={(e) => update("phone", e.target.value)}
@@ -205,8 +195,8 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
             <FileText className="w-3.5 h-3.5" /> Bio
           </label>
-          <textarea
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-24 resize-none"
+          <FormTextarea
+            className="h-24"
             placeholder="Tell buyers about yourself..."
             value={formData.bio}
             onChange={(e) => update("bio", e.target.value)}

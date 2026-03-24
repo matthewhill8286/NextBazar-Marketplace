@@ -4,96 +4,54 @@ import { Bell, Bookmark, MessageCircle, Plus, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useCurrentUser } from "@/lib/hooks/use-current-user";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { useSaved } from "@/lib/saved-context";
 import GlobalSearchBar from "./global-search-bar";
 import UserMenu from "./user-menu";
 
 export default function Navbar() {
   const supabase = createClient();
+  const { userId } = useCurrentUser();
   const { count: savedCount } = useSaved();
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifCount, setNotifCount] = useState(0);
-  const [userId, setUserId] = useState<string | null>(null);
   const t = useTranslations("nav");
 
-  useEffect(() => {
-    async function loadCounts() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
-      setUserId(user.id);
-
-      const [{ count: msgCount }, { count: nCount }] = await Promise.all([
-        supabase
-          .from("messages")
-          .select("id", { count: "exact", head: true })
-          .neq("sender_id", user.id)
-          .is("read_at", null),
-        supabase
-          .from("notifications")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("read", false),
-      ]);
-
-      setUnreadCount(msgCount || 0);
-      setNotifCount(nCount || 0);
-    }
-    loadCounts();
-
-    const channel = supabase
-      .channel("nav-unread")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        loadCounts,
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "messages" },
-        loadCounts,
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase]);
-
-  // Realtime notification count — row-level filter requires userId to be set first
-  useEffect(() => {
+  const loadCounts = useCallback(async () => {
     if (!userId) return;
-
-    async function refreshNotifCount() {
-      const { count } = await supabase
+    const [{ count: msgCount }, { count: nCount }] = await Promise.all([
+      supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .neq("sender_id", userId)
+        .is("read_at", null),
+      supabase
         .from("notifications")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", userId!)
-        .eq("read", false);
-      setNotifCount(count || 0);
-    }
+        .eq("user_id", userId)
+        .eq("read", false),
+    ]);
+    setUnreadCount(msgCount || 0);
+    setNotifCount(nCount || 0);
+  }, [userId]);
 
-    const channel = supabase
-      .channel(`nav-notifs-${userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${userId}`,
-        },
-        refreshNotifCount,
-      )
-      .subscribe();
+  // Initial load and refresh whenever userId changes
+  useEffect(() => { loadCounts(); }, [loadCounts]);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase, userId]);
+  // Realtime subscriptions — all gated on userId being available
+  useRealtimeTable({ channelName: "nav-msg-insert", table: "messages", event: "INSERT", onPayload: loadCounts, enabled: !!userId });
+  useRealtimeTable({ channelName: "nav-msg-update", table: "messages", event: "UPDATE", onPayload: loadCounts, enabled: !!userId });
+  useRealtimeTable({
+    channelName: `nav-notifs-${userId ?? "anon"}`,
+    table: "notifications",
+    event: "*",
+    filter: userId ? `user_id=eq.${userId}` : undefined,
+    onPayload: loadCounts,
+    enabled: !!userId,
+  });
 
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm">

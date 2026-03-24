@@ -15,6 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { timeAgoCompact } from "@/lib/format-helpers";
 
 type Conversation = {
   id: string;
@@ -89,36 +91,23 @@ export default function MessagesPage() {
     load();
   }, []);
 
-  // Realtime: refresh list when conversations change
-  useEffect(() => {
-    if (!userId) return;
-    const channel = supabase
-      .channel("conversations-list")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "conversations",
-          filter: `buyer_id=eq.${userId}`,
-        },
-        () => loadConversations(userId),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "conversations",
-          filter: `seller_id=eq.${userId}`,
-        },
-        () => loadConversations(userId),
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId, loadConversations]);
+  // Realtime: refresh list when any conversation the user is part of changes
+  useRealtimeTable({
+    channelName: `conv-buyer-${userId ?? "anon"}`,
+    table: "conversations",
+    event: "*",
+    filter: userId ? `buyer_id=eq.${userId}` : undefined,
+    onPayload: () => { if (userId) loadConversations(userId); },
+    enabled: !!userId,
+  });
+  useRealtimeTable({
+    channelName: `conv-seller-${userId ?? "anon"}`,
+    table: "conversations",
+    event: "*",
+    filter: userId ? `seller_id=eq.${userId}` : undefined,
+    onPayload: () => { if (userId) loadConversations(userId); },
+    enabled: !!userId,
+  });
 
   async function handlePin(conv: Conversation, e: React.MouseEvent) {
     e.preventDefault();
@@ -162,16 +151,6 @@ export default function MessagesPage() {
     setDeleteTarget(null);
   }
 
-  function timeAgo(d: string | null) {
-    if (!d) return "";
-    const diff = Date.now() - new Date(d).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return "now";
-    if (mins < 60) return `${mins}m`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h`;
-    return `${Math.floor(hrs / 24)}d`;
-  }
 
   const filtered = conversations.filter((c) => {
     if (!searchQuery) return true;
@@ -262,7 +241,7 @@ export default function MessagesPage() {
                         )}
                       </div>
                       <span className="text-xs text-gray-400 shrink-0 ml-2">
-                        {timeAgo(conv.last_message_at)}
+                        {timeAgoCompact(conv.last_message_at)}
                       </span>
                     </div>
                     {conv.listings?.title && (

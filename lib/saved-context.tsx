@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 
 type SavedContextValue = {
   /** Set of listing IDs the current user has saved */
@@ -79,48 +80,33 @@ export function SavedProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Keep in sync with other tabs / devices via realtime
-  useEffect(() => {
-    if (!userId) return;
+  // Keep in sync with other tabs / devices via realtime — INSERT
+  useRealtimeTable({
+    channelName: `saved-insert-${userId ?? "anon"}`,
+    table: "favorites",
+    event: "INSERT",
+    filter: userId ? `user_id=eq.${userId}` : undefined,
+    onPayload: ({ new: row }) => {
+      setSavedIds((prev) => new Set([...prev, row.listing_id as string]));
+    },
+    enabled: !!userId,
+  });
 
-    const channel = supabase
-      .channel("saved-sync")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "favorites",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          setSavedIds(
-            (prev) => new Set([...prev, payload.new.listing_id as string]),
-          );
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "favorites",
-          filter: `user_id=eq.${userId}`,
-        },
-        (payload) => {
-          setSavedIds((prev) => {
-            const next = new Set(prev);
-            next.delete(payload.old.listing_id as string);
-            return next;
-          });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId]);
+  // DELETE events carry the removed row in `old` (Supabase default for deletes)
+  useRealtimeTable({
+    channelName: `saved-delete-${userId ?? "anon"}`,
+    table: "favorites",
+    event: "DELETE",
+    filter: userId ? `user_id=eq.${userId}` : undefined,
+    onPayload: ({ old: row }) => {
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(row.listing_id as string);
+        return next;
+      });
+    },
+    enabled: !!userId,
+  });
 
   const toggle = useCallback(
     async (listingId: string) => {

@@ -8,14 +8,9 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import { createClient } from "@/lib/supabase/client";
+import { CARD_SELECT } from "@/lib/supabase/queries";
 import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
-
-const LISTING_SELECT = `
-  *,
-  categories(name, slug, icon),
-  locations(name, slug),
-  profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews)
-`;
+import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
 
 type Props = {
   initialCategories?: Category[];
@@ -50,7 +45,7 @@ export default function HomeClient({
       let locationName: string | null = null;
       let locationSlug: string | null = null;
       try {
-        const storedSlug = localStorage.getItem("lastSearchLocation");
+        const storedSlug = localStorage.getItem(LAST_SEARCH_LOCATION_KEY);
         if (storedSlug) {
           const { data: loc } = await supabase
             .from("locations")
@@ -68,7 +63,7 @@ export default function HomeClient({
       // Query: top listings by view_count in that area (fall back to all Cyprus)
       let trendingQ = supabase
         .from("listings")
-        .select(LISTING_SELECT)
+        .select(CARD_SELECT)
         .eq("status", "active")
         .order("view_count", { ascending: false })
         .limit(8);
@@ -81,7 +76,7 @@ export default function HomeClient({
       if (!trendData || trendData.length < 3) {
         const { data: fallback } = await supabase
           .from("listings")
-          .select(LISTING_SELECT)
+          .select(CARD_SELECT)
           .eq("status", "active")
           .order("view_count", { ascending: false })
           .limit(8);
@@ -102,7 +97,7 @@ export default function HomeClient({
           if (ids.length > 0) {
             const { data: rvData } = await supabase
               .from("listings")
-              .select(LISTING_SELECT)
+              .select(CARD_SELECT)
               .in("id", ids.slice(0, 8));
             if (rvData && rvData.length > 0) {
               // Preserve the localStorage order (most recently viewed first)

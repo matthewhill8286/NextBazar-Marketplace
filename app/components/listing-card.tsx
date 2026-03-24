@@ -1,14 +1,17 @@
 "use client";
 
-import { Clock, Eye, MapPin } from "lucide-react";
+import { Check, Clock, Eye, GitCompareArrows, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useCompare } from "@/lib/compare-context";
+import { CONDITION_KEYS, unwrap } from "@/lib/format-helpers";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
 import FavoriteButton from "./favorite-button";
+import {FALLBACK_LISTING_IMAGE} from "@/lib/constants";
 
-type CatLike = { name: string; slug?: string; icon?: string | null };
-type LocLike = { name: string; slug?: string };
+export type CatLike = { name: string; slug?: string; icon?: string | null };
+export type LocLike = { name: string; slug?: string };
 
 type ListingCardProps = {
   listing: {
@@ -34,30 +37,16 @@ type ListingCardProps = {
   onUnsave?: () => void;
 };
 
-function unwrap<T>(v: T | T[] | null | undefined): T | null {
-  if (!v) return null;
-  if (Array.isArray(v)) return v[0] || null;
-  return v;
-}
-
-const conditionKeys: Record<string, string> = {
-  new: "condition_new",
-  like_new: "condition_like_new",
-  good: "condition_good",
-  fair: "condition_fair",
-  for_parts: "condition_for_parts",
-};
-
 export default function ListingCard({ listing }: ListingCardProps) {
   const t = useTranslations("listing");
+  const { add, remove, isCompared, isFull } = useCompare();
 
   const cat = unwrap(listing.categories) || unwrap(listing.category);
   const loc = unwrap(listing.locations) || unwrap(listing.location);
   const isSold = listing.status === "sold";
+  const compared = isCompared(listing.id);
 
-  const imageSrc =
-    listing.primary_image_url ||
-    "https://images.unsplash.com/photo-1560472355-536de3962603?w=400&h=300&fit=crop";
+  const imageSrc = listing.primary_image_url || FALLBACK_LISTING_IMAGE;
 
   function formatPrice(price: number | null, currency: string): string {
     if (price === null) return t("contact");
@@ -76,7 +65,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
   }
 
   function formatCondition(condition: string): string {
-    const key = conditionKeys[condition];
+    const key = CONDITION_KEYS[condition];
     return key ? t(key) : condition.replace(/_/g, " ");
   }
 
@@ -129,6 +118,50 @@ export default function ListingCard({ listing }: ListingCardProps) {
         )}
 
         <FavoriteButton listingId={listing.id} />
+
+        {/* Compare toggle */}
+        {!isSold && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              compared
+                ? remove(listing.id)
+                : add({
+                    id: listing.id,
+                    slug: listing.slug,
+                    title: listing.title,
+                    price: listing.price,
+                    currency: listing.currency,
+                    primary_image_url: listing.primary_image_url,
+                    condition: listing.condition,
+                    category: cat,
+                    location: loc,
+                  });
+            }}
+            disabled={!compared && isFull}
+            title={
+              compared
+                ? "Remove from comparison"
+                : isFull
+                  ? "Remove a listing to add this one"
+                  : "Add to comparison"
+            }
+            className={`absolute bottom-2 right-2.5 z-10 w-7 h-7 rounded-full flex items-center justify-center shadow-sm transition-colors ${
+              compared
+                ? "bg-indigo-600 text-white"
+                : isFull
+                  ? "bg-white/80 text-gray-300 cursor-not-allowed"
+                  : "bg-white/80 text-gray-500 hover:bg-indigo-50 hover:text-indigo-600"
+            }`}
+          >
+            {compared ? (
+              <Check className="w-3.5 h-3.5" />
+            ) : (
+              <GitCompareArrows className="w-3.5 h-3.5" />
+            )}
+          </button>
+        )}
 
         {/* View count on gradient */}
         <div className="absolute bottom-2 left-2.5 flex items-center gap-1 text-white/90 text-xs font-medium">

@@ -22,6 +22,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
+import { CONDITION_KEYS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 import type { ListingCardRow, ListingDetailRow } from "@/lib/supabase/supabase.types";
 import AiInsights, { type InsightsPriceSummaryAction } from "./ai-insights";
@@ -62,12 +63,12 @@ function ListingDetailSkeleton() {
         {/* ── Left column ── */}
         <div className="lg:col-span-2 space-y-4">
           {/* Image gallery */}
-          <Bone className="w-full aspect-[4/3] rounded-2xl" />
+          <Bone className="w-full aspect-4/3 rounded-2xl" />
 
           {/* Thumbnail strip */}
           <div className="flex gap-2">
             {[...Array(4)].map((_, i) => (
-              <Bone key={i} className="w-16 h-16 rounded-xl shrink-0" />
+              <Bone key={`${Math.random() + i}`} className="w-16 h-16 rounded-xl shrink-0" />
             ))}
           </div>
 
@@ -95,8 +96,7 @@ function ListingDetailSkeleton() {
             <Bone className="h-5 w-24 mb-1" />
             <div className="grid grid-cols-2 gap-3">
               {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
+                <div key={`${Math.random() + i}`}
                   className="bg-gray-50 rounded-xl p-3 flex gap-3 items-center"
                 >
                   <Bone className="w-8 h-8 rounded-lg shrink-0" />
@@ -154,7 +154,7 @@ function ListingDetailSkeleton() {
           <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 space-y-3">
             <Bone className="h-5 w-28 bg-amber-200" />
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex gap-2 items-center">
+              <div key={`${Math.random() + i}`} className="flex gap-2 items-center">
                 <Bone className="w-3 h-3 rounded-full bg-amber-200 shrink-0" />
                 <Bone
                   className={`h-3.5 bg-amber-200 ${i % 2 === 0 ? "w-full" : "w-4/5"}`}
@@ -169,14 +169,6 @@ function ListingDetailSkeleton() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-
-const conditionKeys: Record<string, string> = {
-  new: "condition_new",
-  like_new: "condition_like_new",
-  good: "condition_good",
-  fair: "condition_fair",
-  for_parts: "condition_for_parts",
-};
 
 type Props = {
   slug: string;
@@ -245,7 +237,7 @@ export default function ListingDetail({
 
   function conditionLabel(c: string | null): string {
     if (!c) return "—";
-    const key = conditionKeys[c];
+    const key = CONDITION_KEYS[c];
     return key
       ? t(key)
       : c.replace(/_/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
@@ -358,7 +350,7 @@ export default function ListingDetail({
     }
     load();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+  }, [slug, listing, supabase.from, supabase.auth.getUser]);
 
   // ── Realtime: listing status (e.g. active → sold) ────────────────────────
   // Fires when the seller marks the item sold or the status changes for any
@@ -378,7 +370,7 @@ export default function ListingDetail({
       )
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [listing?.id]);
+  }, [listing?.id, supabase.channel, supabase.removeChannel]);
 
   // ── Realtime: buyer's offer on this listing ──────────────────────────────
   // Updates existingOffer.status live so the CTA button (Pending / Countered)

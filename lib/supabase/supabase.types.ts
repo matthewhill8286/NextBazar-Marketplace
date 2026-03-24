@@ -10,10 +10,10 @@ import type { Tables } from "./database.types";
 
 export type Category = Tables<"categories">;
 
-/** Subcategory as returned by the cached query (id, category_id, name, slug). */
+/** Subcategory as returned by the cached query (id, category_id, name, slug, sort_order). */
 export type Subcategory = Pick<
   Tables<"subcategories">,
-  "id" | "category_id" | "name" | "slug"
+  "id" | "category_id" | "name" | "slug" | "sort_order"
 >;
 
 /** Location as returned by the cached query (id, name, slug). */
@@ -117,4 +117,42 @@ export type SearchListing = {
   location?: LocationJoin | null;
   // Allow full listing rows (from filter-only searches) to be assigned too
   [key: string]: unknown;
+};
+
+// ─── Dashboard listing type ───────────────────────────────────────────────────
+
+/**
+ * Listing row used in dashboard listing management, analytics, and profile pages.
+ * Joins categories and locations as either a single object or array (Supabase
+ * returns arrays for one-to-many selects, single objects for foreign-key selects).
+ */
+export type DashboardListing = Pick<
+  Tables<"listings">,
+  | "id"
+  | "title"
+  | "slug"
+  | "price"
+  | "currency"
+  | "price_type"
+  | "condition"
+  | "status"
+  | "primary_image_url"
+  | "view_count"
+  | "favorite_count"
+  | "is_promoted"
+  | "is_urgent"
+  | "created_at"
+  | "expires_at"
+  | "category_id"
+  | "location_id"
+> & {
+  message_count: number;
+  categories:
+    | Pick<Tables<"categories">, "name" | "slug" | "icon">
+    | Pick<Tables<"categories">, "name" | "slug" | "icon">[]
+    | null;
+  locations:
+    | Pick<Tables<"locations">, "name">
+    | Pick<Tables<"locations">, "name">[]
+    | null;
 };

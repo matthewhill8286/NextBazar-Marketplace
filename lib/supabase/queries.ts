@@ -19,8 +19,12 @@ function publicClient() {
   );
 }
 
-// Shared select fragment used across home page and listing cards
-const CARD_SELECT = `
+// ─── Shared select fragments ─────────────────────────────────────────────────
+// Export these so client components can reuse the exact same column set without
+// copy-pasting the string.
+
+/** Select fragment for listing card data (home, search, profile, related). */
+export const CARD_SELECT = `
   *,
   categories(name, slug, icon),
   locations(name, slug),

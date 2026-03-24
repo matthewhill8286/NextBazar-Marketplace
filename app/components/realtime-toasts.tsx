@@ -6,6 +6,8 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import { useCurrentUser } from "@/lib/hooks/use-current-user";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 
 // ─── Custom toast UIs ────────────────────────────────────────────────────────
 
@@ -378,10 +380,21 @@ function NotificationToast({
   );
 }
 
+// Offer + message notification types already get a dedicated toast — skip in the
+// generic notifications channel to avoid showing the same event twice.
+const SKIP_NOTIF_TYPES = new Set([
+  "offer_received",
+  "offer_accepted",
+  "offer_declined",
+  "offer_countered",
+  "new_message",
+]);
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function RealtimeToasts() {
   const supabase = createClient();
+  const { userId } = useCurrentUser();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -391,282 +404,163 @@ export default function RealtimeToasts() {
     pathnameRef.current = pathname;
   }, [pathname]);
 
-  useEffect(() => {
-    let mounted = true;
-    const channels: ReturnType<typeof supabase.channel>[] = [];
+  // ── New message subscription ──────────────────────────────────────────────
+  // RLS ensures only messages in the user's conversations are delivered.
+  useRealtimeTable({
+    channelName: "rt-new-messages",
+    table: "messages",
+    event: "INSERT",
+    onPayload: async ({ new: msg }) => {
+      if (!userId || msg.sender_id === userId) return;
+      if (pathnameRef.current.includes(`/messages/${msg.conversation_id}`)) return;
 
-    async function setup() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user || !mounted) return;
-      const userId = user.id;
-
-      // ── New message subscription ─────────────────────────────────────────
-      // RLS ensures only messages in the user's conversations are delivered
-      const msgChannel = supabase
-        .channel("rt-new-messages")
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "messages" },
-          async (payload) => {
-            const msg = payload.new as any;
-
-            // Ignore own messages
-            if (msg.sender_id === userId) return;
-
-            // Suppress if already viewing that conversation
-            if (
-              pathnameRef.current.includes(`/messages/${msg.conversation_id}`)
-            )
-              return;
-
-            // Fetch sender profile + conversation/listing title in parallel
-            const [{ data: sender }, { data: conv }] = await Promise.all([
-              supabase
-                .from("profiles")
-                .select("display_name, avatar_url")
-                .eq("id", msg.sender_id)
-                .single(),
-              supabase
-                .from("conversations")
-                .select("listings(title)")
-                .eq("id", msg.conversation_id)
-                .single(),
-            ]);
-
-            const senderName = sender?.display_name || "Someone";
-            const listingTitle = (conv?.listings as any)?.title || "a listing";
-            const isOffer = msg.message_type === "offer";
-            const preview = isOffer
-              ? `Offered €${Number(msg.offer_price).toLocaleString()}`
-              : (msg.content || "").slice(0, 100);
-
-            toast.custom(
-              (t) => (
-                <MessageToast
-                  toastId={t}
-                  senderName={senderName}
-                  avatarUrl={sender?.avatar_url ?? null}
-                  listingTitle={listingTitle}
-                  preview={preview}
-                  isOffer={isOffer}
-                  onNavigate={() => {
-                    toast.dismiss(t);
-                    router.push(`/messages/${msg.conversation_id}`);
-                  }}
-                />
-              ),
-              { duration: 7000, position: "top-right" },
-            );
-          },
-        )
-        .subscribe();
-
-      // ── New offer subscription ───────────────────────────────────────────
-      const offerChannel = supabase
-        .channel("rt-new-offers")
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "offers",
-            filter: `seller_id=eq.${userId}`,
-          },
-          async (payload) => {
-            const offer = payload.new as any;
-
-            // Fetch buyer profile + listing title in parallel
-            const [{ data: buyer }, { data: listing }] = await Promise.all([
-              supabase
-                .from("profiles")
-                .select("display_name, avatar_url")
-                .eq("id", offer.buyer_id)
-                .single(),
-              supabase
-                .from("listings")
-                .select("title")
-                .eq("id", offer.listing_id)
-                .single(),
-            ]);
-
-            const buyerName = buyer?.display_name || "Someone";
-            const listingTitle = listing?.title || "your listing";
-            const sym =
-              offer.currency === "EUR" ? "€" : (offer.currency ?? "€");
-            const amount = `${sym}${Number(offer.amount).toLocaleString()}`;
-
-            toast.custom(
-              (t) => (
-                <OfferToast
-                  toastId={t}
-                  buyerName={buyerName}
-                  avatarUrl={buyer?.avatar_url ?? null}
-                  listingTitle={listingTitle}
-                  amount={amount}
-                  onNavigate={() => {
-                    toast.dismiss(t);
-                    router.push(`/dashboard/offers?offer=${offer.id}`);
-                  }}
-                />
-              ),
-              { duration: 10000, position: "top-right" },
-            );
-          },
-        )
-        .subscribe();
-
-      // ── Offer status updates (buyer receives counter/accepted/declined) ──────
-      // No server-side column filter here: `buyer_id=eq.${userId}` on UPDATE
-      // events is silently dropped by Supabase when `buyer_id` isn't in the WAL
-      // changeset (i.e. wasn't one of the modified columns).  We filter client-
-      // side instead and rely on the REPLICA IDENTITY FULL migration as backup.
-      const offerUpdateChannel = supabase
-        .channel("rt-offer-updates")
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "offers",
-          },
-          async (payload) => {
-            const offer = payload.new as any;
-            // Only show toast to the buyer of this offer
-            if (offer.buyer_id !== userId) return;
-
-            if (offer.status === "countered" && offer.counter_amount != null) {
-              // Fetch seller profile + listing title in parallel
-              const [{ data: seller }, { data: listing }] = await Promise.all([
-                supabase
-                  .from("profiles")
-                  .select("display_name, avatar_url")
-                  .eq("id", offer.seller_id)
-                  .single(),
-                supabase
-                  .from("listings")
-                  .select("title")
-                  .eq("id", offer.listing_id)
-                  .single(),
-              ]);
-
-              const sellerName = seller?.display_name || "The seller";
-              const listingTitle = listing?.title || "your listing";
-              const sym = offer.currency === "EUR" ? "€" : (offer.currency ?? "€");
-              const counterAmount = `${sym}${Number(offer.counter_amount).toLocaleString()}`;
-
-              toast.custom(
-                (t) => (
-                  <CounterOfferToast
-                    toastId={t}
-                    sellerName={sellerName}
-                    avatarUrl={seller?.avatar_url ?? null}
-                    listingTitle={listingTitle}
-                    counterAmount={counterAmount}
-                    onNavigate={() => {
-                      toast.dismiss(t);
-                      router.push(`/dashboard/offers?offer=${offer.id}`);
-                    }}
-                  />
-                ),
-                { duration: 10000, position: "top-right" },
-              );
-            } else if (offer.status === "accepted" || offer.status === "declined") {
-              // Fetch seller profile + listing title in parallel
-              const [{ data: seller }, { data: listing }] = await Promise.all([
-                supabase
-                  .from("profiles")
-                  .select("display_name, avatar_url")
-                  .eq("id", offer.seller_id)
-                  .single(),
-                supabase
-                  .from("listings")
-                  .select("title")
-                  .eq("id", offer.listing_id)
-                  .single(),
-              ]);
-
-              const sellerName = seller?.display_name || "The seller";
-              const listingTitle = listing?.title || "your listing";
-
-              toast.custom(
-                (t) => (
-                  <OfferStatusToast
-                    toastId={t}
-                    status={offer.status}
-                    personName={sellerName}
-                    avatarUrl={seller?.avatar_url ?? null}
-                    listingTitle={listingTitle}
-                    onNavigate={() => {
-                      toast.dismiss(t);
-                      router.push(`/dashboard/offers?offer=${offer.id}`);
-                    }}
-                  />
-                ),
-                { duration: 10000, position: "top-right" },
-              );
-            }
-          },
-        )
-        .subscribe();
-
-      // ── Notifications ────────────────────────────────────────────────────
-      // Offer and message types are already toasted via their own channels above,
-      // so we skip them here to avoid duplicates.
-      const SKIP_TYPES = new Set([
-        "offer_received",
-        "offer_accepted",
-        "offer_declined",
-        "offer_countered",
-        "new_message",
+      const [{ data: sender }, { data: conv }] = await Promise.all([
+        supabase.from("profiles").select("display_name, avatar_url").eq("id", msg.sender_id).single(),
+        supabase.from("conversations").select("listings(title)").eq("id", msg.conversation_id).single(),
       ]);
 
-      const notifChannel = supabase
-        .channel(`rt-notifications-${userId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            const notif = payload.new as any;
-            if (SKIP_TYPES.has(notif.type)) return;
+      const senderName = sender?.display_name || "Someone";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const listingTitle = (conv?.listings as any)?.title || "a listing";
+      const isOffer = msg.message_type === "offer";
+      const preview = isOffer
+        ? `Offered €${Number(msg.offer_price).toLocaleString()}`
+        : String(msg.content || "").slice(0, 100);
 
-            toast.custom(
-              (t) => (
-                <NotificationToast
-                  toastId={t}
-                  type={notif.type}
-                  title={notif.title}
-                  body={notif.body ?? null}
-                  onNavigate={() => {
-                    toast.dismiss(t);
-                    router.push(notif.link ?? "/dashboard/notifications");
-                  }}
-                />
-              ),
-              { duration: 8000, position: "top-right" },
-            );
-          },
-        )
-        .subscribe();
+      toast.custom(
+        (t) => (
+          <MessageToast
+            toastId={t}
+            senderName={senderName}
+            avatarUrl={sender?.avatar_url ?? null}
+            listingTitle={listingTitle}
+            preview={preview}
+            isOffer={isOffer}
+            onNavigate={() => { toast.dismiss(t); router.push(`/messages/${msg.conversation_id}`); }}
+          />
+        ),
+        { duration: 7000, position: "top-right" },
+      );
+    },
+    enabled: !!userId,
+  });
 
-      channels.push(msgChannel, offerChannel, offerUpdateChannel, notifChannel);
-    }
+  // ── New offer subscription (seller receives) ──────────────────────────────
+  useRealtimeTable({
+    channelName: "rt-new-offers",
+    table: "offers",
+    event: "INSERT",
+    filter: userId ? `seller_id=eq.${userId}` : undefined,
+    onPayload: async ({ new: offer }) => {
+      const [{ data: buyer }, { data: listing }] = await Promise.all([
+        supabase.from("profiles").select("display_name, avatar_url").eq("id", offer.buyer_id).single(),
+        supabase.from("listings").select("title").eq("id", offer.listing_id).single(),
+      ]);
 
-    setup();
+      const buyerName = buyer?.display_name || "Someone";
+      const listingTitle = listing?.title || "your listing";
+      const sym = offer.currency === "EUR" ? "€" : (offer.currency ?? "€");
+      const amount = `${sym}${Number(offer.amount).toLocaleString()}`;
 
-    return () => {
-      mounted = false;
-      channels.forEach(async (ch) => {
-        await supabase.removeChannel(ch)
-      });
-    };
-  }, [supabase, router]);
+      toast.custom(
+        (t) => (
+          <OfferToast
+            toastId={t}
+            buyerName={buyerName}
+            avatarUrl={buyer?.avatar_url ?? null}
+            listingTitle={listingTitle}
+            amount={amount}
+            onNavigate={() => { toast.dismiss(t); router.push(`/dashboard/offers?offer=${offer.id}`); }}
+          />
+        ),
+        { duration: 10000, position: "top-right" },
+      );
+    },
+    enabled: !!userId,
+  });
+
+  // ── Offer status updates (buyer receives counter / accepted / declined) ───
+  // No server-side column filter: `buyer_id=eq.${userId}` on UPDATE is silently
+  // dropped when `buyer_id` isn't in the WAL changeset. Filter client-side instead.
+  useRealtimeTable({
+    channelName: "rt-offer-updates",
+    table: "offers",
+    event: "UPDATE",
+    onPayload: async ({ new: offer }) => {
+      if (!userId || offer.buyer_id !== userId) return;
+
+      if (offer.status === "countered" && offer.counter_amount != null) {
+        const [{ data: seller }, { data: listing }] = await Promise.all([
+          supabase.from("profiles").select("display_name, avatar_url").eq("id", offer.seller_id).single(),
+          supabase.from("listings").select("title").eq("id", offer.listing_id).single(),
+        ]);
+        const sellerName = seller?.display_name || "The seller";
+        const listingTitle = listing?.title || "your listing";
+        const sym = offer.currency === "EUR" ? "€" : (offer.currency ?? "€");
+        const counterAmount = `${sym}${Number(offer.counter_amount).toLocaleString()}`;
+
+        toast.custom(
+          (t) => (
+            <CounterOfferToast
+              toastId={t}
+              sellerName={sellerName}
+              avatarUrl={seller?.avatar_url ?? null}
+              listingTitle={listingTitle}
+              counterAmount={counterAmount}
+              onNavigate={() => { toast.dismiss(t); router.push(`/dashboard/offers?offer=${offer.id}`); }}
+            />
+          ),
+          { duration: 10000, position: "top-right" },
+        );
+      } else if (offer.status === "accepted" || offer.status === "declined") {
+        const [{ data: seller }, { data: listing }] = await Promise.all([
+          supabase.from("profiles").select("display_name, avatar_url").eq("id", offer.seller_id).single(),
+          supabase.from("listings").select("title").eq("id", offer.listing_id).single(),
+        ]);
+        const sellerName = seller?.display_name || "The seller";
+        const listingTitle = listing?.title || "your listing";
+
+        toast.custom(
+          (t) => (
+            <OfferStatusToast
+              toastId={t}
+              status={offer.status as "accepted" | "declined"}
+              personName={sellerName}
+              avatarUrl={seller?.avatar_url ?? null}
+              listingTitle={listingTitle}
+              onNavigate={() => { toast.dismiss(t); router.push(`/dashboard/offers?offer=${offer.id}`); }}
+            />
+          ),
+          { duration: 10000, position: "top-right" },
+        );
+      }
+    },
+    enabled: !!userId,
+  });
+
+  // ── Generic notifications ────────────────────────────────────────────────
+  useRealtimeTable({
+    channelName: `rt-notifications-${userId ?? "anon"}`,
+    table: "notifications",
+    event: "INSERT",
+    filter: userId ? `user_id=eq.${userId}` : undefined,
+    onPayload: ({ new: notif }) => {
+      if (SKIP_NOTIF_TYPES.has(String(notif.type))) return;
+      toast.custom(
+        (t) => (
+          <NotificationToast
+            toastId={t}
+            type={String(notif.type)}
+            title={String(notif.title)}
+            body={notif.body ? String(notif.body) : null}
+            onNavigate={() => { toast.dismiss(t); router.push(String(notif.link ?? "/dashboard/notifications")); }}
+          />
+        ),
+        { duration: 8000, position: "top-right" },
+      );
+    },
+    enabled: !!userId,
+  });
 
   return null;
 }
