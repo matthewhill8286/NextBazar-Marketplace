@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Clock, Eye, GitCompareArrows, MapPin } from "lucide-react";
+import { Check, Clock, Eye, GitCompareArrows, MapPin, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -31,6 +31,7 @@ type ListingCardProps = {
     categories?: CatLike | null;
     location?: LocLike | null;
     locations?: LocLike | null;
+    profiles?: { is_dealer?: boolean } | null;
   };
   userId?: string | null;
   isSaved?: boolean;
@@ -175,6 +176,12 @@ export default function ListingCard({ listing }: ListingCardProps) {
         <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-indigo-600 transition-colors duration-150">
           {listing.title}
         </h3>
+
+        {listing.profiles?.is_dealer && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full mb-1">
+            <Store className="w-2.5 h-2.5" /> Dealer
+          </span>
+        )}
 
         <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-3">
           <MapPin className="w-3 h-3 shrink-0" />

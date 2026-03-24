@@ -44,7 +44,7 @@
     letter-spacing="-1.5"
   >Next</text>
   <text
-    x="165" y="52"
+    x="152" y="52"
     font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
     font-size="34" font-weight="800" fill="url(#grad-main)"
     letter-spacing="-1.5"

@@ -8,7 +8,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import { createClient } from "@/lib/supabase/client";
-import { CARD_SELECT } from "@/lib/supabase/queries";
+import { CARD_SELECT } from "@/lib/supabase/selects";
 import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
 import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
 
@@ -80,11 +80,11 @@ export default function HomeClient({
           .eq("status", "active")
           .order("view_count", { ascending: false })
           .limit(8);
-        setTrending((fallback || []) as ListingCardRow[]);
+        setTrending((fallback || []) as unknown as ListingCardRow[]);
         setTrendingLocationName(null);
         setTrendingLocationSlug(null);
       } else {
-        setTrending(trendData as ListingCardRow[]);
+        setTrending(trendData as unknown as ListingCardRow[]);
         setTrendingLocationName(locationName);
         setTrendingLocationSlug(locationSlug);
       }
@@ -104,7 +104,7 @@ export default function HomeClient({
               const idOrder = ids.slice(0, 8);
               const sorted = idOrder
                 .map((id) => rvData.find((l) => l.id === id))
-                .filter((l): l is ListingCardRow => l != null);
+                .filter((l) => l != null) as unknown as ListingCardRow[];
               setRecentlyViewed(sorted);
             }
           }
@@ -213,10 +213,16 @@ export default function HomeClient({
                   "from-lime-50 to-green-50 hover:from-lime-100 hover:to-green-100 border-lime-100",
                   "from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 border-orange-100",
                 ];
+                // Dedicated landing pages for property & vehicles
+                const LANDING_PAGES: Record<string, string> = {
+                  property: "/properties",
+                  vehicles: "/vehicles",
+                };
+                const href = LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
                 return (
                   <Link
                     key={cat.id}
-                    href={`/search?category=${cat.slug}`}
+                    href={href}
                     className={`bg-linear-to-br ${palettes[i % palettes.length]} rounded-2xl p-3 border hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center group`}
                   >
                     <div

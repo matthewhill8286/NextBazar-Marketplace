@@ -20,16 +20,10 @@ function publicClient() {
 }
 
 // ─── Shared select fragments ─────────────────────────────────────────────────
-// Export these so client components can reuse the exact same column set without
-// copy-pasting the string.
-
-/** Select fragment for listing card data (home, search, profile, related). */
-export const CARD_SELECT = `
-  *,
-  categories(name, slug, icon),
-  locations(name, slug),
-  profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews)
-`;
+// Defined in selects.ts (no server deps) so client components can import safely.
+// Re-exported here so existing server-side imports keep working.
+import { CARD_SELECT } from "./selects";
+export { CARD_SELECT };
 
 // ─── Cached reference data (revalidate: 1 hour) ───────────────────────────────
 
@@ -80,7 +74,7 @@ export const getFeaturedListingsCached = unstable_cache(
       .eq("is_promoted", true)
       .order("created_at", { ascending: false })
       .limit(4);
-    return (data ?? []) as ListingCardRow[];
+    return (data ?? []) as unknown as ListingCardRow[];
   },
   ["featured-listings"],
   { revalidate: 60, tags: ["listings"] },
@@ -94,7 +88,7 @@ export const getRecentListingsCached = unstable_cache(
       .eq("status", "active")
       .order("created_at", { ascending: false })
       .limit(8);
-    return (data ?? []) as ListingCardRow[];
+    return (data ?? []) as unknown as ListingCardRow[];
   },
   ["recent-listings"],
   { revalidate: 60, tags: ["listings"] },
@@ -114,8 +108,16 @@ export const getActiveListingCountCached = unstable_cache(
 
 // ─── Cached listing detail + related (revalidate: 60 s) ──────────────────────
 
+// Explicit columns — excludes heavy `embedding` (vector, ~6 KB) and
+// `search_vector` (tsvector) which are never rendered on the detail page.
 const LISTING_DETAIL_SELECT = `
-  *,
+  id, user_id, category_id, subcategory_id, location_id,
+  title, slug, description, price, currency, price_type, condition, status,
+  primary_image_url, image_count, video_url,
+  is_promoted, promoted_until, is_urgent,
+  view_count, favorite_count, message_count,
+  contact_phone, attributes,
+  expires_at, created_at, updated_at,
   categories(name, slug, icon),
   subcategories(name, slug),
   locations(name, slug),
@@ -140,16 +142,89 @@ export const getRelatedListingsCached = unstable_cache(
   async (categoryId: string, excludeId: string): Promise<ListingCardRow[]> => {
     const { data } = await publicClient()
       .from("listings")
-      .select(`*, categories(name, slug, icon), locations(name, slug)`)
+      .select(CARD_SELECT)
       .eq("status", "active")
       .eq("category_id", categoryId)
       .neq("id", excludeId)
       .order("created_at", { ascending: false })
       .limit(4);
-    return (data ?? []) as ListingCardRow[];
+    return (data ?? []) as unknown as ListingCardRow[];
   },
   ["related-listings"],
   { revalidate: 60, tags: ["listings"] },
+);
+
+// ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
+
+export const getCategoryBySlugCached = unstable_cache(
+  async (slug: string) => {
+    const { data } = await publicClient()
+      .from("categories")
+      .select("id, name, slug, icon")
+      .eq("slug", slug)
+      .single();
+    return data as { id: string; name: string; slug: string; icon: string | null } | null;
+  },
+  ["category-by-slug"],
+  { revalidate: 3600, tags: ["categories"] },
+);
+
+export const getCategoryListingsCached = unstable_cache(
+  async (
+    categoryId: string,
+    opts: { promoted?: boolean; limit?: number } = {},
+  ): Promise<ListingCardRow[]> => {
+    let q = publicClient()
+      .from("listings")
+      .select(CARD_SELECT)
+      .eq("status", "active")
+      .eq("category_id", categoryId);
+    if (opts.promoted) q = q.eq("is_promoted", true);
+    q = q.order("created_at", { ascending: false }).limit(opts.limit ?? 12);
+    const { data } = await q;
+    return (data ?? []) as unknown as ListingCardRow[];
+  },
+  ["category-listings"],
+  { revalidate: 60, tags: ["listings"] },
+);
+
+export const getCategoryStatsCached = unstable_cache(
+  async (categoryId: string) => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+    const [totalRes, newThisWeekRes, avgPriceRes] = await Promise.all([
+      publicClient()
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active")
+        .eq("category_id", categoryId),
+      publicClient()
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active")
+        .eq("category_id", categoryId)
+        .gte("created_at", weekAgo),
+      publicClient()
+        .from("listings")
+        .select("price")
+        .eq("status", "active")
+        .eq("category_id", categoryId)
+        .not("price", "is", null)
+        .limit(500),
+    ]);
+
+    const total = totalRes.count ?? 0;
+    const newThisWeek = newThisWeekRes.count ?? 0;
+    const prices = (avgPriceRes.data ?? []).map((r) => r.price as number);
+    const avgPrice = prices.length > 0
+      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+      : 0;
+
+    return { total, newThisWeek, avgPrice };
+  },
+  ["category-stats"],
+  { revalidate: 300, tags: ["listings"] },
 );
 
 // ─── Non-cached helpers (used server-side with auth context) ─────────────────

@@ -5,6 +5,7 @@ import {
   BarChart2,
   Bell,
   BookMarked,
+  Crown,
   Eye,
   Flag,
   Heart,
@@ -12,6 +13,7 @@ import {
   Settings,
   Shield,
   ShoppingBag,
+  Store,
   Tag,
 } from "lucide-react";
 import Link from "next/link";
@@ -169,6 +171,40 @@ export default function DashboardSidebar({
             </Link>
           );
         })}
+
+        {/* Dealer link — always visible, style differs based on status */}
+        {(() => {
+          const dealerActive =
+            pathname === "/dashboard/dealer" ||
+            pathname.startsWith("/dashboard/dealer");
+          return profile.is_dealer ? (
+            <Link
+              href="/dashboard/dealer"
+              className={clsx(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                dealerActive
+                  ? "bg-indigo-50 text-indigo-700"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+              )}
+            >
+              <Store className="w-4 h-4" />
+              Dealer Portal
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard/dealer"
+              className={clsx(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
+                dealerActive
+                  ? "bg-purple-50 text-purple-700 border-purple-200"
+                  : "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+              )}
+            >
+              <Crown className="w-4 h-4" />
+              Become a Dealer
+            </Link>
+          );
+        })()}
       </nav>
     </aside>
   );
