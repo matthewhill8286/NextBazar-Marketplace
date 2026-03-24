@@ -42,7 +42,8 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
       });
   }, []);
 
-  const isOnSearchPage = pathname === "/search";
+  // pathname includes locale prefix (e.g. /en/search), so use endsWith
+  const isOnSearchPage = pathname.endsWith("/search");
 
   function goToSearch(q: string, ai = false) {
     const params = new URLSearchParams(searchParams.toString());
@@ -65,7 +66,7 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
     if (isOnSearchPage) {
       router.replace(url, { scroll: false });
     } else {
-      router.push(url);
+      router.push(url, { scroll: false });
     }
   }
 
@@ -121,13 +122,12 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   }
 
   // ────────────────────────────── NAVBAR variant ────────────────────────────
-  // Hide the navbar search on the search page — the page has its own search bar
-  if (isOnSearchPage) return null;
-
+  // On the search page, keep the bar in the DOM but invisible so the navbar
+  // height stays constant and the page doesn't jump.
   const activeCategory = categories.find((c) => c.slug === selectedCategory);
 
   return (
-    <div className="flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-indigo-300 hover:bg-white focus-within:border-indigo-400 focus-within:bg-white transition-all overflow-hidden">
+    <div className={`flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-indigo-300 hover:bg-white focus-within:border-indigo-400 focus-within:bg-white transition-all overflow-hidden ${isOnSearchPage ? "invisible" : ""}`}>
       {/* Category picker */}
       <div className="relative shrink-0">
         <select
