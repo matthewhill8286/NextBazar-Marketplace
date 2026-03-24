@@ -227,6 +227,95 @@ export const getCategoryStatsCached = unstable_cache(
   { revalidate: 300, tags: ["listings"] },
 );
 
+// ─── Cached dealer shops (revalidate: 60 s) ─────────────────────────────────
+
+/** Public-safe subset — exclude Stripe secrets. */
+const SHOP_CARD_SELECT =
+  "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, plan_status, created_at";
+
+export type ShopCardRow = {
+  id: string;
+  user_id: string;
+  shop_name: string;
+  slug: string;
+  description: string | null;
+  logo_url: string | null;
+  banner_url: string | null;
+  accent_color: string | null;
+  plan_status: string;
+  created_at: string;
+  listing_count: number;
+  profile: {
+    display_name: string | null;
+    avatar_url: string | null;
+    verified: boolean;
+  } | null;
+};
+
+export const getActiveShopsCached = unstable_cache(
+  async (): Promise<ShopCardRow[]> => {
+    const sb = publicClient();
+
+    // Fetch all active dealer shops
+    const { data: shops } = await sb
+      .from("dealer_shops")
+      .select(SHOP_CARD_SELECT)
+      .eq("plan_status", "active")
+      .order("created_at", { ascending: false });
+
+    if (!shops || shops.length === 0) return [];
+
+    // Collect user_ids and fetch profiles + listing counts in parallel
+    const userIds = shops.map((s) => s.user_id);
+
+    // Fetch profiles and per-user listing counts concurrently
+    const [{ data: profiles }, ...countResults] = await Promise.all([
+      sb
+        .from("profiles")
+        .select("id, display_name, avatar_url, verified")
+        .in("id", userIds),
+      ...userIds.map((uid) =>
+        sb
+          .from("listings")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", uid)
+          .eq("status", "active")
+          .then((res) => ({ user_id: uid, count: res.count ?? 0 })),
+      ),
+    ]);
+
+    // Build lookup maps
+    const profileMap = new Map(
+      (profiles ?? []).map((p: { id: string; display_name: string | null; avatar_url: string | null; verified: boolean }) => [p.id, p]),
+    );
+
+    const countMap = new Map<string, number>();
+    for (const { user_id, count } of countResults) {
+      countMap.set(user_id, count);
+    }
+
+    return shops.map((shop) => ({
+      ...shop,
+      listing_count: countMap.get(shop.user_id) ?? 0,
+      profile: profileMap.get(shop.user_id) ?? null,
+    }));
+  },
+  ["active-shops"],
+  { revalidate: 60, tags: ["shops", "listings"] },
+);
+
+export const getFeaturedShopsCached = unstable_cache(
+  async (limit = 4): Promise<ShopCardRow[]> => {
+    const allShops = await getActiveShopsCached();
+    // Sort by listing count desc, take top N
+    return [...allShops]
+      .sort((a, b) => b.listing_count - a.listing_count)
+      .slice(0, limit);
+  },
+  ["featured-shops"],
+  { revalidate: 60, tags: ["shops", "listings"] },
+);
+
 // ─── Non-cached helpers (used server-side with auth context) ─────────────────
 
 export async function getCategories() {

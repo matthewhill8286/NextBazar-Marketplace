@@ -1,14 +1,16 @@
 "use client";
 
-import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, TrendingUp } from "lucide-react";
+import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, Store, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
+import { ShopCardCompact } from "@/app/[locale]/shops/shops-client";
 import { createClient } from "@/lib/supabase/client";
 import { CARD_SELECT } from "@/lib/supabase/selects";
+import type { ShopCardRow } from "@/lib/supabase/queries";
 import type { Category, ListingCardRow } from "@/lib/supabase/supabase.types";
 import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
 
@@ -17,6 +19,7 @@ type Props = {
   initialFeatured?: ListingCardRow[];
   initialRecent?: ListingCardRow[];
   initialTotalCount?: number;
+  initialFeaturedShops?: ShopCardRow[];
 };
 
 export default function HomeClient({
@@ -24,6 +27,7 @@ export default function HomeClient({
   initialFeatured = [],
   initialRecent = [],
   initialTotalCount = 0,
+  initialFeaturedShops = [],
 }: Props) {
   const supabase = createClient();
   const [categories] = useState<Category[]>(initialCategories);
@@ -272,6 +276,35 @@ export default function HomeClient({
                   listing={listing}
 
                 />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Featured Shops ───────────────────────────────────────────── */}
+        {!loading && initialFeaturedShops.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
+                <h2 className="text-xl font-bold text-gray-900">
+                  Dealer Shops
+                </h2>
+                <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                  <Store className="w-3 h-3" />
+                  Premium
+                </span>
+              </div>
+              <Link
+                href="/shops"
+                className="text-sm text-indigo-600 font-semibold hover:underline"
+              >
+                View all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {initialFeaturedShops.map((shop) => (
+                <ShopCardCompact key={shop.id} shop={shop} />
               ))}
             </div>
           </section>

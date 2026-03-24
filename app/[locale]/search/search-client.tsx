@@ -131,7 +131,7 @@ export default function SearchClient({
         .from("listings")
         .select("*, categories(name, slug, icon), locations(name, slug)")
         .eq("status", "active")
-        .or("is_promoted.eq.true,is_featured.eq.true")
+        .eq("is_promoted", true)
         .order("is_promoted", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(24);

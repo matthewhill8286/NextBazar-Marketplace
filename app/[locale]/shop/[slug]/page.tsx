@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
@@ -69,16 +68,6 @@ export default async function ShopPage(props: PageProps) {
 
   if (!shop || shop.plan_status !== "active") {
     notFound();
-  }
-
-  // Redirect to subdomain when ROOT_DOMAIN is configured (production).
-  // In dev (localhost), skip the redirect so the fallback page still works.
-  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
-  if (rootDomain && !rootDomain.startsWith("localhost")) {
-    const headersList = await headers();
-    const protocol = headersList.get("x-forwarded-proto") || "https";
-    const subdomainUrl = `${protocol}://${slug}.${rootDomain}`;
-    redirect(subdomainUrl);
   }
 
   // Step 2: Fetch listings + profile in parallel (needs user_id from shop)

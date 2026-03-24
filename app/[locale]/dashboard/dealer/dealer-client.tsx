@@ -108,12 +108,6 @@ export default function DealerDashboardClient({
   const [website, setWebsite] = useState(shop?.website ?? "");
   const [facebook, setFacebook] = useState(shop?.facebook ?? "");
   const [instagram, setInstagram] = useState(shop?.instagram ?? "");
-  const [customDomain, setCustomDomain] = useState(shop?.custom_domain ?? "");
-
-  const rootDomain = typeof window !== "undefined"
-    ? window.location.hostname.replace(/^[^.]+\./, "")
-    : "nextbazar.com";
-  const subdomainUrl = `${slug}.${rootDomain}`;
 
   const isActive = shop?.plan_status === "active";
 
@@ -164,7 +158,6 @@ export default function DealerDashboardClient({
         website: website || null,
         facebook: facebook || null,
         instagram: instagram || null,
-        custom_domain: customDomain || null,
       })
       .eq("id", shop.id);
     setSaving(false);
@@ -180,10 +173,7 @@ export default function DealerDashboardClient({
   }
 
   function copyShopUrl() {
-    const protocol = window.location.protocol;
-    const url = customDomain
-      ? `${protocol}//${customDomain}`
-      : `${protocol}//${subdomainUrl}`;
+    const url = `${window.location.origin}/shop/${slug}`;
     navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -268,15 +258,13 @@ export default function DealerDashboardClient({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href={`${typeof window !== "undefined" ? window.location.protocol : "https:"}//${subdomainUrl}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href={`/shop/${slug}`}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
-          </a>
+          </Link>
           <button
             onClick={handleManageBilling}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
@@ -412,12 +400,15 @@ export default function DealerDashboardClient({
               />
             </div>
 
-            {/* Slug / Subdomain */}
+            {/* Slug */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Shop Subdomain
+                Shop URL Slug
               </label>
               <div className="flex items-center gap-0">
+                <span className="bg-gray-50 border border-r-0 border-gray-200 px-3 py-3 rounded-l-xl text-xs text-gray-400">
+                  /shop/
+                </span>
                 <input
                   type="text"
                   value={slug}
@@ -425,18 +416,9 @@ export default function DealerDashboardClient({
                     setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))
                   }
                   placeholder="elite-motors"
-                  className="flex-1 px-4 py-3 rounded-l-xl border border-r-0 border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                  className="flex-1 px-4 py-3 rounded-r-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
                 />
-                <span className="bg-gray-50 border border-gray-200 px-3 py-3 rounded-r-xl text-xs text-gray-400 whitespace-nowrap">
-                  .{rootDomain}
-                </span>
               </div>
-              {slug && (
-                <p className="text-xs text-gray-400 mt-1.5">
-                  Your shop will be live at{" "}
-                  <span className="font-medium text-indigo-600">{subdomainUrl}</span>
-                </p>
-              )}
             </div>
 
             {/* Accent Color */}
@@ -511,28 +493,6 @@ export default function DealerDashboardClient({
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
               />
             </div>
-          </div>
-
-          {/* Custom Domain */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Globe className="w-4 h-4 text-gray-500" />
-              <h4 className="text-sm font-semibold text-gray-900">Custom Domain</h4>
-              <span className="text-[10px] font-medium bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">
-                Optional
-              </span>
-            </div>
-            <p className="text-xs text-gray-500 mb-3">
-              Point your own domain to your shop (e.g. shop.yourbusiness.com).
-              Set a CNAME record pointing to <code className="bg-gray-200 px-1 rounded text-gray-700">{rootDomain}</code> in your DNS settings.
-            </p>
-            <input
-              type="text"
-              value={customDomain}
-              onChange={(e) => setCustomDomain(e.target.value.toLowerCase().trim())}
-              placeholder="shop.yourbusiness.com"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
-            />
           </div>
 
           <button
