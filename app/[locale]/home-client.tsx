@@ -340,7 +340,6 @@ export default function HomeClient({
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-
                 />
               ))}
             </div>
@@ -377,7 +376,6 @@ export default function HomeClient({
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-
                 />
               ))}
             </div>
@@ -426,7 +424,6 @@ export default function HomeClient({
                 <ListingCard
                   key={listing.id}
                   listing={listing}
-
                 />
               ))}
             </div>

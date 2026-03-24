@@ -8,6 +8,10 @@ import type {
   Location,
   Subcategory,
 } from "./supabase.types";
+import { CARD_SELECT } from "./constants";
+
+// Re-export so existing server-side consumers keep working.
+export { CARD_SELECT };
 
 // ─── Public (no-auth) Supabase client ────────────────────────────────────────
 // Used inside unstable_cache wrappers so the cache key is stable and we don't
@@ -18,12 +22,6 @@ function publicClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
-
-// ─── Shared select fragments ─────────────────────────────────────────────────
-// Defined in selects.ts (no server deps) so client components can import safely.
-// Re-exported here so existing server-side imports keep working.
-import { CARD_SELECT } from "./selects";
-export { CARD_SELECT };
 
 // ─── Cached reference data (revalidate: 1 hour) ───────────────────────────────
 

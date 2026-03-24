@@ -20,48 +20,64 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   const [aiLoading, setAiLoading] = useState(false);
 
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
 
-  // ── Always mirror the URL's ?q= value so both bars stay in sync ──────────
-  const urlQuery = searchParams.get("q") ?? "";
+  const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
+  const urlCategory = searchParams.get("category") || "";
+  const [selectedCategory, setSelectedCategory] = useState(urlCategory);
 
   useEffect(() => {
     setQuery(urlQuery);
   }, [urlQuery]);
 
+  useEffect(() => {
+    setSelectedCategory(urlCategory);
+  }, [urlCategory]);
+
   // Load categories once
   useEffect(() => {
+    let isMounted = true;
     const supabase = createClient();
     supabase
       .from("categories")
       .select("id, name, slug, icon")
       .order("sort_order")
-      .then(({ data }) => {
-        if (data) setCategories(data);
+      .then(({ data, error }) => {
+        if (isMounted) {
+          if (error) {
+            console.error("Failed to fetch categories:", error);
+          } else if (data) {
+            setCategories(data);
+          }
+        }
       });
+    return () => { isMounted = false; };
   }, []);
 
-  // pathname includes locale prefix (e.g. /en/search), so use endsWith
   const isOnSearchPage = pathname.endsWith("/search");
 
   function goToSearch(q: string, ai = false) {
     const params = new URLSearchParams(searchParams.toString());
-    if (q.trim()) {
-      params.set("q", q.trim());
+    const trimmedQuery = q.trim();
+
+    if (trimmedQuery) {
+      params.set("q", trimmedQuery);
     } else {
       params.delete("q");
     }
+
     if (selectedCategory) {
       params.set("category", selectedCategory);
     } else {
       params.delete("category");
     }
+
     if (ai) {
       params.set("ai", "1");
     } else {
       params.delete("ai");
     }
+
     const url = `/search?${params.toString()}`;
     if (isOnSearchPage) {
       router.replace(url, { scroll: false });
@@ -80,15 +96,19 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
   async function handleAi() {
     if (aiLoading) return;
     setAiLoading(true);
-    goToSearch(query, true);
-    setTimeout(() => setAiLoading(false), 600);
+    try {
+      goToSearch(query, true);
+    } finally {
+      // Small delay to prevent flickering if transition is too fast
+      setTimeout(() => setAiLoading(false), 600);
+    }
   }
 
   // ─────────────────────────────── HERO variant ────────────────────────────
   if (variant === "hero") {
     return (
-      <div className="relative flex items-center max-w-2xl mx-auto mb-10">
-        <Search className="absolute left-5 text-gray-400 w-5 h-5 z-10 pointer-events-none" />
+      <div className="relative flex items-center max-w-2xl mx-auto mb-10 group/search-bar">
+        <Search className="absolute left-5 text-gray-400 w-5 h-5 z-10 pointer-events-none group-focus-within/search-bar:text-indigo-500 transition-colors" />
         <input
           ref={inputRef}
           type="text"
@@ -96,38 +116,43 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKey}
           placeholder="What are you looking for?"
-          className="w-full pl-14 pr-44 py-4 rounded-2xl bg-white text-gray-800 placeholder:text-gray-400 text-base shadow-2xl shadow-indigo-900/30 focus:outline-none focus:shadow-indigo-900/50 transition-shadow"
+          className="w-full pl-14 pr-44 py-4 rounded-2xl bg-white text-gray-800 placeholder:text-gray-400 text-base shadow-2xl shadow-indigo-900/10 focus:outline-none focus:shadow-indigo-900/20 focus:ring-2 focus:ring-indigo-500/20 transition-all"
         />
-        <button
-          onClick={handleAi}
-          disabled={aiLoading}
-          title="AI smart search"
-          className="absolute right-[7.5rem] top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-3 py-2 rounded-xl text-violet-600 hover:bg-violet-50 transition-colors disabled:opacity-60 group"
-        >
-          {aiLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin text-violet-500" />
-          ) : (
-            <Sparkles className="w-4 h-4 group-hover:scale-110 transition-transform" />
-          )}
-          <span className="text-xs font-semibold hidden sm:inline">AI</span>
-        </button>
-        <button
-          onClick={() => goToSearch(query)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all"
-        >
-          Search
-        </button>
+        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          <button
+            onClick={handleAi}
+            disabled={aiLoading}
+            type="button"
+            title="AI smart search"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-violet-600 hover:bg-violet-50 transition-colors disabled:opacity-60 group/ai"
+          >
+            {aiLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin text-violet-500" />
+            ) : (
+              <Sparkles className="w-4 h-4 group-hover/ai:scale-110 transition-transform" />
+            )}
+            <span className="text-xs font-semibold hidden sm:inline">AI</span>
+          </button>
+          <button
+            onClick={() => goToSearch(query)}
+            type="button"
+            className="bg-linear-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md hover:from-indigo-600 hover:to-indigo-700 transition-all active:scale-95"
+          >
+            Search
+          </button>
+        </div>
       </div>
     );
   }
 
   // ────────────────────────────── NAVBAR variant ────────────────────────────
-  // On the search page, keep the bar in the DOM but invisible so the navbar
-  // height stays constant and the page doesn't jump.
+  // Hide the navbar search on the search page — the page has its own search bar
+  if (isOnSearchPage) return null;
+
   const activeCategory = categories.find((c) => c.slug === selectedCategory);
 
   return (
-    <div className={`flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-indigo-300 hover:bg-white focus-within:border-indigo-400 focus-within:bg-white transition-all overflow-hidden ${isOnSearchPage ? "invisible" : ""}`}>
+    <div className="flex items-center w-full rounded-xl border border-gray-200 bg-gray-50 hover:border-indigo-300 hover:bg-white focus-within:border-indigo-400 focus-within:bg-white transition-all overflow-clip">
       {/* Category picker */}
       <div className="relative shrink-0">
         <select
@@ -164,6 +189,7 @@ export default function GlobalSearchBar({ variant = "navbar" }: Props) {
         <button
           onClick={handleAi}
           disabled={aiLoading}
+          type="button"
           title="AI smart search"
           className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg text-violet-500 hover:text-violet-700 hover:bg-violet-50 transition-colors disabled:opacity-60"
         >
