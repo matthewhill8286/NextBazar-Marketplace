@@ -5,23 +5,28 @@ import {
   ArrowLeft,
   Box,
   Calendar,
+  Car,
   ChevronRight,
   Clock,
   Eye,
+  Fuel,
+  Gauge,
   Heart,
   MapPin,
+  Palette,
   Shield,
   Star,
   Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 import type { ListingCardRow, ListingDetailRow } from "@/lib/supabase/supabase.types";
@@ -190,6 +195,7 @@ export default function ListingDetail({
   const [related, setRelated] = useState<ListingCardRow[]>(initialRelated);
   // Skip loading skeleton when server already provided the data
   const [loading, setLoading] = useState(!initialListing);
+  const viewCounted = useRef(false);
   const [notFound, setNotFound] = useState(false);
   const [aiPrice, setAiPrice] = useState<InsightsPriceSummaryAction | null>(
     null,
@@ -339,12 +345,11 @@ export default function ListingDetail({
         Promise.all([offersPromise, analyticsPromise]);
       }
 
-      // Increment view count on the listing row
-      supabase
-        .from("listings")
-        .update({ view_count: (data.view_count || 0) + 1 })
-        .eq("id", data.id)
-        .then();
+      // Increment view count atomically — once per page visit
+      if (!viewCounted.current) {
+        viewCounted.current = true;
+        supabase.rpc("increment_view_count", { p_listing_id: data.id }).then();
+      }
 
       setLoading(false);
     }
@@ -764,6 +769,68 @@ export default function ListingDetail({
                 </div>
               </div>
 
+              {/* Vehicle Attributes */}
+              {listing.categories?.slug === "vehicles" &&
+                listing.attributes &&
+                typeof listing.attributes === "object" &&
+                !Array.isArray(listing.attributes) && (() => {
+                  const rawAttrs = listing.attributes as Record<string, unknown>;
+                  // Coerce all values to strings — JSON may store numbers
+                  const attrs: Record<string, string> = {};
+                  for (const [k, v] of Object.entries(rawAttrs)) {
+                    if (v != null && v !== "") attrs[k] = String(v);
+                  }
+                  const fields: { key: string; label: string; icon: typeof Car; format?: (v: string) => string }[] = [
+                    { key: "make", label: "Make", icon: Car },
+                    { key: "model", label: "Model", icon: Car },
+                    { key: "year", label: "Year", icon: Calendar },
+                    { key: "mileage", label: "Mileage", icon: Gauge, format: (v) => `${Number(v).toLocaleString()} km` },
+                    { key: "fuel_type", label: "Fuel", icon: Fuel, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
+                    { key: "transmission", label: "Transmission", icon: Tag, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
+                    { key: "color", label: "Color", icon: Palette },
+                    { key: "body_type", label: "Body Type", icon: Car, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
+                    { key: "engine_size", label: "Engine", icon: Gauge, format: (v) => `${v}L` },
+                    { key: "doors", label: "Doors", icon: Car },
+                    { key: "drive_type", label: "Drive", icon: Car, format: (v) => v.toUpperCase() },
+                    { key: "owners", label: "Owners", icon: Shield },
+                    { key: "service_history", label: "Service History", icon: Shield, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
+                  ];
+                  const visible = fields.filter((f) => attrs[f.key]?.trim());
+                  if (visible.length === 0) return null;
+                  return (
+                    <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Car className="w-5 h-5 text-blue-600" />
+                        <h2 className="text-lg font-semibold text-gray-900">
+                          Vehicle Specifications
+                        </h2>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {visible.map((field) => {
+                          const Icon = field.icon;
+                          const raw = attrs[field.key];
+                          const display = field.format ? field.format(raw) : raw;
+                          return (
+                            <div key={field.key} className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5">
+                              <div className="p-2 bg-white rounded-lg shadow-sm">
+                                <Icon className="w-4 h-4 text-blue-500" />
+                              </div>
+                              <div>
+                                <div className="text-[11px] text-gray-500 font-medium">
+                                  {field.label}
+                                </div>
+                                <div className="text-sm font-semibold text-gray-900">
+                                  {display}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
               {/* Description */}
               {listing.description && (
                 <div className="bg-white rounded-2xl p-6 border border-gray-100">
@@ -824,7 +891,7 @@ export default function ListingDetail({
                       {profile?.verified && (
                         <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
                       )}
-                      {profile?.is_dealer && (
+                      {FEATURE_FLAGS.DEALERS && profile?.is_dealer && (
                         <span className="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full shrink-0">
                           PRO
                         </span>

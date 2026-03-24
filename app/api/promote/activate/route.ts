@@ -47,7 +47,9 @@ export async function POST(request: NextRequest) {
     const promotedUntil = new Date();
     promotedUntil.setDate(promotedUntil.getDate() + durationDays);
 
-    const updateData: Record<string, any> = {};
+    const updateData: Record<string, any> = {
+      status: "active", // Activate the listing after successful payment
+    };
     if (promotionType === "featured") {
       updateData.is_promoted = true;
       updateData.promoted_until = promotedUntil.toISOString();

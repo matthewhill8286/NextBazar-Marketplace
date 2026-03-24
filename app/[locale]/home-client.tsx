@@ -8,6 +8,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import { ShopCardCompact } from "@/app/[locale]/shops/shops-client";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import type { ShopCardRow } from "@/lib/supabase/queries";
@@ -282,7 +283,7 @@ export default function HomeClient({
         )}
 
         {/* ── Featured Shops ───────────────────────────────────────────── */}
-        {!loading && initialFeaturedShops.length > 0 && (
+        {FEATURE_FLAGS.DEALERS && !loading && initialFeaturedShops.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">

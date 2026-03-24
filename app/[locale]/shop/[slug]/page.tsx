@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/server";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
@@ -54,6 +55,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 }
 
 export default async function ShopPage(props: PageProps) {
+  if (!FEATURE_FLAGS.DEALERS) notFound();
   const { slug } = await props.params;
   const supabase = await createClient();
 

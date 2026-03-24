@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Suspense, useCallback, useEffect, useState } from "react";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
@@ -92,13 +93,15 @@ export default function Navbar() {
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
           {/* Shops link */}
-          <Link
-            href="/shops"
-            className="hidden md:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors font-medium"
-          >
-            <Store className="w-4 h-4" />
-            <span>{t("shops")}</span>
-          </Link>
+          {FEATURE_FLAGS.DEALERS && (
+            <Link
+              href="/shops"
+              className="hidden md:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+            >
+              <Store className="w-4 h-4" />
+              <span>{t("shops")}</span>
+            </Link>
+          )}
 
           {/* Mobile search icon */}
           <Link

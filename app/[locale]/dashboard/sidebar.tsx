@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import {
   BarChart2,
   Bell,
@@ -172,8 +173,8 @@ export default function DashboardSidebar({
           );
         })}
 
-        {/* Dealer link — always visible, style differs based on status */}
-        {(() => {
+        {/* Dealer link — gated behind feature flag */}
+        {FEATURE_FLAGS.DEALERS && (() => {
           const dealerActive =
             pathname === "/dashboard/dealer" ||
             pathname.startsWith("/dashboard/dealer");
@@ -205,6 +206,7 @@ export default function DashboardSidebar({
             </Link>
           );
         })()}
+        {/* end dealer link */}
       </nav>
     </aside>
   );

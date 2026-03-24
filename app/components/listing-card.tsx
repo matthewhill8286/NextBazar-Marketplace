@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCompare } from "@/lib/compare-context";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS, unwrap } from "@/lib/format-helpers";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
 import FavoriteButton from "./favorite-button";
@@ -177,7 +178,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
           {listing.title}
         </h3>
 
-        {listing.profiles?.is_dealer && (
+        {FEATURE_FLAGS.DEALERS && listing.profiles?.is_dealer && (
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full mb-1">
             <Store className="w-2.5 h-2.5" /> Dealer
           </span>

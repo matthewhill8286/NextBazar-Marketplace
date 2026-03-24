@@ -1,8 +1,10 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/server";
 import DealerDashboardClient from "./dealer-client";
 
 export default async function DealerDashboardPage() {
+  if (!FEATURE_FLAGS.DEALERS) notFound();
   const supabase = await createClient();
   const {
     data: { user },

@@ -11,7 +11,9 @@ import type {
   PricingData,
   UploadedImage,
   UploadedVideo,
+  VehicleAttributes,
 } from "./post-types";
+import { EMPTY_VEHICLE_ATTRS, VEHICLES_CATEGORY_SLUG } from "./post-types";
 import PostStep1 from "./post-step-1";
 import PostStep2 from "./post-step-2";
 import PostStep3 from "./post-step-3";
@@ -46,6 +48,8 @@ export default function PostClient() {
   const [selectedPackage, setSelectedPackage] = useState<
     "free" | "featured" | "urgent"
   >("free");
+  const [vehicleAttrs, setVehicleAttrs] = useState<VehicleAttributes>({ ...EMPTY_VEHICLE_ATTRS });
+  const [vehicleEnrichLoading, setVehicleEnrichLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     title: "",
     category_id: "",
@@ -57,6 +61,10 @@ export default function PostClient() {
     location_id: "",
     contact_phone: "",
   });
+
+  // Determine if current category is "vehicles"
+  const selectedCategory = categories.find((c) => c.id === formData.category_id);
+  const isVehicle = selectedCategory?.slug === VEHICLES_CATEGORY_SLUG;
 
   useEffect(() => {
     async function loadUser() {
@@ -114,6 +122,20 @@ export default function PostClient() {
         title: data.title || prev.title,
         category_id: data.category_id || prev.category_id,
       }));
+
+      // If AI detected a vehicle, pre-fill vehicle attributes from the image
+      if (data.vehicle_attributes && typeof data.vehicle_attributes === "object") {
+        setVehicleAttrs((prev) => {
+          const merged = { ...prev };
+          for (const [k, v] of Object.entries(data.vehicle_attributes)) {
+            if (v && typeof v === "string" && k in prev) {
+              (merged as any)[k] = v;
+            }
+          }
+          return merged;
+        });
+      }
+
       setAiFilled(true);
     } catch {
       // Silent fail — user can still fill manually
@@ -170,6 +192,40 @@ export default function PostClient() {
     setPricingLoading(false);
   }
 
+  const updateVehicleAttr = (key: keyof VehicleAttributes, value: string) =>
+    setVehicleAttrs((prev) => ({ ...prev, [key]: value }));
+
+  async function handleVehicleEnrich() {
+    if (!formData.title && !formData.description) return;
+    setVehicleEnrichLoading(true);
+    try {
+      const res = await fetch("/api/ai/vehicle-enrich", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.attributes) {
+        setVehicleAttrs((prev) => {
+          const merged = { ...prev };
+          for (const [k, v] of Object.entries(data.attributes)) {
+            if (v && typeof v === "string" && k in prev) {
+              (merged as any)[k] = v;
+            }
+          }
+          return merged;
+        });
+      }
+    } catch {
+      // Silent fail
+    }
+    setVehicleEnrichLoading(false);
+  }
+
   async function handlePublish() {
     setError("");
     setLoading(true);
@@ -193,6 +249,10 @@ export default function PostClient() {
 
     const uploadedUrls = images.filter((img) => img.url).map((img) => img.url!);
 
+    // Build attributes JSON for category-specific fields (e.g. vehicle details)
+    const hasVehicleData = isVehicle && Object.values(vehicleAttrs).some((v) => v.trim() !== "");
+    const attributes = hasVehicleData ? vehicleAttrs : null;
+
     const { data, error: insertError } = await supabase
       .from("listings")
       .insert({
@@ -212,6 +272,7 @@ export default function PostClient() {
         primary_image_url: uploadedUrls[0] || null,
         image_count: uploadedUrls.length,
         video_url: video?.url || null,
+        ...(attributes ? { attributes } : {}),
       })
       .select("id, slug")
       .single();
@@ -246,7 +307,7 @@ export default function PostClient() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className={`mx-auto px-4 py-8 transition-all ${step === 3 ? "max-w-5xl" : "max-w-2xl"}`}>
       {/* Progress bar */}
       <div className="flex items-center gap-2 mb-8">
         {[1, 2, 3].map((s) => (
@@ -285,10 +346,13 @@ export default function PostClient() {
           pricingLoading={pricingLoading}
           selectedPriceKey={selectedPriceKey}
           descLoading={descLoading}
+          isVehicle={isVehicle}
+          vehicleAttrs={vehicleAttrs}
           onUpdate={update}
           onSelectPriceKey={setSelectedPriceKey}
           onAiDescription={handleAiDescription}
           onAiPricing={handleAiPricing}
+          onVehicleAttrUpdate={updateVehicleAttr}
           onBack={() => goToStep(1)}
           onNext={() => goToStep(3)}
         />
@@ -302,6 +366,10 @@ export default function PostClient() {
           userId={userId}
           selectedPackage={selectedPackage}
           loading={loading}
+          categories={categories}
+          locations={locations}
+          isVehicle={isVehicle}
+          vehicleAttrs={vehicleAttrs}
           onSetPackage={setSelectedPackage}
           onSetVideo={setVideo}
           onBack={() => goToStep(2)}
@@ -315,8 +383,8 @@ export default function PostClient() {
           listingId={checkoutListing.id}
           promotionType={selectedPackage as "featured" | "urgent"}
           onCloseAction={() => {
-            // User dismissed without paying — listing saved as draft, send to dashboard
-            router.push("/dashboard?tab=active");
+            // User dismissed without paying — listing saved as draft, send to drafts tab
+            router.push("/dashboard?tab=draft");
           }}
         />
       )}

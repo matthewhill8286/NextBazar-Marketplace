@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import { LoadingSpinner } from "@/app/components/ui";
@@ -130,7 +131,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Dealer CTA for non-dealers */}
-      {!isDealer && (
+      {FEATURE_FLAGS.DEALERS && !isDealer && (
         <Link
           href="/dashboard/dealer"
           className="block bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-5 text-white hover:from-purple-700 hover:to-indigo-700 transition-all group"

@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import ListingCard from "@/app/components/listing-card";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { SearchListing } from "@/lib/supabase/supabase.types";
 import { timeAgo } from "@/lib/format-helpers";
 
@@ -129,7 +130,7 @@ export default function ProfileClient({
                     Verified
                   </span>
                 )}
-                {profile.is_dealer && (
+                {FEATURE_FLAGS.DEALERS && profile.is_dealer && (
                   <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-100">
                     🏪 Dealer
                   </span>

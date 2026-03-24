@@ -13,4 +13,7 @@ export const FEATURE_FLAGS = {
 
   /** For Dealers landing page + footer link. Hidden until dealer billing is ready. */
   DEALERS_PAGE: false,
+
+  /** Dealer / Shops features — shops page, dealer badges, dashboard dealer portal, homepage featured shops. */
+  DEALERS: false,
 } as const;

@@ -716,8 +716,14 @@ export type Database = {
           bio: string | null
           created_at: string
           display_name: string | null
+          facebook_username: string | null
           id: string
+          instagram_username: string | null
           is_dealer: boolean
+          location_id: string | null
+          location_lat: number | null
+          location_lng: number | null
+          onboarding_completed: boolean
           phone: string | null
           push_token: string | null
           rating: number
@@ -733,8 +739,14 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          facebook_username?: string | null
           id: string
+          instagram_username?: string | null
           is_dealer?: boolean
+          location_id?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          onboarding_completed?: boolean
           phone?: string | null
           push_token?: string | null
           rating?: number
@@ -750,8 +762,14 @@ export type Database = {
           bio?: string | null
           created_at?: string
           display_name?: string | null
+          facebook_username?: string | null
           id?: string
+          instagram_username?: string | null
           is_dealer?: boolean
+          location_id?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          onboarding_completed?: boolean
           phone?: string | null
           push_token?: string | null
           rating?: number
