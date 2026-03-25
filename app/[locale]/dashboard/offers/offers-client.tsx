@@ -3,9 +3,9 @@
 import {
   Check,
   ChevronDown,
-  ChevronUp,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Clock,
   Loader2,
   MessageCircle,
@@ -19,11 +19,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
 import { ConfirmDialog } from "@/app/components/ui";
-import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { createClient } from "@/lib/supabase/client";
 
 const PAGE_SIZE = 10;
 const TERMINAL_STATUSES = ["withdrawn", "declined", "expired"];
@@ -160,7 +160,10 @@ function Pagination({
         </button>
         {Array.from({ length: totalPages }, (_, i) => (
           <button
-            key={i}
+            key={`pagination-${
+              // biome-ignore lint/suspicious/noArrayIndexKey: string key here
+              i
+            }`}
             type="button"
             onClick={() => onPage(i)}
             className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
@@ -331,7 +334,6 @@ function OfferCard({
             : "border-gray-100"
         }`}
       >
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: this can be looked another time */}
         <div
           className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
           onClick={() => setExpanded(!expanded)}

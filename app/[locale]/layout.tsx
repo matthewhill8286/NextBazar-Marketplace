@@ -64,32 +64,32 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-gray-50">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AuthProvider>
-          <SavedProvider>
-            <CompareProvider>
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <CompareBar />
-              <RealtimeToasts />
-              <Toaster
-                position="top-right"
-                visibleToasts={4}
-                gap={8}
-                toastOptions={{
-                  unstyled: true,
-                  classNames: {
-                    toast:
-                      "flex items-center gap-3 w-[360px] rounded-xl border px-4 py-3 shadow-lg text-sm font-medium",
-                    success: "bg-green-50 border-green-200 text-green-800",
-                    error: "bg-red-50 border-red-200 text-red-800",
-                    info: "bg-indigo-50 border-indigo-200 text-indigo-800",
-                    warning: "bg-amber-50 border-amber-200 text-amber-800",
-                    default: "bg-white border-gray-200 text-gray-900",
-                  },
-                }}
-              />
-            </CompareProvider>
-          </SavedProvider>
+            <SavedProvider>
+              <CompareProvider>
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+                <CompareBar />
+                <RealtimeToasts />
+                <Toaster
+                  position="top-right"
+                  visibleToasts={4}
+                  gap={8}
+                  toastOptions={{
+                    unstyled: true,
+                    classNames: {
+                      toast:
+                        "flex items-center gap-3 w-[360px] rounded-xl border px-4 py-3 shadow-lg text-sm font-medium",
+                      success: "bg-green-50 border-green-200 text-green-800",
+                      error: "bg-red-50 border-red-200 text-red-800",
+                      info: "bg-indigo-50 border-indigo-200 text-indigo-800",
+                      warning: "bg-amber-50 border-amber-200 text-amber-800",
+                      default: "bg-white border-gray-200 text-gray-900",
+                    },
+                  }}
+                />
+              </CompareProvider>
+            </SavedProvider>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

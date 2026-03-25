@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { getCategoriesCached } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/server";
 import OnboardingWizard from "./onboarding-wizard";
 
 export const metadata: Metadata = {

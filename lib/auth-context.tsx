@@ -2,10 +2,11 @@
 
 import {
   createContext,
+  type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
-  type ReactNode,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,11 +15,17 @@ type AuthContextValue = {
   userId: string | null;
   /** True while the initial auth check is in-flight */
   loading: boolean;
+  /** Incremented when profile data changes (e.g. avatar upload) */
+  profileVersion: number;
+  /** Call this to tell subscribers (e.g. UserMenu) to re-fetch profile data */
+  refreshProfile: () => void;
 };
 
 const AuthContext = createContext<AuthContextValue>({
   userId: null,
   loading: true,
+  profileVersion: 0,
+  refreshProfile: () => {},
 });
 
 /**
@@ -33,6 +40,11 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileVersion, setProfileVersion] = useState(0);
+
+  const refreshProfile = useCallback(() => {
+    setProfileVersion((v) => v + 1);
+  }, []);
 
   useEffect(() => {
     const supabase = createClient();
@@ -57,7 +69,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userId, loading }}>
+    <AuthContext.Provider
+      value={{ userId, loading, profileVersion, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

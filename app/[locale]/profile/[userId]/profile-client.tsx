@@ -1,20 +1,12 @@
 "use client";
 
-import {
-  Calendar,
-  ChevronRight,
-  MapPin,
-  Package,
-  Shield,
-  Star,
-} from "lucide-react";
+import { Calendar, ChevronRight, Package, Shield, Star } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import ListingCard from "@/app/components/listing-card";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
-import type { SearchListing } from "@/lib/supabase/supabase.types";
 import { timeAgo } from "@/lib/format-helpers";
+import type { SearchListing } from "@/lib/supabase/supabase.types";
 
 type Profile = {
   id: string;

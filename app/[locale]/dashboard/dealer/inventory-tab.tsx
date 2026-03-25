@@ -97,10 +97,7 @@ export default function InventoryTab({ listings }: Props) {
           </thead>
           <tbody className="divide-y divide-gray-50">
             {listings.map((l) => (
-              <tr
-                key={l.id}
-                className="hover:bg-gray-50/50 transition-colors"
-              >
+              <tr key={l.id} className="hover:bg-gray-50/50 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden shrink-0">
@@ -157,10 +154,7 @@ export default function InventoryTab({ listings }: Props) {
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-gray-300" />
             <p className="font-medium">No listings yet</p>
             <p className="text-xs mt-1">
-              <Link
-                href="/post"
-                className="text-indigo-600 hover:underline"
-              >
+              <Link href="/post" className="text-indigo-600 hover:underline">
                 Create your first listing
               </Link>
             </p>

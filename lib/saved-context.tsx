@@ -9,8 +9,8 @@ import {
   useState,
 } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { createClient } from "@/lib/supabase/client";
 
 type SavedContextValue = {
   /** Set of listing IDs the current user has saved */

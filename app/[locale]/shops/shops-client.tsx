@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  Check,
-  Package,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Store,
-} from "lucide-react";
+import { ArrowRight, Check, Package, Search, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -53,7 +45,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
       result = result.filter(
         (s) =>
           s.shop_name.toLowerCase().includes(q) ||
-          (s.description && s.description.toLowerCase().includes(q)),
+          s.description?.toLowerCase().includes(q),
       );
     }
 

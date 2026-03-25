@@ -29,7 +29,6 @@ type ActivateResult = {
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const listingId = searchParams.get("listing_id");
 
   const [status, setStatus] = useState<"activating" | "active" | "error">(
     "activating",

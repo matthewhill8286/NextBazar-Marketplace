@@ -1,5 +1,6 @@
-import { unstable_cache } from "next/cache";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { unstable_cache } from "next/cache";
+import { CARD_SELECT } from "./constants";
 import { createClient } from "./server";
 import type {
   Category,
@@ -8,7 +9,6 @@ import type {
   Location,
   Subcategory,
 } from "./supabase.types";
-import { CARD_SELECT } from "./constants";
 
 // Re-export so existing server-side consumers keep working.
 export { CARD_SELECT };

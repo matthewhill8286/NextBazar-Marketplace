@@ -1,6 +1,6 @@
 "use client";
 
-import { Bike, Car, Cog, Store, Truck } from "lucide-react";
+import { Bike, Car, Cog, Store } from "lucide-react";
 import CategoryLanding, {
   type TabConfig,
 } from "@/app/components/category-landing";

@@ -6,8 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
-import { createClient } from "@/lib/supabase/client";
 import type { ClientPricing } from "@/lib/stripe";
+import { createClient } from "@/lib/supabase/client";
 
 function buildPromotions(pricing: ClientPricing) {
   return [
@@ -220,9 +220,9 @@ export default function PromoteClient({
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                {promo.benefits.map((b, i) => (
+                {promo.benefits.map((b) => (
                   <div
-                    key={i}
+                    key={b}
                     className="flex items-center gap-1.5 text-xs text-gray-600"
                   >
                     <Check className="w-3 h-3 text-green-500 shrink-0" />

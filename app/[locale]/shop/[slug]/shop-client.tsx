@@ -18,8 +18,8 @@ import {
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
-import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import type { Tables } from "@/lib/supabase/database.types";
+import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 type DealerShop = Omit<
   Tables<"dealer_shops">,

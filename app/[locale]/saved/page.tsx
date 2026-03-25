@@ -43,7 +43,9 @@ export default function SavedPage() {
       .then(({ data }) => {
         if (data) {
           const newEntries = Object.fromEntries(data.map((l) => [l.id, l]));
-          missing.forEach((id) => fetchedRef.current.add(id));
+          missing.forEach((id) => {
+            fetchedRef.current.add(id);
+          });
           setListingMap((prev) => ({ ...prev, ...newEntries }));
         }
         setPageLoading(false);

@@ -37,13 +37,11 @@ export const PRO_SELLER_FEATURE_GROUPS: FeatureGroup[] = [
   },
   {
     heading: "Communication",
-    items: [
-      "Quick-reply message templates",
-      "Response time badge",
-    ],
+    items: ["Quick-reply message templates", "Response time badge"],
   },
 ];
 
 /** Flat list for compact UIs (e.g. the subscribe CTA grid). */
-export const PRO_SELLER_FEATURES: string[] =
-  PRO_SELLER_FEATURE_GROUPS.flatMap((g) => g.items);
+export const PRO_SELLER_FEATURES: string[] = PRO_SELLER_FEATURE_GROUPS.flatMap(
+  (g) => g.items,
+);

@@ -22,9 +22,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Resolve price ID — if set in DB, use it; otherwise create on the fly
+    // (matches whatever mode the STRIPE_SECRET_KEY is in: test or live)
+    let priceId = promo.priceId;
+    if (!priceId) {
+      const product = await stripe.products.create({
+        name: promo.name,
+        description: promo.description,
+      });
+      const price = await stripe.prices.create({
+        product: product.id,
+        unit_amount: promo.amount,
+        currency: "eur",
+      });
+      priceId = price.id;
+    }
+
     const sharedParams = {
       mode: "payment" as const,
-      line_items: [{ price: promo.priceId, quantity: 1 }],
+      line_items: [{ price: priceId, quantity: 1 }],
       metadata: {
         listing_id: listingId,
         promotion_type: promotionType,

@@ -11,15 +11,15 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
-import type { ClientPricing } from "@/lib/stripe";
-import type { ListingRow } from "./types";
 import type { BrandingState } from "./branding-form";
 import BrandingForm from "./branding-form";
 import InventoryTab from "./inventory-tab";
 import OverviewTab from "./overview-tab";
 import ProSellerCTA from "./pro-seller-cta";
+import type { ListingRow } from "./types";
 import VerifyingSpinner from "./verifying-spinner";
 
 type DealerShop = Tables<"dealer_shops">;
@@ -34,13 +34,7 @@ type Props = {
 
 type Tab = "overview" | "branding" | "inventory";
 
-export default function DealerDashboardClient({
-  shop,
-  profile,
-  listings,
-  userId,
-  userEmail,
-}: Props) {
+export default function DealerDashboardClient({ shop, listings }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();

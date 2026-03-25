@@ -8,9 +8,7 @@ import DashboardSidebar from "./sidebar";
 /* ── Skeleton pulse block ─────────────────────────────────────────────────── */
 function Bone({ className = "" }: { className?: string }) {
   return (
-    <div
-      className={`animate-pulse rounded-lg bg-gray-200 ${className}`}
-    />
+    <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />
   );
 }
 
@@ -37,6 +35,7 @@ function SidebarSkeleton() {
       {/* Nav items */}
       <div className="bg-white rounded-2xl border border-gray-100 p-3 space-y-1">
         {Array.from({ length: 7 }).map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
           <Bone key={i} className="h-10 rounded-xl" />
         ))}
       </div>
@@ -56,6 +55,7 @@ function ContentSkeleton() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
             key={i}
             className="bg-white rounded-xl border border-gray-100 p-4 space-y-3"
           >
@@ -73,6 +73,7 @@ function ContentSkeleton() {
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
             key={i}
             className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4"
           >

@@ -12,11 +12,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCompare } from "@/lib/compare-context";
+import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS, unwrap } from "@/lib/format-helpers";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
 import FavoriteButton from "./favorite-button";
-import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 
 export type CatLike = { name: string; slug?: string; icon?: string | null };
 export type LocLike = { name: string; slug?: string };

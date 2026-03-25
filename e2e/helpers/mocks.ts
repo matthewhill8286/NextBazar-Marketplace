@@ -305,9 +305,10 @@ export async function mockAuthUser(page: Page, userId = "user-test-1") {
         .replace(/\+/g, "-")
         .replace(/\//g, "_")
         .replace(/=/g, "");
-      const cookieValue = "base64-" + b64;
+      const cookieValue = `base64-${b64}`;
       const cookieName = "sb-giseotbdmhdsxgjilrqk-auth-token";
 
+      // biome-ignore lint/suspicious/noDocumentCookie: seems fine here
       document.cookie = `${cookieName}=${cookieValue}; path=/; max-age=3600; SameSite=Lax`;
 
       // Also keep the legacy localStorage key as a fallback for any code that reads it

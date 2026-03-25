@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { mockListings, mockSupabase } from "./helpers/mocks";
+import { mockSupabase } from "./helpers/mocks";
 
 const SUPABASE_URL = "https://giseotbdmhdsxgjilrqk.supabase.co";
 

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  AlertTriangle,
   ArrowLeft,
   CheckCircle,
   ExternalLink,
@@ -20,8 +19,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { createClient } from "@/lib/supabase/client";
 
 type Message = {
   id: string;
@@ -484,6 +483,14 @@ export default function ChatThread({
           >
             View <ExternalLink className="w-3 h-3" />
           </Link>
+          {conversation.seller_id !== userId && (
+            <button
+              onClick={() => setOfferOpen(true)}
+              className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors flex items-center gap-1.5 shrink-0"
+            >
+              <Tag className="w-3 h-3" /> Make Offer
+            </button>
+          )}
         </div>
       )}
 
@@ -739,7 +746,6 @@ export default function ChatThread({
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            autoFocus
           />
           <button
             onClick={handleSend}
@@ -754,6 +760,140 @@ export default function ChatThread({
           </button>
         </div>
       </div>
+      {/* Modals */}
+      {/* Delete Conversation Modal */}
+      {deleteConvOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setDeleteConvOpen(false)}
+          />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Delete conversation?
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              This will permanently delete this conversation and all its
+              messages for you. This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConvOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConversation}
+                disabled={deletingConv}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {deletingConv ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Message Modal */}
+      {deleteMsg && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setDeleteMsg(null)}
+          />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Delete message?
+            </h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Are you sure you want to delete this message?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteMsg(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteMessage}
+                disabled={deletingMsg}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center"
+              >
+                {deletingMsg ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Send Offer Modal */}
+      {offerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOfferOpen(false)}
+          />
+          <div className="relative bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900">Make an offer</h3>
+              <button
+                onClick={() => setOfferOpen(false)}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Your Price Offer
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">
+                  €
+                </span>
+                <input
+                  type="number"
+                  placeholder="0.00"
+                  value={offerPrice}
+                  onChange={(e) => setOfferPrice(e.target.value)}
+                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none font-semibold text-lg"
+                />
+              </div>
+              <p className="mt-2 text-[11px] text-gray-400">
+                Enter a fair price for this item. Offers are non-binding but
+                show serious interest.
+              </p>
+            </div>
+
+            <button
+              onClick={handleSendOffer}
+              disabled={
+                sendingOffer || !offerPrice || parseFloat(offerPrice) <= 0
+              }
+              className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {sendingOffer ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <Tag className="w-4 h-4" /> Send Offer
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

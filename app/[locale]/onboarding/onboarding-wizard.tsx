@@ -20,9 +20,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
-import type { Category } from "@/lib/supabase/supabase.types";
 import type { Database } from "@/lib/supabase/database.types";
+import type { Category } from "@/lib/supabase/supabase.types";
 
 type FullLocation = Database["public"]["Tables"]["locations"]["Row"];
 
@@ -69,13 +70,13 @@ const STEP_DESCRIPTIONS: Record<Step, string> = {
 
 export default function OnboardingWizard({
   userId,
-  userEmail,
   userName,
   existingAvatar,
   categories,
   locations,
 }: Props) {
   const router = useRouter();
+  const { refreshProfile } = useAuth();
   const supabase = createClient();
 
   const [step, setStep] = useState<Step>(1);
@@ -114,7 +115,12 @@ export default function OnboardingWizard({
   const handleAvatarUpload = useCallback(
     async (file: File) => {
       // Validate file type
-      const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+      const ALLOWED_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+      ];
       if (!ALLOWED_TYPES.includes(file.type)) {
         toast.error("Invalid file type", {
           description: "Please upload a JPEG, PNG, WebP, or GIF image.",
@@ -142,7 +148,8 @@ export default function OnboardingWizard({
 
         if (error) {
           toast.error("Upload failed", {
-            description: error.message || "Could not upload your photo. Please try again.",
+            description:
+              error.message || "Could not upload your photo. Please try again.",
           });
           setAvatarUploading(false);
           return;
@@ -155,7 +162,8 @@ export default function OnboardingWizard({
         toast.success("Photo uploaded");
       } catch {
         toast.error("Upload failed", {
-          description: "A network error occurred. Please check your connection and try again.",
+          description:
+            "A network error occurred. Please check your connection and try again.",
         });
       } finally {
         setAvatarUploading(false);
@@ -236,9 +244,13 @@ export default function OnboardingWizard({
       })
       .eq("id", userId);
 
+    // Notify navbar / other components to re-fetch profile data (e.g. avatar)
+    refreshProfile();
+
     // Create quick listing if provided
     if (!skipListing && listingTitle.trim() && listingCategoryId) {
       const slug =
+        // biome-ignore lint/style/useTemplate: this can be addressed at a later date
         listingTitle
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")

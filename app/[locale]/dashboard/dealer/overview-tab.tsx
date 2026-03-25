@@ -8,8 +8,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import type { ListingRow } from "./types";
 import ShopUrlCard from "./shop-url-card";
+import type { ListingRow } from "./types";
 
 type Props = {
   listings: ListingRow[];

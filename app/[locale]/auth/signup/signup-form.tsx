@@ -2,8 +2,8 @@
 
 import { Loader2, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { ErrorBanner } from "@/app/components/ui";
+import { createClient } from "@/lib/supabase/client";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">

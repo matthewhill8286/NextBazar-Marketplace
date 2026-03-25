@@ -15,7 +15,10 @@ export type BrandingState = {
 type Props = {
   state: BrandingState;
   saving: boolean;
-  onChange: <K extends keyof BrandingState>(key: K, value: BrandingState[K]) => void;
+  onChange: <K extends keyof BrandingState>(
+    key: K,
+    value: BrandingState[K],
+  ) => void;
   onSave: () => void;
 };
 
@@ -30,8 +33,21 @@ function darkenHex(hex: string): string {
   return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
 }
 
-export default function BrandingForm({ state, saving, onChange, onSave }: Props) {
-  const { shopName, slug, description, accentColor, website, facebook, instagram } = state;
+export default function BrandingForm({
+  state,
+  saving,
+  onChange,
+  onSave,
+}: Props) {
+  const {
+    shopName,
+    slug,
+    description,
+    accentColor,
+    website,
+    facebook,
+    instagram,
+  } = state;
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-6">

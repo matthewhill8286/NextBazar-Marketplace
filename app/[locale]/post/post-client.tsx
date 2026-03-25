@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { ErrorBanner } from "@/app/components/ui";
-import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { useAuth } from "@/lib/auth-context";
-import { createClient } from "@/lib/supabase/client";
+import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import type { ClientPricing } from "@/lib/stripe";
+import { createClient } from "@/lib/supabase/client";
+import PostStep1 from "./post-step-1";
+import PostStep2 from "./post-step-2";
+import PostStep3 from "./post-step-3";
 import type {
   FormData,
   PricingData,
@@ -16,9 +19,6 @@ import type {
   VehicleAttributes,
 } from "./post-types";
 import { EMPTY_VEHICLE_ATTRS, VEHICLES_CATEGORY_SLUG } from "./post-types";
-import PostStep1 from "./post-step-1";
-import PostStep2 from "./post-step-2";
-import PostStep3 from "./post-step-3";
 
 export default function PostClient({ pricing }: { pricing: ClientPricing }) {
   const router = useRouter();
@@ -55,7 +55,6 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
   const [vehicleAttrs, setVehicleAttrs] = useState<VehicleAttributes>({
     ...EMPTY_VEHICLE_ATTRS,
   });
-  const [vehicleEnrichLoading, setVehicleEnrichLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     title: "",
     category_id: "",
@@ -202,37 +201,6 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
 
   const updateVehicleAttr = (key: keyof VehicleAttributes, value: string) =>
     setVehicleAttrs((prev) => ({ ...prev, [key]: value }));
-
-  async function handleVehicleEnrich() {
-    if (!formData.title && !formData.description) return;
-    setVehicleEnrichLoading(true);
-    try {
-      const res = await fetch("/api/ai/vehicle-enrich", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formData.title,
-          description: formData.description,
-        }),
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      if (data.attributes) {
-        setVehicleAttrs((prev) => {
-          const merged = { ...prev };
-          for (const [k, v] of Object.entries(data.attributes)) {
-            if (v && typeof v === "string" && k in prev) {
-              (merged as any)[k] = v;
-            }
-          }
-          return merged;
-        });
-      }
-    } catch {
-      // Silent fail
-    }
-    setVehicleEnrichLoading(false);
-  }
 
   async function handlePublish() {
     setError("");

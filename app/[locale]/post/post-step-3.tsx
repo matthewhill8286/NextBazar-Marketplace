@@ -351,8 +351,8 @@ export default function PostStep3({
                     Quick Boost
                   </div>
                   <div className="text-xs text-gray-500">
-                    Boosted visibility + priority in search for 3 days · Up to 3×
-                    more views
+                    Boosted visibility + priority in search for 3 days · Up to
+                    3× more views
                   </div>
                 </div>
               </div>

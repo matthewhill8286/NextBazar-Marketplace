@@ -22,7 +22,7 @@ export default function CompareBar() {
 
         {/* Slots */}
         <div className="flex flex-1 items-center gap-3 min-w-0">
-          {slots.map((listing, i) =>
+          {slots.map((listing) =>
             listing ? (
               <div
                 key={listing.id}
@@ -57,7 +57,7 @@ export default function CompareBar() {
               </div>
             ) : (
               <div
-                key={i}
+                key={listing}
                 className="flex-1 max-w-[200px] h-[52px] rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center hidden sm:flex"
               >
                 <span className="text-xs text-gray-400">

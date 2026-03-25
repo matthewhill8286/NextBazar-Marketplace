@@ -26,8 +26,8 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { useAuth } from "@/lib/auth-context";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 import type {

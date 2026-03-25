@@ -112,7 +112,6 @@
   },
   "listing": {
     "contact": "Επικοινωνία",
-    "featured": "Προτεινόμενο",
     "urgent": "Ενισχυμένο",
     "sold": "Πωλήθηκε",
     "timeMinutes": "πριν {n}λ",

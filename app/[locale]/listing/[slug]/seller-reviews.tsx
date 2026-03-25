@@ -2,8 +2,8 @@
 
 import { CheckCircle, Loader2, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { timeAgo } from "@/lib/format-helpers";
+import { createClient } from "@/lib/supabase/client";
 
 type Review = {
   id: string;

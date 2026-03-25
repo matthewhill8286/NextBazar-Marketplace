@@ -1,7 +1,6 @@
 "use client";
 
 import { LayoutDashboard, LogOut, Settings } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -20,10 +19,13 @@ type UserProfile = {
 export default function UserMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const tDash = useTranslations("dashboard");
-  const { userId: authUserId, loading: authLoading } = useAuth();
+  const {
+    userId: authUserId,
+    loading: authLoading,
+    profileVersion,
+  } = useAuth();
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const [open, setOpen] = useState(false);
@@ -64,7 +66,7 @@ export default function UserMenu() {
         });
         setLoading(false);
       });
-  }, [authUserId, authLoading]);
+  }, [authUserId, authLoading, profileVersion]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -112,13 +114,13 @@ export default function UserMenu() {
       {/* Avatar button — shows a dot if there are unread alerts */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
+        className="pointer-events-auto relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
-          <Image
+          <img
             src={user.avatar_url}
-            alt=""
-            className="w-full h-full rounded-full object-cover"
+            alt="user avatar"
+            className="w-full h-full rounded-full object-cover hover:pointer-events-auto"
           />
         ) : (
           initials

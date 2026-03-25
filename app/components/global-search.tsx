@@ -2,7 +2,6 @@
 
 import {
   Clock,
-  Command,
   Flame,
   Loader2,
   MapPin,
@@ -262,11 +261,6 @@ export default function GlobalSearch() {
     open && !hasQuery && (recentSearches.length > 0 || trending.length > 0);
   const showResults = open && hasQuery;
 
-  // ── Detect macOS for shortcut hint ────────────────────────────────────
-  const isMac =
-    typeof navigator !== "undefined" &&
-    /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
-
   return (
     <div
       ref={containerRef}
@@ -305,7 +299,7 @@ export default function GlobalSearch() {
             </button>
           ) : (
             <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-[10px] font-medium text-gray-400">
-              {isMac ? <Command className="w-2.5 h-2.5" /> : "Ctrl+"}K
+              {"Ctrl+"}K
             </kbd>
           )}
         </div>
