@@ -15,9 +15,52 @@ import { useEffect, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
-import { LoadingSpinner } from "@/app/components/ui";
 import ListingsClient from "./listings/listings-client";
 import MyShopTab from "./my-shop-tab";
+
+/* ── Skeleton pulse block ─────────────────────────────────────────────────── */
+function Bone({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />;
+}
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <Bone className="h-8 w-36" />
+        <Bone className="h-10 w-36 rounded-xl" />
+      </div>
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Bone className="w-9 h-9 rounded-lg" />
+              <Bone className="h-3 w-12" />
+            </div>
+            <Bone className="h-7 w-16" />
+          </div>
+        ))}
+      </div>
+      {/* Tabs */}
+      <Bone className="h-11 w-full max-w-md rounded-xl" />
+      {/* Listing rows */}
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4">
+            <Bone className="w-16 h-12 rounded-lg shrink-0" />
+            <div className="flex-1 space-y-2">
+              <Bone className="h-4 w-3/4" />
+              <Bone className="h-3 w-1/2" />
+            </div>
+            <Bone className="h-4 w-16 shrink-0" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type DashboardView = "overview" | "my-shop";
 
@@ -80,7 +123,7 @@ export default function DashboardPage() {
   );
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <PageSkeleton />;
   }
 
   return (

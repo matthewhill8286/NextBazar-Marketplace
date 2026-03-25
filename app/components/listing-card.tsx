@@ -221,6 +221,11 @@ export default function ListingCard({ listing }: ListingCardProps) {
       {listing.is_promoted && (
         <div className="absolute left-0 bottom-0 right-0 h-0.5 bg-linear-to-r from-amber-400 via-orange-400 to-amber-400" />
       )}
+
+      {/* Red accent stripe for urgent listings */}
+      {listing.is_urgent && !listing.is_promoted && (
+        <div className="absolute left-0 bottom-0 right-0 h-0.5 bg-linear-to-r from-red-400 via-rose-500 to-red-400" />
+      )}
     </Link>
   );
 }
