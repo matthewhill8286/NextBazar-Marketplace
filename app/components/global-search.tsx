@@ -204,7 +204,7 @@ export default function GlobalSearch() {
     addRecent(term);
     const params = new URLSearchParams({ q: term });
     if (activeCategory) params.set("category", activeCategory);
-    router.push(`/search?${params.toString()}`);
+    router.push(`/search?${params.toString()}`, { scroll: false });
     setOpen(false);
     inputRef.current?.blur();
   }

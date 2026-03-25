@@ -122,6 +122,7 @@ export default function SearchClient({
   // ─── Ref: track the last query WE pushed to the URL (to avoid re-searching
   //     when our own syncUrl call triggers the searchParams watcher) ─────────
   const lastInternalQuery = useRef(initialQuery);
+  const lastInternalUrl = useRef(searchParams.toString());
 
   // ─── Load featured/promoted listings once ────────────────────────────────
   useEffect(() => {
@@ -324,21 +325,36 @@ export default function SearchClient({
     if (priceMin) params.set("priceMin", priceMin);
     if (priceMax) params.set("priceMax", priceMax);
     const qs = params.toString();
+    lastInternalUrl.current = qs; // mark so the URL watcher ignores our own push
     router.replace(qs ? `/search?${qs}` : "/search", { scroll: false });
   }
 
   // ─── React to URL changes driven by the global header search bar ─────────
-  // When the header fires router.replace("/search?q=..."), searchParams updates
-  // here. We only act if the new q differs from what we last pushed ourselves.
+  // When the header (or a category link) fires router.push("/search?category=…&q=…"),
+  // searchParams updates here. We sync ALL params (q, category, etc.) into local
+  // state so filters and results reflect the new URL.
   useEffect(() => {
+    const currentUrl = searchParams.toString();
+    if (currentUrl === lastInternalUrl.current) return; // our own syncUrl — ignore
+    lastInternalUrl.current = currentUrl;
+
     const urlQ = searchParams.get("q") ?? "";
-    if (urlQ === lastInternalQuery.current) return; // our own syncUrl — ignore
+    const urlCat = searchParams.get("category") ?? "";
+    const urlSub = searchParams.get("subcategory") ?? "";
+    const urlLoc = searchParams.get("location") ?? "";
+    const urlSort = searchParams.get("sort") ?? "newest";
+    const urlPriceMin = searchParams.get("priceMin") ?? "";
+    const urlPriceMax = searchParams.get("priceMax") ?? "";
+
     lastInternalQuery.current = urlQ;
     setInputValue(urlQ);
     setSubmittedQuery(urlQ);
-    if (categories.length > 0) {
-      doSearch(urlQ);
-    }
+    setCategorySlug(urlCat);
+    setSubcategorySlug(urlSub);
+    setLocationSlug(urlLoc);
+    setSortBy(urlSort);
+    setPriceMin(urlPriceMin);
+    setPriceMax(urlPriceMax);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
