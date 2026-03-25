@@ -33,7 +33,7 @@ export default function ProSellerModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-700 rounded-2xl p-8 text-white text-center shadow-2xl">
+      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-linear-to-br from-purple-600 via-indigo-600 to-indigo-700 rounded-2xl p-8 text-white text-center shadow-2xl">
         {/* Close button */}
         <button
           onClick={onClose}

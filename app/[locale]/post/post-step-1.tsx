@@ -85,6 +85,9 @@ export default function PostStep1({
             <>
               <Wand2 className="w-4 h-4" />
               Suggest title &amp; category with AI
+              <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+                Beta
+              </span>
             </>
           )}
         </button>

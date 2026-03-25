@@ -151,7 +151,7 @@ export default function AiInsights({
         <Sparkles className="w-5 h-5 text-indigo-600" />
         <h2 className="text-lg font-semibold text-indigo-900">AI Insights</h2>
         <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
-          Powered by GPT-4o
+          Beta
         </span>
         {market.similar_count > 0 && (
           <span className="text-xs text-indigo-400 ml-auto">

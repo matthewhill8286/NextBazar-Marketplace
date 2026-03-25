@@ -541,7 +541,7 @@ export default function SearchClient({
                 onClick={() => handleAiSearch()}
                 disabled={aiSearching || !inputValue.trim()}
                 className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                title="AI Smart Search"
+                title="AI Smart Search (Beta)"
               >
                 {aiSearching ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -566,7 +566,10 @@ export default function SearchClient({
               Enter
             </kbd>{" "}
             to search · <Sparkles className="w-3 h-3 inline text-indigo-300" />{" "}
-            for AI smart search
+            for AI smart search{" "}
+            <span className="text-[9px] bg-white/15 text-white/60 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+              Beta
+            </span>
           </p>
         </div>
       </section>

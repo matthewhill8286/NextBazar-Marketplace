@@ -48,9 +48,11 @@ const TABS = [
 export default function ListingsClient({
   initialListings,
   isProSeller = false,
+  onListingsChange,
 }: {
   initialListings: DashboardListing[];
   isProSeller?: boolean;
+  onListingsChange?: (listings: DashboardListing[]) => void;
 }) {
   const supabase = createClient();
   const searchParams = useSearchParams();
@@ -61,7 +63,20 @@ export default function ListingsClient({
     return validTabs.includes(t) ? t : "active";
   }
 
-  const [listings, setListings] = useState(initialListings);
+  const [listings, setListingsInternal] = useState(initialListings);
+
+  // Wrapper that notifies the parent whenever listings change
+  function setListings(
+    updater:
+      | DashboardListing[]
+      | ((prev: DashboardListing[]) => DashboardListing[]),
+  ) {
+    setListingsInternal((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      onListingsChange?.(next);
+      return next;
+    });
+  }
   const [tab, setTab] = useState(tabFromParams);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -398,6 +413,33 @@ export default function ListingsClient({
     setBulkLoading(false);
   }
 
+  async function bulkReactivate() {
+    setBulkLoading(true);
+    const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
+    const newExpiresAt = new Date(Date.now() + LISTING_ACTIVE_MS).toISOString();
+    const { error } = await supabase
+      .from("listings")
+      .update({ status: "active", expires_at: newExpiresAt })
+      .in("id", ids);
+    if (error) {
+      toast.error("Failed to reactivate listings.");
+    } else {
+      setListings((prev) =>
+        prev.map((l) =>
+          ids.includes(l.id)
+            ? { ...l, status: "active", expires_at: newExpiresAt }
+            : l,
+        ),
+      );
+      toast.success(
+        `${ids.length} listing${ids.length !== 1 ? "s" : ""} reactivated`,
+      );
+      setTab("active");
+    }
+    clearSelection();
+    setBulkLoading(false);
+  }
+
   const SelectIcon = allSelected ? CheckSquare : Square;
 
   return (
@@ -464,6 +506,20 @@ export default function ListingsClient({
                   Relist All
                 </button>
               </>
+            )}
+            {tab === "sold" && (
+              <button
+                onClick={bulkReactivate}
+                disabled={bulkLoading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
+              >
+                {bulkLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <RotateCcw className="w-3 h-3" />
+                )}
+                Re-activate
+              </button>
             )}
             {tab === "active" && (
               <button
@@ -559,6 +615,13 @@ export default function ListingsClient({
                       AD
                     </span>
                   )}
+                  {listing.is_urgent &&
+                    !listing.is_promoted &&
+                    listing.status !== "sold" && (
+                      <span className="absolute top-0.5 left-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded">
+                        ⚡
+                      </span>
+                    )}
                   {listing.status === "sold" && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                       <span className="bg-white text-gray-900 text-[9px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">
@@ -602,6 +665,48 @@ export default function ListingsClient({
                         </>
                       );
                     })()}
+                    {listing.is_promoted &&
+                      listing.promoted_until &&
+                      listing.status === "active" &&
+                      (() => {
+                        const days = Math.max(
+                          0,
+                          Math.ceil(
+                            (new Date(listing.promoted_until).getTime() -
+                              Date.now()) /
+                              86_400_000,
+                          ),
+                        );
+                        return (
+                          <>
+                            <span>·</span>
+                            <span className="text-amber-600 font-medium">
+                              ✦ Featured · {days}d left
+                            </span>
+                          </>
+                        );
+                      })()}
+                    {listing.is_urgent &&
+                      listing.boosted_until &&
+                      listing.status === "active" &&
+                      (() => {
+                        const days = Math.max(
+                          0,
+                          Math.ceil(
+                            (new Date(listing.boosted_until).getTime() -
+                              Date.now()) /
+                              86_400_000,
+                          ),
+                        );
+                        return (
+                          <>
+                            <span>·</span>
+                            <span className="text-red-500 font-medium">
+                              ⚡ Boosted · {days}d left
+                            </span>
+                          </>
+                        );
+                      })()}
                   </div>
                 </div>
 
@@ -696,15 +801,17 @@ export default function ListingsClient({
                       >
                         <Pencil className="w-3.5 h-3.5" /> Edit Listing
                       </Link>
-                      {listing.status === "active" && !listing.is_promoted && (
-                        <Link
-                          href={`/promote/${listing.id}`}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50"
-                          onClick={() => setOpenMenu(null)}
-                        >
-                          <Star className="w-3.5 h-3.5" /> Promote Listing
-                        </Link>
-                      )}
+                      {listing.status === "active" &&
+                        !listing.is_promoted &&
+                        !listing.is_urgent && (
+                          <Link
+                            href={`/promote/${listing.id}`}
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50"
+                            onClick={() => setOpenMenu(null)}
+                          >
+                            <Star className="w-3.5 h-3.5" /> Promote Listing
+                          </Link>
+                        )}
                       {listing.status === "active" && (
                         <button
                           onClick={() => {

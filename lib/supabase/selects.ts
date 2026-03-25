@@ -6,7 +6,7 @@
 export const CARD_SELECT = `
   id, user_id, category_id, location_id,
   title, slug, price, currency, price_type, condition, status,
-  primary_image_url, is_promoted, is_urgent,
+  primary_image_url, is_promoted, is_urgent, promoted_until,
   view_count, favorite_count, created_at,
   categories(name, slug, icon),
   locations(name, slug),
