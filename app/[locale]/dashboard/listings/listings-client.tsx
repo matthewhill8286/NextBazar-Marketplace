@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
-import { EmptyState } from "@/app/components/ui";
+import { ConfirmDialog, EmptyState } from "@/app/components/ui";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { LISTING_ACTIVE_MS } from "@/lib/constants";
@@ -68,6 +68,13 @@ export default function ListingsClient({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Single-item confirmation dialog state
+  const [confirmAction, setConfirmAction] = useState<{
+    type: "delete" | "sold" | "renew" | "reactivate";
+    listingId: string;
+    listingTitle: string;
+  } | null>(null);
 
   const filtered = listings.filter((l) => l.status === tab);
   const selectedInTab = filtered.filter((l) => selected.has(l.id));
@@ -120,6 +127,9 @@ export default function ListingsClient({
       setListings((prev) =>
         prev.map((l) => (l.id === id ? { ...l, status } : l)),
       );
+      toast.success(
+        status === "sold" ? "Listing marked as sold" : "Listing status updated",
+      );
     }
     setOpenMenu(null);
     setLoadingAction(null);
@@ -132,6 +142,7 @@ export default function ListingsClient({
       toast.error("Failed to delete listing.");
     } else {
       setListings((prev) => prev.filter((l) => l.id !== id));
+      toast.success("Listing deleted");
     }
     setOpenMenu(null);
     setLoadingAction(null);
@@ -224,10 +235,22 @@ export default function ListingsClient({
           l.id === id ? { ...l, status: "active", expires_at: newExpiresAt } : l,
         ),
       );
+      toast.success("Listing renewed for 30 days");
       if (tab === "expired") setTab("active");
     }
     setOpenMenu(null);
     setLoadingAction(null);
+  }
+
+  // ── Confirm single-item action ────────────────────────────────────────────
+  async function handleConfirmAction() {
+    if (!confirmAction) return;
+    const { type, listingId } = confirmAction;
+    setConfirmAction(null);
+    if (type === "delete") await deleteListing(listingId);
+    else if (type === "sold") await updateStatus(listingId, "sold");
+    else if (type === "renew") await renewListing(listingId);
+    else if (type === "reactivate") await updateStatus(listingId, "active");
   }
 
   // ── Bulk actions ─────────────────────────────────────────────────────────
@@ -235,8 +258,13 @@ export default function ListingsClient({
   async function bulkDelete() {
     setBulkLoading(true);
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
-    await supabase.from("listings").delete().in("id", ids);
-    setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
+    const { error } = await supabase.from("listings").delete().in("id", ids);
+    if (error) {
+      toast.error("Failed to delete listings.");
+    } else {
+      setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
+      toast.success(`${ids.length} listing${ids.length !== 1 ? "s" : ""} deleted`);
+    }
     clearSelection();
     setShowDeleteConfirm(false);
     setBulkLoading(false);
@@ -245,13 +273,18 @@ export default function ListingsClient({
   async function bulkMarkSold() {
     setBulkLoading(true);
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
-    await supabase.from("listings").update({ status: "sold" }).in("id", ids);
-    setListings((prev) =>
-      prev.map((l) => (ids.includes(l.id) ? { ...l, status: "sold" } : l)),
-    );
+    const { error } = await supabase.from("listings").update({ status: "sold" }).in("id", ids);
+    if (error) {
+      toast.error("Failed to update listings.");
+    } else {
+      setListings((prev) =>
+        prev.map((l) => (ids.includes(l.id) ? { ...l, status: "sold" } : l)),
+      );
+      toast.success(`${ids.length} listing${ids.length !== 1 ? "s" : ""} marked as sold`);
+      setTab("sold");
+    }
     clearSelection();
     setBulkLoading(false);
-    setTab("sold");
   }
 
   async function bulkRelist() {
@@ -304,6 +337,7 @@ export default function ListingsClient({
     }
 
     setListings((prev) => [...newListings, ...prev]);
+    toast.success(`${newListings.length} listing${newListings.length !== 1 ? "s" : ""} relisted`);
     clearSelection();
     setBulkLoading(false);
     setTab("active");
@@ -313,18 +347,23 @@ export default function ListingsClient({
     setBulkLoading(true);
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
     const newExpiresAt = new Date(Date.now() + LISTING_ACTIVE_MS).toISOString();
-    await supabase
+    const { error } = await supabase
       .from("listings")
       .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
       .in("id", ids);
-    setListings((prev) =>
-      prev.map((l) =>
-        ids.includes(l.id) ? { ...l, status: "active", expires_at: newExpiresAt } : l,
-      ),
-    );
+    if (error) {
+      toast.error("Failed to renew listings.");
+    } else {
+      setListings((prev) =>
+        prev.map((l) =>
+          ids.includes(l.id) ? { ...l, status: "active", expires_at: newExpiresAt } : l,
+        ),
+      );
+      toast.success(`${ids.length} listing${ids.length !== 1 ? "s" : ""} renewed`);
+      setTab("active");
+    }
     clearSelection();
     setBulkLoading(false);
-    setTab("active");
   }
 
   const SelectIcon = allSelected ? CheckSquare : Square;
@@ -540,7 +579,7 @@ export default function ListingsClient({
                 {/* Renew CTA — expiring-soon active listings */}
                 {listing.status === "active" && expiryBadge(listing.expires_at, listing.status) && (
                   <button
-                    onClick={() => renewListing(listing.id)}
+                    onClick={() => setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title })}
                     disabled={loadingAction === listing.id}
                     className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 shrink-0"
                   >
@@ -557,7 +596,7 @@ export default function ListingsClient({
                 {listing.status === "expired" && (
                   <div className="hidden sm:flex items-center gap-1.5 shrink-0">
                     <button
-                      onClick={() => renewListing(listing.id)}
+                      onClick={() => setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title })}
                       disabled={loadingAction === listing.id}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
                     >
@@ -614,7 +653,10 @@ export default function ListingsClient({
                       )}
                       {listing.status === "active" && (
                         <button
-                          onClick={() => updateStatus(listing.id, "sold")}
+                          onClick={() => {
+                            setOpenMenu(null);
+                            setConfirmAction({ type: "sold", listingId: listing.id, listingTitle: listing.title });
+                          }}
                           className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
                         >
                           <CheckCircle className="w-3.5 h-3.5" /> Mark as Sold
@@ -622,7 +664,10 @@ export default function ListingsClient({
                       )}
                       {listing.status === "sold" && (
                         <button
-                          onClick={() => updateStatus(listing.id, "active")}
+                          onClick={() => {
+                            setOpenMenu(null);
+                            setConfirmAction({ type: "reactivate", listingId: listing.id, listingTitle: listing.title });
+                          }}
                           className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
                         >
                           <RotateCcw className="w-3.5 h-3.5" /> Reactivate
@@ -630,7 +675,10 @@ export default function ListingsClient({
                       )}
                       {listing.status === "active" && (
                         <button
-                          onClick={() => renewListing(listing.id)}
+                          onClick={() => {
+                            setOpenMenu(null);
+                            setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title });
+                          }}
                           className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 w-full"
                         >
                           <Clock className="w-3.5 h-3.5" /> Renew (30 days)
@@ -639,7 +687,10 @@ export default function ListingsClient({
                       {listing.status === "expired" && (
                         <>
                           <button
-                            onClick={() => renewListing(listing.id)}
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title });
+                            }}
                             className="flex items-center gap-2.5 px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 w-full"
                           >
                             <Clock className="w-3.5 h-3.5" /> Renew listing
@@ -653,7 +704,10 @@ export default function ListingsClient({
                         </>
                       )}
                       <button
-                        onClick={() => deleteListing(listing.id)}
+                        onClick={() => {
+                          setOpenMenu(null);
+                          setConfirmAction({ type: "delete", listingId: listing.id, listingTitle: listing.title });
+                        }}
                         className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full"
                       >
                         <Trash2 className="w-3.5 h-3.5" /> Delete
@@ -683,39 +737,65 @@ export default function ListingsClient({
         />
       )}
 
-      {/* Bulk delete confirmation modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Delete {selectedInTab.length} listing
-              {selectedInTab.length !== 1 ? "s" : ""}?
-            </h3>
-            <p className="text-sm text-gray-500 mb-6">
-              This action is permanent and cannot be undone.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={bulkDelete}
-                disabled={bulkLoading}
-                className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {bulkLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  "Delete"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Bulk delete confirmation */}
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title={`Delete ${selectedInTab.length} listing${selectedInTab.length !== 1 ? "s" : ""}?`}
+        description="This action is permanent and cannot be undone."
+        confirmLabel="Delete"
+        confirmClassName="bg-red-600 hover:bg-red-700"
+        loading={bulkLoading}
+        onConfirm={bulkDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
+
+      {/* Single-item: Delete */}
+      <ConfirmDialog
+        open={confirmAction?.type === "delete"}
+        title="Delete listing?"
+        description={`"${confirmAction?.listingTitle}" will be permanently removed. This cannot be undone.`}
+        confirmLabel="Delete"
+        confirmClassName="bg-red-600 hover:bg-red-700"
+        loading={loadingAction !== null}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      {/* Single-item: Mark as Sold */}
+      <ConfirmDialog
+        open={confirmAction?.type === "sold"}
+        title="Mark as sold?"
+        description={`"${confirmAction?.listingTitle}" will be moved to your sold listings and will no longer be visible to buyers.`}
+        confirmLabel="Mark as Sold"
+        confirmClassName="bg-green-600 hover:bg-green-700"
+        loading={loadingAction !== null}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      {/* Single-item: Renew */}
+      <ConfirmDialog
+        open={confirmAction?.type === "renew"}
+        title="Renew listing?"
+        description={`"${confirmAction?.listingTitle}" will be renewed for another 30 days.`}
+        confirmLabel="Renew"
+        confirmClassName="bg-indigo-600 hover:bg-indigo-700"
+        loading={loadingAction !== null}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      {/* Single-item: Reactivate */}
+      <ConfirmDialog
+        open={confirmAction?.type === "reactivate"}
+        title="Reactivate listing?"
+        description={`"${confirmAction?.listingTitle}" will be moved back to your active listings and visible to buyers again.`}
+        confirmLabel="Reactivate"
+        confirmClassName="bg-indigo-600 hover:bg-indigo-700"
+        loading={loadingAction !== null}
+        onConfirm={handleConfirmAction}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   );
 }

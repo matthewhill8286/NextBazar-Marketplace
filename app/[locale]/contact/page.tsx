@@ -17,7 +17,7 @@ const TOPICS = [
   "Account / login problem",
   "Billing or payments",
   "Report a user or listing",
-  "Dealer / business account",
+  "Pro Seller / business account",
   "Partnership",
   "Other",
 ];

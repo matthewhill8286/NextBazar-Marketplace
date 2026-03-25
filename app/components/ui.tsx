@@ -5,7 +5,7 @@
  */
 
 import { Loader2 } from "lucide-react";
-import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 // ─── Form primitives ──────────────────────────────────────────────────────────
 
@@ -136,6 +136,87 @@ export function EmptyState({
         <p className="text-gray-400 text-sm">{description}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
+    </div>
+  );
+}
+
+// ─── Confirm dialog ──────────────────────────────────────────────────────────
+
+type ConfirmDialogProps = {
+  open: boolean;
+  title: string;
+  description?: string;
+  /** Icon rendered above the title */
+  icon?: ReactNode;
+  /** Text on the confirm button — defaults to "Confirm" */
+  confirmLabel?: string;
+  /** Text on the cancel button — defaults to "Cancel" */
+  cancelLabel?: string;
+  /** Tailwind classes for the confirm button — defaults to indigo */
+  confirmClassName?: string;
+  loading?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+/**
+ * A modal confirmation dialog with backdrop blur.
+ *
+ * @example
+ * <ConfirmDialog
+ *   open={showDelete}
+ *   title="Delete listing?"
+ *   description="This action is permanent and cannot be undone."
+ *   confirmLabel="Delete"
+ *   confirmClassName="bg-red-600 hover:bg-red-700"
+ *   onConfirm={handleDelete}
+ *   onCancel={() => setShowDelete(false)}
+ * />
+ */
+export function ConfirmDialog({
+  open,
+  title,
+  description,
+  icon,
+  confirmLabel = "Confirm",
+  cancelLabel = "Cancel",
+  confirmClassName = "bg-indigo-600 hover:bg-indigo-700",
+  loading = false,
+  onConfirm,
+  onCancel,
+}: ConfirmDialogProps) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-150">
+        {icon && (
+          <div className="flex justify-center mb-4">{icon}</div>
+        )}
+        <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+        {description && (
+          <p className="text-sm text-gray-500 mb-6">{description}</p>
+        )}
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            {cancelLabel}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${confirmClassName}`}
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              confirmLabel
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

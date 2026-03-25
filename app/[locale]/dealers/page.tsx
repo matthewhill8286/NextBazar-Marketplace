@@ -17,9 +17,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "For Dealers — NextBazar",
+  title: "For Pro Sellers — NextBazar",
   description:
-    "Grow your dealership on NextBazar. Powerful tools for professional sellers.",
+    "Grow your business on NextBazar. Powerful tools for professional sellers.",
 };
 
 const FEATURES = [
@@ -56,7 +56,7 @@ const FEATURES = [
   {
     icon: ShieldCheck,
     color: "bg-cyan-50 text-cyan-600",
-    title: "Verified dealer badge",
+    title: "Verified Pro Seller badge",
     desc: "A PRO badge on your profile and every listing builds buyer trust and increases click-through rate.",
   },
   {
@@ -69,7 +69,7 @@ const FEATURES = [
     icon: Zap,
     color: "bg-yellow-50 text-yellow-600",
     title: "Priority support",
-    desc: "Dealer accounts get access to a dedicated support channel with faster response times.",
+    desc: "Pro Seller accounts get access to a dedicated support channel with faster response times.",
   },
 ];
 
@@ -89,14 +89,14 @@ const PLANS = [
     href: "/auth/signup",
   },
   {
-    name: "Dealer",
+    name: "Pro Seller",
     price: "€29",
     period: "/ month",
     highlight: true,
     features: [
       "Unlimited listings",
       "Advanced analytics dashboard",
-      "Verified dealer badge",
+      "Verified Pro Seller badge",
       "Bulk listing management",
       "Priority support",
       "5 promoted listings / month",
@@ -110,7 +110,7 @@ const PLANS = [
     period: "",
     highlight: false,
     features: [
-      "Everything in Dealer",
+      "Everything in Pro Seller",
       "Dedicated account manager",
       "API access",
       "Custom branding options",
@@ -124,9 +124,9 @@ const PLANS = [
 const TESTIMONIALS = [
   {
     name: "Stavros P.",
-    role: "Used car dealer, Limassol",
+    role: "Used car seller, Limassol",
     quote:
-      "Since upgrading to a Dealer account our enquiries doubled within the first month. The analytics alone are worth it.",
+      "Since upgrading to a Pro Seller account our enquiries doubled within the first month. The analytics alone are worth it.",
     initials: "SP",
     color: "from-indigo-400 to-indigo-600",
   },
@@ -154,7 +154,7 @@ export default function DealersPage() {
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-5 leading-tight">
             Grow your business <br className="hidden md:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">
-              with NextBazar Dealer
+              with NextBazar Pro
             </span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-10">
@@ -167,7 +167,7 @@ export default function DealersPage() {
               href="/contact"
               className="inline-flex items-center gap-2 bg-indigo-600 text-white px-7 py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"
             >
-              Get dealer access <ArrowRight className="w-4 h-4" />
+              Get Pro Seller access <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/auth/signup"
@@ -282,7 +282,7 @@ export default function DealersPage() {
       {/* Testimonials */}
       <section className="max-w-5xl mx-auto px-4 pb-20">
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
-          Trusted by local dealers
+          Trusted by local sellers
         </h2>
         <div className="grid md:grid-cols-2 gap-5">
           {TESTIMONIALS.map((t) => (
@@ -316,13 +316,13 @@ export default function DealersPage() {
         <div className="max-w-xl mx-auto px-4 text-center text-white">
           <h2 className="text-2xl font-bold mb-3">Ready to go pro?</h2>
           <p className="text-indigo-100 mb-7">
-            Join hundreds of dealers already growing their business on NextBazar.
+            Join hundreds of sellers already growing their business on NextBazar.
           </p>
           <Link
             href="/contact"
             className="inline-flex items-center gap-2 bg-white text-indigo-600 px-7 py-3.5 rounded-xl font-semibold hover:bg-indigo-50 transition-colors"
           >
-            Get dealer access <ArrowRight className="w-4 h-4" />
+            Get Pro Seller access <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>

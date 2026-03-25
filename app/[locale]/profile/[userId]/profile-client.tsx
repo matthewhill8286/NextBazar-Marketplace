@@ -132,7 +132,7 @@ export default function ProfileClient({
                 )}
                 {FEATURE_FLAGS.DEALERS && profile.is_dealer && (
                   <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-100">
-                    🏪 Dealer
+                    🏪 Pro Seller
                   </span>
                 )}
               </div>
