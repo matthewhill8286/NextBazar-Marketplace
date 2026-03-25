@@ -7,7 +7,13 @@
     "searchPlaceholder": "Αναζήτηση σε χιλιάδες αγγελίες...",
     "searchIn": "Αναζήτηση σε {category}…",
     "allCategories": "Όλα",
-    "shops": "Καταστήματα"
+    "shops": "Καταστήματα",
+    "noResults": "Δεν βρέθηκαν αγγελίες για \"{query}\"",
+    "tryFullSearch": "Δοκιμάστε πλήρη αναζήτηση με φίλτρα",
+    "viewAllResults": "Δείτε όλα τα αποτελέσματα για \"{query}\"",
+    "recentSearches": "Πρόσφατα",
+    "trending": "Δημοφιλή",
+    "categories": "Κατηγορίες"
   },
   "footer": {
     "tagline": "Η πιο έξυπνη αγορά της Κύπρου για αγοραπωλησίες.",

@@ -7,7 +7,13 @@
     "searchPlaceholder": "Search thousands of listings...",
     "searchIn": "Search in {category}…",
     "allCategories": "All",
-    "shops": "Shops"
+    "shops": "Shops",
+    "noResults": "No listings found for \"{query}\"",
+    "tryFullSearch": "Try full search with filters",
+    "viewAllResults": "View all results for \"{query}\"",
+    "recentSearches": "Recent",
+    "trending": "Trending",
+    "categories": "Categories"
   },
   "footer": {
     "tagline": "Cyprus's smartest marketplace for buying and selling anything.",
