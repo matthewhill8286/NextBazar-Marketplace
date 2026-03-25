@@ -200,12 +200,15 @@ export type DashboardListing = Pick<
   | "favorite_count"
   | "is_promoted"
   | "is_urgent"
+  | "promoted_until"
   | "created_at"
   | "expires_at"
   | "category_id"
   | "location_id"
 > & {
   message_count: number;
+  /** Present only after the boosted_until migration has been applied. */
+  boosted_until?: string | null;
   categories:
     | Pick<Tables<"categories">, "name" | "slug" | "icon">
     | Pick<Tables<"categories">, "name" | "slug" | "icon">[]

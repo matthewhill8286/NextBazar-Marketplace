@@ -5,21 +5,61 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth-context";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
-import BrandingForm, { type BrandingState } from "./dealer/branding-form";
-import ProSellerCTA from "./dealer/pro-seller-cta";
-import ShopUrlCard from "./dealer/shop-url-card";
-import VerifyingSpinner from "./dealer/verifying-spinner";
+import BrandingForm, { type BrandingState } from "../dealer/branding-form";
+import ProSellerCTA from "../dealer/pro-seller-cta";
+import ShopUrlCard from "../dealer/shop-url-card";
+import VerifyingSpinner from "../dealer/verifying-spinner";
 
 type DealerShop = Tables<"dealer_shops">;
 
-type Props = {
-  userId: string;
-};
+/* ── Skeleton ────────────────────────────────────────────────────────────── */
+function Bone({ className = "" }: { className?: string }) {
+  return (
+    <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />
+  );
+}
 
-export default function MyShopTab({ userId }: Props) {
+function ShopSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Bone className="w-10 h-10 rounded-xl" />
+          <div className="space-y-2">
+            <Bone className="h-5 w-32" />
+            <Bone className="h-3 w-48" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Bone className="h-9 w-24 rounded-xl" />
+          <Bone className="h-9 w-20 rounded-xl" />
+        </div>
+      </div>
+      <Bone className="h-16 w-full rounded-xl" />
+      <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
+        <Bone className="h-5 w-40" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Bone className="h-10 w-full rounded-lg" />
+          <Bone className="h-10 w-full rounded-lg" />
+        </div>
+        <Bone className="h-24 w-full rounded-lg" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Bone className="h-10 w-full rounded-lg" />
+          <Bone className="h-10 w-full rounded-lg" />
+          <Bone className="h-10 w-full rounded-lg" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────── */
+export default function ShopPage() {
+  const { userId, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -29,6 +69,7 @@ export default function MyShopTab({ userId }: Props) {
   const [saving, setSaving] = useState(false);
   const [subscribing, setSubscribing] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [bannerUploading, setBannerUploading] = useState(false);
   const [dealerPrice, setDealerPrice] = useState("€25");
   const [dealerInterval, setDealerInterval] = useState("month");
 
@@ -53,11 +94,12 @@ export default function MyShopTab({ userId }: Props) {
 
   // ─── Load shop data ──────────────────────────────────────────────────
   useEffect(() => {
+    if (authLoading || !userId) return;
     async function load() {
       const { data } = await supabase
         .from("dealer_shops")
         .select("*")
-        .eq("user_id", userId)
+        .eq("user_id", userId!)
         .single();
 
       if (data) {
@@ -76,7 +118,7 @@ export default function MyShopTab({ userId }: Props) {
       setLoading(false);
     }
     load();
-  }, [userId]);
+  }, [userId, authLoading]);
 
   // ─── Fetch pricing from DB ──────────────────────────────────────────
   useEffect(() => {
@@ -175,13 +217,20 @@ export default function MyShopTab({ userId }: Props) {
   async function handleSaveBranding() {
     if (!shop) return;
     setSaving(true);
+
+    // Only set the slug on first save; once persisted it never changes.
+    const slugValue = shop.slug
+      ? shop.slug
+      : branding.slug.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+
     const { error } = await supabase
       .from("dealer_shops")
       .update({
         shop_name: branding.shopName,
-        slug: branding.slug.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+        slug: slugValue,
         description: branding.description,
         accent_color: branding.accentColor,
+        banner_url: branding.bannerUrl || null,
         website: branding.website || null,
         facebook: branding.facebook || null,
         instagram: branding.instagram || null,
@@ -197,25 +246,66 @@ export default function MyShopTab({ userId }: Props) {
     }
   }
 
-  // ─── Conditional renders ───────────────────────────────────────────
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-      </div>
-    );
+  // ─── Banner upload ─────────────────────────────────────────────────
+  async function handleBannerUpload(file: File) {
+    if (!userId || !shop) return;
+    setBannerUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${userId}/banner.${ext}`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true });
+      if (error) {
+        toast.error("Banner upload failed", { description: error.message });
+        setBannerUploading(false);
+        return;
+      }
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+      const urlWithCacheBust = `${publicUrl}?t=${Date.now()}`;
+
+      // Persist to DB immediately
+      await supabase
+        .from("dealer_shops")
+        .update({ banner_url: urlWithCacheBust })
+        .eq("id", shop.id);
+
+      setBranding((prev) => ({ ...prev, bannerUrl: urlWithCacheBust }));
+      toast.success("Banner uploaded");
+    } catch {
+      toast.error("Banner upload failed");
+    }
+    setBannerUploading(false);
   }
+
+  async function handleBannerRemove() {
+    if (!shop) return;
+    await supabase
+      .from("dealer_shops")
+      .update({ banner_url: null })
+      .eq("id", shop.id);
+    setBranding((prev) => ({ ...prev, bannerUrl: "" }));
+    toast.success("Banner removed");
+  }
+
+  // ─── Conditional renders ───────────────────────────────────────────
+  if (authLoading || loading) return <ShopSkeleton />;
 
   if (verifying) return <VerifyingSpinner />;
 
   if (!isActive) {
     return (
-      <ProSellerCTA
-        dealerPrice={dealerPrice}
-        dealerInterval={dealerInterval}
-        subscribing={subscribing}
-        onSubscribe={handleSubscribe}
-      />
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900">My Shop</h1>
+        <ProSellerCTA
+          dealerPrice={dealerPrice}
+          dealerInterval={dealerInterval}
+          subscribing={subscribing}
+          onSubscribe={handleSubscribe}
+        />
+      </div>
     );
   }
 
@@ -270,10 +360,11 @@ export default function MyShopTab({ userId }: Props) {
       <BrandingForm
         state={branding}
         saving={saving}
-        bannerUploading={false}
+        bannerUploading={bannerUploading}
+        slugLocked={!!shop?.slug}
         onChange={handleBrandingChange}
-        onBannerUpload={() => {}}
-        onBannerRemove={() => {}}
+        onBannerUpload={handleBannerUpload}
+        onBannerRemove={handleBannerRemove}
         onSave={handleSaveBranding}
       />
     </div>

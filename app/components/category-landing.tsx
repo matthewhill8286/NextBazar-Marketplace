@@ -256,7 +256,7 @@ export default function CategoryLanding({
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-gray-900 text-white shadow-lg shadow-gray-900/20"
+                    ? "bg-gray-900 text-white shadow-sm shadow-gray-900/10"
                     : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                 }`}
               >

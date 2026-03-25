@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import type { DashboardListing } from "@/lib/supabase/supabase.types";
+import { DashboardProvider } from "./dashboard-context";
 import DashboardSidebar from "./sidebar";
 
 /* ── Skeleton pulse block ─────────────────────────────────────────────────── */
@@ -90,6 +92,15 @@ function ContentSkeleton() {
   );
 }
 
+const LISTING_SELECT = `
+  id, title, slug, price, currency, price_type, condition, status,
+  primary_image_url, view_count, favorite_count, message_count,
+  is_promoted, is_urgent, promoted_until, created_at, expires_at,
+  category_id, location_id,
+  categories(name, slug, icon),
+  locations(name)
+`;
+
 export default function DashboardShell({
   children,
 }: {
@@ -99,6 +110,9 @@ export default function DashboardShell({
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [listings, setListings] = useState<DashboardListing[]>([]);
+  const [isDealer, setIsDealer] = useState(false);
+  const [isProSeller, setIsProSeller] = useState(false);
   const [stats, setStats] = useState({
     active: 0,
     sold: 0,
@@ -118,13 +132,20 @@ export default function DashboardShell({
         return;
       }
 
-      const [{ data: prof }, { data: listings }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", user.id).single(),
-        supabase
-          .from("listings")
-          .select("status, view_count, favorite_count")
-          .eq("user_id", user.id),
-      ]);
+      const [{ data: prof }, { data: listingData }, { data: shop }] =
+        await Promise.all([
+          supabase.from("profiles").select("*").eq("id", user.id).single(),
+          supabase
+            .from("listings")
+            .select(LISTING_SELECT)
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("dealer_shops")
+            .select("plan_status")
+            .eq("user_id", user.id)
+            .single(),
+        ]);
 
       setProfile({
         display_name: prof?.display_name || user.email?.split("@")[0] || "User",
@@ -138,7 +159,13 @@ export default function DashboardShell({
       const ADMIN_EMAILS = ["matthill8286@gmail.com"];
       setIsAdmin(ADMIN_EMAILS.includes(user.email || ""));
 
-      const items = listings || [];
+      const items = listingData || [];
+      setListings(items);
+
+      const dealer = prof?.is_dealer || false;
+      setIsDealer(dealer);
+      setIsProSeller(!!dealer && shop?.plan_status === "active");
+
       setStats({
         active: items.filter((s) => s.status === "active").length,
         sold: items.filter((s) => s.status === "sold").length,
@@ -163,13 +190,19 @@ export default function DashboardShell({
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-        {profile && (
-          <DashboardSidebar profile={profile} stats={stats} isAdmin={isAdmin} />
-        )}
-        <div className="min-w-0">{children}</div>
+    <DashboardProvider value={{ listings, isDealer, isProSeller }}>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+          {profile && (
+            <DashboardSidebar
+              profile={profile}
+              stats={stats}
+              isAdmin={isAdmin}
+            />
+          )}
+          <div className="min-w-0">{children}</div>
+        </div>
       </div>
-    </div>
+    </DashboardProvider>
   );
 }

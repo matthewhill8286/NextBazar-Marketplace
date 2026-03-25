@@ -337,6 +337,7 @@ export type Database = {
           created_at: string;
           currency: string;
           description: string | null;
+          boosted_until: string | null;
           embedding: string | null;
           expires_at: string | null;
           expiry_warning_sent: boolean;
@@ -369,6 +370,7 @@ export type Database = {
           created_at?: string;
           currency?: string;
           description?: string | null;
+          boosted_until?: string | null;
           embedding?: string | null;
           expires_at?: string | null;
           expiry_warning_sent?: boolean;
@@ -401,6 +403,7 @@ export type Database = {
           created_at?: string;
           currency?: string;
           description?: string | null;
+          boosted_until?: string | null;
           embedding?: string | null;
           expires_at?: string | null;
           expiry_warning_sent?: boolean;

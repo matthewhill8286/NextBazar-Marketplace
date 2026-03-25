@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
         is_promoted?: boolean;
         promoted_until?: string;
         is_urgent?: boolean;
+        boosted_until?: string;
       };
 
       const updateData: ListingUpdate = {
@@ -59,6 +60,7 @@ export async function POST(request: NextRequest) {
         updateData.promoted_until = promotedUntil.toISOString();
       } else if (promotionType === "urgent") {
         updateData.is_urgent = true;
+        updateData.boosted_until = promotedUntil.toISOString();
       }
 
       const { error } = await supabaseAdmin

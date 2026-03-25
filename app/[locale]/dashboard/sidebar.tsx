@@ -13,6 +13,7 @@ import {
   Settings,
   Shield,
   ShoppingBag,
+  Store,
   Tag,
 } from "lucide-react";
 import Link from "next/link";
@@ -186,19 +187,33 @@ export default function DashboardSidebar({
           );
         })}
 
-        {/* Become a Pro Seller link — only shown for non-dealers */}
-        {FEATURE_FLAGS.DEALERS && !profile.is_dealer && (
-          <Link
-            href="/dealers"
-            className={clsx(
-              "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
-              "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
-            )}
-          >
-            <Crown className="w-4 h-4" />
-            Become a Pro Seller
-          </Link>
-        )}
+        {/* My Shop — Pro Sellers get a direct link, others see upgrade CTA */}
+        {FEATURE_FLAGS.DEALERS &&
+          (profile.is_dealer ? (
+            <Link
+              href="/dashboard/shop"
+              className={clsx(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                pathname === "/dashboard/shop"
+                  ? "bg-indigo-50 text-indigo-700"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+              )}
+            >
+              <Store className="w-4 h-4" />
+              My Shop
+            </Link>
+          ) : (
+            <Link
+              href="/dealers"
+              className={clsx(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
+                "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+              )}
+            >
+              <Crown className="w-4 h-4" />
+              Become a Pro Seller
+            </Link>
+          ))}
       </nav>
     </aside>
   );

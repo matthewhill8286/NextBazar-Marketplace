@@ -52,6 +52,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
     slug: shop?.slug ?? "",
     description: shop?.description ?? "",
     accentColor: shop?.accent_color ?? "#4f46e5",
+    bannerUrl: shop?.banner_url ?? "",
     website: shop?.website ?? "",
     facebook: shop?.facebook ?? "",
     instagram: shop?.instagram ?? "",
@@ -240,7 +241,10 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
         <BrandingForm
           state={branding}
           saving={saving}
+          bannerUploading={false}
           onChange={handleBrandingChange}
+          onBannerUpload={() => {}}
+          onBannerRemove={() => {}}
           onSave={handleSaveBranding}
         />
       )}

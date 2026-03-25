@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings, Store } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -14,6 +14,7 @@ type UserProfile = {
   email: string;
   display_name: string | null;
   avatar_url: string | null;
+  is_dealer: boolean;
 };
 
 export default function UserMenu() {
@@ -54,7 +55,7 @@ export default function UserMenu() {
     const supabase = createClient();
     supabase
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select("display_name, avatar_url, is_dealer")
       .eq("id", authUserId)
       .single()
       .then(({ data: profile }) => {
@@ -63,6 +64,7 @@ export default function UserMenu() {
           email: "", // email not needed for display
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
+          is_dealer: profile?.is_dealer || false,
         });
         setLoading(false);
       });
@@ -147,6 +149,16 @@ export default function UserMenu() {
               <LayoutDashboard className="w-4 h-4 text-gray-400" />
               {tDash("overview")}
             </Link>
+            {FEATURE_FLAGS.DEALERS && user.is_dealer && (
+              <Link
+                href="/dashboard/shop"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Store className="w-4 h-4 text-gray-400" />
+                My Shop
+              </Link>
+            )}
             <Link
               href="/dashboard/settings"
               onClick={() => setOpen(false)}
