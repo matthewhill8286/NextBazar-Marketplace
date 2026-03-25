@@ -113,12 +113,6 @@ export default function DashboardShell({
   const [listings, setListings] = useState<DashboardListing[]>([]);
   const [isDealer, setIsDealer] = useState(false);
   const [isProSeller, setIsProSeller] = useState(false);
-  const [stats, setStats] = useState({
-    active: 0,
-    sold: 0,
-    views: 0,
-    favorites: 0,
-  });
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -166,13 +160,6 @@ export default function DashboardShell({
       setIsDealer(dealer);
       setIsProSeller(!!dealer && shop?.plan_status === "active");
 
-      setStats({
-        active: items.filter((s) => s.status === "active").length,
-        sold: items.filter((s) => s.status === "sold").length,
-        views: items.reduce((sum, s) => sum + (s.view_count || 0), 0),
-        favorites: items.reduce((sum, s) => sum + (s.favorite_count || 0), 0),
-      });
-
       setLoading(false);
     }
     load();
@@ -196,7 +183,6 @@ export default function DashboardShell({
           {profile && (
             <DashboardSidebar
               profile={profile}
-              stats={stats}
               isAdmin={isAdmin}
             />
           )}

@@ -6,9 +6,7 @@ import {
   Bell,
   BookMarked,
   Crown,
-  Eye,
   Flag,
-  Heart,
   LayoutDashboard,
   Settings,
   Shield,
@@ -28,12 +26,6 @@ type SidebarProps = {
     verified: boolean;
     is_dealer: boolean;
   };
-  stats: {
-    active: number;
-    sold: number;
-    views: number;
-    favorites: number;
-  };
   isAdmin?: boolean;
 };
 
@@ -51,11 +43,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
-export default function DashboardSidebar({
-  profile,
-  stats,
-  isAdmin,
-}: SidebarProps) {
+export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
   const rawPathname = usePathname();
   // Strip locale prefix (/en/ or /el/) so href comparisons work correctly
   const pathname = rawPathname.replace(/^\/(en|el)(\/|$)/, "/");
@@ -100,62 +88,6 @@ export default function DashboardSidebar({
               </span>
             )}
           </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-2">
-          <Link
-            href="/dashboard?tab=active"
-            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
-          >
-            <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
-              {stats.active}
-            </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">
-              Active
-            </div>
-          </Link>
-          <Link
-            href="/dashboard?tab=sold"
-            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
-          >
-            <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
-              {stats.sold}
-            </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">
-              Sold
-            </div>
-          </Link>
-          <Link
-            href="/dashboard/analytics"
-            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
-          >
-            <div className="flex items-center justify-center gap-1">
-              <Eye className="w-3 h-3 text-gray-400 group-hover:text-indigo-500" />
-              <span className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
-                {stats.views >= 1000
-                  ? `${(stats.views / 1000).toFixed(1)}k`
-                  : stats.views}
-              </span>
-            </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">
-              Views
-            </div>
-          </Link>
-          <Link
-            href="/saved"
-            className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-rose-50 hover:ring-1 hover:ring-rose-200 transition-all group"
-          >
-            <div className="flex items-center justify-center gap-1">
-              <Heart className="w-3 h-3 text-gray-400 group-hover:text-rose-400" />
-              <span className="text-lg font-bold text-gray-900 group-hover:text-rose-600">
-                {stats.favorites}
-              </span>
-            </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-rose-400">
-              Saved
-            </div>
-          </Link>
         </div>
       </div>
 

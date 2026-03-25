@@ -804,14 +804,14 @@ export default function ListingsClient({
                       {listing.status === "active" &&
                         !listing.is_promoted &&
                         !listing.is_urgent && (
-                        <Link
-                          href={`/promote/${listing.id}`}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50"
-                          onClick={() => setOpenMenu(null)}
-                        >
-                          <Star className="w-3.5 h-3.5" /> Promote Listing
-                        </Link>
-                      )}
+                          <Link
+                            href={`/promote/${listing.id}`}
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50"
+                            onClick={() => setOpenMenu(null)}
+                          >
+                            <Star className="w-3.5 h-3.5" /> Promote Listing
+                          </Link>
+                        )}
                       {listing.status === "active" && (
                         <button
                           onClick={() => {

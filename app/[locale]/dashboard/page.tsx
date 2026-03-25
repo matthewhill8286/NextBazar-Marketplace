@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Crown,
-  Eye,
-  Heart,
-  MessageCircle,
-  Package,
-  Plus,
-} from "lucide-react";
+import { Crown, Eye, Heart, MessageCircle, Package, Plus } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
@@ -17,7 +10,11 @@ import ProSellerModal from "./dealer/pro-seller-modal";
 import ListingsClient from "./listings/listings-client";
 
 export default function DashboardPage() {
-  const { listings: initialListings, isDealer, isProSeller } = useDashboardData();
+  const {
+    listings: initialListings,
+    isDealer,
+    isProSeller,
+  } = useDashboardData();
   const [liveListings, setLiveListings] = useState(initialListings);
   const [showProModal, setShowProModal] = useState(false);
   const [dealerPrice] = useState("€25");
@@ -31,7 +28,10 @@ export default function DashboardPage() {
 
   const activeCount = liveListings.filter((l) => l.status === "active").length;
   const totalViews = liveListings.reduce((s, l) => s + (l.view_count || 0), 0);
-  const totalFavs = liveListings.reduce((s, l) => s + (l.favorite_count || 0), 0);
+  const totalFavs = liveListings.reduce(
+    (s, l) => s + (l.favorite_count || 0),
+    0,
+  );
   const totalMessages = liveListings.reduce(
     (s, l) => s + (l.message_count || 0),
     0,

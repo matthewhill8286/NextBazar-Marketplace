@@ -567,7 +567,9 @@ export default function SearchClient({
             </kbd>{" "}
             to search · <Sparkles className="w-3 h-3 inline text-indigo-300" />{" "}
             for AI smart search{" "}
-            <span className="text-[9px] bg-white/15 text-white/60 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">Beta</span>
+            <span className="text-[9px] bg-white/15 text-white/60 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+              Beta
+            </span>
           </p>
         </div>
       </section>

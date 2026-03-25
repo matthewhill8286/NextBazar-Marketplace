@@ -111,7 +111,9 @@ export default function PostStep2({
             )}
             {descLoading ? "Writing..." : "Write with AI"}
             {!descLoading && (
-              <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">Beta</span>
+              <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+                Beta
+              </span>
             )}
           </button>
         </div>
@@ -369,7 +371,9 @@ export default function PostStep2({
               )}
               {pricingLoading ? "Analyzing..." : "Get pricing guide"}
               {!pricingLoading && (
-                <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">Beta</span>
+                <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+                  Beta
+                </span>
               )}
             </button>
           </div>
@@ -447,7 +451,9 @@ export default function PostStep2({
             <span className="font-semibold text-indigo-900 text-sm">
               AI Pricing Guide
             </span>
-            <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">Beta</span>
+            <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+              Beta
+            </span>
             {(pricingData.market?.similar_count ?? 0) > 0 && (
               <span className="text-xs text-indigo-400 ml-auto">
                 Based on {pricingData.market!.similar_count} similar listings

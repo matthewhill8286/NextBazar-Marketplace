@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, ExternalLink, Loader2, Store } from "lucide-react";
+import { CreditCard, ExternalLink, Store } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";

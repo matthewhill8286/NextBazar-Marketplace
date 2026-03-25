@@ -38,9 +38,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error:
-          err instanceof Error
-            ? err.message
-            : "Failed to generate description",
+          err instanceof Error ? err.message : "Failed to generate description",
       },
       { status: 500 },
     );

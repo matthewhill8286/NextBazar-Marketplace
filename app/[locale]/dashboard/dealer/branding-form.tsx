@@ -175,7 +175,8 @@ export default function BrandingForm({
             )}
             <p className="font-semibold text-gray-900 mb-1">Upload Banner</p>
             <p className="text-sm text-gray-500">
-              Drag & drop or click to browse. JPG, PNG, WebP — recommended 1200 x 300px.
+              Drag & drop or click to browse. JPG, PNG, WebP — recommended 1200
+              x 300px.
             </p>
           </div>
         )}
@@ -335,15 +336,9 @@ export default function BrandingForm({
                 /shop/{slug || "..."}
               </span>
 
-              {website && (
-                <Globe className="w-3.5 h-3.5 text-gray-400" />
-              )}
-              {facebook && (
-                <Facebook className="w-3.5 h-3.5 text-gray-400" />
-              )}
-              {instagram && (
-                <Instagram className="w-3.5 h-3.5 text-gray-400" />
-              )}
+              {website && <Globe className="w-3.5 h-3.5 text-gray-400" />}
+              {facebook && <Facebook className="w-3.5 h-3.5 text-gray-400" />}
+              {instagram && <Instagram className="w-3.5 h-3.5 text-gray-400" />}
             </div>
 
             {/* Fake listing placeholders */}
@@ -441,7 +436,9 @@ export default function BrandingForm({
                 ? "Improve with AI"
                 : "Write with AI"}
             {!aiWriting && (
-              <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1 py-0.5 rounded-full font-semibold uppercase tracking-wider">Beta</span>
+              <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+                Beta
+              </span>
             )}
           </button>
         </div>
