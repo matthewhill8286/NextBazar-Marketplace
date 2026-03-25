@@ -258,7 +258,10 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
   it("disables the Withdraw button while the request is in-flight", async () => {
     let settle!: (v: { error: null }) => void;
     mockUpdateEq.mockImplementation(
-      () => new Promise<{ error: null }>((res) => { settle = res; }),
+      () =>
+        new Promise<{ error: null }>((res) => {
+          settle = res;
+        }),
     );
     renderBuyer();
     await expand();
@@ -319,23 +322,22 @@ describe("BuyerOfferCard — accept / decline counter offer", () => {
     expect(
       screen.getByText(/Accept €175/i).closest("button"),
     ).not.toBeDisabled();
-    expect(
-      screen.getByText(/^Decline$/i).closest("button"),
-    ).not.toBeDisabled();
+    expect(screen.getByText(/^Decline$/i).closest("button")).not.toBeDisabled();
   });
 
   it("disables all action buttons while the request is in-flight", async () => {
     let settle!: (v: { error: null }) => void;
     mockUpdateEq.mockImplementation(
-      () => new Promise<{ error: null }>((res) => { settle = res; }),
+      () =>
+        new Promise<{ error: null }>((res) => {
+          settle = res;
+        }),
     );
     renderBuyer(COUNTERED_OFFER);
     await expand();
     fireEvent.click(screen.getByText(/Accept €175/i));
     await waitFor(() =>
-      expect(
-        screen.getByText(/Accept €175/i).closest("button"),
-      ).toBeDisabled(),
+      expect(screen.getByText(/Accept €175/i).closest("button")).toBeDisabled(),
     );
     // Withdraw is blocked by the same !!loading guard
     expect(
@@ -415,7 +417,10 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
   it("disables Accept and Decline while the request is in-flight", async () => {
     let settle!: (v: { error: null }) => void;
     mockUpdateEq.mockImplementation(
-      () => new Promise<{ error: null }>((res) => { settle = res; }),
+      () =>
+        new Promise<{ error: null }>((res) => {
+          settle = res;
+        }),
     );
     renderSeller();
     await expand(/^Accept$/);
@@ -423,9 +428,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
     await waitFor(() =>
       expect(screen.getByText(/^Accept$/).closest("button")).toBeDisabled(),
     );
-    expect(
-      screen.getByText(/^Decline$/).closest("button"),
-    ).toBeDisabled();
+    expect(screen.getByText(/^Decline$/).closest("button")).toBeDisabled();
     settle({ error: null });
     await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });

@@ -1,8 +1,13 @@
 "use client";
 
-import { Building, Building2, Hammer, Key } from "lucide-react";
-import CategoryLanding, { type TabConfig } from "@/app/components/category-landing";
-import type { ListingCardRow, Subcategory } from "@/lib/supabase/supabase.types";
+import { Building2, Hammer, Key } from "lucide-react";
+import CategoryLanding, {
+  type TabConfig,
+} from "@/app/components/category-landing";
+import type {
+  ListingCardRow,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 const TABS: TabConfig[] = [
   {
@@ -11,34 +16,15 @@ const TABS: TabConfig[] = [
     icon: Building2,
     description:
       "Find your dream home — browse apartments, houses, villas, land plots, and commercial properties for sale across Cyprus.",
-    subcategorySlugs: [
-      "apartment-sale",
-      "house-sale",
-      "villa-sale",
-      "land",
-      "commercial-sale",
-      "apartment",
-      "house",
-      "villa",
-    ],
+    subcategorySlugs: ["apartments-sale", "houses-sale", "commercial", "land"],
   },
   {
     key: "rent",
     label: "Rent",
     icon: Key,
     description:
-      "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets.",
-    subcategorySlugs: [
-      "apartment-rent",
-      "house-rent",
-      "villa-rent",
-      "office-rent",
-      "commercial-rent",
-      "short-term",
-      "holiday-let",
-      "rental",
-      "rent",
-    ],
+      "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets across Cyprus.",
+    subcategorySlugs: ["apartments-rent", "houses-rent"],
   },
   {
     key: "new-developments",
@@ -46,13 +32,7 @@ const TABS: TabConfig[] = [
     icon: Hammer,
     description:
       "Explore off-plan and newly built projects from trusted developers — modern designs, payment plans, and early-bird pricing.",
-    subcategorySlugs: [
-      "new-development",
-      "off-plan",
-      "new-build",
-      "project",
-      "development",
-    ],
+    subcategorySlugs: [],
   },
 ];
 
@@ -84,6 +64,7 @@ export default function PropertiesClient({
       recentListings={recentListings}
       currency="€"
       postLabel="List a Property"
+      heroImage={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/property-hero.jpg`}
     />
   );
 }

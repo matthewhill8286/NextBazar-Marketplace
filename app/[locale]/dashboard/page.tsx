@@ -15,9 +15,52 @@ import { useEffect, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
-import { LoadingSpinner } from "@/app/components/ui";
 import ListingsClient from "./listings/listings-client";
 import MyShopTab from "./my-shop-tab";
+
+/* ── Skeleton pulse block ─────────────────────────────────────────────────── */
+function Bone({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />;
+}
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <Bone className="h-8 w-36" />
+        <Bone className="h-10 w-36 rounded-xl" />
+      </div>
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Bone className="w-9 h-9 rounded-lg" />
+              <Bone className="h-3 w-12" />
+            </div>
+            <Bone className="h-7 w-16" />
+          </div>
+        ))}
+      </div>
+      {/* Tabs */}
+      <Bone className="h-11 w-full max-w-md rounded-xl" />
+      {/* Listing rows */}
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4">
+            <Bone className="w-16 h-12 rounded-lg shrink-0" />
+            <div className="flex-1 space-y-2">
+              <Bone className="h-4 w-3/4" />
+              <Bone className="h-3 w-1/2" />
+            </div>
+            <Bone className="h-4 w-16 shrink-0" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 type DashboardView = "overview" | "my-shop";
 
@@ -30,7 +73,8 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState<string | null>(null);
 
   // Allow linking directly to the shop tab via ?view=my-shop
-  const initialView = searchParams.get("view") === "my-shop" ? "my-shop" : "overview";
+  const initialView =
+    searchParams.get("view") === "my-shop" ? "my-shop" : "overview";
   const [view, setView] = useState<DashboardView>(initialView);
 
   useEffect(() => {
@@ -79,7 +123,7 @@ export default function DashboardPage() {
   );
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <PageSkeleton />;
   }
 
   return (
@@ -135,7 +179,9 @@ export default function DashboardPage() {
                 <div className="p-2 bg-indigo-50 rounded-lg">
                   <Package className="w-4 h-4 text-indigo-600" />
                 </div>
-                <span className="text-xs font-medium text-gray-500">Active</span>
+                <span className="text-xs font-medium text-gray-500">
+                  Active
+                </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
                 {listings.filter((l) => l.status === "active").length}
@@ -168,7 +214,9 @@ export default function DashboardPage() {
                 <div className="p-2 bg-purple-50 rounded-lg">
                   <MessageCircle className="w-4 h-4 text-purple-600" />
                 </div>
-                <span className="text-xs font-medium text-gray-500">Messages</span>
+                <span className="text-xs font-medium text-gray-500">
+                  Messages
+                </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
                 {totalMessages}
@@ -189,7 +237,8 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-lg">Become a Pro Seller</h3>
                   <p className="text-white/80 text-sm mt-0.5">
-                    Get unlimited listings, a branded shop page, analytics &amp; more for just €35/month
+                    Get unlimited listings, a branded shop page, analytics &amp;
+                    more for just €35/month
                   </p>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5 bg-white text-purple-700 font-semibold text-sm px-4 py-2 rounded-lg shrink-0 group-hover:bg-white/90 transition-colors">

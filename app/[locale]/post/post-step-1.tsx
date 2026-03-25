@@ -1,7 +1,9 @@
 "use client";
 
 import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import ImageUpload from "@/app/components/image-upload";
 import type {
   Category,
@@ -141,20 +143,14 @@ export default function PostStep1({
         {visibleSubcategories.length > 0 && (
           <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-200">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subcategory{" "}
-              <span className="text-gray-400 font-normal">(optional)</span>
+              Subcategory
             </label>
             <div className="flex flex-wrap gap-2">
               {visibleSubcategories.map((sub) => (
                 <button
                   key={sub.id}
                   type="button"
-                  onClick={() =>
-                    onUpdate(
-                      "subcategory_id",
-                      formData.subcategory_id === sub.id ? "" : sub.id,
-                    )
-                  }
+                  onClick={() => onUpdate("subcategory_id", sub.id)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                     formData.subcategory_id === sub.id
                       ? "border-indigo-400 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
@@ -172,7 +168,11 @@ export default function PostStep1({
       <button
         type="button"
         onClick={onNext}
-        disabled={!formData.title || !formData.category_id}
+        disabled={
+          !formData.title ||
+          !formData.category_id ||
+          (visibleSubcategories.length > 0 && !formData.subcategory_id)
+        }
         className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
       >
         Continue <ArrowRight className="w-4 h-4" />

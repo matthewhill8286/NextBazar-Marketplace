@@ -67,7 +67,14 @@ export function CompareProvider({ children }: { children: ReactNode }) {
 
   return (
     <CompareContext.Provider
-      value={{ items, add, remove, clear, isCompared, isFull: items.length >= MAX }}
+      value={{
+        items,
+        add,
+        remove,
+        clear,
+        isCompared,
+        isFull: items.length >= MAX,
+      }}
     >
       {children}
     </CompareContext.Provider>

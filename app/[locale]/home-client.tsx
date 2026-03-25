@@ -1,6 +1,15 @@
 "use client";
 
-import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, Store, TrendingUp } from "lucide-react";
+import {
+  Bot,
+  Clock,
+  Flame,
+  MessageCircle,
+  Shield,
+  Sparkles,
+  Store,
+  TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CategoryIcon, {
@@ -35,8 +44,12 @@ export default function HomeClient({
   const [featured] = useState<ListingCardRow[]>(initialFeatured);
   const [recent] = useState<ListingCardRow[]>(initialRecent);
   const [trending, setTrending] = useState<ListingCardRow[]>([]);
-  const [trendingLocationName, setTrendingLocationName] = useState<string | null>(null);
-  const [trendingLocationSlug, setTrendingLocationSlug] = useState<string | null>(null);
+  const [trendingLocationName, setTrendingLocationName] = useState<
+    string | null
+  >(null);
+  const [trendingLocationSlug, setTrendingLocationSlug] = useState<
+    string | null
+  >(null);
   const [recentlyViewed, setRecentlyViewed] = useState<ListingCardRow[]>([]);
   const [totalCount] = useState(initialTotalCount);
   // Public data (categories, featured, recent) comes from the server.
@@ -124,19 +137,25 @@ export default function HomeClient({
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-linear-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white">
+      <section className="relative overflow-hidden text-white">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/home-hero.jpg)`,
+          }}
+        />
+        {/* Dark gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/75 via-indigo-900/65 to-indigo-950/80" />
         {/* Dot mesh overlay */}
         <div
-          className="absolute inset-0 opacity-[0.12]"
+          className="absolute inset-0 opacity-[0.08]"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
             backgroundSize: "32px 32px",
           }}
         />
-        {/* Ambient glow blobs */}
-        <div className="absolute -top-40 -left-40 w-125 h-125 bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-violet-500 rounded-full blur-3xl opacity-25 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
           {/* Eyebrow pill */}
@@ -145,7 +164,7 @@ export default function HomeClient({
             Cyprus&rsquo;s smartest marketplace
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 tracking-tight leading-[1.1] drop-shadow-lg">
             Buy &amp; Sell{" "}
             <span className="relative inline-block">
               <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-300 to-orange-300">
@@ -155,7 +174,7 @@ export default function HomeClient({
             in Cyprus
           </h1>
 
-          <p className="text-indigo-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-white/85 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
             AI-powered search, instant messaging, and verified sellers — all in
             one place.
           </p>
@@ -223,7 +242,8 @@ export default function HomeClient({
                   property: "/properties",
                   vehicles: "/vehicles",
                 };
-                const href = LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
+                const href =
+                  LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
                 return (
                   <Link
                     key={cat.id}
@@ -272,44 +292,42 @@ export default function HomeClient({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featured.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           </section>
         )}
 
         {/* ── Featured Shops ───────────────────────────────────────────── */}
-        {FEATURE_FLAGS.DEALERS && !loading && initialFeaturedShops.length > 0 && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
-                <h2 className="text-xl font-bold text-gray-900">
-                  Pro Seller Shops
-                </h2>
-                <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
-                  <Store className="w-3 h-3" />
-                  Premium
-                </span>
+        {FEATURE_FLAGS.DEALERS &&
+          !loading &&
+          initialFeaturedShops.length > 0 && (
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Pro Seller Shops
+                  </h2>
+                  <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                    <Store className="w-3 h-3" />
+                    Premium
+                  </span>
+                </div>
+                <Link
+                  href="/shops"
+                  className="text-sm text-indigo-600 font-semibold hover:underline"
+                >
+                  View all →
+                </Link>
               </div>
-              <Link
-                href="/shops"
-                className="text-sm text-indigo-600 font-semibold hover:underline"
-              >
-                View all →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {initialFeaturedShops.map((shop) => (
-                <ShopCardCompact key={shop.id} shop={shop} />
-              ))}
-            </div>
-          </section>
-        )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {initialFeaturedShops.map((shop) => (
+                  <ShopCardCompact key={shop.id} shop={shop} />
+                ))}
+              </div>
+            </section>
+          )}
 
         {/* ── Trending in Your Area ────────────────────────────────────── */}
         {!loading && trending.length > 0 && (
@@ -328,9 +346,11 @@ export default function HomeClient({
                 </span>
               </div>
               <Link
-                href={trendingLocationSlug
-                  ? `/search?location=${trendingLocationSlug}&sort=popular`
-                  : "/search?sort=popular"}
+                href={
+                  trendingLocationSlug
+                    ? `/search?location=${trendingLocationSlug}&sort=popular`
+                    : "/search?sort=popular"
+                }
                 className="text-sm text-indigo-600 font-semibold hover:underline"
               >
                 View all →
@@ -338,10 +358,7 @@ export default function HomeClient({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {trending.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           </section>
@@ -362,9 +379,11 @@ export default function HomeClient({
                 </span>
               </div>
               <button
-                  type="button"
+                type="button"
                 onClick={() => {
-                  try { localStorage.removeItem("recentlyViewed"); } catch {}
+                  try {
+                    localStorage.removeItem("recentlyViewed");
+                  } catch {}
                   setRecentlyViewed([]);
                 }}
                 className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
@@ -374,10 +393,7 @@ export default function HomeClient({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recentlyViewed.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           </section>
@@ -407,7 +423,7 @@ export default function HomeClient({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
-                    key={`${Math.random() + i}`}
+                  key={`${Math.random() + i}`}
                   className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
                 >
                   <div className="aspect-4/3 bg-gray-100 animate-pulse" />
@@ -422,10 +438,7 @@ export default function HomeClient({
           ) : recent.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recent.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           ) : (

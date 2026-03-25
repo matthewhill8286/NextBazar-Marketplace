@@ -22,7 +22,7 @@ const mockSavedSearch = {
 /** Add a saved_searches route that starts empty and can be overridden per-test */
 async function mockSavedSearches(
   page: Parameters<typeof mockAuthUser>[0],
-  initial: typeof mockSavedSearch[] = [],
+  initial: (typeof mockSavedSearch)[] = [],
 ) {
   await page.route(`${SUPABASE_URL}/rest/v1/saved_searches**`, (route) => {
     const method = route.request().method();
@@ -107,7 +107,8 @@ test.describe("Save Search button", () => {
     // Capture the outgoing POST
     const [request] = await Promise.all([
       page.waitForRequest(
-        (r) => r.url().includes("/rest/v1/saved_searches") && r.method() === "POST",
+        (r) =>
+          r.url().includes("/rest/v1/saved_searches") && r.method() === "POST",
       ),
       saveBtn.click(),
     ]);
@@ -180,9 +181,9 @@ test.describe("Saved Searches dashboard", () => {
     await mockSavedSearches(page);
     await page.goto("/dashboard/saved-searches");
 
-    await expect(
-      page.getByText(/no saved searches/i),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/no saved searches/i)).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
   test("lists saved searches when they exist", async ({ page }) => {
@@ -191,9 +192,9 @@ test.describe("Saved Searches dashboard", () => {
     await mockSavedSearches(page, [mockSavedSearch]);
     await page.goto("/dashboard/saved-searches");
 
-    await expect(
-      page.getByText("electronics in nicosia"),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("electronics in nicosia")).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
   test("each saved search has a run-search link", async ({ page }) => {
@@ -217,9 +218,9 @@ test.describe("Saved Searches dashboard", () => {
     await mockSavedSearches(page, [mockSavedSearch]);
     await page.goto("/dashboard/saved-searches");
 
-    await expect(
-      page.getByText("electronics in nicosia"),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("electronics in nicosia")).toBeVisible({
+      timeout: 10_000,
+    });
 
     const deleteBtn = page.getByTitle("Delete").first();
     await expect(deleteBtn).toBeVisible();
@@ -246,8 +247,8 @@ test.describe("Saved Searches dashboard", () => {
     await mockSavedSearches(page);
     await page.goto("/dashboard/saved-searches");
 
-    await expect(
-      page.getByRole("link", { name: /new search/i }),
-    ).toBeVisible({ timeout: 5_000 });
+    await expect(page.getByRole("link", { name: /new search/i })).toBeVisible({
+      timeout: 5_000,
+    });
   });
 });

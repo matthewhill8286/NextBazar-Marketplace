@@ -204,16 +204,13 @@ export default function OnboardingWizard({
       .eq("id", userId);
 
     // Create quick listing if provided
-    if (
-      !skipListing &&
-      listingTitle.trim() &&
-      listingCategoryId
-    ) {
-      const slug = listingTitle
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")
-        .slice(0, 60) + `-${Date.now().toString(36)}`;
+    if (!skipListing && listingTitle.trim() && listingCategoryId) {
+      const slug =
+        listingTitle
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+          .slice(0, 60) + `-${Date.now().toString(36)}`;
 
       let primaryImageUrl: string | null = null;
 
@@ -465,8 +462,8 @@ export default function OnboardingWizard({
                   </h3>
                   <p className="text-sm text-gray-500 max-w-sm mx-auto">
                     We&apos;ll use your location to show you nearby listings and
-                    help buyers find your items. Your exact coordinates are never
-                    shared publicly.
+                    help buyers find your items. Your exact coordinates are
+                    never shared publicly.
                   </p>
                 </div>
                 <button
@@ -502,7 +499,9 @@ export default function OnboardingWizard({
             {/* Manual location selector (always visible) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                {geoGranted ? "Confirm your city" : "Or select your city manually"}
+                {geoGranted
+                  ? "Confirm your city"
+                  : "Or select your city manually"}
               </label>
               <select
                 value={locationId}
@@ -693,9 +692,7 @@ export default function OnboardingWizard({
                   type="button"
                   onClick={() => finishOnboarding(false)}
                   disabled={
-                    saving ||
-                    !listingTitle.trim() ||
-                    !listingCategoryId
+                    saving || !listingTitle.trim() || !listingCategoryId
                   }
                   className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-indigo-200"
                 >

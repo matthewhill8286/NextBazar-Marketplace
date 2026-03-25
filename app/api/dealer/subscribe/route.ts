@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { DEALER_PLAN, stripe } from "@/lib/stripe";
+import { getDealerPlan, stripe } from "@/lib/stripe";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,19 +35,22 @@ export async function POST(request: NextRequest) {
       customerId = customer.id;
     }
 
-    // Resolve the price ID — if env var is set, use it; otherwise create the
+    // Fetch dealer plan pricing from DB
+    const dealerPlan = await getDealerPlan();
+
+    // Resolve the price ID — if set in DB, use it; otherwise create the
     // product+price on the fly (useful for dev/test environments).
-    let priceId = DEALER_PLAN.priceId;
+    let priceId = dealerPlan.priceId;
     if (!priceId) {
       const product = await stripe.products.create({
-        name: DEALER_PLAN.name,
-        description: DEALER_PLAN.description,
+        name: dealerPlan.name,
+        description: dealerPlan.description,
       });
       const price = await stripe.prices.create({
         product: product.id,
-        unit_amount: DEALER_PLAN.amount,
+        unit_amount: dealerPlan.amount,
         currency: "eur",
-        recurring: { interval: DEALER_PLAN.interval },
+        recurring: { interval: dealerPlan.interval },
       });
       priceId = price.id;
     }
@@ -74,7 +77,9 @@ export async function POST(request: NextRequest) {
   } catch (err: unknown) {
     console.error("Dealer subscribe error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to create checkout" },
+      {
+        error: err instanceof Error ? err.message : "Failed to create checkout",
+      },
       { status: 500 },
     );
   }

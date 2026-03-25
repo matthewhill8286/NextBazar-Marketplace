@@ -26,7 +26,10 @@ function expiryBadge(
 // The recently-viewed tracking logic — stores up to 12 IDs, deduplicated,
 // newest first.
 
-function trackRecentlyViewed(storedJson: string | null, newId: string): string[] {
+function trackRecentlyViewed(
+  storedJson: string | null,
+  newId: string,
+): string[] {
   const prev: string[] = storedJson ? JSON.parse(storedJson) : [];
   return [newId, ...prev.filter((id) => id !== newId)].slice(0, 12);
 }
@@ -117,12 +120,20 @@ describe("trackRecentlyViewed", () => {
 
   it("prepends the new ID to an existing list", () => {
     const existing = JSON.stringify(["id-2", "id-3"]);
-    expect(trackRecentlyViewed(existing, "id-1")).toEqual(["id-1", "id-2", "id-3"]);
+    expect(trackRecentlyViewed(existing, "id-1")).toEqual([
+      "id-1",
+      "id-2",
+      "id-3",
+    ]);
   });
 
   it("deduplicates: moves existing ID to the front instead of duplicating", () => {
     const existing = JSON.stringify(["id-1", "id-2", "id-3"]);
-    expect(trackRecentlyViewed(existing, "id-2")).toEqual(["id-2", "id-1", "id-3"]);
+    expect(trackRecentlyViewed(existing, "id-2")).toEqual([
+      "id-2",
+      "id-1",
+      "id-3",
+    ]);
   });
 
   it("removes the ID from its old position before prepending", () => {

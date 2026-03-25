@@ -20,6 +20,10 @@ export default async function ListingPage(
     : [];
 
   return (
-    <ListingDetail slug={slug} initialListing={listing} initialRelated={related} />
+    <ListingDetail
+      slug={slug}
+      initialListing={listing}
+      initialRelated={related}
+    />
   );
 }

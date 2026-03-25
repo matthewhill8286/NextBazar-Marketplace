@@ -29,7 +29,10 @@ import MakeOfferModal from "@/app/components/make-offer-modal";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
-import type { ListingCardRow, ListingDetailRow } from "@/lib/supabase/supabase.types";
+import type {
+  ListingCardRow,
+  ListingDetailRow,
+} from "@/lib/supabase/supabase.types";
 import AiInsights, { type InsightsPriceSummaryAction } from "./ai-insights";
 import ImageGallery from "./image-gallery";
 import {
@@ -73,7 +76,10 @@ function ListingDetailSkeleton() {
           {/* Thumbnail strip */}
           <div className="flex gap-2">
             {[...Array(4)].map((_, i) => (
-              <Bone key={`${Math.random() + i}`} className="w-16 h-16 rounded-xl shrink-0" />
+              <Bone
+                key={`${Math.random() + i}`}
+                className="w-16 h-16 rounded-xl shrink-0"
+              />
             ))}
           </div>
 
@@ -101,7 +107,8 @@ function ListingDetailSkeleton() {
             <Bone className="h-5 w-24 mb-1" />
             <div className="grid grid-cols-2 gap-3">
               {[...Array(4)].map((_, i) => (
-                <div key={`${Math.random() + i}`}
+                <div
+                  key={`${Math.random() + i}`}
                   className="bg-gray-50 rounded-xl p-3 flex gap-3 items-center"
                 >
                   <Bone className="w-8 h-8 rounded-lg shrink-0" />
@@ -159,7 +166,10 @@ function ListingDetailSkeleton() {
           <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 space-y-3">
             <Bone className="h-5 w-28 bg-amber-200" />
             {[...Array(4)].map((_, i) => (
-              <div key={`${Math.random() + i}`} className="flex gap-2 items-center">
+              <div
+                key={`${Math.random() + i}`}
+                className="flex gap-2 items-center"
+              >
                 <Bone className="w-3 h-3 rounded-full bg-amber-200 shrink-0" />
                 <Bone
                   className={`h-3.5 bg-amber-200 ${i % 2 === 0 ? "w-full" : "w-4/5"}`}
@@ -191,7 +201,9 @@ export default function ListingDetail({
   const locale = useLocale();
 
   const supabase = createClient();
-  const [listing, setListing] = useState<ListingDetailRow | null>(initialListing);
+  const [listing, setListing] = useState<ListingDetailRow | null>(
+    initialListing,
+  );
   const [related, setRelated] = useState<ListingCardRow[]>(initialRelated);
   // Skip loading skeleton when server already provided the data
   const [loading, setLoading] = useState(!initialListing);
@@ -307,7 +319,10 @@ export default function ListingDetail({
       try {
         const stored = localStorage.getItem("recentlyViewed");
         const prev: string[] = stored ? JSON.parse(stored) : [];
-        const updated = [data.id, ...prev.filter((id: string) => id !== data.id)].slice(0, 12);
+        const updated = [
+          data.id,
+          ...prev.filter((id: string) => id !== data.id),
+        ].slice(0, 12);
         localStorage.setItem("recentlyViewed", JSON.stringify(updated));
       } catch {}
 
@@ -369,7 +384,7 @@ export default function ListingDetail({
       setLoading(false);
     }
     load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, listing, supabase.from, supabase.auth.getUser]);
 
   // ── Realtime: listing status (e.g. active → sold) ────────────────────────
@@ -382,14 +397,21 @@ export default function ListingDetail({
       .channel(`listing-status-${listing.id}`)
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "listings", filter: `id=eq.${listing.id}` },
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "listings",
+          filter: `id=eq.${listing.id}`,
+        },
         (payload) => {
           const patch = payload.new as Partial<typeof listing> & { id: string };
-          setListing((prev) => prev ? { ...prev, ...patch } : prev);
+          setListing((prev) => (prev ? { ...prev, ...patch } : prev));
         },
       )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [listing?.id, supabase.channel, supabase.removeChannel]);
 
   // ── Realtime: buyer's offer on this listing ──────────────────────────────
@@ -397,7 +419,8 @@ export default function ListingDetail({
   // reflects the current state without a page reload.  Only runs when we know
   // the current user is the buyer (currentUserId set and != seller).
   useEffect(() => {
-    if (!listing?.id || !currentUserId || currentUserId === listing.user_id) return;
+    if (!listing?.id || !currentUserId || currentUserId === listing.user_id)
+      return;
 
     const channel = supabase
       .channel(`listing-offer-${listing.id}-${currentUserId}`)
@@ -439,7 +462,9 @@ export default function ListingDetail({
         },
       )
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [listing?.id, listing?.user_id, currentUserId]);
 
   if (loading) {
@@ -562,141 +587,148 @@ export default function ListingDetail({
             {/* ═══ LEFT COLUMN ═══ */}
             <div className="lg:col-span-2 space-y-6">
               {/* Title card */}
-              <div className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}>
+              <div
+                className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}
+              >
                 {/* Sold banner — full-width strip at the very top of the card */}
                 {listing.status === "sold" && (
                   <div className="flex items-center justify-center gap-3 bg-gray-900 text-white py-3 px-6">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">━━━</span>
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">
+                      ━━━
+                    </span>
                     <span className="text-sm font-black uppercase tracking-[0.2em]">
                       {t("sold")}
                     </span>
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">━━━</span>
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">
+                      ━━━
+                    </span>
                   </div>
                 )}
                 <div className="p-6">
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  {listing.is_promoted && (
-                    <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                      {t("featured")}
-                    </span>
-                  )}
-                  {listing.is_urgent && (
-                    <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                      {t("urgent")}
-                    </span>
-                  )}
-                  <span
-                    className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5`}
-                  >
-                    <CategoryIcon slug={listing.categories?.slug} size={12} />
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    {listing.is_promoted && (
+                      <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                        {t("featured")}
+                      </span>
+                    )}
+                    {listing.is_urgent && (
+                      <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                        {t("urgent")}
+                      </span>
+                    )}
                     <span
-                      className={
-                        getCategoryConfig(listing.categories?.slug).color
-                      }
+                      className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5`}
                     >
-                      {listing.categories?.name}
+                      <CategoryIcon slug={listing.categories?.slug} size={12} />
+                      <span
+                        className={
+                          getCategoryConfig(listing.categories?.slug).color
+                        }
+                      >
+                        {listing.categories?.name}
+                      </span>
                     </span>
-                  </span>
-                  {listing.condition && (
-                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                      {conditionLabel(listing.condition)}
-                    </span>
-                  )}
-                  {listing.price_type === "negotiable" && (
-                    <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                      {tCommon("negotiable")}
-                    </span>
-                  )}
-                  {listing.price_type === "free" && (
-                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                      {tCommon("free")}
-                    </span>
-                  )}
-                </div>
-
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
-                  {listing.title}
-                </h1>
-
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500 mb-5">
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    {listing.locations?.name || "Cyprus"}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    {timeAgo(listing.created_at)}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-gray-400" />
-                    {t("views", {
-                      count: (listing.view_count || 0).toLocaleString(),
-                    })}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Heart className="w-4 h-4 text-gray-400" />
-                    {t("savedCount", {
-                      count: (listing.favorite_count || 0).toLocaleString(),
-                    })}
-                  </span>
-                </div>
-
-                <div className="flex items-end gap-3 mb-1">
-                  <span className="text-3xl md:text-4xl font-bold text-gray-900">
-                    {formatPrice(listing.price, listing.currency)}
-                  </span>
-                  {listing.price_type === "negotiable" && (
-                    <span className="text-sm text-green-600 font-medium pb-1">
-                      {t("priceNegotiable")}
-                    </span>
-                  )}
-                </div>
-
-                {price && isOwner && (
-                  <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
-                    <span className="flex items-center gap-1">
-                      <Shield className="w-3 h-3 text-indigo-500" />
-                      {t("marketValue")}
-                    </span>
-                    {aiMarketLoading ? (
-                      <span className="h-3.5 w-28 bg-gray-200 rounded animate-pulse inline-block" />
-                    ) : (
-                      <>
-                        <span className="font-semibold text-gray-700">
-                          {formatPrice(priceEstLow, listing.currency)} –{" "}
-                          {formatPrice(priceEstHigh, listing.currency)}
-                        </span>
-                        {aiPrice?.price_verdict &&
-                          aiPrice.price_verdict !== "no_data" && (
-                            <span
-                              className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                                aiPrice.price_verdict === "underpriced"
-                                  ? "bg-green-100 text-green-700"
-                                  : aiPrice.price_verdict === "overpriced"
-                                    ? "bg-red-100 text-red-700"
-                                    : "bg-indigo-100 text-indigo-700"
-                              }`}
-                            >
-                              {aiPrice.price_verdict === "underpriced"
-                                ? t("belowMarket")
-                                : aiPrice.price_verdict === "overpriced"
-                                  ? t("aboveMarket")
-                                  : t("fairPrice")}
-                            </span>
-                          )}
-                        <span className="text-[10px] text-gray-400 ml-0.5">
-                          · AI
-                        </span>
-                      </>
+                    {listing.condition && (
+                      <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                        {conditionLabel(listing.condition)}
+                      </span>
+                    )}
+                    {listing.price_type === "negotiable" && (
+                      <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                        {tCommon("negotiable")}
+                      </span>
+                    )}
+                    {listing.price_type === "free" && (
+                      <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                        {tCommon("free")}
+                      </span>
                     )}
                   </div>
-                )}
 
-                <div className="flex items-center gap-2 pt-2">
-                  <FavoriteAction listingId={listing.id} />
-                  <ShareAction title={listing.title} slug={listing.slug} />
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                    {listing.title}
+                  </h1>
+
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500 mb-5">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4 text-gray-400" />
+                      {listing.locations?.name || "Cyprus"}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      {timeAgo(listing.created_at)}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Eye className="w-4 h-4 text-gray-400" />
+                      {t("views", {
+                        count: (listing.view_count || 0).toLocaleString(),
+                      })}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Heart className="w-4 h-4 text-gray-400" />
+                      {t("savedCount", {
+                        count: (listing.favorite_count || 0).toLocaleString(),
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-end gap-3 mb-1">
+                    <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                      {formatPrice(listing.price, listing.currency)}
+                    </span>
+                    {listing.price_type === "negotiable" && (
+                      <span className="text-sm text-green-600 font-medium pb-1">
+                        {t("priceNegotiable")}
+                      </span>
+                    )}
+                  </div>
+
+                  {price && isOwner && (
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
+                      <span className="flex items-center gap-1">
+                        <Shield className="w-3 h-3 text-indigo-500" />
+                        {t("marketValue")}
+                      </span>
+                      {aiMarketLoading ? (
+                        <span className="h-3.5 w-28 bg-gray-200 rounded animate-pulse inline-block" />
+                      ) : (
+                        <>
+                          <span className="font-semibold text-gray-700">
+                            {formatPrice(priceEstLow, listing.currency)} –{" "}
+                            {formatPrice(priceEstHigh, listing.currency)}
+                          </span>
+                          {aiPrice?.price_verdict &&
+                            aiPrice.price_verdict !== "no_data" && (
+                              <span
+                                className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                                  aiPrice.price_verdict === "underpriced"
+                                    ? "bg-green-100 text-green-700"
+                                    : aiPrice.price_verdict === "overpriced"
+                                      ? "bg-red-100 text-red-700"
+                                      : "bg-indigo-100 text-indigo-700"
+                                }`}
+                              >
+                                {aiPrice.price_verdict === "underpriced"
+                                  ? t("belowMarket")
+                                  : aiPrice.price_verdict === "overpriced"
+                                    ? t("aboveMarket")
+                                    : t("fairPrice")}
+                              </span>
+                            )}
+                          <span className="text-[10px] text-gray-400 ml-0.5">
+                            · AI
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 pt-2">
+                    {!isOwner && <FavoriteAction listingId={listing.id} />}
+                    <ShareAction title={listing.title} slug={listing.slug} />
+                  </div>
                 </div>
-                </div>{/* end p-6 wrapper */}
+                {/* end p-6 wrapper */}
               </div>
 
               {/* Details grid */}
@@ -789,27 +821,71 @@ export default function ListingDetail({
               {listing.categories?.slug === "vehicles" &&
                 listing.attributes &&
                 typeof listing.attributes === "object" &&
-                !Array.isArray(listing.attributes) && (() => {
-                  const rawAttrs = listing.attributes as Record<string, unknown>;
+                !Array.isArray(listing.attributes) &&
+                (() => {
+                  const rawAttrs = listing.attributes as Record<
+                    string,
+                    unknown
+                  >;
                   // Coerce all values to strings — JSON may store numbers
                   const attrs: Record<string, string> = {};
                   for (const [k, v] of Object.entries(rawAttrs)) {
                     if (v != null && v !== "") attrs[k] = String(v);
                   }
-                  const fields: { key: string; label: string; icon: typeof Car; format?: (v: string) => string }[] = [
+                  const fields: {
+                    key: string;
+                    label: string;
+                    icon: typeof Car;
+                    format?: (v: string) => string;
+                  }[] = [
                     { key: "make", label: "Make", icon: Car },
                     { key: "model", label: "Model", icon: Car },
                     { key: "year", label: "Year", icon: Calendar },
-                    { key: "mileage", label: "Mileage", icon: Gauge, format: (v) => `${Number(v).toLocaleString()} km` },
-                    { key: "fuel_type", label: "Fuel", icon: Fuel, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
-                    { key: "transmission", label: "Transmission", icon: Tag, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
+                    {
+                      key: "mileage",
+                      label: "Mileage",
+                      icon: Gauge,
+                      format: (v) => `${Number(v).toLocaleString()} km`,
+                    },
+                    {
+                      key: "fuel_type",
+                      label: "Fuel",
+                      icon: Fuel,
+                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                    },
+                    {
+                      key: "transmission",
+                      label: "Transmission",
+                      icon: Tag,
+                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                    },
                     { key: "color", label: "Color", icon: Palette },
-                    { key: "body_type", label: "Body Type", icon: Car, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
-                    { key: "engine_size", label: "Engine", icon: Gauge, format: (v) => `${v}L` },
+                    {
+                      key: "body_type",
+                      label: "Body Type",
+                      icon: Car,
+                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                    },
+                    {
+                      key: "engine_size",
+                      label: "Engine",
+                      icon: Gauge,
+                      format: (v) => `${v}L`,
+                    },
                     { key: "doors", label: "Doors", icon: Car },
-                    { key: "drive_type", label: "Drive", icon: Car, format: (v) => v.toUpperCase() },
+                    {
+                      key: "drive_type",
+                      label: "Drive",
+                      icon: Car,
+                      format: (v) => v.toUpperCase(),
+                    },
                     { key: "owners", label: "Owners", icon: Shield },
-                    { key: "service_history", label: "Service History", icon: Shield, format: (v) => v.charAt(0).toUpperCase() + v.slice(1) },
+                    {
+                      key: "service_history",
+                      label: "Service History",
+                      icon: Shield,
+                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                    },
                   ];
                   const visible = fields.filter((f) => attrs[f.key]?.trim());
                   if (visible.length === 0) return null;
@@ -825,9 +901,14 @@ export default function ListingDetail({
                         {visible.map((field) => {
                           const Icon = field.icon;
                           const raw = attrs[field.key];
-                          const display = field.format ? field.format(raw) : raw;
+                          const display = field.format
+                            ? field.format(raw)
+                            : raw;
                           return (
-                            <div key={field.key} className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5">
+                            <div
+                              key={field.key}
+                              className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5"
+                            >
                               <div className="p-2 bg-white rounded-lg shadow-sm">
                                 <Icon className="w-4 h-4 text-blue-500" />
                               </div>
@@ -899,7 +980,11 @@ export default function ListingDetail({
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <Link
-                        href={shopSlug ? `/shop/${shopSlug}` : `/profile/${listing.user_id}`}
+                        href={
+                          shopSlug
+                            ? `/shop/${shopSlug}`
+                            : `/profile/${listing.user_id}`
+                        }
                         className="font-semibold text-gray-900 truncate hover:text-indigo-600 transition-colors"
                       >
                         {profile?.display_name || "Seller"}
@@ -934,14 +1019,16 @@ export default function ListingDetail({
                   </div>
                 </div>
 
-                <ContactButtons
-                  listingId={listing.id}
-                  sellerId={listing.user_id}
-                  listingTitle={listing.title}
-                  contactPhone={listing.contact_phone}
-                  whatsappNumber={profile?.whatsapp_number || null}
-                  telegramUsername={profile?.telegram_username || null}
-                />
+                {!isOwner && (
+                  <ContactButtons
+                    listingId={listing.id}
+                    sellerId={listing.user_id}
+                    listingTitle={listing.title}
+                    contactPhone={listing.contact_phone}
+                    whatsappNumber={profile?.whatsapp_number || null}
+                    telegramUsername={profile?.telegram_username || null}
+                  />
+                )}
 
                 {/* Make an Offer / Offer state — non-owners only */}
                 {!isOwner && listing.price && listing.status === "active" && (
@@ -958,7 +1045,9 @@ export default function ListingDetail({
                           </div>
                           <div className="bg-emerald-50 px-4 py-3 flex items-center justify-between gap-3">
                             <div className="text-xs text-emerald-700">
-                              <span className="block text-[11px] text-emerald-500 mb-0.5">Accepted amount</span>
+                              <span className="block text-[11px] text-emerald-500 mb-0.5">
+                                Accepted amount
+                              </span>
                               <span className="font-extrabold text-emerald-800 text-base">
                                 {existingOffer.amount != null
                                   ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
@@ -987,7 +1076,9 @@ export default function ListingDetail({
                           </div>
                           <div className="bg-indigo-50 group-hover:bg-indigo-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
                             <div className="text-xs text-indigo-600">
-                              <span className="block text-[11px] text-indigo-400 mb-0.5">Your offer</span>
+                              <span className="block text-[11px] text-indigo-400 mb-0.5">
+                                Your offer
+                              </span>
                               <span className="font-bold">
                                 {existingOffer.amount != null
                                   ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
@@ -996,7 +1087,9 @@ export default function ListingDetail({
                             </div>
                             <div className="w-px h-6 bg-indigo-200" />
                             <div className="text-xs text-indigo-600">
-                              <span className="block text-[11px] text-indigo-400 mb-0.5">Counter</span>
+                              <span className="block text-[11px] text-indigo-400 mb-0.5">
+                                Counter
+                              </span>
                               <span className="font-extrabold text-indigo-700">
                                 {existingOffer.counter_amount != null
                                   ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.counter_amount.toLocaleString()}`
@@ -1022,7 +1115,9 @@ export default function ListingDetail({
                           </div>
                           <div className="bg-amber-50 group-hover:bg-amber-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
                             <div className="text-xs text-amber-700">
-                              <span className="block text-[11px] text-amber-500 mb-0.5">Your offer</span>
+                              <span className="block text-[11px] text-amber-500 mb-0.5">
+                                Your offer
+                              </span>
                               <span className="font-extrabold text-amber-800 text-base">
                                 {existingOffer.amount != null
                                   ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
@@ -1064,7 +1159,11 @@ export default function ListingDetail({
 
                 <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                   <Link
-                    href={shopSlug ? `/shop/${shopSlug}` : `/profile/${listing.user_id}`}
+                    href={
+                      shopSlug
+                        ? `/shop/${shopSlug}`
+                        : `/profile/${listing.user_id}`
+                    }
                     className="text-sm text-indigo-600 font-medium hover:underline"
                   >
                     {shopSlug ? t("visitShop") : t("viewSellerProfile")}
@@ -1151,7 +1250,13 @@ export default function ListingDetail({
           currency={listing.currency || "EUR"}
           onCloseAction={() => setShowOfferModal(false)}
           onOfferSentAction={(offerId, amt, cur) => {
-            setExistingOffer({ id: offerId, status: "pending", amount: amt, counter_amount: null, currency: cur });
+            setExistingOffer({
+              id: offerId,
+              status: "pending",
+              amount: amt,
+              counter_amount: null,
+              currency: cur,
+            });
             setOfferCount((c) => c + 1);
             setShowOfferModal(false);
           }}

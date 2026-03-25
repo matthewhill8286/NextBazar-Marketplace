@@ -1,6 +1,13 @@
 "use client";
 
-import { Check, Clock, Eye, GitCompareArrows, MapPin, Store } from "lucide-react";
+import {
+  Check,
+  Clock,
+  Eye,
+  GitCompareArrows,
+  MapPin,
+  Store,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -9,7 +16,7 @@ import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS, unwrap } from "@/lib/format-helpers";
 import CategoryIcon, { getCategoryConfig } from "./category-icon";
 import FavoriteButton from "./favorite-button";
-import {FALLBACK_LISTING_IMAGE} from "@/lib/constants";
+import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 
 export type CatLike = { name: string; slug?: string; icon?: string | null };
 export type LocLike = { name: string; slug?: string };
@@ -213,6 +220,11 @@ export default function ListingCard({ listing }: ListingCardProps) {
       {/* Amber accent stripe for featured listings */}
       {listing.is_promoted && (
         <div className="absolute left-0 bottom-0 right-0 h-0.5 bg-linear-to-r from-amber-400 via-orange-400 to-amber-400" />
+      )}
+
+      {/* Red accent stripe for urgent listings */}
+      {listing.is_urgent && !listing.is_promoted && (
+        <div className="absolute left-0 bottom-0 right-0 h-0.5 bg-linear-to-r from-red-400 via-rose-500 to-red-400" />
       )}
     </Link>
   );

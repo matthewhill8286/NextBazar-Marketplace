@@ -26,6 +26,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
+import type { ClientPricing } from "@/lib/stripe";
 
 type DealerShop = Tables<"dealer_shops">;
 
@@ -70,6 +71,21 @@ export default function DealerDashboardClient({
   const [subscribing, setSubscribing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [dealerPrice, setDealerPrice] = useState("€35");
+  const [dealerInterval, setDealerInterval] = useState("month");
+
+  // ─── Fetch pricing from DB ──────────────────────────────────────────────
+  useEffect(() => {
+    fetch("/api/pricing")
+      .then((r) => r.json())
+      .then((p: ClientPricing) => {
+        if (p?.dealer) {
+          setDealerPrice(p.dealer.price);
+          setDealerInterval(p.dealer.interval);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // ─── Post-checkout verification ─────────────────────────────────────────────
   useEffect(() => {
@@ -218,8 +234,10 @@ export default function DealerDashboardClient({
               Everything you need to grow your business on NextBazar.
             </p>
             <div className="text-4xl font-extrabold my-6">
-              &euro;35
-              <span className="text-lg font-medium text-white/50">/month</span>
+              {dealerPrice}
+              <span className="text-lg font-medium text-white/50">
+                /{dealerInterval}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left mb-8 max-w-md mx-auto">
@@ -485,16 +503,18 @@ export default function DealerDashboardClient({
             style={{
               background: `linear-gradient(135deg, ${accentColor}, ${
                 /^#[0-9A-Fa-f]{6}$/.test(accentColor)
-                  ? (() => {
-                      const num = parseInt(accentColor.replace("#", ""), 16);
-                      const amt = Math.round(2.55 * -25);
-                      const clamp = (v: number) =>
-                        Math.max(0, Math.min(255, v));
-                      const R = clamp((num >> 16) + amt);
-                      const G = clamp(((num >> 8) & 0xff) + amt);
-                      const B = clamp((num & 0xff) + amt);
-                      return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
-                    })()
+                  ? (
+                      () => {
+                        const num = parseInt(accentColor.replace("#", ""), 16);
+                        const amt = Math.round(2.55 * -25);
+                        const clamp = (v: number) =>
+                          Math.max(0, Math.min(255, v));
+                        const R = clamp((num >> 16) + amt);
+                        const G = clamp(((num >> 8) & 0xff) + amt);
+                        const B = clamp((num & 0xff) + amt);
+                        return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
+                      }
+                    )()
                   : "#4338ca"
               })`,
             }}
@@ -514,7 +534,9 @@ export default function DealerDashboardClient({
                 <div className="text-white font-semibold text-sm">
                   {shopName || "Your Shop"}
                 </div>
-                <div className="text-white/60 text-xs">/shop/{slug || "..."}</div>
+                <div className="text-white/60 text-xs">
+                  /shop/{slug || "..."}
+                </div>
               </div>
             </div>
           </div>

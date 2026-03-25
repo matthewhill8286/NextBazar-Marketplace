@@ -127,7 +127,8 @@ export default function ContactPage() {
                   Office
                 </div>
                 <div className="text-sm text-gray-600 leading-relaxed">
-                  NextBazar Ltd<br />
+                  NextBazar Ltd
+                  <br />
                   Limassol, Cyprus
                 </div>
               </div>
@@ -146,7 +147,9 @@ export default function ContactPage() {
                 </h2>
                 <p className="text-gray-500 text-sm max-w-xs mx-auto">
                   Thanks for reaching out. We'll get back to you at{" "}
-                  <span className="font-medium text-gray-700">{form.email}</span>{" "}
+                  <span className="font-medium text-gray-700">
+                    {form.email}
+                  </span>{" "}
                   within 24 hours.
                 </p>
               </div>

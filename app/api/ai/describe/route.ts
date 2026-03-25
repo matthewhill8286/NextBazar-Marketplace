@@ -70,7 +70,10 @@ ${price ? `Asking price: €${price}` : ""}`,
   } catch (err: unknown) {
     console.error("AI describe error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to generate description" },
+      {
+        error:
+          err instanceof Error ? err.message : "Failed to generate description",
+      },
       { status: 500 },
     );
   }

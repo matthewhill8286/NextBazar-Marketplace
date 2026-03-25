@@ -119,24 +119,36 @@ export default function Footer() {
             </p>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link href="/about" className="hover:text-white transition-colors">
+                <Link
+                  href="/about"
+                  className="hover:text-white transition-colors"
+                >
                   {t("aboutUs")}
                 </Link>
               </li>
               <li>
-                <Link href="/safety" className="hover:text-white transition-colors">
+                <Link
+                  href="/safety"
+                  className="hover:text-white transition-colors"
+                >
                   {t("safetyTips")}
                 </Link>
               </li>
               {FEATURE_FLAGS.DEALERS_PAGE && (
                 <li>
-                  <Link href="/dealers" className="hover:text-white transition-colors">
+                  <Link
+                    href="/dealers"
+                    className="hover:text-white transition-colors"
+                  >
                     {t("forDealers")}
                   </Link>
                 </li>
               )}
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
+                <Link
+                  href="/contact"
+                  className="hover:text-white transition-colors"
+                >
                   {t("contact")}
                 </Link>
               </li>

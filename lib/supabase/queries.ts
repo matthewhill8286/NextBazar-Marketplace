@@ -61,6 +61,41 @@ export const getLocationsCached = unstable_cache(
   { revalidate: 3600, tags: ["locations"] },
 );
 
+// ─── Cached pricing data (revalidate: 5 min) ─────────────────────────────────
+
+export type PricingRow = {
+  id: string;
+  key: string;
+  name: string;
+  description: string;
+  amount: number;
+  currency: string;
+  interval: string | null;
+  duration_days: number | null;
+  stripe_price_id: string | null;
+  sort_order: number;
+  metadata: Record<string, unknown>;
+};
+
+export const getPricingCached = unstable_cache(
+  async (): Promise<PricingRow[]> => {
+    const { data } = await publicClient()
+      .from("pricing")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order");
+    return (data ?? []) as PricingRow[];
+  },
+  ["pricing"],
+  { revalidate: 300, tags: ["pricing"] },
+);
+
+/** Convenience: returns a map keyed by pricing.key (e.g. "featured", "urgent", "dealer_pro") */
+export async function getPricingMap(): Promise<Record<string, PricingRow>> {
+  const rows = await getPricingCached();
+  return Object.fromEntries(rows.map((r) => [r.key, r]));
+}
+
 // ─── Cached home-page listing data (revalidate: 60 s) ────────────────────────
 
 export const getFeaturedListingsCached = unstable_cache(
@@ -161,7 +196,12 @@ export const getCategoryBySlugCached = unstable_cache(
       .select("id, name, slug, icon")
       .eq("slug", slug)
       .single();
-    return data as { id: string; name: string; slug: string; icon: string | null } | null;
+    return data as {
+      id: string;
+      name: string;
+      slug: string;
+      icon: string | null;
+    } | null;
   },
   ["category-by-slug"],
   { revalidate: 3600, tags: ["categories"] },
@@ -189,7 +229,9 @@ export const getCategoryListingsCached = unstable_cache(
 export const getCategoryStatsCached = unstable_cache(
   async (categoryId: string) => {
     const now = new Date();
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const weekAgo = new Date(
+      now.getTime() - 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     const [totalRes, newThisWeekRes, avgPriceRes] = await Promise.all([
       publicClient()
@@ -215,9 +257,10 @@ export const getCategoryStatsCached = unstable_cache(
     const total = totalRes.count ?? 0;
     const newThisWeek = newThisWeekRes.count ?? 0;
     const prices = (avgPriceRes.data ?? []).map((r) => r.price as number);
-    const avgPrice = prices.length > 0
-      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-      : 0;
+    const avgPrice =
+      prices.length > 0
+        ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+        : 0;
 
     return { total, newThisWeek, avgPrice };
   },
@@ -284,7 +327,14 @@ export const getActiveShopsCached = unstable_cache(
 
     // Build lookup maps
     const profileMap = new Map(
-      (profiles ?? []).map((p: { id: string; display_name: string | null; avatar_url: string | null; verified: boolean }) => [p.id, p]),
+      (profiles ?? []).map(
+        (p: {
+          id: string;
+          display_name: string | null;
+          avatar_url: string | null;
+          verified: boolean;
+        }) => [p.id, p],
+      ),
     );
 
     const countMap = new Map<string, number>();

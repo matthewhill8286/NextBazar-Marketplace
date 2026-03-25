@@ -20,7 +20,10 @@ import type { MapLocation } from "@/app/components/listings-map";
 const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
   ssr: false,
   loading: () => (
-    <div className="w-full rounded-2xl bg-gray-100 animate-pulse" style={{ height: 420 }} />
+    <div
+      className="w-full rounded-2xl bg-gray-100 animate-pulse"
+      style={{ height: 420 }}
+    />
   ),
 });
 import CategoryIcon, {
@@ -106,7 +109,9 @@ export default function SearchClient({
   // ─── Persist last-used location slug so the home page can show trending ────
   useEffect(() => {
     if (locationSlug) {
-      try { localStorage.setItem(LAST_SEARCH_LOCATION_KEY, locationSlug); } catch {}
+      try {
+        localStorage.setItem(LAST_SEARCH_LOCATION_KEY, locationSlug);
+      } catch {}
     }
   }, [locationSlug]);
 
@@ -122,6 +127,7 @@ export default function SearchClient({
   // ─── Ref: track the last query WE pushed to the URL (to avoid re-searching
   //     when our own syncUrl call triggers the searchParams watcher) ─────────
   const lastInternalQuery = useRef(initialQuery);
+  const lastInternalUrl = useRef(searchParams.toString());
 
   // ─── Load featured/promoted listings once ────────────────────────────────
   useEffect(() => {
@@ -210,7 +216,17 @@ export default function SearchClient({
     }
     loadMap();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode, submittedQuery, categorySlug, subcategorySlug, priceMin, priceMax, categories, subcategories, supabase.from]);
+  }, [
+    viewMode,
+    submittedQuery,
+    categorySlug,
+    subcategorySlug,
+    priceMin,
+    priceMax,
+    categories,
+    subcategories,
+    supabase.from,
+  ]);
 
   // ─── Load auth once (categories/locations already hydrated from server) ─────
   useEffect(() => {
@@ -260,7 +276,15 @@ export default function SearchClient({
       p.set("offset", String(pageOffset));
       return p;
     },
-    [categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax, PAGE_SIZE],
+    [
+      categorySlug,
+      subcategorySlug,
+      locationSlug,
+      sortBy,
+      priceMin,
+      priceMax,
+      PAGE_SIZE,
+    ],
   );
 
   // ─── Core search ──────────────────────────────────────────────────────────
@@ -324,21 +348,36 @@ export default function SearchClient({
     if (priceMin) params.set("priceMin", priceMin);
     if (priceMax) params.set("priceMax", priceMax);
     const qs = params.toString();
+    lastInternalUrl.current = qs; // mark so the URL watcher ignores our own push
     router.replace(qs ? `/search?${qs}` : "/search", { scroll: false });
   }
 
   // ─── React to URL changes driven by the global header search bar ─────────
-  // When the header fires router.replace("/search?q=..."), searchParams updates
-  // here. We only act if the new q differs from what we last pushed ourselves.
+  // When the header (or a category link) fires router.push("/search?category=…&q=…"),
+  // searchParams updates here. We sync ALL params (q, category, etc.) into local
+  // state so filters and results reflect the new URL.
   useEffect(() => {
+    const currentUrl = searchParams.toString();
+    if (currentUrl === lastInternalUrl.current) return; // our own syncUrl — ignore
+    lastInternalUrl.current = currentUrl;
+
     const urlQ = searchParams.get("q") ?? "";
-    if (urlQ === lastInternalQuery.current) return; // our own syncUrl — ignore
+    const urlCat = searchParams.get("category") ?? "";
+    const urlSub = searchParams.get("subcategory") ?? "";
+    const urlLoc = searchParams.get("location") ?? "";
+    const urlSort = searchParams.get("sort") ?? "newest";
+    const urlPriceMin = searchParams.get("priceMin") ?? "";
+    const urlPriceMax = searchParams.get("priceMax") ?? "";
+
     lastInternalQuery.current = urlQ;
     setInputValue(urlQ);
     setSubmittedQuery(urlQ);
-    if (categories.length > 0) {
-      doSearch(urlQ);
-    }
+    setCategorySlug(urlCat);
+    setSubcategorySlug(urlSub);
+    setLocationSlug(urlLoc);
+    setSortBy(urlSort);
+    setPriceMin(urlPriceMin);
+    setPriceMax(urlPriceMax);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
@@ -948,10 +987,7 @@ export default function SearchClient({
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {listings.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
             {listings.length < totalHits && (
@@ -1003,10 +1039,7 @@ export default function SearchClient({
             ) : featuredListings.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {featuredListings.map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing}
-                  />
+                  <ListingCard key={listing.id} listing={listing} />
                 ))}
               </div>
             ) : (

@@ -30,10 +30,5 @@ export default function OffersPage() {
 
   if (!userId) return null;
 
-  return (
-    <OffersClient
-      userId={userId}
-      focusOfferId={focusOfferId}
-    />
-  );
+  return <OffersClient userId={userId} focusOfferId={focusOfferId} />;
 }

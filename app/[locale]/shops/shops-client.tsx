@@ -64,8 +64,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
       case "newest":
         result.sort(
           (a, b) =>
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime(),
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
         );
         break;
       case "name":
@@ -128,7 +127,10 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
             className="w-full h-8 md:h-12"
             preserveAspectRatio="none"
           >
-            <path d="M0 60L1440 60L1440 0C1440 0 1080 60 720 60C360 60 0 0 0 0L0 60Z" fill="#f9fafb" />
+            <path
+              d="M0 60L1440 60L1440 0C1440 0 1080 60 720 60C360 60 0 0 0 0L0 60Z"
+              fill="#f9fafb"
+            />
           </svg>
         </div>
       </div>
@@ -138,7 +140,9 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-gray-500">
-            <span className="font-semibold text-gray-900">{filtered.length}</span>{" "}
+            <span className="font-semibold text-gray-900">
+              {filtered.length}
+            </span>{" "}
             {filtered.length === 1 ? "shop" : "shops"} found
           </p>
           <select

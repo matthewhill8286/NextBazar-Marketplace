@@ -9,11 +9,15 @@ import {
   Search,
   TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { getCategoryConfig } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
-import type { ListingCardRow, Subcategory } from "@/lib/supabase/supabase.types";
+import type {
+  ListingCardRow,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -24,6 +28,8 @@ export type TabConfig = {
   description: string;
   /** Subcategory slugs that belong to this tab */
   subcategorySlugs: string[];
+  /** If true, filter to listings from dealer profiles only */
+  filterByDealer?: boolean;
 };
 
 type CategoryStats = {
@@ -46,7 +52,45 @@ type Props = {
   currency?: string;
   /** CTA label for the post button */
   postLabel?: string;
+  /** Optional hero background image URL */
+  heroImage?: string;
 };
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function filterListings(
+  listings: ListingCardRow[],
+  tabConfig: TabConfig | undefined,
+  subcategories: Subcategory[],
+): ListingCardRow[] {
+  if (!tabConfig) return listings;
+
+  // Dealer filter — show only listings from dealer profiles
+  if (tabConfig.filterByDealer) {
+    return listings.filter(
+      (l) =>
+        l.profiles &&
+        typeof l.profiles === "object" &&
+        "is_dealer" in l.profiles &&
+        (l.profiles as { is_dealer?: boolean }).is_dealer === true,
+    );
+  }
+
+  // Subcategory filter
+  if (tabConfig.subcategorySlugs.length === 0) return listings;
+
+  const matchingSubs = subcategories.filter((sc) =>
+    tabConfig.subcategorySlugs.includes(sc.slug),
+  );
+  if (matchingSubs.length === 0) return listings;
+
+  const subIds = new Set(matchingSubs.map((sc) => sc.id));
+  return listings.filter(
+    (l) =>
+      "subcategory_id" in l &&
+      subIds.has((l as Record<string, unknown>).subcategory_id as string),
+  );
+}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -62,44 +106,58 @@ export default function CategoryLanding({
   recentListings,
   currency = "€",
   postLabel = "Post a Listing",
+  heroImage,
 }: Props) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.key ?? "");
   const { gradient, accent } = getCategoryConfig(categorySlug);
 
-  // Filter subcategories for the active tab
   const activeTabConfig = tabs.find((t) => t.key === activeTab);
+
+  // Subcategory pills for the active tab
   const tabSubcategories = subcategories.filter((sc) =>
     activeTabConfig?.subcategorySlugs.includes(sc.slug),
   );
 
-  // Filter listings by the active tab's subcategory slugs
-  const tabSubcategoryIds = new Set(tabSubcategories.map((sc) => sc.id));
-  const filteredFeatured =
-    tabSubcategoryIds.size > 0
-      ? featuredListings.filter((l) =>
-          "subcategory_id" in l && tabSubcategoryIds.has((l as Record<string, unknown>).subcategory_id as string),
-        )
-      : featuredListings;
-  const filteredRecent =
-    tabSubcategoryIds.size > 0
-      ? recentListings.filter((l) =>
-          "subcategory_id" in l && tabSubcategoryIds.has((l as Record<string, unknown>).subcategory_id as string),
-        )
-      : recentListings;
-
-  // If filtered is empty, show all — better UX than blank
-  const displayFeatured = filteredFeatured.length > 0 ? filteredFeatured : featuredListings;
-  const displayRecent = filteredRecent.length > 0 ? filteredRecent : recentListings;
+  // Filter both sets of listings by the active tab
+  const displayFeatured = filterListings(
+    featuredListings,
+    activeTabConfig,
+    subcategories,
+  );
+  const displayRecent = filterListings(
+    recentListings,
+    activeTabConfig,
+    subcategories,
+  );
 
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section
-        className={`relative overflow-hidden bg-linear-to-br ${gradient} text-white`}
-      >
+      <section className="relative overflow-hidden text-white">
+        {/* Background: image or gradient */}
+        {heroImage ? (
+          <>
+            <Image
+              src={heroImage}
+              alt=""
+              fill
+              className="object-cover"
+              priority
+            />
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/50" />
+            {/* Gradient tint overlay */}
+            <div
+              className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-40`}
+            />
+          </>
+        ) : (
+          <div className={`absolute inset-0 bg-linear-to-br ${gradient}`} />
+        )}
+
         {/* Dot mesh overlay */}
         <div
-          className="absolute inset-0 opacity-[0.10]"
+          className="absolute inset-0 opacity-[0.07]"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
@@ -108,11 +166,11 @@ export default function CategoryLanding({
         />
         {/* Ambient glow */}
         <div
-          className="absolute -top-40 -left-40 w-125 h-125 rounded-full blur-3xl opacity-20 pointer-events-none"
+          className="absolute -top-40 -left-40 w-125 h-125 rounded-full blur-3xl opacity-15 pointer-events-none"
           style={{ backgroundColor: accent }}
         />
         <div
-          className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-25 pointer-events-none"
+          className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none"
           style={{ backgroundColor: accent }}
         />
 
@@ -123,10 +181,10 @@ export default function CategoryLanding({
               {stats.total.toLocaleString()} listings available
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-[1.1]">
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-[1.1] drop-shadow-sm">
               {headline}
             </h1>
-            <p className="text-white/80 text-lg md:text-xl mb-8 max-w-2xl leading-relaxed">
+            <p className="text-white/85 text-lg md:text-xl mb-8 max-w-2xl leading-relaxed drop-shadow-sm">
               {subheadline}
             </p>
 
@@ -285,36 +343,49 @@ export default function CategoryLanding({
 
           {displayRecent.length === 0 && (
             <div className="text-center py-16 text-gray-400">
-              <p className="text-lg font-medium mb-1">No listings yet</p>
+              <p className="text-lg font-medium mb-1">
+                No {activeTabConfig?.label.toLowerCase() ?? ""} listings yet
+              </p>
               <p className="text-sm">
                 Be the first to{" "}
                 <Link href="/post" className="text-indigo-600 hover:underline">
                   post a listing
                 </Link>{" "}
-                in this category.
+                in this category, or try a different tab above.
               </p>
             </div>
           )}
         </section>
 
         {/* ── CTA Banner ──────────────────────────────────────────────── */}
-        <section
-          className={`rounded-2xl bg-linear-to-br ${gradient} p-8 md:p-12 text-white text-center`}
-        >
-          <h3 className="text-2xl md:text-3xl font-bold mb-3">
-            Ready to list your {categoryName.toLowerCase().replace(/s$/, "")}?
-          </h3>
-          <p className="text-white/80 mb-6 max-w-lg mx-auto">
-            Reach thousands of buyers across Cyprus. AI-powered pricing
-            suggestions help you get the best deal.
-          </p>
-          <Link
-            href="/post"
-            className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10"
-          >
-            <Plus className="w-4 h-4" />
-            {postLabel}
-          </Link>
+        <section className="relative rounded-2xl overflow-hidden p-8 md:p-12 text-white text-center">
+          {heroImage ? (
+            <>
+              <Image src={heroImage} alt="" fill className="object-cover" />
+              <div className="absolute inset-0 bg-black/55" />
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-30`}
+              />
+            </>
+          ) : (
+            <div className={`absolute inset-0 bg-linear-to-br ${gradient}`} />
+          )}
+          <div className="relative">
+            <h3 className="text-2xl md:text-3xl font-bold mb-3">
+              Ready to list your {categoryName.toLowerCase().replace(/s$/, "")}?
+            </h3>
+            <p className="text-white/80 mb-6 max-w-lg mx-auto">
+              Reach thousands of buyers across Cyprus. AI-powered pricing
+              suggestions help you get the best deal.
+            </p>
+            <Link
+              href="/post"
+              className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10"
+            >
+              <Plus className="w-4 h-4" />
+              {postLabel}
+            </Link>
+          </div>
         </section>
       </div>
     </>

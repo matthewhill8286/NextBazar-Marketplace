@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { PROMOTION_PRICES, type PromotionType, stripe } from "@/lib/stripe";
+import { getPromotionPrices, type PromotionType, stripe } from "@/lib/stripe";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +13,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const promo = PROMOTION_PRICES[promotionType as PromotionType];
+    const prices = await getPromotionPrices();
+    const promo = prices[promotionType as PromotionType];
     if (!promo) {
       return NextResponse.json(
         { error: "Invalid promotion type" },
@@ -51,7 +52,12 @@ export async function POST(request: NextRequest) {
   } catch (err: unknown) {
     console.error("Checkout error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to create checkout session" },
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : "Failed to create checkout session",
+      },
       { status: 500 },
     );
   }

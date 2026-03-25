@@ -11,7 +11,11 @@ type Props = {
   listingPrice: number | null;
   currency: string;
   onCloseAction: () => void;
-  onOfferSentAction?: (offerId: string, amount: number, currency: string) => void;
+  onOfferSentAction?: (
+    offerId: string,
+    amount: number,
+    currency: string,
+  ) => void;
 };
 
 export default function MakeOfferModal({
@@ -53,14 +57,18 @@ export default function MakeOfferModal({
       return;
     }
 
-    const { data: newOffer, error } = await supabase.from("offers").insert({
-      listing_id: listingId,
-      buyer_id: user.id,
-      seller_id: sellerId,
-      amount: val,
-      currency,
-      message: message.trim() || null,
-    }).select("id").single();
+    const { data: newOffer, error } = await supabase
+      .from("offers")
+      .insert({
+        listing_id: listingId,
+        buyer_id: user.id,
+        seller_id: sellerId,
+        amount: val,
+        currency,
+        message: message.trim() || null,
+      })
+      .select("id")
+      .single();
 
     if (error) {
       setErrorMsg(

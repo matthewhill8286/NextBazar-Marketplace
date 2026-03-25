@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { PROMOTION_PRICES, type PromotionType } from "@/lib/stripe";
+import { getPromotionPrices, type PromotionType } from "@/lib/stripe";
 
 const COINBASE_API = "https://api.commerce.coinbase.com";
 
@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const promo = PROMOTION_PRICES[promotionType as PromotionType];
+    const prices = await getPromotionPrices();
+    const promo = prices[promotionType as PromotionType];
     if (!promo) {
       return NextResponse.json(
         { error: "Invalid promotion type" },
@@ -73,7 +74,10 @@ export async function POST(request: NextRequest) {
   } catch (err: unknown) {
     console.error("Crypto checkout error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to create crypto charge" },
+      {
+        error:
+          err instanceof Error ? err.message : "Failed to create crypto charge",
+      },
       { status: 500 },
     );
   }

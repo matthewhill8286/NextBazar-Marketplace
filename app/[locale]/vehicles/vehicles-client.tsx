@@ -1,42 +1,38 @@
 "use client";
 
-import { Car, Sparkles, Store, User } from "lucide-react";
-import CategoryLanding, { type TabConfig } from "@/app/components/category-landing";
-import type { ListingCardRow, Subcategory } from "@/lib/supabase/supabase.types";
+import { Bike, Car, Cog, Store, Truck } from "lucide-react";
+import CategoryLanding, {
+  type TabConfig,
+} from "@/app/components/category-landing";
+import type {
+  ListingCardRow,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 const TABS: TabConfig[] = [
   {
-    key: "new",
-    label: "New Cars",
-    icon: Sparkles,
-    description:
-      "Browse brand-new vehicles from authorised sellers — latest models, full warranties, and financing options available.",
-    subcategorySlugs: [
-      "new-car",
-      "new-vehicle",
-      "new",
-      "brand-new",
-      "dealer-new",
-    ],
-  },
-  {
-    key: "used",
-    label: "Used Cars",
+    key: "cars",
+    label: "Cars",
     icon: Car,
     description:
-      "Find quality pre-owned vehicles from private sellers and certified Pro Sellers — inspected, priced fairly, and ready to drive.",
-    subcategorySlugs: [
-      "used-car",
-      "used-vehicle",
-      "used",
-      "pre-owned",
-      "second-hand",
-      "car",
-      "motorcycle",
-      "suv",
-      "truck",
-      "van",
-    ],
+      "Browse new and used cars from private sellers and certified Pro Sellers — inspected, priced fairly, and ready to drive.",
+    subcategorySlugs: ["cars"],
+  },
+  {
+    key: "motorcycles",
+    label: "Motorcycles & More",
+    icon: Bike,
+    description:
+      "Explore motorcycles, trucks, vans, boats, and bicycles from sellers across Cyprus.",
+    subcategorySlugs: ["motorcycles", "trucks-vans", "boats", "bicycles"],
+  },
+  {
+    key: "parts",
+    label: "Parts & Accessories",
+    icon: Cog,
+    description:
+      "Find quality auto parts, accessories, tyres, and aftermarket upgrades for all vehicle types.",
+    subcategorySlugs: ["parts-accessories"],
   },
   {
     key: "dealers",
@@ -44,12 +40,8 @@ const TABS: TabConfig[] = [
     icon: Store,
     description:
       "Shop directly from trusted Pro Sellers — browse their full inventory, compare prices, and get exclusive deals.",
-    subcategorySlugs: [
-      "dealer",
-      "showroom",
-      "dealership",
-      "certified-dealer",
-    ],
+    subcategorySlugs: [],
+    filterByDealer: true,
   },
 ];
 
@@ -81,6 +73,7 @@ export default function VehiclesClient({
       recentListings={recentListings}
       currency="€"
       postLabel="List a Vehicle"
+      heroImage={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/vehicles-hero.jpg`}
     />
   );
 }

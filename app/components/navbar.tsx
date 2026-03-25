@@ -1,6 +1,13 @@
 "use client";
 
-import {Bell, Bookmark, MessageCircle, Plus, Search, Store} from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  MessageCircle,
+  Plus,
+  Search,
+  Store,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -40,11 +47,25 @@ export default function Navbar() {
   }, [userId]);
 
   // Initial load and refresh whenever userId changes
-  useEffect(() => { loadCounts(); }, [loadCounts]);
+  useEffect(() => {
+    loadCounts();
+  }, [loadCounts]);
 
   // Realtime subscriptions — all gated on userId being available
-  useRealtimeTable({ channelName: "nav-msg-insert", table: "messages", event: "INSERT", onPayload: loadCounts, enabled: !!userId });
-  useRealtimeTable({ channelName: "nav-msg-update", table: "messages", event: "UPDATE", onPayload: loadCounts, enabled: !!userId });
+  useRealtimeTable({
+    channelName: "nav-msg-insert",
+    table: "messages",
+    event: "INSERT",
+    onPayload: loadCounts,
+    enabled: !!userId,
+  });
+  useRealtimeTable({
+    channelName: "nav-msg-update",
+    table: "messages",
+    event: "UPDATE",
+    onPayload: loadCounts,
+    enabled: !!userId,
+  });
   useRealtimeTable({
     channelName: `nav-notifs-${userId ?? "anon"}`,
     table: "notifications",
@@ -103,49 +124,53 @@ export default function Navbar() {
             <Search className="w-5 h-5" />
           </Link>
 
-          {/* Messages */}
-          <Link
-            href="/messages"
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span className="hidden font-medium">
-              {t("messages")}
-            </span>
-            {unreadCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </Link>
+          {/* Messages — logged-in only */}
+          {userId && (
+            <Link
+              href="/messages"
+              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span className="hidden font-medium">{t("messages")}</span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+          )}
 
-          {/* Saved */}
-          <Link
-            href="/saved"
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
-          >
-            <Bookmark className="w-4 h-4" />
-            <span className="hidden font-medium">{t("saved")}</span>
-            {savedCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
-                {savedCount > 9 ? "9+" : savedCount}
-              </span>
-            )}
-          </Link>
+          {/* Saved — logged-in only */}
+          {userId && (
+            <Link
+              href="/saved"
+              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+            >
+              <Bookmark className="w-4 h-4" />
+              <span className="hidden font-medium">{t("saved")}</span>
+              {savedCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
+                  {savedCount > 9 ? "9+" : savedCount}
+                </span>
+              )}
+            </Link>
+          )}
 
-          {/* Notifications */}
-          <Link
-            href="/dashboard/notifications"
-            className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
-          >
-            <Bell className="w-4 h-4" />
-            <span className="hidden font-medium">{t("alerts")}</span>
-            {notifCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-indigo-600 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
-                {notifCount > 9 ? "9+" : notifCount}
-              </span>
-            )}
-          </Link>
+          {/* Notifications — logged-in only */}
+          {userId && (
+            <Link
+              href="/dashboard/notifications"
+              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+            >
+              <Bell className="w-4 h-4" />
+              <span className="hidden font-medium">{t("alerts")}</span>
+              {notifCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-indigo-600 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
+                  {notifCount > 9 ? "9+" : notifCount}
+                </span>
+              )}
+            </Link>
+          )}
 
           {/* Post Ad — primary CTA */}
           <Link

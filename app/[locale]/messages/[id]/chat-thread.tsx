@@ -150,7 +150,9 @@ export default function ChatThread({
     filter: `conversation_id=eq.${conversationId}`,
     onPayload: ({ new: updated }) => {
       setMessages((prev) =>
-        prev.map((m) => (m.id === updated.id ? { ...m, ...(updated as Message) } : m)),
+        prev.map((m) =>
+          m.id === updated.id ? { ...m, ...(updated as Message) } : m,
+        ),
       );
     },
     enabled: !!conversationId && !!userId,

@@ -7,49 +7,59 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { createClient } from "@/lib/supabase/client";
+import type { ClientPricing } from "@/lib/stripe";
 
-const PROMOTIONS = [
-  {
-    key: "featured",
-    name: "Featured Listing",
-    icon: Star,
-    price: "€4.99",
-    duration: "7 days",
-    color: "from-amber-500 to-orange-500",
-    bgColor: "bg-amber-50 border-amber-200",
-    popular: true,
-    benefits: [
-      "Top placement in search results",
-      "Highlighted with Featured badge",
-      "Shown on homepage featured section",
-      "Up to 5x more views",
-    ],
-  },
-  {
-    key: "urgent",
-    name: "Urgent Badge",
-    icon: Zap,
-    price: "€2.99",
-    duration: "3 days",
-    color: "from-red-500 to-pink-500",
-    bgColor: "bg-red-50 border-red-200",
-    popular: false,
-    benefits: [
-      "Urgent badge on your listing",
-      "Priority in search results",
-      "Creates sense of urgency for buyers",
-      "Up to 3x more views",
-    ],
-  },
-];
+function buildPromotions(pricing: ClientPricing) {
+  return [
+    {
+      key: "featured",
+      name: pricing.featured.name,
+      icon: Star,
+      price: pricing.featured.price,
+      duration: `${pricing.featured.duration} days`,
+      color: "from-amber-500 to-orange-500",
+      bgColor: "bg-amber-50 border-amber-200",
+      popular: true,
+      benefits: [
+        "Top placement in search results",
+        "Highlighted with Featured badge",
+        "Shown on homepage featured section",
+        "Up to 5x more views",
+      ],
+    },
+    {
+      key: "urgent",
+      name: pricing.urgent.name,
+      icon: Zap,
+      price: pricing.urgent.price,
+      duration: `${pricing.urgent.duration} days`,
+      color: "from-red-500 to-pink-500",
+      bgColor: "bg-red-50 border-red-200",
+      popular: false,
+      benefits: [
+        "Urgent badge on your listing",
+        "Priority in search results",
+        "Creates sense of urgency for buyers",
+        "Up to 3x more views",
+      ],
+    },
+  ];
+}
 
-export default function PromoteClient({ listingId }: { listingId: string }) {
+export default function PromoteClient({
+  listingId,
+  pricing,
+}: {
+  listingId: string;
+  pricing: ClientPricing;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState("featured");
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const PROMOTIONS = buildPromotions(pricing);
 
   useEffect(() => {
     async function load() {
@@ -243,6 +253,7 @@ export default function PromoteClient({ listingId }: { listingId: string }) {
         <StripeCheckoutModal
           listingId={listing.id}
           promotionType={selected as "featured" | "urgent"}
+          pricing={pricing}
           onCloseAction={() => setCheckoutOpen(false)}
         />
       )}

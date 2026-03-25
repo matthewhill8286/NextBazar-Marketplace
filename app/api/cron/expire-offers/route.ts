@@ -32,7 +32,9 @@ export async function GET(request: NextRequest) {
   // 1. Find all offers that should expire
   const { data: expiredOffers, error: fetchError } = await supabaseAdmin
     .from("offers")
-    .select("id, buyer_id, seller_id, listing_id, amount, currency, listings(title, slug)")
+    .select(
+      "id, buyer_id, seller_id, listing_id, amount, currency, listings(title, slug)",
+    )
     .in("status", ["pending", "countered"])
     .lt("expires_at", now);
 
@@ -110,6 +112,8 @@ export async function GET(request: NextRequest) {
     console.error("Failed to insert expiry notifications:", notifError);
   }
 
-  console.log(`Expired ${ids.length} offers, inserted ${notifications.length} notifications`);
+  console.log(
+    `Expired ${ids.length} offers, inserted ${notifications.length} notifications`,
+  );
   return NextResponse.json({ expired: ids.length });
 }

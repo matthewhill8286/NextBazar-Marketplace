@@ -13,7 +13,11 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Category, Location, Subcategory } from "@/lib/supabase/supabase.types";
+import type {
+  Category,
+  Location,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 type ReferenceData = {
   categories: Category[];
@@ -31,8 +35,14 @@ export function useReferenceData(): ReferenceData {
   useEffect(() => {
     const supabase = createClient();
     Promise.all([
-      supabase.from("categories").select("id, name, slug, icon").order("sort_order"),
-      supabase.from("subcategories").select("id, category_id, name, slug, sort_order").order("sort_order"),
+      supabase
+        .from("categories")
+        .select("id, name, slug, icon")
+        .order("sort_order"),
+      supabase
+        .from("subcategories")
+        .select("id, category_id, name, slug, sort_order")
+        .order("sort_order"),
       supabase.from("locations").select("id, name, slug").order("sort_order"),
     ]).then(([{ data: cats }, { data: subs }, { data: locs }]) => {
       if (cats) setCategories(cats as Category[]);

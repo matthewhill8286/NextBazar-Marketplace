@@ -8,7 +8,8 @@ import { useEffect, useRef } from "react";
 // biome-ignore lint/suspicious/noExplicitAny: Leaflet internal
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
@@ -99,7 +100,9 @@ export default function ListingsMap({
         iconSize: [0, 0],
       });
 
-      L.marker([loc.lat, loc.lng], { icon: label, interactive: false }).addTo(map);
+      L.marker([loc.lat, loc.lng], { icon: label, interactive: false }).addTo(
+        map,
+      );
 
       marker.on("click", () => onSelectLocation(loc.slug));
       marker.bindTooltip(

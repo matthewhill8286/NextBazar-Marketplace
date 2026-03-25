@@ -81,7 +81,7 @@ export default function ImageGallery({
           />
         )}
 
-          {/* ── Status overlays ────────────────────────────────────────── */}
+        {/* ── Status overlays ────────────────────────────────────────── */}
         {listingStatus === "sold" && (
           <>
             {/* Dim the image */}

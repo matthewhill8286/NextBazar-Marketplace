@@ -99,7 +99,8 @@ export default function ShopClient({
     return formatDate(profile.created_at);
   }, [profile?.created_at]);
 
-  const hasSocials = shop.website || shop.facebook || shop.instagram || shop.tiktok;
+  const hasSocials =
+    shop.website || shop.facebook || shop.instagram || shop.tiktok;
 
   const promotedCount = listings.filter((l) => l.is_promoted).length;
 
@@ -180,7 +181,11 @@ export default function ShopClient({
           onClick={handleShare}
           className="absolute top-4 right-4 p-2.5 rounded-xl bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white transition-all shadow-sm"
         >
-          {copied ? <Check className="w-4 h-4 text-green-600" /> : <Share2 className="w-4 h-4" />}
+          {copied ? (
+            <Check className="w-4 h-4 text-green-600" />
+          ) : (
+            <Share2 className="w-4 h-4" />
+          )}
         </button>
       </div>
 
@@ -249,7 +254,8 @@ export default function ShopClient({
                   )}
                   <span className="inline-flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
                     <Package className="w-3.5 h-3.5 text-gray-400" />
-                    {listings.length} {listings.length === 1 ? "listing" : "listings"}
+                    {listings.length}{" "}
+                    {listings.length === 1 ? "listing" : "listings"}
                   </span>
                   {promotedCount > 0 && (
                     <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full">

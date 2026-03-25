@@ -56,8 +56,12 @@ export default async function ProfilePage({
   // Supabase returns join columns as arrays; unwrap to match SearchListing type
   const normalisedListings = (listings || []).map((l) => ({
     ...l,
-    categories: Array.isArray(l.categories) ? (l.categories[0] ?? null) : l.categories,
-    locations: Array.isArray(l.locations) ? (l.locations[0] ?? null) : l.locations,
+    categories: Array.isArray(l.categories)
+      ? (l.categories[0] ?? null)
+      : l.categories,
+    locations: Array.isArray(l.locations)
+      ? (l.locations[0] ?? null)
+      : l.locations,
   }));
 
   return (

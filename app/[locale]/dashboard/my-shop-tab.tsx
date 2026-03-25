@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
+import type { ClientPricing } from "@/lib/stripe";
 
 type DealerShop = Tables<"dealer_shops">;
 
@@ -35,6 +36,8 @@ export default function MyShopTab({ userId }: Props) {
   const [subscribing, setSubscribing] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [dealerPrice, setDealerPrice] = useState("€35");
+  const [dealerInterval, setDealerInterval] = useState("month");
 
   // Branding form state
   const [shopName, setShopName] = useState("");
@@ -69,6 +72,19 @@ export default function MyShopTab({ userId }: Props) {
     load();
   }, [userId]);
 
+  // ─── Fetch pricing from DB ──────────────────────────────────────────────
+  useEffect(() => {
+    fetch("/api/pricing")
+      .then((r) => r.json())
+      .then((p: ClientPricing) => {
+        if (p?.dealer) {
+          setDealerPrice(p.dealer.price);
+          setDealerInterval(p.dealer.interval);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // ─── Post-checkout verification ──────────────────────────────────────────
   useEffect(() => {
     const isSetup = searchParams.get("setup") === "true";
@@ -92,7 +108,8 @@ export default function MyShopTab({ userId }: Props) {
         })
         .catch(() => {
           toast.error("Verification failed", {
-            description: "We couldn't verify your subscription. Please refresh the page.",
+            description:
+              "We couldn't verify your subscription. Please refresh the page.",
           });
         })
         .finally(() => setVerifying(false));
@@ -233,8 +250,10 @@ export default function MyShopTab({ userId }: Props) {
               Everything you need to grow your business on NextBazar.
             </p>
             <div className="text-4xl font-extrabold my-6">
-              &euro;35
-              <span className="text-lg font-medium text-white/50">/month</span>
+              {dealerPrice}
+              <span className="text-lg font-medium text-white/50">
+                /{dealerInterval}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left mb-8 max-w-md mx-auto">
@@ -361,16 +380,18 @@ export default function MyShopTab({ userId }: Props) {
           style={{
             background: `linear-gradient(135deg, ${accentColor}, ${
               /^#[0-9A-Fa-f]{6}$/.test(accentColor)
-                ? (() => {
-                    const num = parseInt(accentColor.replace("#", ""), 16);
-                    const amt = Math.round(2.55 * -25);
-                    const clamp = (v: number) =>
-                      Math.max(0, Math.min(255, v));
-                    const R = clamp((num >> 16) + amt);
-                    const G = clamp(((num >> 8) & 0xff) + amt);
-                    const B = clamp((num & 0xff) + amt);
-                    return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
-                  })()
+                ? (
+                    () => {
+                      const num = parseInt(accentColor.replace("#", ""), 16);
+                      const amt = Math.round(2.55 * -25);
+                      const clamp = (v: number) =>
+                        Math.max(0, Math.min(255, v));
+                      const R = clamp((num >> 16) + amt);
+                      const G = clamp(((num >> 8) & 0xff) + amt);
+                      const B = clamp((num & 0xff) + amt);
+                      return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
+                    }
+                  )()
                 : "#4338ca"
             })`,
           }}

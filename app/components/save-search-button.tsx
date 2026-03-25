@@ -43,19 +43,16 @@ export default function SaveSearchButton({
     if (!userId) return;
     const params = buildParams();
 
-    let q = supabase
-      .from("saved_searches")
-      .select("id")
-      .eq("user_id", userId);
+    let q = supabase.from("saved_searches").select("id").eq("user_id", userId);
 
-    if (params.query)         q = q.eq("query",         params.query);
-    else                      q = q.is("query",          null);
+    if (params.query) q = q.eq("query", params.query);
+    else q = q.is("query", null);
 
     if (params.category_slug) q = q.eq("category_slug", params.category_slug);
-    else                      q = q.is("category_slug",  null);
+    else q = q.is("category_slug", null);
 
     if (params.location_slug) q = q.eq("location_slug", params.location_slug);
-    else                      q = q.is("location_slug",  null);
+    else q = q.is("location_slug", null);
 
     q.maybeSingle().then(({ data }) => setSavedId(data?.id ?? null));
     // eslint-disable-next-line react-hooks/exhaustive-deps

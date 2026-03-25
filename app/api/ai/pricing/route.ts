@@ -88,7 +88,12 @@ Give pricing guidance in JSON:
   } catch (err: unknown) {
     console.error("AI pricing error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to generate pricing guidance" },
+      {
+        error:
+          err instanceof Error
+            ? err.message
+            : "Failed to generate pricing guidance",
+      },
       { status: 500 },
     );
   }

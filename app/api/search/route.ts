@@ -134,7 +134,7 @@ export async function GET(req: NextRequest) {
         .from("listings")
         .select(`*, categories(name, slug, icon), locations(name, slug)`)
         .eq("status", "active")
-        .or(`title.ilike.%${q}%,description.ilike.%${q}%`);
+        .ilike("title", `%${q}%`);
 
       if (categoryId) ilikeQ = ilikeQ.eq("category_id", categoryId);
       if (subcategoryId) ilikeQ = ilikeQ.eq("subcategory_id", subcategoryId);

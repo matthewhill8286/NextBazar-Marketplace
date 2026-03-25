@@ -17,7 +17,10 @@ export const revalidate = 60;
 
 export default async function VehiclesPage() {
   const category = await getCategoryBySlugCached("vehicles");
-  if (!category) return <div className="p-20 text-center text-gray-400">Category not found.</div>;
+  if (!category)
+    return (
+      <div className="p-20 text-center text-gray-400">Category not found.</div>
+    );
 
   const [subcategories, featured, recent, stats] = await Promise.all([
     getSubcategoriesCached(),
