@@ -724,7 +724,7 @@ export default function ListingDetail({
                   )}
 
                   <div className="flex items-center gap-2 pt-2">
-                    <FavoriteAction listingId={listing.id} />
+                    {!isOwner && <FavoriteAction listingId={listing.id} />}
                     <ShareAction title={listing.title} slug={listing.slug} />
                   </div>
                 </div>
@@ -1019,14 +1019,16 @@ export default function ListingDetail({
                   </div>
                 </div>
 
-                <ContactButtons
-                  listingId={listing.id}
-                  sellerId={listing.user_id}
-                  listingTitle={listing.title}
-                  contactPhone={listing.contact_phone}
-                  whatsappNumber={profile?.whatsapp_number || null}
-                  telegramUsername={profile?.telegram_username || null}
-                />
+                {!isOwner && (
+                  <ContactButtons
+                    listingId={listing.id}
+                    sellerId={listing.user_id}
+                    listingTitle={listing.title}
+                    contactPhone={listing.contact_phone}
+                    whatsappNumber={profile?.whatsapp_number || null}
+                    telegramUsername={profile?.telegram_username || null}
+                  />
+                )}
 
                 {/* Make an Offer / Offer state — non-owners only */}
                 {!isOwner && listing.price && listing.status === "active" && (

@@ -8,6 +8,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Bitcoin, CreditCard, ExternalLink, Loader2, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import type { ClientPricing } from "@/lib/stripe";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -16,6 +17,7 @@ const stripePromise = loadStripe(
 type Props = {
   listingId: string;
   promotionType: "featured" | "urgent";
+  pricing?: ClientPricing;
   /** Called when the user closes the modal without paying */
   onCloseAction: () => void;
 };
@@ -138,6 +140,7 @@ function CryptoTab({
 export default function StripeCheckoutModal({
   listingId,
   promotionType,
+  pricing,
   onCloseAction,
 }: Props) {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "crypto">("card");
@@ -170,8 +173,8 @@ export default function StripeCheckoutModal({
           <div>
             <p className="font-semibold text-gray-900 text-sm">
               {promotionType === "featured"
-                ? "✨ Featured Listing — €4.99"
-                : "⚡ Urgent Badge — €2.99"}
+                ? `✨ Featured Listing — ${pricing?.featured.price ?? "€9.99"}`
+                : `⚡ Urgent Badge — ${pricing?.urgent.price ?? "€5"}`}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
               Choose your payment method below

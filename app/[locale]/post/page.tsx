@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getClientPricing } from "@/lib/stripe";
 import PostClient from "./post-client";
 
 export const metadata: Metadata = {
@@ -6,6 +7,7 @@ export const metadata: Metadata = {
   description: "Create a new listing and start selling on NextBazar.",
 };
 
-export default function PostPage() {
-  return <PostClient />;
+export default async function PostPage() {
+  const pricing = await getClientPricing();
+  return <PostClient pricing={pricing} />;
 }

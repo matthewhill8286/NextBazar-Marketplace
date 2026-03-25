@@ -137,19 +137,25 @@ export default function HomeClient({
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-linear-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white">
+      <section className="relative overflow-hidden text-white">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/home-hero.jpg)`,
+          }}
+        />
+        {/* Dark gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/75 via-indigo-900/65 to-indigo-950/80" />
         {/* Dot mesh overlay */}
         <div
-          className="absolute inset-0 opacity-[0.12]"
+          className="absolute inset-0 opacity-[0.08]"
           style={{
             backgroundImage:
               "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
             backgroundSize: "32px 32px",
           }}
         />
-        {/* Ambient glow blobs */}
-        <div className="absolute -top-40 -left-40 w-125 h-125 bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-violet-500 rounded-full blur-3xl opacity-25 pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24 text-center">
           {/* Eyebrow pill */}
@@ -158,7 +164,7 @@ export default function HomeClient({
             Cyprus&rsquo;s smartest marketplace
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 tracking-tight leading-[1.1]">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-5 tracking-tight leading-[1.1] drop-shadow-lg">
             Buy &amp; Sell{" "}
             <span className="relative inline-block">
               <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-300 to-orange-300">
@@ -168,7 +174,7 @@ export default function HomeClient({
             in Cyprus
           </h1>
 
-          <p className="text-indigo-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-white/85 text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
             AI-powered search, instant messaging, and verified sellers — all in
             one place.
           </p>

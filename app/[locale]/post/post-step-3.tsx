@@ -16,6 +16,7 @@ import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import VideoUpload from "@/app/components/video-upload";
+import type { ClientPricing } from "@/lib/stripe";
 import type {
   Category,
   FormData,
@@ -36,6 +37,7 @@ type Props = {
   locations: Location[];
   isVehicle: boolean;
   vehicleAttrs: VehicleAttributes;
+  pricing: ClientPricing;
   onSetPackage: (pkg: "free" | "featured" | "urgent") => void;
   onSetVideo: (v: UploadedVideo | null) => void;
   onBack: () => void;
@@ -57,6 +59,7 @@ export default function PostStep3({
   locations,
   isVehicle,
   vehicleAttrs,
+  pricing,
   onSetPackage,
   onSetVideo,
   onBack,
@@ -314,7 +317,9 @@ export default function PostStep3({
                   </div>
                 </div>
               </div>
-              <div className="font-bold text-amber-600 shrink-0">€4.99</div>
+              <div className="font-bold text-amber-600 shrink-0">
+                {pricing.featured.price}
+              </div>
             </div>
           </button>
 
@@ -351,7 +356,9 @@ export default function PostStep3({
                   </div>
                 </div>
               </div>
-              <div className="font-bold text-red-600 shrink-0">€2.99</div>
+              <div className="font-bold text-red-600 shrink-0">
+                {pricing.urgent.price}
+              </div>
             </div>
           </button>
 
@@ -405,9 +412,9 @@ export default function PostStep3({
               ) : selectedPackage === "free" ? (
                 "Publish Listing"
               ) : selectedPackage === "featured" ? (
-                "Publish & Feature — €4.99"
+                `Publish & Feature — ${pricing.featured.price}`
               ) : (
-                "Publish & Boost — €2.99"
+                `Publish & Boost — ${pricing.urgent.price}`
               )}
             </button>
           </div>

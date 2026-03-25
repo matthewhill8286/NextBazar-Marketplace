@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
+import type { ClientPricing } from "@/lib/stripe";
 
 type DealerShop = Tables<"dealer_shops">;
 
@@ -35,6 +36,8 @@ export default function MyShopTab({ userId }: Props) {
   const [subscribing, setSubscribing] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [dealerPrice, setDealerPrice] = useState("€35");
+  const [dealerInterval, setDealerInterval] = useState("month");
 
   // Branding form state
   const [shopName, setShopName] = useState("");
@@ -68,6 +71,19 @@ export default function MyShopTab({ userId }: Props) {
     }
     load();
   }, [userId]);
+
+  // ─── Fetch pricing from DB ──────────────────────────────────────────────
+  useEffect(() => {
+    fetch("/api/pricing")
+      .then((r) => r.json())
+      .then((p: ClientPricing) => {
+        if (p?.dealer) {
+          setDealerPrice(p.dealer.price);
+          setDealerInterval(p.dealer.interval);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // ─── Post-checkout verification ──────────────────────────────────────────
   useEffect(() => {
@@ -234,8 +250,10 @@ export default function MyShopTab({ userId }: Props) {
               Everything you need to grow your business on NextBazar.
             </p>
             <div className="text-4xl font-extrabold my-6">
-              &euro;35
-              <span className="text-lg font-medium text-white/50">/month</span>
+              {dealerPrice}
+              <span className="text-lg font-medium text-white/50">
+                /{dealerInterval}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left mb-8 max-w-md mx-auto">

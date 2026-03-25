@@ -6,6 +6,7 @@ import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { ErrorBanner } from "@/app/components/ui";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
+import type { ClientPricing } from "@/lib/stripe";
 import type {
   FormData,
   PricingData,
@@ -18,7 +19,7 @@ import PostStep1 from "./post-step-1";
 import PostStep2 from "./post-step-2";
 import PostStep3 from "./post-step-3";
 
-export default function PostClient() {
+export default function PostClient({ pricing }: { pricing: ClientPricing }) {
   const router = useRouter();
   const supabase = createClient();
   const { categories, subcategories, locations } = useReferenceData();
@@ -382,6 +383,7 @@ export default function PostClient() {
           locations={locations}
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
+          pricing={pricing}
           onSetPackage={setSelectedPackage}
           onSetVideo={setVideo}
           onBack={() => goToStep(2)}
@@ -394,6 +396,7 @@ export default function PostClient() {
         <StripeCheckoutModal
           listingId={checkoutListing.id}
           promotionType={selectedPackage as "featured" | "urgent"}
+          pricing={pricing}
           onCloseAction={() => {
             // User dismissed without paying — listing saved as draft, send to drafts tab
             router.push("/dashboard?tab=draft");

@@ -27,10 +27,24 @@ export function useCurrentUser(): CurrentUserState {
 
   useEffect(() => {
     const supabase = createClient();
+
+    // Initial check
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUserId(user?.id ?? null);
       setLoading(false);
     });
+
+    // Listen for auth state changes (login, logout, token refresh)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id ?? null);
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return { userId, loading };
