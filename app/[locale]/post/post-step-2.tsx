@@ -544,9 +544,9 @@ export default function PostStep2({
           {/* Tips */}
           {pricingData.tips && pricingData.tips.length > 0 && (
             <div className="space-y-1.5">
-              {pricingData.tips.map((tip, i) => (
+              {pricingData.tips.map((tip) => (
                 <div
-                  key={i}
+                  key={tip}
                   className="flex items-start gap-2 text-xs text-indigo-700"
                 >
                   <Lightbulb className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />

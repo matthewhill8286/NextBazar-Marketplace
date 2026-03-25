@@ -29,7 +29,6 @@ type ActivateResult = {
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const listingId = searchParams.get("listing_id");
 
   const [status, setStatus] = useState<"activating" | "active" | "error">(
     "activating",
@@ -161,14 +160,14 @@ function SuccessContent() {
             ) : (
               <Star className="w-5 h-5" />
             )}
-            {isFeatured ? "Featured Listing Active" : "Urgent Badge Active"}
+            {isFeatured ? "Featured Listing Active" : "Quick Boost Active"}
           </div>
           <p
             className={`text-sm ${isFeatured ? "text-amber-600" : "text-red-500"}`}
           >
             {isFeatured
               ? `Top placement + highlighted badge for ${result?.durationDays} days`
-              : `Urgent badge + priority in search for ${result?.durationDays} days`}
+              : `Boosted visibility + priority in search for ${result?.durationDays} days`}
           </p>
         </div>
 

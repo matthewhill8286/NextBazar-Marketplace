@@ -15,8 +15,8 @@ import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
-import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format-helpers";
+import { createClient } from "@/lib/supabase/client";
 
 type Purchase = {
   id: string; // offer id
@@ -327,7 +327,7 @@ export default function PurchasesClient({
           <div className="bg-white rounded-xl border border-gray-100 p-4 text-center">
             <div className="text-2xl font-bold text-gray-900">
               {
-                purchases.filter((p) => {
+                purchases.filter(() => {
                   // reviewed = has offer in reviewed state, we check via hasReviewed in each card
                   // just show pending reviews as a nudge
                   return true;

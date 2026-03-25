@@ -47,9 +47,7 @@ vi.mock("next/image", () => ({
   default: ({
     src,
     alt,
-    ...props
   }: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }) => (
-    // biome-ignore lint/a11y/useAltText
     <img src={src as string} alt={alt} />
   ),
 }));

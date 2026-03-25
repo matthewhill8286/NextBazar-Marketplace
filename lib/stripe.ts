@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { getPricingMap, type PricingRow } from "@/lib/supabase/queries";
+import { getPricingMap } from "@/lib/supabase/queries";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
@@ -10,7 +10,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export type PromotionType = "featured" | "urgent";
 
 export type PromotionPriceInfo = {
-  priceId: string;
+  priceId: string | null;
   name: string;
   description: string;
   amount: number; // cents
@@ -30,12 +30,12 @@ export async function getPromotionPrices(): Promise<
   Record<PromotionType, PromotionPriceInfo>
 > {
   const map = await getPricingMap();
-  const featured = map["featured"];
-  const urgent = map["urgent"];
+  const featured = map.featured;
+  const urgent = map.urgent;
 
   return {
     featured: {
-      priceId: featured?.stripe_price_id ?? "price_1TD6LxI6t3gE5tEXGDty8s9J",
+      priceId: featured?.stripe_price_id ?? null,
       name: featured?.name ?? "Featured Listing",
       description:
         featured?.description ?? "Top placement + highlighted for 7 days",
@@ -43,11 +43,12 @@ export async function getPromotionPrices(): Promise<
       duration: featured?.duration_days ?? 7,
     },
     urgent: {
-      priceId: urgent?.stripe_price_id ?? "price_1TD6M3I6t3gE5tEXMP3hRen1",
-      name: urgent?.name ?? "Urgent Badge",
+      priceId: urgent?.stripe_price_id ?? null,
+      name: urgent?.name ?? "Quick Boost",
       description:
-        urgent?.description ?? "Urgent badge + priority in search for 3 days",
-      amount: urgent?.amount ?? 500,
+        urgent?.description ??
+        "Boosted visibility + priority in search for 3 days",
+      amount: urgent?.amount ?? 499,
       duration: urgent?.duration_days ?? 3,
     },
   };
@@ -56,6 +57,7 @@ export async function getPromotionPrices(): Promise<
 /** Fetch dealer plan pricing from the DB pricing table. */
 export async function getDealerPlan(): Promise<DealerPlanInfo> {
   const map = await getPricingMap();
+  // biome-ignore lint/complexity/useLiteralKeys: this is fine
   const dealer = map["dealer_pro"];
 
   return {

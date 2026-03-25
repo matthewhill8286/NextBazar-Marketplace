@@ -210,8 +210,8 @@ export default function AiInsights({
               {insights.quality_score}/100
             </span>
           </div>
-          {insights.quality_tips?.slice(0, 2).map((tip, i) => (
-            <p key={i} className="text-xs text-gray-500 leading-relaxed">
+          {insights.quality_tips?.slice(0, 2).map((tip) => (
+            <p key={tip} className="text-xs text-gray-500 leading-relaxed">
               • {tip}
             </p>
           ))}

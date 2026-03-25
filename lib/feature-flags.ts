@@ -12,7 +12,7 @@ export const FEATURE_FLAGS = {
   CRYPTO_PAYMENTS: false,
 
   /** For Dealers landing page + footer link. Hidden until dealer billing is ready. */
-  DEALERS_PAGE: false,
+  DEALERS_PAGE: true,
 
   /** Dealer / Shops features — shops page, dealer badges, dashboard dealer portal, homepage featured shops. */
   DEALERS: true,

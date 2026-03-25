@@ -13,10 +13,10 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
-import { createClient } from "@/lib/supabase/client";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { useSaved } from "@/lib/saved-context";
+import { createClient } from "@/lib/supabase/client";
 import GlobalSearch from "./global-search";
 import UserMenu from "./user-menu";
 

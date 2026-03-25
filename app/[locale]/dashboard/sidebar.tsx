@@ -1,7 +1,6 @@
 "use client";
 
 import clsx from "clsx";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import {
   BarChart2,
   Bell,
@@ -14,11 +13,11 @@ import {
   Settings,
   Shield,
   ShoppingBag,
-  Store,
   Tag,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 type SidebarProps = {
   profile: {
@@ -187,41 +186,19 @@ export default function DashboardSidebar({
           );
         })}
 
-        {/* My Shop link — gated behind feature flag */}
-        {FEATURE_FLAGS.DEALERS &&
-          (() => {
-            const shopActive =
-              pathname === "/dashboard" &&
-              typeof window !== "undefined" &&
-              new URLSearchParams(window.location.search).get("view") ===
-                "my-shop";
-            return profile.is_dealer ? (
-              <Link
-                href="/dashboard?view=my-shop"
-                className={clsx(
-                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  shopActive
-                    ? "bg-indigo-50 text-indigo-700"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                )}
-              >
-                <Store className="w-4 h-4" />
-                My Shop
-              </Link>
-            ) : (
-              <Link
-                href="/dashboard?view=my-shop"
-                className={clsx(
-                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
-                  "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
-                )}
-              >
-                <Crown className="w-4 h-4" />
-                Become a Pro Seller
-              </Link>
-            );
-          })()}
-        {/* end shop link */}
+        {/* Become a Pro Seller link — only shown for non-dealers */}
+        {FEATURE_FLAGS.DEALERS && !profile.is_dealer && (
+          <Link
+            href="/dealers"
+            className={clsx(
+              "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
+              "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+            )}
+          >
+            <Crown className="w-4 h-4" />
+            Become a Pro Seller
+          </Link>
+        )}
       </nav>
     </aside>
   );

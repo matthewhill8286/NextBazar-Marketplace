@@ -2,8 +2,8 @@
 
 import { Check, Flag, Heart, Loader2, Share2, X } from "lucide-react";
 import { useState } from "react";
-import { useSaved } from "@/lib/saved-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
 
 const REPORT_REASONS: { value: string; label: string }[] = [
@@ -83,15 +83,15 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
 }
 
 export function ReportAction({ listingId }: { listingId: string }) {
-  /* ── Feature-gated: hide report button until reports dashboard is ready ── */
-  if (!FEATURE_FLAGS.REPORTS) return null;
-
   const supabase = createClient();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+
+  /* ── Feature-gated: hide report button until reports dashboard is ready ── */
+  if (!FEATURE_FLAGS.REPORTS) return null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

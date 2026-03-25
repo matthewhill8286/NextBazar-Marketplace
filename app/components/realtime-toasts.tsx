@@ -1,13 +1,13 @@
 "use client";
 
 import { Bell, MessageCircle, Tag, TrendingDown, X } from "lucide-react";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
-import Image from "next/image";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── Custom toast UIs ────────────────────────────────────────────────────────
 

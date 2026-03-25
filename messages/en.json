@@ -112,7 +112,7 @@
   },
   "listing": {
     "contact": "Contact",
-    "urgent": "Urgent",
+    "urgent": "Boosted",
     "sold": "Sold",
     "timeMinutes": "{n}m ago",
     "timeHours": "{n}h ago",

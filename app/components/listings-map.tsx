@@ -5,7 +5,6 @@ import L from "leaflet";
 import { useEffect, useRef } from "react";
 
 // Fix Leaflet's default icon path issue with bundlers
-// biome-ignore lint/suspicious/noExplicitAny: Leaflet internal
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:

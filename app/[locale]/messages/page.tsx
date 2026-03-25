@@ -14,9 +14,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { timeAgoCompact } from "@/lib/format-helpers";
+import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { createClient } from "@/lib/supabase/client";
 
 type Conversation = {
   id: string;

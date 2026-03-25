@@ -27,10 +27,7 @@ export default function supabaseImageLoader({
   const q = quality || 75;
 
   // Full Supabase storage URLs — append width/quality query params
-  if (
-    src.startsWith("http://") ||
-    src.startsWith("https://")
-  ) {
+  if (src.startsWith("http://") || src.startsWith("https://")) {
     const sep = src.includes("?") ? "&" : "?";
     return `${src}${sep}w=${width}&q=${q}`;
   }

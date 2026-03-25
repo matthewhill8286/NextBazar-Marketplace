@@ -112,8 +112,7 @@
   },
   "listing": {
     "contact": "Επικοινωνία",
-    "featured": "Προτεινόμενο",
-    "urgent": "Επείγον",
+    "urgent": "Ενισχυμένο",
     "sold": "Πωλήθηκε",
     "timeMinutes": "πριν {n}λ",
     "timeHours": "πριν {n}ω",

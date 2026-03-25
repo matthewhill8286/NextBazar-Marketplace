@@ -109,7 +109,9 @@ beforeEach(() => {
   mockGetUser.mockResolvedValue({ data: { user: { id: "user-seller-1" } } });
 
   // Clear captured callbacks between tests
-  Object.keys(capturedCallbacks).forEach((k) => delete capturedCallbacks[k]);
+  Object.keys(capturedCallbacks).forEach((k) => {
+    delete capturedCallbacks[k]
+  });
 });
 
 // ---------------------------------------------------------------------------

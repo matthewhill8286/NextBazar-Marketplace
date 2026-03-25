@@ -3,8 +3,6 @@ import { createClient } from "@/lib/supabase/client";
 
 type RealtimeEvent = "INSERT" | "UPDATE" | "DELETE" | "*";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 type AnyRecord = Record<string, any>;
 
 export type RealtimePayload<T extends AnyRecord = AnyRecord> = {

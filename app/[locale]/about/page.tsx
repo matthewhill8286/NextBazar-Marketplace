@@ -1,6 +1,3 @@
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import {
   ArrowRight,
   Globe2,
@@ -8,9 +5,10 @@ import {
   Package,
   ShieldCheck,
   Star,
-  Users,
   Zap,
 } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About Us — NextBazar",

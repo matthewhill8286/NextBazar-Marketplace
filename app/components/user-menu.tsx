@@ -1,11 +1,11 @@
 "use client";
 
 import { LayoutDashboard, LogOut, Settings } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,9 +19,13 @@ type UserProfile = {
 export default function UserMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const tDash = useTranslations("dashboard");
+  const {
+    userId: authUserId,
+    loading: authLoading,
+    profileVersion,
+  } = useAuth();
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const [open, setOpen] = useState(false);
@@ -37,50 +41,32 @@ export default function UserMenu() {
     router.push(newPath);
   }
 
-  // ── Auth: load user profile + initial unread count ───────────────────────
+  // ── Load profile when auth user changes (no extra getUser() call) ────────
   useEffect(() => {
+    if (authLoading) return;
+
+    if (!authUserId) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     const supabase = createClient();
-
-    async function loadUser() {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser();
-
-      if (authUser) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("display_name, avatar_url")
-          .eq("id", authUser.id)
-          .single();
-
+    supabase
+      .from("profiles")
+      .select("display_name, avatar_url")
+      .eq("id", authUserId)
+      .single()
+      .then(({ data: profile }) => {
         setUser({
-          id: authUser.id,
-          email: authUser.email || "",
+          id: authUserId,
+          email: "", // email not needed for display
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
         });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    }
-
-    loadUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        setUser(null);
-      } else {
-        loadUser();
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+        setLoading(false);
+      });
+  }, [authUserId, authLoading, profileVersion]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -128,13 +114,13 @@ export default function UserMenu() {
       {/* Avatar button — shows a dot if there are unread alerts */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
+        className="pointer-events-auto relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
-          <Image
+          <img
             src={user.avatar_url}
-            alt=""
-            className="w-full h-full rounded-full object-cover"
+            alt="user avatar"
+            className="w-full h-full rounded-full object-cover hover:pointer-events-auto"
           />
         ) : (
           initials

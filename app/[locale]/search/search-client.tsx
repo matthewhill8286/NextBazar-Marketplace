@@ -3,7 +3,7 @@
 import {
   LayoutGrid,
   Loader2,
-  Map,
+  MapIcon,
   MapPin,
   Search,
   SlidersHorizontal,
@@ -26,6 +26,7 @@ const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
     />
   ),
 });
+
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -83,10 +84,9 @@ export default function SearchClient({
   const [showFilters, setShowFilters] = useState(false);
 
   const [listings, setListings] = useState<SearchListing[]>([]);
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
-  const [subcategories, setSubcategories] =
-    useState<Subcategory[]>(initialSubcategories);
-  const [locations, setLocations] = useState<Location[]>(initialLocations);
+  const [categories] = useState<Category[]>(initialCategories);
+  const [subcategories] = useState<Subcategory[]>(initialSubcategories);
+  const [locations] = useState<Location[]>(initialLocations);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
@@ -228,20 +228,6 @@ export default function SearchClient({
     supabase.from,
   ]);
 
-  // ─── Load auth once (categories/locations already hydrated from server) ─────
-  useEffect(() => {
-    async function loadAuth() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      // Auth state is managed by SavedProvider in the layout —
-      // nothing more to do here; categories/locs came in as props.
-      void user;
-    }
-    loadAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supabase.auth.getUser]);
-
   // ─── Normalise hit shape ──────────────────────────────────────────────────
   // Accepts both full Supabase rows (categories/locations objects) and flat
   // vector-search RPC results (category_name / location_name columns).
@@ -288,7 +274,6 @@ export default function SearchClient({
   );
 
   // ─── Core search ──────────────────────────────────────────────────────────
-  // biome-ignore lint/correctness/useExhaustiveDependencies:
   const doSearch = useCallback(
     async (q: string) => {
       setLoading(true);
@@ -537,7 +522,6 @@ export default function SearchClient({
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              autoFocus
             />
             <div className="absolute right-2 flex items-center gap-1.5">
               {inputValue && (
@@ -853,7 +837,7 @@ export default function SearchClient({
                   className={`p-1.5 rounded-md transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
                   title="Map view"
                 >
-                  <Map className="w-4 h-4" />
+                  <MapIcon className="w-4 h-4" />
                 </button>
               </div>
               {!showFilters && (
@@ -907,6 +891,7 @@ export default function SearchClient({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: this is fine for loading
                 key={i}
                 className="bg-white rounded-xl border border-gray-100 overflow-hidden"
               >

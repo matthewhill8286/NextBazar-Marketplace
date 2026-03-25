@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { timeAgo } from "@/lib/format-helpers";
+import { createClient } from "@/lib/supabase/client";
 
 type Notification = {
   id: string;
@@ -132,6 +132,7 @@ export default function NotificationsClient({
 
             const inner = (
               <div
+                key={n.id}
                 className={`flex items-start gap-4 p-4 transition-colors ${
                   !n.read ? "bg-indigo-50/30" : "hover:bg-gray-50/50"
                 }`}

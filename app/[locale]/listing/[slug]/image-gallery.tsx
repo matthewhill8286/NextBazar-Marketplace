@@ -61,6 +61,7 @@ export default function ImageGallery({
       {/* ── Main viewer ─────────────────────────────────────────────── */}
       <div className="relative aspect-video max-h-130 bg-gray-900 rounded-2xl overflow-hidden group">
         {active.kind === "video" ? (
+          // biome-ignore lint/a11y/useMediaCaption: no captions relevant here
           <video
             ref={videoRef}
             key={active.url}
@@ -167,7 +168,7 @@ export default function ImageGallery({
         <div className="flex gap-2 mt-3 overflow-x-auto hide-scrollbar pb-1">
           {media.map((item, idx) => (
             <button
-              key={idx}
+              key={item.url}
               onClick={() => setActiveIndex(idx)}
               className={`relative w-20 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
                 idx === activeIndex

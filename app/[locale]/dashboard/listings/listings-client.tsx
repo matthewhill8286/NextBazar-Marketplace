@@ -20,12 +20,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import { ConfirmDialog, EmptyState } from "@/app/components/ui";
-import { toast } from "sonner";
-import { createClient } from "@/lib/supabase/client";
 import { LISTING_ACTIVE_MS } from "@/lib/constants";
 import {
   expiryBadge,
@@ -33,6 +32,7 @@ import {
   timeAgo,
   unwrap,
 } from "@/lib/format-helpers";
+import { createClient } from "@/lib/supabase/client";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
 
 /** Re-export so dashboard/page.tsx can import the canonical type. */
@@ -47,8 +47,10 @@ const TABS = [
 
 export default function ListingsClient({
   initialListings,
+  isProSeller = false,
 }: {
   initialListings: DashboardListing[];
+  isProSeller?: boolean;
 }) {
   const supabase = createClient();
   const searchParams = useSearchParams();
@@ -93,13 +95,17 @@ export default function ListingsClient({
     if (allSelected) {
       setSelected((prev) => {
         const next = new Set(prev);
-        filtered.forEach((l) => next.delete(l.id));
+        filtered.forEach((l) => {
+          next.delete(l.id);
+        });
         return next;
       });
     } else {
       setSelected((prev) => {
         const next = new Set(prev);
-        filtered.forEach((l) => next.add(l.id));
+        filtered.forEach((l) => {
+          next.add(l.id);
+        });
         return next;
       });
     }
@@ -424,8 +430,8 @@ export default function ListingsClient({
         })}
       </div>
 
-      {/* Bulk action bar */}
-      {selectedInTab.length > 0 && (
+      {/* Bulk action bar — Pro Sellers only */}
+      {isProSeller && selectedInTab.length > 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-indigo-50 border border-indigo-100 rounded-xl">
           <span className="text-sm font-medium text-indigo-800">
             {selectedInTab.length} selected
@@ -494,16 +500,18 @@ export default function ListingsClient({
       {/* Listings */}
       {filtered.length > 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
-          {/* Select-all header */}
-          <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 bg-gray-50/60 rounded-t-xl">
-            <button
-              onClick={toggleSelectAll}
-              className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
-            >
-              <SelectIcon className="w-4 h-4" />
-              {allSelected ? "Deselect all" : "Select all"}
-            </button>
-          </div>
+          {/* Select-all header — Pro Sellers only */}
+          {isProSeller && (
+            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 bg-gray-50/60 rounded-t-xl">
+              <button
+                onClick={toggleSelectAll}
+                className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
+              >
+                <SelectIcon className="w-4 h-4" />
+                {allSelected ? "Deselect all" : "Select all"}
+              </button>
+            </div>
+          )}
 
           {filtered.map((listing) => {
             const isSelected = selected.has(listing.id);
@@ -512,17 +520,19 @@ export default function ListingsClient({
                 key={listing.id}
                 className={`flex items-center gap-3 p-4 hover:bg-gray-50/50 transition-colors ${isSelected ? "bg-indigo-50/40" : ""}`}
               >
-                {/* Checkbox */}
-                <button
-                  onClick={() => toggleSelect(listing.id)}
-                  className="shrink-0 text-gray-400 hover:text-indigo-600 transition-colors"
-                >
-                  {isSelected ? (
-                    <CheckSquare className="w-5 h-5 text-indigo-600" />
-                  ) : (
-                    <Square className="w-5 h-5" />
-                  )}
-                </button>
+                {/* Checkbox — Pro Sellers only */}
+                {isProSeller && (
+                  <button
+                    onClick={() => toggleSelect(listing.id)}
+                    className="shrink-0 text-gray-400 hover:text-indigo-600 transition-colors"
+                  >
+                    {isSelected ? (
+                      <CheckSquare className="w-5 h-5 text-indigo-600" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                )}
 
                 {/* Thumbnail */}
                 <div className="w-20 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">

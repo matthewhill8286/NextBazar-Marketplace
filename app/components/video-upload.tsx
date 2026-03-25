@@ -123,6 +123,7 @@ export default function VideoUpload({
           </div>
         ) : (
           /* Preview */
+          // biome-ignore lint/a11y/useMediaCaption: no caption needed
           <video
             src={video.previewUrl}
             className="w-full h-full object-contain"

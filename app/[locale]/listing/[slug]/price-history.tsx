@@ -102,6 +102,7 @@ export default function PriceHistory({
     .join(" ");
 
   // Fill under the line
+  // biome-ignore lint/style/useTemplate: this is a template string
   const fillD = pathD + ` L ${pts[pts.length - 1].x} ${H} L ${pts[0].x} ${H} Z`;
 
   const firstPrice = allPoints[0].price;
@@ -171,8 +172,8 @@ export default function PriceHistory({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          {pts.map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="3" fill={lineColor} />
+          {pts.map((p) => (
+            <circle key={`${p}`} cx={p.x} cy={p.y} r="3" fill={lineColor} />
           ))}
         </svg>
       </div>

@@ -15,8 +15,9 @@
  * `setLoading(null)` always runs.  Before the fix a thrown exception left
  * `disabled={!!loading}` permanently true, making buttons unresponsive.
  */
-import React from "react";
+
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   BuyerOfferCard,
@@ -29,10 +30,7 @@ import {
 
 const { mockUpdateEq, mockUpdate, mockDeleteEq, mockRefresh } = vi.hoisted(
   () => {
-    const mockUpdateEq = vi.fn<
-      [],
-      Promise<{ error: null | { message: string } }>
-    >();
+    const mockUpdateEq = vi.fn();
     const mockUpdate = vi.fn(() => ({ eq: mockUpdateEq }));
     const mockDeleteEq = vi.fn().mockResolvedValue({ error: null });
     const mockRefresh = vi.fn();

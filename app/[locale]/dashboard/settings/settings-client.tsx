@@ -11,13 +11,13 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import {
   ErrorBanner,
   FormInput,
   FormTextarea,
   SuccessBanner,
 } from "@/app/components/ui";
+import { createClient } from "@/lib/supabase/client";
 
 type ProfileData = {
   id: string;

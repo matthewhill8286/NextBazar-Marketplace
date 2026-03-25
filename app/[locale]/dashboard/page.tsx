@@ -15,12 +15,15 @@ import { useEffect, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
+import ProSellerModal from "./dealer/pro-seller-modal";
 import ListingsClient from "./listings/listings-client";
 import MyShopTab from "./my-shop-tab";
 
 /* ── Skeleton pulse block ─────────────────────────────────────────────────── */
 function Bone({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />;
+  return (
+    <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />
+  );
 }
 
 function PageSkeleton() {
@@ -34,7 +37,11 @@ function PageSkeleton() {
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+          <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
+            key={i}
+            className="bg-white rounded-xl border border-gray-100 p-4 space-y-3"
+          >
             <div className="flex items-center gap-2">
               <Bone className="w-9 h-9 rounded-lg" />
               <Bone className="h-3 w-12" />
@@ -48,7 +55,11 @@ function PageSkeleton() {
       {/* Listing rows */}
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4">
+          <div
+            // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
+            key={i}
+            className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4"
+          >
             <Bone className="w-16 h-12 rounded-lg shrink-0" />
             <div className="flex-1 space-y-2">
               <Bone className="h-4 w-3/4" />
@@ -70,7 +81,12 @@ export default function DashboardPage() {
   const [listings, setListings] = useState<DashboardListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDealer, setIsDealer] = useState(false);
+  const [isProSeller, setIsProSeller] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [showProModal, setShowProModal] = useState(false);
+  const [dealerPrice, setDealerPrice] = useState("€25");
+  const [dealerInterval, setDealerInterval] = useState("month");
+  const [subscribing, setSubscribing] = useState(false);
 
   // Allow linking directly to the shop tab via ?view=my-shop
   const initialView =
@@ -86,7 +102,7 @@ export default function DashboardPage() {
 
       setUserId(user.id);
 
-      const [{ data }, { data: profile }] = await Promise.all([
+      const [{ data }, { data: profile }, { data: shop }] = await Promise.all([
         supabase
           .from("listings")
           .select(
@@ -106,10 +122,32 @@ export default function DashboardPage() {
           .select("is_dealer")
           .eq("id", user.id)
           .single(),
+        supabase
+          .from("dealer_shops")
+          .select("plan_status")
+          .eq("user_id", user.id)
+          .single(),
       ]);
 
       setListings(data || []);
-      setIsDealer(profile?.is_dealer || false);
+      const dealer = profile?.is_dealer || false;
+      setIsDealer(dealer);
+      setIsProSeller(!!dealer && shop?.plan_status === "active");
+
+      // Fetch pricing for the CTA modal (non-dealers only)
+      if (!dealer) {
+        try {
+          const res = await fetch("/api/pricing");
+          const pricing = await res.json();
+          if (pricing?.dealer_pro) {
+            setDealerPrice(pricing.dealer_pro.price);
+            setDealerInterval(pricing.dealer_pro.interval);
+          }
+        } catch {
+          // fall back to defaults
+        }
+      }
+
       setLoading(false);
     }
     load();
@@ -227,7 +265,7 @@ export default function DashboardPage() {
           {/* Pro Seller CTA for non-dealers */}
           {FEATURE_FLAGS.DEALERS && !isDealer && (
             <button
-              onClick={() => setView("my-shop")}
+              onClick={() => setShowProModal(true)}
               className="w-full text-left bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-5 text-white hover:from-purple-700 hover:to-indigo-700 transition-all group cursor-pointer"
             >
               <div className="flex items-center gap-4">
@@ -238,7 +276,7 @@ export default function DashboardPage() {
                   <h3 className="font-bold text-lg">Become a Pro Seller</h3>
                   <p className="text-white/80 text-sm mt-0.5">
                     Get unlimited listings, a branded shop page, analytics &amp;
-                    more for just €35/month
+                    more for just {dealerPrice}/{dealerInterval}
                   </p>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5 bg-white text-purple-700 font-semibold text-sm px-4 py-2 rounded-lg shrink-0 group-hover:bg-white/90 transition-colors">
@@ -250,8 +288,35 @@ export default function DashboardPage() {
           )}
 
           {/* Full listings manager — tabs, bulk actions, per-item menus */}
-          <ListingsClient initialListings={listings} />
+          <ListingsClient
+            initialListings={listings}
+            isProSeller={isProSeller}
+          />
         </>
+      )}
+
+      {/* Pro Seller modal */}
+      {showProModal && (
+        <ProSellerModal
+          dealerPrice={dealerPrice}
+          dealerInterval={dealerInterval}
+          subscribing={subscribing}
+          onSubscribe={async () => {
+            setSubscribing(true);
+            try {
+              const res = await fetch("/api/dealer/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ origin: window.location.origin }),
+              });
+              const { url } = await res.json();
+              if (url) window.location.href = url;
+            } catch {
+              setSubscribing(false);
+            }
+          }}
+          onClose={() => setShowProModal(false)}
+        />
       )}
     </div>
   );
