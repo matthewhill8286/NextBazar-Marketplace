@@ -12,6 +12,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ConfirmDialog } from "@/app/components/ui";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { timeAgo } from "@/lib/format-helpers";
@@ -63,6 +65,10 @@ export default function AdminReportsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("pending");
   const [updating, setUpdating] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: "remove" | "dismiss";
+    report: Report;
+  } | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -112,33 +118,46 @@ export default function AdminReportsPage() {
 
   async function updateStatus(reportId: string, newStatus: string) {
     setUpdating(reportId);
-    await supabase
+    const { error } = await supabase
       .from("reports")
       .update({ status: newStatus })
       .eq("id", reportId);
-    setReports((prev) => prev.filter((r) => r.id !== reportId));
+    if (error) {
+      toast.error("Failed to update report status.");
+    } else {
+      setReports((prev) => prev.filter((r) => r.id !== reportId));
+      toast.success(`Report ${newStatus}`);
+    }
     setUpdating(null);
   }
 
   async function removeListing(report: Report) {
     if (!report.listing) return;
-    if (
-      !confirm(
-        `Remove listing "${report.listing.title}"? This cannot be undone.`,
-      )
-    )
-      return;
     setUpdating(report.id);
-    await supabase
+    const { error: listingErr } = await supabase
       .from("listings")
       .update({ status: "removed" })
       .eq("id", report.listing.id);
+    if (listingErr) {
+      toast.error("Failed to remove listing.");
+      setUpdating(null);
+      return;
+    }
     await supabase
       .from("reports")
       .update({ status: "resolved" })
       .eq("id", report.id);
     setReports((prev) => prev.filter((r) => r.id !== report.id));
+    toast.success("Listing removed and report resolved");
     setUpdating(null);
+  }
+
+  async function handleConfirmedAction() {
+    if (!confirmAction) return;
+    const { type, report } = confirmAction;
+    setConfirmAction(null);
+    if (type === "remove") await removeListing(report);
+    else if (type === "dismiss") await updateStatus(report.id, "dismissed");
   }
 
   function handleFilterChange(s: string) {
@@ -257,7 +276,7 @@ export default function AdminReportsPage() {
                         <Eye className="w-3.5 h-3.5" /> Mark Reviewing
                       </button>
                       <button
-                        onClick={() => removeListing(report)}
+                        onClick={() => setConfirmAction({ type: "remove", report })}
                         disabled={
                           updating === report.id ||
                           !report.listing ||
@@ -268,7 +287,7 @@ export default function AdminReportsPage() {
                         <XCircle className="w-3.5 h-3.5" /> Remove Listing
                       </button>
                       <button
-                        onClick={() => updateStatus(report.id, "dismissed")}
+                        onClick={() => setConfirmAction({ type: "dismiss", report })}
                         disabled={updating === report.id}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-xs font-medium hover:bg-gray-100 transition-colors disabled:opacity-40"
                       >
@@ -279,7 +298,7 @@ export default function AdminReportsPage() {
                   {filter === "reviewing" && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       <button
-                        onClick={() => removeListing(report)}
+                        onClick={() => setConfirmAction({ type: "remove", report })}
                         disabled={
                           updating === report.id ||
                           !report.listing ||
@@ -290,7 +309,7 @@ export default function AdminReportsPage() {
                         <XCircle className="w-3.5 h-3.5" /> Remove Listing
                       </button>
                       <button
-                        onClick={() => updateStatus(report.id, "dismissed")}
+                        onClick={() => setConfirmAction({ type: "dismiss", report })}
                         disabled={updating === report.id}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-xs font-medium hover:bg-gray-100 transition-colors disabled:opacity-40"
                       >
@@ -307,6 +326,31 @@ export default function AdminReportsPage() {
           ))}
         </div>
       )}
+
+      {/* Remove Listing confirmation */}
+      <ConfirmDialog
+        open={confirmAction?.type === "remove"}
+        title="Remove listing?"
+        description={`"${confirmAction?.report.listing?.title}" will be removed from the marketplace and the report marked as resolved. This cannot be undone.`}
+        icon={<div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center"><XCircle className="w-6 h-6 text-red-600" /></div>}
+        confirmLabel="Remove Listing"
+        confirmClassName="bg-red-600 hover:bg-red-700"
+        loading={updating !== null}
+        onConfirm={handleConfirmedAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      {/* Dismiss Report confirmation */}
+      <ConfirmDialog
+        open={confirmAction?.type === "dismiss"}
+        title="Dismiss report?"
+        description="This report will be marked as dismissed. The listing will remain active."
+        confirmLabel="Dismiss"
+        confirmClassName="bg-gray-600 hover:bg-gray-700"
+        loading={updating !== null}
+        onConfirm={handleConfirmedAction}
+        onCancel={() => setConfirmAction(null)}
+      />
     </div>
   );
 }

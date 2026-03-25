@@ -20,6 +20,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
+import { ConfirmDialog } from "@/app/components/ui";
+import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 
@@ -182,6 +184,10 @@ function OfferCard({
   const [hasReviewed, setHasReviewed] = useState(false);
   const [existingRating, setExistingRating] = useState<number | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    type: "accepted" | "declined" | "withdrawn" | "countered";
+    extras?: Record<string, unknown>;
+  } | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const listing = offer.listings;
@@ -220,16 +226,33 @@ function OfferCard({
         .eq("id", offer.id);
       if (error) {
         setActionError("Couldn't update offer. Please try again.");
+        toast.error("Failed to update offer");
         return;
       }
       onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
       setShowCounter(false);
+
+      const toastMap: Record<string, string> = {
+        accepted: "Offer accepted",
+        declined: "Offer declined",
+        countered: "Counter offer sent",
+        withdrawn: "Offer withdrawn",
+      };
+      toast.success(toastMap[status] || "Offer updated");
       router.refresh();
     } catch {
       setActionError("Couldn't update offer. Please try again.");
+      toast.error("Failed to update offer");
     } finally {
       setLoading(null);
     }
+  }
+
+  async function handleConfirmedAction() {
+    if (!confirmAction) return;
+    const { type, extras } = confirmAction;
+    setConfirmAction(null);
+    await respond(type, extras || {});
   }
 
   async function handleDelete() {
@@ -239,12 +262,15 @@ function OfferCard({
       const { error } = await supabase.from("offers").delete().eq("id", offer.id);
       if (error) {
         setActionError("Couldn't delete offer. Please try again.");
+        toast.error("Failed to delete offer");
         setDeleteConfirm(false);
         return;
       }
       onDelete(offer.id);
+      toast.success("Offer removed");
     } catch {
       setActionError("Couldn't delete offer. Please try again.");
+      toast.error("Failed to delete offer");
       setDeleteConfirm(false);
     } finally {
       setLoading(null);
@@ -391,7 +417,7 @@ function OfferCard({
                   <div className="flex gap-2">
                     <button
                         type="button"
-                      onClick={() => respond("accepted")}
+                      onClick={() => setConfirmAction({ type: "accepted" })}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
@@ -409,7 +435,7 @@ function OfferCard({
                     </button>
                     <button
                         type="button"
-                      onClick={() => respond("declined")}
+                      onClick={() => setConfirmAction({ type: "declined" })}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
                     >
@@ -443,9 +469,12 @@ function OfferCard({
                     <div className="flex gap-2">
                       <button
                           type="button"
-                        onClick={() => respond("countered", {
-                          counter_amount: Number(counterAmount),
-                          counter_message: counterMessage || null,
+                        onClick={() => setConfirmAction({
+                          type: "countered",
+                          extras: {
+                            counter_amount: Number(counterAmount),
+                            counter_message: counterMessage || null,
+                          },
                         })}
                         disabled={!counterAmount || !!loading}
                         className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
@@ -469,7 +498,7 @@ function OfferCard({
             {!isSeller && (offer.status === "pending" || offer.status === "countered") && (
               <button
                   type="button"
-                onClick={() => respond("withdrawn")}
+                onClick={() => setConfirmAction({ type: "withdrawn" })}
                 disabled={!!loading}
                 className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
               >
@@ -482,7 +511,7 @@ function OfferCard({
               <div className="flex gap-2">
                 <button
                     type="button"
-                  onClick={() => respond("accepted")}
+                  onClick={() => setConfirmAction({ type: "accepted" })}
                   disabled={!!loading}
                   className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
@@ -491,7 +520,7 @@ function OfferCard({
                 </button>
                 <button
                     type="button"
-                  onClick={() => respond("declined")}
+                  onClick={() => setConfirmAction({ type: "declined" })}
                   disabled={!!loading}
                   className="flex-1 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
@@ -555,6 +584,63 @@ function OfferCard({
           onReviewedAction={() => setHasReviewed(true)}
         />
       )}
+
+      {/* ── Confirm dialogs for offer actions ── */}
+      <ConfirmDialog
+        open={confirmAction?.type === "accepted"}
+        title="Accept this offer?"
+        description={`You'll agree to sell for ${sym}${
+          offer.status === "countered" && offer.counter_amount
+            ? offer.counter_amount.toLocaleString()
+            : offer.amount.toLocaleString()
+        }. The ${isSeller ? "buyer" : "seller"} will be notified.`}
+        icon={<div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center"><Check className="w-6 h-6 text-green-600" /></div>}
+        confirmLabel="Accept"
+        confirmClassName="bg-green-600 hover:bg-green-700"
+        loading={loading === "accepted"}
+        onConfirm={handleConfirmedAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmAction?.type === "declined"}
+        title="Decline this offer?"
+        description={`The ${isSeller ? "buyer" : "seller"} will be notified that you declined.`}
+        icon={<div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center"><X className="w-6 h-6 text-red-600" /></div>}
+        confirmLabel="Decline"
+        confirmClassName="bg-red-600 hover:bg-red-700"
+        loading={loading === "declined"}
+        onConfirm={handleConfirmedAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmAction?.type === "countered"}
+        title="Send counter offer?"
+        description={`You'll counter with ${sym}${
+          confirmAction?.extras?.counter_amount
+            ? Number(confirmAction.extras.counter_amount).toLocaleString()
+            : "—"
+        }. The buyer will be notified.`}
+        icon={<div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center"><RotateCcw className="w-6 h-6 text-indigo-600" /></div>}
+        confirmLabel="Send Counter"
+        confirmClassName="bg-indigo-600 hover:bg-indigo-700"
+        loading={loading === "countered"}
+        onConfirm={handleConfirmedAction}
+        onCancel={() => setConfirmAction(null)}
+      />
+
+      <ConfirmDialog
+        open={confirmAction?.type === "withdrawn"}
+        title="Withdraw this offer?"
+        description={`Your offer of ${sym}${offer.amount.toLocaleString()} will be withdrawn and the seller will be notified.`}
+        icon={<div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center"><X className="w-6 h-6 text-gray-500" /></div>}
+        confirmLabel="Withdraw"
+        confirmClassName="bg-red-600 hover:bg-red-700"
+        loading={loading === "withdrawn"}
+        onConfirm={handleConfirmedAction}
+        onCancel={() => setConfirmAction(null)}
+      />
     </>
   );
 }

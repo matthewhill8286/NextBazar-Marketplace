@@ -10,7 +10,7 @@ const TABS: TabConfig[] = [
     label: "New Cars",
     icon: Sparkles,
     description:
-      "Browse brand-new vehicles from authorised dealers — latest models, full warranties, and financing options available.",
+      "Browse brand-new vehicles from authorised sellers — latest models, full warranties, and financing options available.",
     subcategorySlugs: [
       "new-car",
       "new-vehicle",
@@ -24,7 +24,7 @@ const TABS: TabConfig[] = [
     label: "Used Cars",
     icon: Car,
     description:
-      "Find quality pre-owned vehicles from private sellers and certified dealers — inspected, priced fairly, and ready to drive.",
+      "Find quality pre-owned vehicles from private sellers and certified Pro Sellers — inspected, priced fairly, and ready to drive.",
     subcategorySlugs: [
       "used-car",
       "used-vehicle",
@@ -40,10 +40,10 @@ const TABS: TabConfig[] = [
   },
   {
     key: "dealers",
-    label: "Dealer Showrooms",
+    label: "Pro Seller Showrooms",
     icon: Store,
     description:
-      "Shop directly from trusted dealerships — browse their full inventory, compare prices, and get exclusive deals.",
+      "Shop directly from trusted Pro Sellers — browse their full inventory, compare prices, and get exclusive deals.",
     subcategorySlugs: [
       "dealer",
       "showroom",

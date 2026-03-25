@@ -1,16 +1,15 @@
 "use client";
 
-import { Bell, Bookmark, MessageCircle, Plus, Search, Store } from "lucide-react";
+import {Bell, Bookmark, MessageCircle, Plus, Search, Store} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { useSaved } from "@/lib/saved-context";
-import GlobalSearchBar from "./global-search-bar";
 import UserMenu from "./user-menu";
 
 export default function Navbar() {
@@ -78,17 +77,6 @@ export default function Navbar() {
             className="md:hidden h-10 w-10"
           />
         </Link>
-
-        {/* Search bar */}
-        <div className="flex-1 max-w-xl hidden md:block">
-          <Suspense
-            fallback={
-              <div className="w-full h-[42px] rounded-xl border border-gray-100 bg-gray-50/50 animate-pulse" />
-            }
-          >
-            <GlobalSearchBar variant="navbar" />
-          </Suspense>
-        </div>
 
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">

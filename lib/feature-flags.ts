@@ -15,7 +15,7 @@ export const FEATURE_FLAGS = {
   DEALERS_PAGE: false,
 
   /** Dealer / Shops features — shops page, dealer badges, dashboard dealer portal, homepage featured shops. */
-  DEALERS: false,
+  DEALERS: true,
 
   /** Reports queue & dashboard — hide until full CRUD reports management is built. */
   REPORTS: false,

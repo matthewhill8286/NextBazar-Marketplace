@@ -24,7 +24,7 @@
     "company": "Company",
     "aboutUs": "About Us",
     "safetyTips": "Safety Tips",
-    "forDealers": "For Dealers",
+    "forDealers": "For Pro Sellers",
     "contact": "Contact",
     "rights": "© 2026 Impkt. All rights reserved.",
     "privacy": "Privacy Policy",
@@ -167,7 +167,8 @@
     "safetyTip3": "Never send money in advance",
     "safetyTip4": "Use in-app messaging for all communication",
     "viewMore": "View more",
-    "viewSellerProfile": "View seller profile →"
+    "viewSellerProfile": "View seller profile →",
+    "visitShop": "Visit shop →"
   },
   "offer": {
     "title": "Make an Offer",

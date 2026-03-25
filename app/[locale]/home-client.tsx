@@ -289,7 +289,7 @@ export default function HomeClient({
               <div className="flex items-center gap-3">
                 <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
                 <h2 className="text-xl font-bold text-gray-900">
-                  Dealer Shops
+                  Pro Seller Shops
                 </h2>
                 <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
                   <Store className="w-3 h-3" />

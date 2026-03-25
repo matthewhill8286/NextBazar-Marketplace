@@ -92,7 +92,7 @@ export default function DashboardSidebar({
             <p className="text-xs text-gray-500 truncate">{profile.email}</p>
             {profile.is_dealer && (
               <span className="inline-block mt-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
-                Dealer Account
+                Pro Seller
               </span>
             )}
           </div>
@@ -173,40 +173,36 @@ export default function DashboardSidebar({
           );
         })}
 
-        {/* Dealer link — gated behind feature flag */}
+        {/* My Shop link — gated behind feature flag */}
         {FEATURE_FLAGS.DEALERS && (() => {
-          const dealerActive =
-            pathname === "/dashboard/dealer" ||
-            pathname.startsWith("/dashboard/dealer");
+          const shopActive = pathname === "/dashboard" && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("view") === "my-shop";
           return profile.is_dealer ? (
             <Link
-              href="/dashboard/dealer"
+              href="/dashboard?view=my-shop"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                dealerActive
+                shopActive
                   ? "bg-indigo-50 text-indigo-700"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
               )}
             >
               <Store className="w-4 h-4" />
-              Dealer Portal
+              My Shop
             </Link>
           ) : (
             <Link
-              href="/dashboard/dealer"
+              href="/dashboard?view=my-shop"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
-                dealerActive
-                  ? "bg-purple-50 text-purple-700 border-purple-200"
-                  : "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+                "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
               )}
             >
               <Crown className="w-4 h-4" />
-              Become a Dealer
+              Become a Pro Seller
             </Link>
           );
         })()}
-        {/* end dealer link */}
+        {/* end shop link */}
       </nav>
     </aside>
   );

@@ -203,12 +203,14 @@ export default function ListingDetail({
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [existingOffer, setExistingOffer] = useState<{
+    id: string;
     status: string;
     amount: number | null;
     counter_amount: number | null;
     currency: string;
   } | null>(null);
   const [offerCount, setOfferCount] = useState(0);
+  const [shopSlug, setShopSlug] = useState<string | null>(null);
 
   const dateLocale = locale === "el" ? "el-GR" : "en-GB";
 
@@ -314,7 +316,7 @@ export default function ListingDetail({
         // Fetch offer history and record analytics in parallel
         const offersPromise = supabase
           .from("offers")
-          .select("status, amount, counter_amount, currency")
+          .select("id, status, amount, counter_amount, currency")
           .eq("listing_id", data.id)
           .eq("buyer_id", userId)
           .then(({ data: allOffers }) => {
@@ -328,6 +330,7 @@ export default function ListingDetail({
             );
             if (active)
               setExistingOffer({
+                id: active.id,
                 status: active.status,
                 amount: active.amount ?? null,
                 counter_amount: active.counter_amount ?? null,
@@ -349,6 +352,18 @@ export default function ListingDetail({
       if (!viewCounted.current) {
         viewCounted.current = true;
         supabase.rpc("increment_view_count", { p_listing_id: data.id }).then();
+      }
+
+      // If seller is a Pro Seller, fetch their shop slug for linking
+      if (FEATURE_FLAGS.DEALERS && data.profiles?.is_dealer) {
+        supabase
+          .from("dealer_shops")
+          .select("slug")
+          .eq("user_id", data.user_id)
+          .single()
+          .then(({ data: shop }) => {
+            if (shop?.slug) setShopSlug(shop.slug);
+          });
       }
 
       setLoading(false);
@@ -411,6 +426,7 @@ export default function ListingDetail({
             status === "accepted"
           ) {
             setExistingOffer({
+              id: patch.id,
               status,
               amount: patch.amount ?? null,
               counter_amount: patch.counter_amount ?? null,
@@ -883,7 +899,7 @@ export default function ListingDetail({
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <Link
-                        href={`/profile/${listing.user_id}`}
+                        href={shopSlug ? `/shop/${shopSlug}` : `/profile/${listing.user_id}`}
                         className="font-semibold text-gray-900 truncate hover:text-indigo-600 transition-colors"
                       >
                         {profile?.display_name || "Seller"}
@@ -950,7 +966,7 @@ export default function ListingDetail({
                               </span>
                             </div>
                             <Link
-                              href="/dashboard/offers"
+                              href={`/dashboard/offers${existingOffer?.id ? `?offer=${existingOffer.id}` : ""}`}
                               className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
                             >
                               View →
@@ -960,7 +976,7 @@ export default function ListingDetail({
                       ) : existingOffer.status === "countered" ? (
                         // ── Counter offer received ────────────────────────
                         <Link
-                          href="/dashboard/offers"
+                          href={`/dashboard/offers${existingOffer?.id ? `?offer=${existingOffer.id}` : ""}`}
                           className="block w-full rounded-xl overflow-hidden border-2 border-indigo-200 hover:border-indigo-300 transition-all group"
                         >
                           <div className="bg-indigo-600 px-4 py-2 flex items-center gap-2">
@@ -995,7 +1011,7 @@ export default function ListingDetail({
                       ) : (
                         // ── Offer pending ─────────────────────────────────
                         <Link
-                          href="/dashboard/offers"
+                          href={`/dashboard/offers${existingOffer?.id ? `?offer=${existingOffer.id}` : ""}`}
                           className="block w-full rounded-xl overflow-hidden border-2 border-amber-200 hover:border-amber-300 transition-all group"
                         >
                           <div className="bg-amber-500 px-4 py-2 flex items-center gap-2">
@@ -1048,10 +1064,10 @@ export default function ListingDetail({
 
                 <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                   <Link
-                    href={`/profile/${listing.user_id}`}
+                    href={shopSlug ? `/shop/${shopSlug}` : `/profile/${listing.user_id}`}
                     className="text-sm text-indigo-600 font-medium hover:underline"
                   >
-                    {t("viewSellerProfile")}
+                    {shopSlug ? t("visitShop") : t("viewSellerProfile")}
                   </Link>
                 </div>
               </div>
@@ -1134,8 +1150,8 @@ export default function ListingDetail({
           listingPrice={listing.price}
           currency={listing.currency || "EUR"}
           onCloseAction={() => setShowOfferModal(false)}
-          onOfferSentAction={(amt, cur) => {
-            setExistingOffer({ status: "pending", amount: amt, counter_amount: null, currency: cur });
+          onOfferSentAction={(offerId, amt, cur) => {
+            setExistingOffer({ id: offerId, status: "pending", amount: amt, counter_amount: null, currency: cur });
             setOfferCount((c) => c + 1);
             setShowOfferModal(false);
           }}
