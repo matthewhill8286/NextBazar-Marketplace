@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { useSaved } from "@/lib/saved-context";
+import GlobalSearch from "./global-search";
 import UserMenu from "./user-menu";
 
 export default function Navbar() {
@@ -77,6 +78,9 @@ export default function Navbar() {
             className="md:hidden h-10 w-10"
           />
         </Link>
+
+        {/* Global search — desktop only */}
+        <GlobalSearch />
 
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
