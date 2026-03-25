@@ -8,6 +8,7 @@ import Footer from "@/app/components/footer";
 import Navbar from "@/app/components/navbar";
 import RealtimeToasts from "@/app/components/realtime-toasts";
 import { routing } from "@/i18n/routing";
+import { AuthProvider } from "@/lib/auth-context";
 import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
 
@@ -62,6 +63,7 @@ export default async function LocaleLayout({
     <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-gray-50">
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <AuthProvider>
           <SavedProvider>
             <CompareProvider>
               <Navbar />
@@ -88,6 +90,7 @@ export default async function LocaleLayout({
               />
             </CompareProvider>
           </SavedProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

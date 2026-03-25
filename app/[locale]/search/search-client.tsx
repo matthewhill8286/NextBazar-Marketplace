@@ -228,20 +228,6 @@ export default function SearchClient({
     supabase.from,
   ]);
 
-  // ─── Load auth once (categories/locations already hydrated from server) ─────
-  useEffect(() => {
-    async function loadAuth() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      // Auth state is managed by SavedProvider in the layout —
-      // nothing more to do here; categories/locs came in as props.
-      void user;
-    }
-    loadAuth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supabase.auth.getUser]);
-
   // ─── Normalise hit shape ──────────────────────────────────────────────────
   // Accepts both full Supabase rows (categories/locations objects) and flat
   // vector-search RPC results (category_name / location_name columns).

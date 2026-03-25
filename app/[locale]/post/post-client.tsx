@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { ErrorBanner } from "@/app/components/ui";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import type { ClientPricing } from "@/lib/stripe";
 import type {
@@ -73,26 +74,23 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
   );
   const isVehicle = selectedCategory?.slug === VEHICLES_CATEGORY_SLUG;
 
+  const { userId: authUserId } = useAuth();
+
   useEffect(() => {
-    async function loadUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        setUserId(user.id);
-        // Auto-populate phone from profile
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("phone")
-          .eq("id", user.id)
-          .single();
+    if (!authUserId) return;
+    setUserId(authUserId);
+    // Auto-populate phone from profile
+    supabase
+      .from("profiles")
+      .select("phone")
+      .eq("id", authUserId)
+      .single()
+      .then(({ data: profile }) => {
         if (profile?.phone) {
           setFormData((prev) => ({ ...prev, contact_phone: profile.phone }));
         }
-      }
-    }
-    loadUser();
-  }, [supabase]);
+      });
+  }, [authUserId, supabase]);
 
   const update = (key: string, value: string) =>
     setFormData((prev) => ({ ...prev, [key]: value }));

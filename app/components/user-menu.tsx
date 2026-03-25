@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 
@@ -22,6 +23,7 @@ export default function UserMenu() {
   const t = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const tDash = useTranslations("dashboard");
+  const { userId: authUserId, loading: authLoading } = useAuth();
 
   const [user, setUser] = useState<UserProfile | null>(null);
   const [open, setOpen] = useState(false);
@@ -37,50 +39,32 @@ export default function UserMenu() {
     router.push(newPath);
   }
 
-  // ── Auth: load user profile + initial unread count ───────────────────────
+  // ── Load profile when auth user changes (no extra getUser() call) ────────
   useEffect(() => {
+    if (authLoading) return;
+
+    if (!authUserId) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     const supabase = createClient();
-
-    async function loadUser() {
-      const {
-        data: { user: authUser },
-      } = await supabase.auth.getUser();
-
-      if (authUser) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("display_name, avatar_url")
-          .eq("id", authUser.id)
-          .single();
-
+    supabase
+      .from("profiles")
+      .select("display_name, avatar_url")
+      .eq("id", authUserId)
+      .single()
+      .then(({ data: profile }) => {
         setUser({
-          id: authUser.id,
-          email: authUser.email || "",
+          id: authUserId,
+          email: "", // email not needed for display
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
         });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    }
-
-    loadUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        setUser(null);
-      } else {
-        loadUser();
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+        setLoading(false);
+      });
+  }, [authUserId, authLoading]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {

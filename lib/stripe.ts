@@ -44,10 +44,10 @@ export async function getPromotionPrices(): Promise<
     },
     urgent: {
       priceId: urgent?.stripe_price_id ?? "price_1TD6M3I6t3gE5tEXMP3hRen1",
-      name: urgent?.name ?? "Urgent Badge",
+      name: urgent?.name ?? "Quick Boost",
       description:
-        urgent?.description ?? "Urgent badge + priority in search for 3 days",
-      amount: urgent?.amount ?? 500,
+        urgent?.description ?? "Boosted visibility + priority in search for 3 days",
+      amount: urgent?.amount ?? 499,
       duration: urgent?.duration_days ?? 3,
     },
   };

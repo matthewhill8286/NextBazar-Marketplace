@@ -2,6 +2,7 @@
 
 import { Bell, BellOff, Check, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
@@ -24,17 +25,10 @@ export default function SaveSearchButton({
   sortBy,
 }: Props) {
   const supabase = createClient();
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId } = useAuth();
   const [savedId, setSavedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [justSaved, setJustSaved] = useState(false);
-
-  // Check auth once
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) setUserId(user.id);
-    });
-  }, []);
 
   // Check if this exact search is already saved.
   // Must use .is("field", null) for null values — .eq("field", "") does NOT

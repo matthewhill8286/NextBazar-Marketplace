@@ -29,10 +29,7 @@ import {
 
 const { mockUpdateEq, mockUpdate, mockDeleteEq, mockRefresh } = vi.hoisted(
   () => {
-    const mockUpdateEq = vi.fn<
-      [],
-      Promise<{ error: null | { message: string } }>
-    >();
+    const mockUpdateEq = vi.fn();
     const mockUpdate = vi.fn(() => ({ eq: mockUpdateEq }));
     const mockDeleteEq = vi.fn().mockResolvedValue({ error: null });
     const mockRefresh = vi.fn();

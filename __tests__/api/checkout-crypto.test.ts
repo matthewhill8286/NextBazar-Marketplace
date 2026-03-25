@@ -17,8 +17,8 @@ vi.mock("@/lib/stripe", () => ({
     },
     urgent: {
       priceId: "price_urgent_test",
-      name: "Urgent Badge",
-      description: "Urgent badge + priority in search for 3 days",
+      name: "Quick Boost",
+      description: "Boosted visibility + priority in search for 3 days",
       amount: 299,
       duration: 3,
     },

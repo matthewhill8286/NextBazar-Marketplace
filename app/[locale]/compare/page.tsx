@@ -142,7 +142,7 @@ export default function ComparePage() {
           )}
           {l.is_urgent && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
-              ⚡ Urgent
+              ⚡ Boosted
             </span>
           )}
           {!l.is_promoted && !l.is_urgent && (

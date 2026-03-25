@@ -174,7 +174,7 @@ export default function StripeCheckoutModal({
             <p className="font-semibold text-gray-900 text-sm">
               {promotionType === "featured"
                 ? `✨ Featured Listing — ${pricing?.featured.price ?? "€9.99"}`
-                : `⚡ Urgent Badge — ${pricing?.urgent.price ?? "€5"}`}
+                : `⚡ Quick Boost — ${pricing?.urgent.price ?? "€4.99"}`}
             </p>
             <p className="text-xs text-gray-400 mt-0.5">
               Choose your payment method below

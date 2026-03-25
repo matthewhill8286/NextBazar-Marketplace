@@ -27,6 +27,7 @@ import CategoryIcon, {
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { useAuth } from "@/lib/auth-context";
 import { CONDITION_KEYS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 import type {
@@ -200,6 +201,7 @@ export default function ListingDetail({
   const tCommon = useTranslations("common");
   const locale = useLocale();
 
+  const { userId: authUserId } = useAuth();
   const supabase = createClient();
   const [listing, setListing] = useState<ListingDetailRow | null>(
     initialListing,
@@ -268,24 +270,17 @@ export default function ListingDetail({
       let data = listing; // may already be hydrated from server
       let userId: string | null = null;
 
-      if (!data) {
-        // Client-side fallback: fetch listing + auth in parallel — single getUser call
-        const [
-          {
-            data: { user: u },
-          },
-          { data: fetched, error },
-        ] = await Promise.all([
-          supabase.auth.getUser(),
-          supabase
-            .from("listings")
-            .select(LISTING_SELECT)
-            .eq("slug", slug)
-            .single(),
-        ]);
+      // Use auth context — no getUser() network call needed
+      userId = authUserId;
+      setCurrentUserId(userId);
 
-        userId = u?.id ?? null;
-        setCurrentUserId(userId);
+      if (!data) {
+        // Client-side fallback: fetch listing
+        const { data: fetched, error } = await supabase
+          .from("listings")
+          .select(LISTING_SELECT)
+          .eq("slug", slug)
+          .single();
 
         if (error || !fetched) {
           setNotFound(true);
@@ -306,13 +301,6 @@ export default function ListingDetail({
           .order("created_at", { ascending: false })
           .limit(4);
         setRelated((rel || []) as ListingCardRow[]);
-      } else {
-        // Data came from server — single getUser call, reused below
-        const {
-          data: { user: u },
-        } = await supabase.auth.getUser();
-        userId = u?.id ?? null;
-        setCurrentUserId(userId);
       }
 
       // Track recently viewed (store up to 12 listing IDs, newest first)
@@ -385,7 +373,7 @@ export default function ListingDetail({
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, listing, supabase.from, supabase.auth.getUser]);
+  }, [slug, listing, supabase.from, authUserId]);
 
   // ── Realtime: listing status (e.g. active → sold) ────────────────────────
   // Fires when the seller marks the item sold or the status changes for any

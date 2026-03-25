@@ -15,12 +15,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
-import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format-helpers";
+import { createClient } from "@/lib/supabase/client";
 
 type SearchResult = {
   id: string;

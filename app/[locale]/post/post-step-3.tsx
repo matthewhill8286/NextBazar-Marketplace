@@ -143,10 +143,10 @@ export default function PostStep3({
                 </span>
               )}
 
-              {/* Urgent badge */}
+              {/* Boost badge */}
               {selectedPackage === "urgent" && (
                 <span className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> Urgent
+                  <Zap className="w-3 h-3" /> Boosted
                 </span>
               )}
 
@@ -238,7 +238,7 @@ export default function PostStep3({
             {selectedPackage === "featured"
               ? "Your listing will appear at the top of search results with a golden highlight"
               : selectedPackage === "urgent"
-                ? "Your listing will stand out with an urgent badge and priority placement"
+                ? "Your listing will stand out with a boost badge and priority placement"
                 : "Standard appearance — visible in search results for 30 days"}
           </p>
         </div>
@@ -348,11 +348,11 @@ export default function PostStep3({
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 text-sm">
-                    Urgent Badge
+                    Quick Boost
                   </div>
                   <div className="text-xs text-gray-500">
-                    Urgent badge + priority in search for 3 days · Up to 3× more
-                    views
+                    Boosted visibility + priority in search for 3 days · Up to 3×
+                    more views
                   </div>
                 </div>
               </div>

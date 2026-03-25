@@ -37,9 +37,9 @@ function buildPromotions(pricing: ClientPricing) {
       bgColor: "bg-red-50 border-red-200",
       popular: false,
       benefits: [
-        "Urgent badge on your listing",
+        "Boost badge on your listing",
         "Priority in search results",
-        "Creates sense of urgency for buyers",
+        "Stand out from the crowd",
         "Up to 3x more views",
       ],
     },

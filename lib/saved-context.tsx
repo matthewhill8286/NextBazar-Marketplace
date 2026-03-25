@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 
@@ -34,51 +35,34 @@ const SavedContext = createContext<SavedContextValue>({
 
 export function SavedProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
+  const { userId: authUserId, loading: authLoading } = useAuth();
   const [userId, setUserId] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
-  // Load favorites for a given user (or clear state on logout)
+  // Load favorites whenever auth user changes (login, logout, user switch)
   useEffect(() => {
-    async function init(uid: string | null) {
-      if (!uid) {
-        // Logged out — immediately wipe any previously loaded data
-        setUserId(null);
-        setSavedIds(new Set());
-        setLoading(false);
-        return;
-      }
+    if (authLoading) return;
 
-      setUserId(uid);
-      setLoading(true);
-
-      const { data } = await supabase
-        .from("favorites")
-        .select("listing_id")
-        .eq("user_id", uid);
-
-      setSavedIds(new Set((data || []).map((r) => r.listing_id as string)));
+    if (!authUserId) {
+      setUserId(null);
+      setSavedIds(new Set());
       setLoading(false);
+      return;
     }
 
-    // Fire once on mount with whoever is currently logged in
-    supabase.auth
-      .getUser()
-      .then(({ data: { user } }) => init(user?.id ?? null));
+    setUserId(authUserId);
+    setLoading(true);
 
-    // Re-fire on every auth change: login, logout, or user switch.
-    // Without this, a second user logging in would see the previous user's
-    // saved listings because the context never re-initialised.
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      init(session?.user?.id ?? null);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    supabase
+      .from("favorites")
+      .select("listing_id")
+      .eq("user_id", authUserId)
+      .then(({ data }) => {
+        setSavedIds(new Set((data || []).map((r) => r.listing_id as string)));
+        setLoading(false);
+      });
+  }, [authUserId, authLoading]);
 
   // Keep in sync with other tabs / devices via realtime — INSERT
   useRealtimeTable({
