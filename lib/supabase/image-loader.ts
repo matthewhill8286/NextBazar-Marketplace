@@ -21,18 +21,26 @@ type ImageLoaderParams = {
 
 export default function supabaseImageLoader({
   src,
+  width,
+  quality,
 }: ImageLoaderParams): string {
-  // Full URLs (Supabase, Unsplash, etc.) — return as-is
-  if (src.startsWith("http://") || src.startsWith("https://")) {
-    return src;
+  const q = quality || 75;
+
+  // Full Supabase storage URLs — append width/quality query params
+  if (
+    src.startsWith("http://") ||
+    src.startsWith("https://")
+  ) {
+    const sep = src.includes("?") ? "&" : "?";
+    return `${src}${sep}w=${width}&q=${q}`;
   }
 
-  // Relative Supabase storage path — prepend the project URL
+  // Relative Supabase storage path — prepend the project URL + params
   if (src.startsWith("/storage/v1/")) {
     const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-    return `${SUPABASE_URL}${src}`;
+    return `${SUPABASE_URL}${src}?w=${width}&q=${q}`;
   }
 
-  // Everything else (local assets like /nextbazar-logo.svg) — return as-is
-  return src;
+  // Everything else (local assets like /nextbazar-logo.svg) — pass width through
+  return `${src}?w=${width}&q=${q}`;
 }
