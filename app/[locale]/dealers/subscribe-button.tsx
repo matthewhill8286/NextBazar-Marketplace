@@ -1,0 +1,67 @@
+"use client";
+
+import { ArrowRight, CreditCard, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
+
+type Props = {
+  label: string;
+  /** "primary" = indigo bg, "white" = white bg (for use on coloured sections) */
+  variant?: "primary" | "white";
+};
+
+export default function DealersSubscribeButton({
+  label,
+  variant = "primary",
+}: Props) {
+  const router = useRouter();
+  const { userId } = useAuth();
+  const [subscribing, setSubscribing] = useState(false);
+
+  async function handleClick() {
+    // If not logged in, send to signup first
+    if (!userId) {
+      router.push("/auth/signup?redirect=/dealers");
+      return;
+    }
+
+    setSubscribing(true);
+    try {
+      const res = await fetch("/api/dealer/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origin: window.location.origin }),
+      });
+      const { url, error } = await res.json();
+      if (url) {
+        window.location.href = url;
+      } else {
+        console.error("Subscribe error:", error);
+        setSubscribing(false);
+      }
+    } catch {
+      setSubscribing(false);
+    }
+  }
+
+  const base =
+    "inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-colors disabled:opacity-50";
+  const styles =
+    variant === "white"
+      ? `${base} bg-white text-indigo-600 hover:bg-indigo-50`
+      : `${base} bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm shadow-indigo-200`;
+
+  return (
+    <button onClick={handleClick} disabled={subscribing} className={styles}>
+      {subscribing ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : variant === "white" ? (
+        <CreditCard className="w-4 h-4" />
+      ) : (
+        <ArrowRight className="w-4 h-4" />
+      )}
+      {label}
+    </button>
+  );
+}
