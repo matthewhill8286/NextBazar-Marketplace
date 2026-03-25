@@ -161,7 +161,12 @@ export const getCategoryBySlugCached = unstable_cache(
       .select("id, name, slug, icon")
       .eq("slug", slug)
       .single();
-    return data as { id: string; name: string; slug: string; icon: string | null } | null;
+    return data as {
+      id: string;
+      name: string;
+      slug: string;
+      icon: string | null;
+    } | null;
   },
   ["category-by-slug"],
   { revalidate: 3600, tags: ["categories"] },
@@ -189,7 +194,9 @@ export const getCategoryListingsCached = unstable_cache(
 export const getCategoryStatsCached = unstable_cache(
   async (categoryId: string) => {
     const now = new Date();
-    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const weekAgo = new Date(
+      now.getTime() - 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     const [totalRes, newThisWeekRes, avgPriceRes] = await Promise.all([
       publicClient()
@@ -215,9 +222,10 @@ export const getCategoryStatsCached = unstable_cache(
     const total = totalRes.count ?? 0;
     const newThisWeek = newThisWeekRes.count ?? 0;
     const prices = (avgPriceRes.data ?? []).map((r) => r.price as number);
-    const avgPrice = prices.length > 0
-      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-      : 0;
+    const avgPrice =
+      prices.length > 0
+        ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+        : 0;
 
     return { total, newThisWeek, avgPrice };
   },
@@ -284,7 +292,14 @@ export const getActiveShopsCached = unstable_cache(
 
     // Build lookup maps
     const profileMap = new Map(
-      (profiles ?? []).map((p: { id: string; display_name: string | null; avatar_url: string | null; verified: boolean }) => [p.id, p]),
+      (profiles ?? []).map(
+        (p: {
+          id: string;
+          display_name: string | null;
+          avatar_url: string | null;
+          verified: boolean;
+        }) => [p.id, p],
+      ),
     );
 
     const countMap = new Map<string, number>();

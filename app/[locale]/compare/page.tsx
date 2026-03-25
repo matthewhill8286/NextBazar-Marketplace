@@ -68,15 +68,22 @@ export default function ComparePage() {
       )
       .in("id", ids)
       .then(({ data }) => {
-        if (!data) { setLoading(false); return; }
+        if (!data) {
+          setLoading(false);
+          return;
+        }
         // Preserve the order of the URL ids and unwrap Supabase join arrays
         const sorted = ids
           .map((id) => data.find((l) => l.id === id))
           .filter((l): l is NonNullable<typeof l> => Boolean(l))
           .map((l) => ({
             ...l,
-            categories: Array.isArray(l.categories) ? (l.categories[0] ?? null) : l.categories,
-            locations: Array.isArray(l.locations) ? (l.locations[0] ?? null) : l.locations,
+            categories: Array.isArray(l.categories)
+              ? (l.categories[0] ?? null)
+              : l.categories,
+            locations: Array.isArray(l.locations)
+              ? (l.locations[0] ?? null)
+              : l.locations,
           })) as CompareListing[];
         setListings(sorted);
         setLoading(false);
@@ -94,14 +101,22 @@ export default function ComparePage() {
     }
   }
 
-  const rows: { label: string; render: (l: CompareListing) => React.ReactNode }[] = [
+  const rows: {
+    label: string;
+    render: (l: CompareListing) => React.ReactNode;
+  }[] = [
     {
       label: "Price",
       render: (l) => {
         const sym = l.currency === "EUR" ? "€" : l.currency;
-        return l.price
-          ? <span className="font-bold text-gray-900">{sym}{l.price.toLocaleString()}</span>
-          : <span className="text-gray-400">POA</span>;
+        return l.price ? (
+          <span className="font-bold text-gray-900">
+            {sym}
+            {l.price.toLocaleString()}
+          </span>
+        ) : (
+          <span className="text-gray-400">POA</span>
+        );
       },
     },
     {
@@ -254,7 +269,9 @@ export default function ComparePage() {
                     <th key={`empty-${i}`} className="pb-6 px-3 align-top">
                       <div className="rounded-2xl border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center">
                         <p className="text-xs text-gray-400 text-center px-2">
-                          Add another listing<br />to compare
+                          Add another listing
+                          <br />
+                          to compare
                         </p>
                       </div>
                     </th>

@@ -30,7 +30,8 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState<string | null>(null);
 
   // Allow linking directly to the shop tab via ?view=my-shop
-  const initialView = searchParams.get("view") === "my-shop" ? "my-shop" : "overview";
+  const initialView =
+    searchParams.get("view") === "my-shop" ? "my-shop" : "overview";
   const [view, setView] = useState<DashboardView>(initialView);
 
   useEffect(() => {
@@ -135,7 +136,9 @@ export default function DashboardPage() {
                 <div className="p-2 bg-indigo-50 rounded-lg">
                   <Package className="w-4 h-4 text-indigo-600" />
                 </div>
-                <span className="text-xs font-medium text-gray-500">Active</span>
+                <span className="text-xs font-medium text-gray-500">
+                  Active
+                </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
                 {listings.filter((l) => l.status === "active").length}
@@ -168,7 +171,9 @@ export default function DashboardPage() {
                 <div className="p-2 bg-purple-50 rounded-lg">
                   <MessageCircle className="w-4 h-4 text-purple-600" />
                 </div>
-                <span className="text-xs font-medium text-gray-500">Messages</span>
+                <span className="text-xs font-medium text-gray-500">
+                  Messages
+                </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
                 {totalMessages}
@@ -189,7 +194,8 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-lg">Become a Pro Seller</h3>
                   <p className="text-white/80 text-sm mt-0.5">
-                    Get unlimited listings, a branded shop page, analytics &amp; more for just €35/month
+                    Get unlimited listings, a branded shop page, analytics &amp;
+                    more for just €35/month
                   </p>
                 </div>
                 <div className="hidden sm:flex items-center gap-1.5 bg-white text-purple-700 font-semibold text-sm px-4 py-2 rounded-lg shrink-0 group-hover:bg-white/90 transition-colors">

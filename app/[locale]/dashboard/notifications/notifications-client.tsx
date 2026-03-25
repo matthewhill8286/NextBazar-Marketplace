@@ -49,7 +49,6 @@ const TYPE_BG: Record<string, string> = {
   listing_expired: "bg-red-50",
 };
 
-
 export default function NotificationsClient({
   initialNotifications,
 }: {

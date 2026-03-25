@@ -5,7 +5,12 @@
  */
 
 import { Loader2 } from "lucide-react";
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type {
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 
 // ─── Form primitives ──────────────────────────────────────────────────────────
 
@@ -18,7 +23,11 @@ type FormInputProps = InputHTMLAttributes<HTMLInputElement> & {
 };
 
 /** Standard single-line text input with consistent app styling. */
-export function FormInput({ prefix, className = "", ...props }: FormInputProps) {
+export function FormInput({
+  prefix,
+  className = "",
+  ...props
+}: FormInputProps) {
   if (prefix) {
     return (
       <div className="relative">
@@ -38,10 +47,7 @@ export function FormTextarea({
   ...props
 }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <textarea
-      className={`${INPUT_BASE} resize-none ${className}`}
-      {...props}
-    />
+    <textarea className={`${INPUT_BASE} resize-none ${className}`} {...props} />
   );
 }
 
@@ -50,15 +56,17 @@ export function FormSelect({
   className = "",
   ...props
 }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select className={`${INPUT_BASE} ${className}`} {...props} />
-  );
+  return <select className={`${INPUT_BASE} ${className}`} {...props} />;
 }
 
 // ─── Feedback banners ─────────────────────────────────────────────────────────
 
 /** Red inline error banner. Pass `null` / `""` to hide. */
-export function ErrorBanner({ message }: { message: string | null | undefined }) {
+export function ErrorBanner({
+  message,
+}: {
+  message: string | null | undefined;
+}) {
   if (!message) return null;
   return (
     <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-100">
@@ -68,7 +76,11 @@ export function ErrorBanner({ message }: { message: string | null | undefined })
 }
 
 /** Green inline success banner. Pass `null` / `""` to hide. */
-export function SuccessBanner({ message }: { message: string | null | undefined }) {
+export function SuccessBanner({
+  message,
+}: {
+  message: string | null | undefined;
+}) {
   if (!message) return null;
   return (
     <div className="bg-green-50 text-green-700 text-sm px-4 py-3 rounded-xl border border-green-100">
@@ -132,9 +144,7 @@ export function EmptyState({
     >
       {emoji && <div className="text-4xl mb-3">{emoji}</div>}
       <p className="font-semibold text-gray-700 mb-1">{title}</p>
-      {description && (
-        <p className="text-gray-400 text-sm">{description}</p>
-      )}
+      {description && <p className="text-gray-400 text-sm">{description}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>
   );
@@ -189,9 +199,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-150">
-        {icon && (
-          <div className="flex justify-center mb-4">{icon}</div>
-        )}
+        {icon && <div className="flex justify-center mb-4">{icon}</div>}
         <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
         {description && (
           <p className="text-sm text-gray-500 mb-6">{description}</p>

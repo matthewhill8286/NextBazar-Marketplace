@@ -278,35 +278,41 @@ export async function mockAuthUser(page: Page, userId = "user-test-1") {
   //
   // @supabase/ssr reads document.cookie via the `cookie` package (no URL decoding
   // by default in newer versions), so we set the raw encoded value.
-  await page.addInitScript(({ id }) => {
-    const session = {
-      access_token: "fake-access-token",
-      token_type: "bearer",
-      expires_in: 3600,
-      expires_at: Math.floor(Date.now() / 1000) + 3600,
-      refresh_token: "fake-refresh-token",
-      user: {
-        id,
-        aud: "authenticated",
-        role: "authenticated",
-        email: "test@example.com",
-        app_metadata: { provider: "email" },
-        user_metadata: {},
-        created_at: "2024-01-01T00:00:00Z",
-      },
-    };
+  await page.addInitScript(
+    ({ id }) => {
+      const session = {
+        access_token: "fake-access-token",
+        token_type: "bearer",
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        refresh_token: "fake-refresh-token",
+        user: {
+          id,
+          aud: "authenticated",
+          role: "authenticated",
+          email: "test@example.com",
+          app_metadata: { provider: "email" },
+          user_metadata: {},
+          created_at: "2024-01-01T00:00:00Z",
+        },
+      };
 
-    // @supabase/ssr uses the prefix "base64-" (not "base64url-") and then
-    // decodes the remainder with its own stringFromBase64URL implementation.
-    // btoa is safe here because the JSON contains only ASCII characters.
-    const json = JSON.stringify(session);
-    const b64 = btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-    const cookieValue = "base64-" + b64;
-    const cookieName = "sb-giseotbdmhdsxgjilrqk-auth-token";
+      // @supabase/ssr uses the prefix "base64-" (not "base64url-") and then
+      // decodes the remainder with its own stringFromBase64URL implementation.
+      // btoa is safe here because the JSON contains only ASCII characters.
+      const json = JSON.stringify(session);
+      const b64 = btoa(json)
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+      const cookieValue = "base64-" + b64;
+      const cookieName = "sb-giseotbdmhdsxgjilrqk-auth-token";
 
-    document.cookie = `${cookieName}=${cookieValue}; path=/; max-age=3600; SameSite=Lax`;
+      document.cookie = `${cookieName}=${cookieValue}; path=/; max-age=3600; SameSite=Lax`;
 
-    // Also keep the legacy localStorage key as a fallback for any code that reads it
-    localStorage.setItem(cookieName, JSON.stringify(session));
-  }, { id: userId });
+      // Also keep the legacy localStorage key as a fallback for any code that reads it
+      localStorage.setItem(cookieName, JSON.stringify(session));
+    },
+    { id: userId },
+  );
 }

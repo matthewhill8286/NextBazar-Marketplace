@@ -93,12 +93,16 @@ export function useRealtimeTable<T extends AnyRecord = AnyRecord>({
 
     const channel = supabase
       .channel(channelName)
-      .on("postgres_changes", listenConfig, (payload: { new: unknown; old: unknown }) => {
-        callbackRef.current({
-          new: (payload.new ?? {}) as Partial<T>,
-          old: (payload.old ?? {}) as Partial<T>,
-        });
-      })
+      .on(
+        "postgres_changes",
+        listenConfig,
+        (payload: { new: unknown; old: unknown }) => {
+          callbackRef.current({
+            new: (payload.new ?? {}) as Partial<T>,
+            old: (payload.old ?? {}) as Partial<T>,
+          });
+        },
+      )
       .subscribe();
 
     return () => {

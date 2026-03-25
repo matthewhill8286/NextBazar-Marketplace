@@ -53,8 +53,18 @@ const VALUES = [
 ];
 
 const TEAM = [
-  { initials: "MH", name: "Matt Hill", role: "Co-founder & CTO", color: "from-indigo-400 to-indigo-600" },
-  { initials: "YD", name: "Yaroslava D.", role: "Co-founder & Head Designer", color: "from-violet-400 to-violet-600" },
+  {
+    initials: "MH",
+    name: "Matt Hill",
+    role: "Co-founder & CTO",
+    color: "from-indigo-400 to-indigo-600",
+  },
+  {
+    initials: "YD",
+    name: "Yaroslava D.",
+    role: "Co-founder & Head Designer",
+    color: "from-violet-400 to-violet-600",
+  },
 ];
 
 export default function AboutPage() {
@@ -110,8 +120,8 @@ export default function AboutPage() {
             <h2 className="text-2xl md:text-3xl font-bold mb-4">Our mission</h2>
             <p className="text-indigo-100 leading-relaxed text-lg">
               To make every transaction in Cyprus — from a second-hand sofa to a
-              pre-owned BMW — as seamless, transparent, and trustworthy as buying
-              from a friend. No hidden fees, no dark patterns, no noise.
+              pre-owned BMW — as seamless, transparent, and trustworthy as
+              buying from a friend. No hidden fees, no dark patterns, no noise.
             </p>
           </div>
         </div>
@@ -133,7 +143,9 @@ export default function AboutPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">{v.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{v.desc}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {v.desc}
+                </p>
               </div>
             </div>
           ))}
@@ -156,7 +168,9 @@ export default function AboutPage() {
               >
                 {m.initials}
               </div>
-              <div className="font-semibold text-gray-900 text-sm">{m.name}</div>
+              <div className="font-semibold text-gray-900 text-sm">
+                {m.name}
+              </div>
               <div className="text-xs text-gray-500 mt-0.5">{m.role}</div>
             </div>
           ))}

@@ -116,7 +116,15 @@ describe("buildParams", () => {
   });
 
   it("preserves non-empty string values", () => {
-    const p = buildParams("iphone", "electronics", "", "nicosia", "", "", "newest");
+    const p = buildParams(
+      "iphone",
+      "electronics",
+      "",
+      "nicosia",
+      "",
+      "",
+      "newest",
+    );
     expect(p.query).toBe("iphone");
     expect(p.category_slug).toBe("electronics");
     expect(p.location_slug).toBe("nicosia");

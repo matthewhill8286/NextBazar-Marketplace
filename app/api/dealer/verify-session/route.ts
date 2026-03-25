@@ -16,10 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     const { sessionId } = await request.json();
     if (!sessionId) {
-      return NextResponse.json(
-        { error: "Missing sessionId" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
     }
 
     // Authenticate the requesting user
@@ -66,12 +63,12 @@ export async function POST(request: NextRequest) {
     const customerId =
       typeof session.customer === "string"
         ? session.customer
-        : session.customer?.id ?? null;
+        : (session.customer?.id ?? null);
 
     const subscriptionId =
       typeof session.subscription === "string"
         ? session.subscription
-        : (session.subscription as { id: string } | null)?.id ?? null;
+        : ((session.subscription as { id: string } | null)?.id ?? null);
 
     // Check if shop already exists (webhook might have already handled it)
     const { data: existingShop } = await supabaseAdmin
@@ -124,8 +121,7 @@ export async function POST(request: NextRequest) {
     console.error("verify-session error:", err);
     return NextResponse.json(
       {
-        error:
-          err instanceof Error ? err.message : "Failed to verify session",
+        error: err instanceof Error ? err.message : "Failed to verify session",
       },
       { status: 500 },
     );

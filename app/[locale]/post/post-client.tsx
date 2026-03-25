@@ -44,11 +44,15 @@ export default function PostClient() {
   const [descLoading, setDescLoading] = useState(false);
   const [pricingLoading, setPricingLoading] = useState(false);
   const [pricingData, setPricingData] = useState<PricingData | null>(null);
-  const [selectedPriceKey, setSelectedPriceKey] = useState<"low" | "suggested" | "high" | null>(null);
+  const [selectedPriceKey, setSelectedPriceKey] = useState<
+    "low" | "suggested" | "high" | null
+  >(null);
   const [selectedPackage, setSelectedPackage] = useState<
     "free" | "featured" | "urgent"
   >("free");
-  const [vehicleAttrs, setVehicleAttrs] = useState<VehicleAttributes>({ ...EMPTY_VEHICLE_ATTRS });
+  const [vehicleAttrs, setVehicleAttrs] = useState<VehicleAttributes>({
+    ...EMPTY_VEHICLE_ATTRS,
+  });
   const [vehicleEnrichLoading, setVehicleEnrichLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     title: "",
@@ -63,7 +67,9 @@ export default function PostClient() {
   });
 
   // Determine if current category is "vehicles"
-  const selectedCategory = categories.find((c) => c.id === formData.category_id);
+  const selectedCategory = categories.find(
+    (c) => c.id === formData.category_id,
+  );
   const isVehicle = selectedCategory?.slug === VEHICLES_CATEGORY_SLUG;
 
   useEffect(() => {
@@ -124,7 +130,10 @@ export default function PostClient() {
       }));
 
       // If AI detected a vehicle, pre-fill vehicle attributes from the image
-      if (data.vehicle_attributes && typeof data.vehicle_attributes === "object") {
+      if (
+        data.vehicle_attributes &&
+        typeof data.vehicle_attributes === "object"
+      ) {
         setVehicleAttrs((prev) => {
           const merged = { ...prev };
           for (const [k, v] of Object.entries(data.vehicle_attributes)) {
@@ -250,7 +259,8 @@ export default function PostClient() {
     const uploadedUrls = images.filter((img) => img.url).map((img) => img.url!);
 
     // Build attributes JSON for category-specific fields (e.g. vehicle details)
-    const hasVehicleData = isVehicle && Object.values(vehicleAttrs).some((v) => v.trim() !== "");
+    const hasVehicleData =
+      isVehicle && Object.values(vehicleAttrs).some((v) => v.trim() !== "");
     const attributes = hasVehicleData ? vehicleAttrs : null;
 
     const { data, error: insertError } = await supabase
@@ -307,7 +317,9 @@ export default function PostClient() {
   }
 
   return (
-    <div className={`mx-auto px-4 py-8 transition-all ${step === 3 ? "max-w-5xl" : "max-w-2xl"}`}>
+    <div
+      className={`mx-auto px-4 py-8 transition-all ${step === 3 ? "max-w-5xl" : "max-w-2xl"}`}
+    >
       {/* Progress bar */}
       <div className="flex items-center gap-2 mb-8">
         {[1, 2, 3].map((s) => (

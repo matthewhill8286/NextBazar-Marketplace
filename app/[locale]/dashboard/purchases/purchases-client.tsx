@@ -56,7 +56,6 @@ function unwrap<T>(v: T | T[] | null | undefined): T | null {
   return v;
 }
 
-
 function formatDate(d: string | null) {
   if (!d) return "—";
   return new Date(d).toLocaleDateString("en-GB", {

@@ -99,8 +99,12 @@ function OfferStatusToast({
 }) {
   const isAccepted = status === "accepted";
   return (
-    <div className={`w-85 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}>
-      <div className={`w-1 shrink-0 ${isAccepted ? "bg-linear-to-b from-emerald-500 to-teal-600" : "bg-linear-to-b from-rose-500 to-red-600"}`} />
+    <div
+      className={`w-85 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}
+    >
+      <div
+        className={`w-1 shrink-0 ${isAccepted ? "bg-linear-to-b from-emerald-500 to-teal-600" : "bg-linear-to-b from-rose-500 to-red-600"}`}
+      />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -111,12 +115,18 @@ function OfferStatusToast({
                 className="w-8 h-8 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isAccepted ? "bg-emerald-100" : "bg-rose-100"}`}>
-                <Tag className={`w-4 h-4 ${isAccepted ? "text-emerald-600" : "text-rose-600"}`} />
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isAccepted ? "bg-emerald-100" : "bg-rose-100"}`}
+              >
+                <Tag
+                  className={`w-4 h-4 ${isAccepted ? "text-emerald-600" : "text-rose-600"}`}
+                />
               </div>
             )}
             <div className="min-w-0">
-              <p className={`text-[10px] font-bold uppercase tracking-widest ${isAccepted ? "text-emerald-500" : "text-rose-500"}`}>
+              <p
+                className={`text-[10px] font-bold uppercase tracking-widest ${isAccepted ? "text-emerald-500" : "text-rose-500"}`}
+              >
                 Offer {isAccepted ? "accepted" : "declined"}
               </p>
               <p className="text-sm font-bold text-gray-900 truncate">
@@ -352,7 +362,9 @@ function NotificationToast({
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                 {cfg.label}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">{title}</p>
+              <p className="text-sm font-bold text-gray-900 truncate">
+                {title}
+              </p>
             </div>
           </div>
           <button
@@ -412,11 +424,20 @@ export default function RealtimeToasts() {
     event: "INSERT",
     onPayload: async ({ new: msg }) => {
       if (!userId || msg.sender_id === userId) return;
-      if (pathnameRef.current.includes(`/messages/${msg.conversation_id}`)) return;
+      if (pathnameRef.current.includes(`/messages/${msg.conversation_id}`))
+        return;
 
       const [{ data: sender }, { data: conv }] = await Promise.all([
-        supabase.from("profiles").select("display_name, avatar_url").eq("id", msg.sender_id).single(),
-        supabase.from("conversations").select("listings(title)").eq("id", msg.conversation_id).single(),
+        supabase
+          .from("profiles")
+          .select("display_name, avatar_url")
+          .eq("id", msg.sender_id)
+          .single(),
+        supabase
+          .from("conversations")
+          .select("listings(title)")
+          .eq("id", msg.conversation_id)
+          .single(),
       ]);
 
       const senderName = sender?.display_name || "Someone";
@@ -436,7 +457,10 @@ export default function RealtimeToasts() {
             listingTitle={listingTitle}
             preview={preview}
             isOffer={isOffer}
-            onNavigate={() => { toast.dismiss(t); router.push(`/messages/${msg.conversation_id}`); }}
+            onNavigate={() => {
+              toast.dismiss(t);
+              router.push(`/messages/${msg.conversation_id}`);
+            }}
           />
         ),
         { duration: 7000, position: "top-right" },
@@ -453,8 +477,16 @@ export default function RealtimeToasts() {
     filter: userId ? `seller_id=eq.${userId}` : undefined,
     onPayload: async ({ new: offer }) => {
       const [{ data: buyer }, { data: listing }] = await Promise.all([
-        supabase.from("profiles").select("display_name, avatar_url").eq("id", offer.buyer_id).single(),
-        supabase.from("listings").select("title").eq("id", offer.listing_id).single(),
+        supabase
+          .from("profiles")
+          .select("display_name, avatar_url")
+          .eq("id", offer.buyer_id)
+          .single(),
+        supabase
+          .from("listings")
+          .select("title")
+          .eq("id", offer.listing_id)
+          .single(),
       ]);
 
       const buyerName = buyer?.display_name || "Someone";
@@ -470,7 +502,10 @@ export default function RealtimeToasts() {
             avatarUrl={buyer?.avatar_url ?? null}
             listingTitle={listingTitle}
             amount={amount}
-            onNavigate={() => { toast.dismiss(t); router.push(`/dashboard/offers?offer=${offer.id}`); }}
+            onNavigate={() => {
+              toast.dismiss(t);
+              router.push(`/dashboard/offers?offer=${offer.id}`);
+            }}
           />
         ),
         { duration: 10000, position: "top-right" },
@@ -491,8 +526,16 @@ export default function RealtimeToasts() {
 
       if (offer.status === "countered" && offer.counter_amount != null) {
         const [{ data: seller }, { data: listing }] = await Promise.all([
-          supabase.from("profiles").select("display_name, avatar_url").eq("id", offer.seller_id).single(),
-          supabase.from("listings").select("title").eq("id", offer.listing_id).single(),
+          supabase
+            .from("profiles")
+            .select("display_name, avatar_url")
+            .eq("id", offer.seller_id)
+            .single(),
+          supabase
+            .from("listings")
+            .select("title")
+            .eq("id", offer.listing_id)
+            .single(),
         ]);
         const sellerName = seller?.display_name || "The seller";
         const listingTitle = listing?.title || "your listing";
@@ -507,15 +550,26 @@ export default function RealtimeToasts() {
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
               counterAmount={counterAmount}
-              onNavigate={() => { toast.dismiss(t); router.push(`/dashboard/offers?offer=${offer.id}`); }}
+              onNavigate={() => {
+                toast.dismiss(t);
+                router.push(`/dashboard/offers?offer=${offer.id}`);
+              }}
             />
           ),
           { duration: 10000, position: "top-right" },
         );
       } else if (offer.status === "accepted" || offer.status === "declined") {
         const [{ data: seller }, { data: listing }] = await Promise.all([
-          supabase.from("profiles").select("display_name, avatar_url").eq("id", offer.seller_id).single(),
-          supabase.from("listings").select("title").eq("id", offer.listing_id).single(),
+          supabase
+            .from("profiles")
+            .select("display_name, avatar_url")
+            .eq("id", offer.seller_id)
+            .single(),
+          supabase
+            .from("listings")
+            .select("title")
+            .eq("id", offer.listing_id)
+            .single(),
         ]);
         const sellerName = seller?.display_name || "The seller";
         const listingTitle = listing?.title || "your listing";
@@ -528,7 +582,10 @@ export default function RealtimeToasts() {
               personName={sellerName}
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
-              onNavigate={() => { toast.dismiss(t); router.push(`/dashboard/offers?offer=${offer.id}`); }}
+              onNavigate={() => {
+                toast.dismiss(t);
+                router.push(`/dashboard/offers?offer=${offer.id}`);
+              }}
             />
           ),
           { duration: 10000, position: "top-right" },
@@ -553,7 +610,10 @@ export default function RealtimeToasts() {
             type={String(notif.type)}
             title={String(notif.title)}
             body={notif.body ? String(notif.body) : null}
-            onNavigate={() => { toast.dismiss(t); router.push(String(notif.link ?? "/dashboard/notifications")); }}
+            onNavigate={() => {
+              toast.dismiss(t);
+              router.push(String(notif.link ?? "/dashboard/notifications"));
+            }}
           />
         ),
         { duration: 8000, position: "top-right" },

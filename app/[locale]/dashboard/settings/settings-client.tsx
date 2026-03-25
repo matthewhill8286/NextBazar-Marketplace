@@ -12,7 +12,12 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { ErrorBanner, FormInput, FormTextarea, SuccessBanner } from "@/app/components/ui";
+import {
+  ErrorBanner,
+  FormInput,
+  FormTextarea,
+  SuccessBanner,
+} from "@/app/components/ui";
 
 type ProfileData = {
   id: string;

@@ -61,7 +61,8 @@ export default function CompareBar() {
                 className="flex-1 max-w-[200px] h-[52px] rounded-xl border-2 border-dashed border-gray-200 flex items-center justify-center hidden sm:flex"
               >
                 <span className="text-xs text-gray-400">
-                  {3 - items.length} slot{3 - items.length !== 1 ? "s" : ""} left
+                  {3 - items.length} slot{3 - items.length !== 1 ? "s" : ""}{" "}
+                  left
                 </span>
               </div>
             ),
@@ -80,9 +81,7 @@ export default function CompareBar() {
           <button
             type="button"
             onClick={() =>
-              router.push(
-                `/compare?ids=${items.map((l) => l.id).join(",")}`,
-              )
+              router.push(`/compare?ids=${items.map((l) => l.id).join(",")}`)
             }
             disabled={items.length < 2}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"

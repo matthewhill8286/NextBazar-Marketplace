@@ -72,17 +72,18 @@ export default function PostStep3({
     if (vehicleAttrs.year) vehicleChips.push(vehicleAttrs.year);
     if (vehicleAttrs.mileage)
       vehicleChips.push(`${Number(vehicleAttrs.mileage).toLocaleString()} km`);
-    if (vehicleAttrs.fuel_type) vehicleChips.push(capitalize(vehicleAttrs.fuel_type));
-    if (vehicleAttrs.transmission) vehicleChips.push(capitalize(vehicleAttrs.transmission));
-    if (vehicleAttrs.engine_size) vehicleChips.push(`${vehicleAttrs.engine_size}L`);
+    if (vehicleAttrs.fuel_type)
+      vehicleChips.push(capitalize(vehicleAttrs.fuel_type));
+    if (vehicleAttrs.transmission)
+      vehicleChips.push(capitalize(vehicleAttrs.transmission));
+    if (vehicleAttrs.engine_size)
+      vehicleChips.push(`${vehicleAttrs.engine_size}L`);
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">
-          Boost Your Listing
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900">Boost Your Listing</h2>
         <p className="text-sm text-gray-500 mt-1">
           Choose how you want your listing to appear
         </p>
@@ -90,7 +91,6 @@ export default function PostStep3({
 
       {/* ── Two-column layout: Preview (left) + Options (right) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-
         {/* ═══ LEFT COLUMN — Live Preview ═══ */}
         <div className="lg:sticky lg:top-8 space-y-2">
           <div className="flex items-center gap-2 text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -153,7 +153,8 @@ export default function PostStep3({
                   <Eye className="w-3 h-3" /> 0
                 </span>
                 <span className="flex items-center gap-1">
-                  <Camera className="w-3 h-3" /> {images.filter((i) => i.url || i.preview).length}
+                  <Camera className="w-3 h-3" />{" "}
+                  {images.filter((i) => i.url || i.preview).length}
                 </span>
                 {video?.url && (
                   <span className="flex items-center gap-1">
@@ -190,7 +191,9 @@ export default function PostStep3({
                 {formData.condition && (
                   <>
                     <span className="text-gray-200">·</span>
-                    <span className="shrink-0">{capitalize(formData.condition)}</span>
+                    <span className="shrink-0">
+                      {capitalize(formData.condition)}
+                    </span>
                   </>
                 )}
               </div>
@@ -239,7 +242,6 @@ export default function PostStep3({
 
         {/* ═══ RIGHT COLUMN — Package Selection + Actions ═══ */}
         <div className="space-y-4">
-
           {/* Free tier */}
           <button
             type="button"
@@ -252,13 +254,21 @@ export default function PostStep3({
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                  selectedPackage === "free" ? "border-indigo-500 bg-indigo-500" : "border-gray-300"
-                }`}>
-                  {selectedPackage === "free" && <Check className="w-3 h-3 text-white" />}
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                    selectedPackage === "free"
+                      ? "border-indigo-500 bg-indigo-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {selectedPackage === "free" && (
+                    <Check className="w-3 h-3 text-white" />
+                  )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm">Free Listing</div>
+                  <div className="font-semibold text-gray-900 text-sm">
+                    Free Listing
+                  </div>
                   <div className="text-xs text-gray-500">
                     Standard visibility for 30 days
                   </div>
@@ -283,23 +293,28 @@ export default function PostStep3({
             </div>
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                  selectedPackage === "featured" ? "border-amber-500 bg-amber-500" : "border-amber-300"
-                }`}>
-                  {selectedPackage === "featured" && <Check className="w-3 h-3 text-white" />}
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                    selectedPackage === "featured"
+                      ? "border-amber-500 bg-amber-500"
+                      : "border-amber-300"
+                  }`}
+                >
+                  {selectedPackage === "featured" && (
+                    <Check className="w-3 h-3 text-white" />
+                  )}
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 text-sm">
                     Featured Listing
                   </div>
                   <div className="text-xs text-gray-500">
-                    Top placement + highlighted badge for 7 days · Up to 5× more views
+                    Top placement + highlighted badge for 7 days · Up to 5× more
+                    views
                   </div>
                 </div>
               </div>
-              <div className="font-bold text-amber-600 shrink-0">
-                €4.99
-              </div>
+              <div className="font-bold text-amber-600 shrink-0">€4.99</div>
             </div>
           </button>
 
@@ -315,15 +330,24 @@ export default function PostStep3({
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                  selectedPackage === "urgent" ? "border-red-500 bg-red-500" : "border-gray-300"
-                }`}>
-                  {selectedPackage === "urgent" && <Check className="w-3 h-3 text-white" />}
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                    selectedPackage === "urgent"
+                      ? "border-red-500 bg-red-500"
+                      : "border-gray-300"
+                  }`}
+                >
+                  {selectedPackage === "urgent" && (
+                    <Check className="w-3 h-3 text-white" />
+                  )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm">Urgent Badge</div>
+                  <div className="font-semibold text-gray-900 text-sm">
+                    Urgent Badge
+                  </div>
                   <div className="text-xs text-gray-500">
-                    Urgent badge + priority in search for 3 days · Up to 3× more views
+                    Urgent badge + priority in search for 3 days · Up to 3× more
+                    views
                   </div>
                 </div>
               </div>
@@ -390,7 +414,8 @@ export default function PostStep3({
 
           {selectedPackage !== "free" && (
             <p className="text-center text-xs text-gray-400">
-              Your listing will be published, then pay to activate your promotion.
+              Your listing will be published, then pay to activate your
+              promotion.
             </p>
           )}
         </div>

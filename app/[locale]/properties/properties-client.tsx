@@ -1,8 +1,13 @@
 "use client";
 
 import { Building2, Hammer, Key } from "lucide-react";
-import CategoryLanding, { type TabConfig } from "@/app/components/category-landing";
-import type { ListingCardRow, Subcategory } from "@/lib/supabase/supabase.types";
+import CategoryLanding, {
+  type TabConfig,
+} from "@/app/components/category-landing";
+import type {
+  ListingCardRow,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 const TABS: TabConfig[] = [
   {
@@ -11,12 +16,7 @@ const TABS: TabConfig[] = [
     icon: Building2,
     description:
       "Find your dream home — browse apartments, houses, villas, land plots, and commercial properties for sale across Cyprus.",
-    subcategorySlugs: [
-      "apartments-sale",
-      "houses-sale",
-      "commercial",
-      "land",
-    ],
+    subcategorySlugs: ["apartments-sale", "houses-sale", "commercial", "land"],
   },
   {
     key: "rent",
@@ -24,10 +24,7 @@ const TABS: TabConfig[] = [
     icon: Key,
     description:
       "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets across Cyprus.",
-    subcategorySlugs: [
-      "apartments-rent",
-      "houses-rent",
-    ],
+    subcategorySlugs: ["apartments-rent", "houses-rent"],
   },
   {
     key: "new-developments",

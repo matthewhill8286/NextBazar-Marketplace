@@ -1,6 +1,15 @@
 "use client";
 
-import { Bot, Clock, Flame, MessageCircle, Shield, Sparkles, Store, TrendingUp } from "lucide-react";
+import {
+  Bot,
+  Clock,
+  Flame,
+  MessageCircle,
+  Shield,
+  Sparkles,
+  Store,
+  TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CategoryIcon, {
@@ -35,8 +44,12 @@ export default function HomeClient({
   const [featured] = useState<ListingCardRow[]>(initialFeatured);
   const [recent] = useState<ListingCardRow[]>(initialRecent);
   const [trending, setTrending] = useState<ListingCardRow[]>([]);
-  const [trendingLocationName, setTrendingLocationName] = useState<string | null>(null);
-  const [trendingLocationSlug, setTrendingLocationSlug] = useState<string | null>(null);
+  const [trendingLocationName, setTrendingLocationName] = useState<
+    string | null
+  >(null);
+  const [trendingLocationSlug, setTrendingLocationSlug] = useState<
+    string | null
+  >(null);
   const [recentlyViewed, setRecentlyViewed] = useState<ListingCardRow[]>([]);
   const [totalCount] = useState(initialTotalCount);
   // Public data (categories, featured, recent) comes from the server.
@@ -223,7 +236,8 @@ export default function HomeClient({
                   property: "/properties",
                   vehicles: "/vehicles",
                 };
-                const href = LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
+                const href =
+                  LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
                 return (
                   <Link
                     key={cat.id}
@@ -272,44 +286,42 @@ export default function HomeClient({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featured.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           </section>
         )}
 
         {/* ── Featured Shops ───────────────────────────────────────────── */}
-        {FEATURE_FLAGS.DEALERS && !loading && initialFeaturedShops.length > 0 && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
-                <h2 className="text-xl font-bold text-gray-900">
-                  Pro Seller Shops
-                </h2>
-                <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
-                  <Store className="w-3 h-3" />
-                  Premium
-                </span>
+        {FEATURE_FLAGS.DEALERS &&
+          !loading &&
+          initialFeaturedShops.length > 0 && (
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-6 bg-linear-to-b from-purple-500 to-indigo-600 rounded-full" />
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Pro Seller Shops
+                  </h2>
+                  <span className="flex items-center gap-1 bg-purple-50 border border-purple-100 text-purple-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+                    <Store className="w-3 h-3" />
+                    Premium
+                  </span>
+                </div>
+                <Link
+                  href="/shops"
+                  className="text-sm text-indigo-600 font-semibold hover:underline"
+                >
+                  View all →
+                </Link>
               </div>
-              <Link
-                href="/shops"
-                className="text-sm text-indigo-600 font-semibold hover:underline"
-              >
-                View all →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {initialFeaturedShops.map((shop) => (
-                <ShopCardCompact key={shop.id} shop={shop} />
-              ))}
-            </div>
-          </section>
-        )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                {initialFeaturedShops.map((shop) => (
+                  <ShopCardCompact key={shop.id} shop={shop} />
+                ))}
+              </div>
+            </section>
+          )}
 
         {/* ── Trending in Your Area ────────────────────────────────────── */}
         {!loading && trending.length > 0 && (
@@ -328,9 +340,11 @@ export default function HomeClient({
                 </span>
               </div>
               <Link
-                href={trendingLocationSlug
-                  ? `/search?location=${trendingLocationSlug}&sort=popular`
-                  : "/search?sort=popular"}
+                href={
+                  trendingLocationSlug
+                    ? `/search?location=${trendingLocationSlug}&sort=popular`
+                    : "/search?sort=popular"
+                }
                 className="text-sm text-indigo-600 font-semibold hover:underline"
               >
                 View all →
@@ -338,10 +352,7 @@ export default function HomeClient({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {trending.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           </section>
@@ -362,9 +373,11 @@ export default function HomeClient({
                 </span>
               </div>
               <button
-                  type="button"
+                type="button"
                 onClick={() => {
-                  try { localStorage.removeItem("recentlyViewed"); } catch {}
+                  try {
+                    localStorage.removeItem("recentlyViewed");
+                  } catch {}
                   setRecentlyViewed([]);
                 }}
                 className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
@@ -374,10 +387,7 @@ export default function HomeClient({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recentlyViewed.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           </section>
@@ -407,7 +417,7 @@ export default function HomeClient({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
-                    key={`${Math.random() + i}`}
+                  key={`${Math.random() + i}`}
                   className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
                 >
                   <div className="aspect-4/3 bg-gray-100 animate-pulse" />
@@ -422,10 +432,7 @@ export default function HomeClient({
           ) : recent.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recent.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
           ) : (

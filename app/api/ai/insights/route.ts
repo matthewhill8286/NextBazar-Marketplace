@@ -109,7 +109,10 @@ Respond in JSON format with these exact fields:
   } catch (err: unknown) {
     console.error("AI insights error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to generate insights" },
+      {
+        error:
+          err instanceof Error ? err.message : "Failed to generate insights",
+      },
       { status: 500 },
     );
   }

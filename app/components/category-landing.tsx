@@ -14,7 +14,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { getCategoryConfig } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
-import type { ListingCardRow, Subcategory } from "@/lib/supabase/supabase.types";
+import type {
+  ListingCardRow,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -116,8 +119,16 @@ export default function CategoryLanding({
   );
 
   // Filter both sets of listings by the active tab
-  const displayFeatured = filterListings(featuredListings, activeTabConfig, subcategories);
-  const displayRecent = filterListings(recentListings, activeTabConfig, subcategories);
+  const displayFeatured = filterListings(
+    featuredListings,
+    activeTabConfig,
+    subcategories,
+  );
+  const displayRecent = filterListings(
+    recentListings,
+    activeTabConfig,
+    subcategories,
+  );
 
   return (
     <>
@@ -136,7 +147,9 @@ export default function CategoryLanding({
             {/* Dark overlay for text readability */}
             <div className="absolute inset-0 bg-black/50" />
             {/* Gradient tint overlay */}
-            <div className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-40`} />
+            <div
+              className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-40`}
+            />
           </>
         ) : (
           <div className={`absolute inset-0 bg-linear-to-br ${gradient}`} />
@@ -350,7 +363,9 @@ export default function CategoryLanding({
             <>
               <Image src={heroImage} alt="" fill className="object-cover" />
               <div className="absolute inset-0 bg-black/55" />
-              <div className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-30`} />
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-30`}
+              />
             </>
           ) : (
             <div className={`absolute inset-0 bg-linear-to-br ${gradient}`} />

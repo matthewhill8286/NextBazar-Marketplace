@@ -98,7 +98,8 @@ export default function SafetyPage() {
           </h1>
           <p className="text-lg text-gray-500 max-w-xl mx-auto">
             The vast majority of transactions on our platform go smoothly. These
-            tips will help you spot the rare bad actor and keep every deal secure.
+            tips will help you spot the rare bad actor and keep every deal
+            secure.
           </p>
         </div>
       </section>
@@ -124,7 +125,9 @@ export default function SafetyPage() {
                 <h3 className="font-semibold text-gray-900 mb-1 text-sm">
                   {tip.title}
                 </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{tip.desc}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {tip.desc}
+                </p>
               </div>
             </div>
           ))}
@@ -152,7 +155,9 @@ export default function SafetyPage() {
                 <h3 className="font-semibold text-gray-900 mb-1 text-sm">
                   {tip.title}
                 </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{tip.desc}</p>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {tip.desc}
+                </p>
               </div>
             </div>
           ))}

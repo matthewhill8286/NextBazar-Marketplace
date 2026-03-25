@@ -149,7 +149,8 @@ export default function DealersPage() {
       <section className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 py-20 text-center">
           <span className="inline-flex items-center gap-1.5 bg-violet-50 text-violet-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            <Star className="w-3.5 h-3.5 fill-violet-500" /> Professional sellers
+            <Star className="w-3.5 h-3.5 fill-violet-500" /> Professional
+            sellers
           </span>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-5 leading-tight">
             Grow your business <br className="hidden md:block" />
@@ -158,9 +159,9 @@ export default function DealersPage() {
             </span>
           </h1>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-10">
-            Everything a professional seller needs — unlimited listings, powerful
-            analytics, offer management, and a verified badge that builds instant
-            buyer trust.
+            Everything a professional seller needs — unlimited listings,
+            powerful analytics, offer management, and a verified badge that
+            builds instant buyer trust.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
@@ -316,7 +317,8 @@ export default function DealersPage() {
         <div className="max-w-xl mx-auto px-4 text-center text-white">
           <h2 className="text-2xl font-bold mb-3">Ready to go pro?</h2>
           <p className="text-indigo-100 mb-7">
-            Join hundreds of sellers already growing their business on NextBazar.
+            Join hundreds of sellers already growing their business on
+            NextBazar.
           </p>
           <Link
             href="/contact"

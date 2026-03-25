@@ -276,7 +276,9 @@ export default function AdminReportsPage() {
                         <Eye className="w-3.5 h-3.5" /> Mark Reviewing
                       </button>
                       <button
-                        onClick={() => setConfirmAction({ type: "remove", report })}
+                        onClick={() =>
+                          setConfirmAction({ type: "remove", report })
+                        }
                         disabled={
                           updating === report.id ||
                           !report.listing ||
@@ -287,7 +289,9 @@ export default function AdminReportsPage() {
                         <XCircle className="w-3.5 h-3.5" /> Remove Listing
                       </button>
                       <button
-                        onClick={() => setConfirmAction({ type: "dismiss", report })}
+                        onClick={() =>
+                          setConfirmAction({ type: "dismiss", report })
+                        }
                         disabled={updating === report.id}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-xs font-medium hover:bg-gray-100 transition-colors disabled:opacity-40"
                       >
@@ -298,7 +302,9 @@ export default function AdminReportsPage() {
                   {filter === "reviewing" && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       <button
-                        onClick={() => setConfirmAction({ type: "remove", report })}
+                        onClick={() =>
+                          setConfirmAction({ type: "remove", report })
+                        }
                         disabled={
                           updating === report.id ||
                           !report.listing ||
@@ -309,7 +315,9 @@ export default function AdminReportsPage() {
                         <XCircle className="w-3.5 h-3.5" /> Remove Listing
                       </button>
                       <button
-                        onClick={() => setConfirmAction({ type: "dismiss", report })}
+                        onClick={() =>
+                          setConfirmAction({ type: "dismiss", report })
+                        }
                         disabled={updating === report.id}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-xs font-medium hover:bg-gray-100 transition-colors disabled:opacity-40"
                       >
@@ -332,7 +340,11 @@ export default function AdminReportsPage() {
         open={confirmAction?.type === "remove"}
         title="Remove listing?"
         description={`"${confirmAction?.report.listing?.title}" will be removed from the marketplace and the report marked as resolved. This cannot be undone.`}
-        icon={<div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center"><XCircle className="w-6 h-6 text-red-600" /></div>}
+        icon={
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+            <XCircle className="w-6 h-6 text-red-600" />
+          </div>
+        }
         confirmLabel="Remove Listing"
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={updating !== null}

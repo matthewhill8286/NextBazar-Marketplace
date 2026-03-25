@@ -50,8 +50,16 @@ type Offer = {
     price: number | null;
     currency: string;
   } | null;
-  buyer?: { id: string; display_name: string; avatar_url: string | null } | null;
-  seller?: { id: string; display_name: string; avatar_url: string | null } | null;
+  buyer?: {
+    id: string;
+    display_name: string;
+    avatar_url: string | null;
+  } | null;
+  seller?: {
+    id: string;
+    display_name: string;
+    avatar_url: string | null;
+  } | null;
 };
 
 type Props = {
@@ -59,21 +67,43 @@ type Props = {
   focusOfferId?: string;
 };
 
-const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  pending:   { label: "Pending",   bg: "bg-amber-50",  text: "text-amber-700" },
-  accepted:  { label: "Accepted",  bg: "bg-green-50",  text: "text-green-700" },
-  declined:  { label: "Declined",  bg: "bg-red-50",    text: "text-red-600"   },
-  countered: { label: "Countered", bg: "bg-indigo-50",   text: "text-indigo-700"  },
-  withdrawn: { label: "Withdrawn", bg: "bg-gray-100",  text: "text-gray-500"  },
-  expired:   { label: "Expired",   bg: "bg-gray-100",  text: "text-gray-500"  },
+const STATUS_CONFIG: Record<
+  string,
+  { label: string; bg: string; text: string }
+> = {
+  pending: { label: "Pending", bg: "bg-amber-50", text: "text-amber-700" },
+  accepted: { label: "Accepted", bg: "bg-green-50", text: "text-green-700" },
+  declined: { label: "Declined", bg: "bg-red-50", text: "text-red-600" },
+  countered: {
+    label: "Countered",
+    bg: "bg-indigo-50",
+    text: "text-indigo-700",
+  },
+  withdrawn: { label: "Withdrawn", bg: "bg-gray-100", text: "text-gray-500" },
+  expired: { label: "Expired", bg: "bg-gray-100", text: "text-gray-500" },
 };
 
-function Avatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
-  const initials = name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+function Avatar({
+  name,
+  avatarUrl,
+}: {
+  name: string;
+  avatarUrl: string | null;
+}) {
+  const initials = name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
   return (
     <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
       {avatarUrl ? (
-        <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+        <img
+          src={avatarUrl}
+          alt={name}
+          className="w-full h-full object-cover"
+        />
       ) : (
         initials
       )}
@@ -121,7 +151,7 @@ function Pagination({
       </span>
       <div className="flex items-center gap-1">
         <button
-            type="button"
+          type="button"
           onClick={() => onPage(page - 1)}
           disabled={page === 0}
           className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -143,7 +173,7 @@ function Pagination({
           </button>
         ))}
         <button
-            type="button"
+          type="button"
           onClick={() => onPage(page + 1)}
           disabled={page >= totalPages - 1}
           className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
@@ -196,7 +226,14 @@ function OfferCard({
 
   useEffect(() => {
     if (focused && cardRef.current) {
-      setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+      setTimeout(
+        () =>
+          cardRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          }),
+        300,
+      );
     }
   }, [focused]);
 
@@ -229,7 +266,11 @@ function OfferCard({
         toast.error("Failed to update offer");
         return;
       }
-      onUpdate(offer.id, { status, responded_at: new Date().toISOString(), ...extras } as Partial<Offer>);
+      onUpdate(offer.id, {
+        status,
+        responded_at: new Date().toISOString(),
+        ...extras,
+      } as Partial<Offer>);
       setShowCounter(false);
 
       const toastMap: Record<string, string> = {
@@ -259,7 +300,10 @@ function OfferCard({
     setLoading("delete");
     setActionError(null);
     try {
-      const { error } = await supabase.from("offers").delete().eq("id", offer.id);
+      const { error } = await supabase
+        .from("offers")
+        .delete()
+        .eq("id", offer.id);
       if (error) {
         setActionError("Couldn't delete offer. Please try again.");
         toast.error("Failed to delete offer");
@@ -282,7 +326,9 @@ function OfferCard({
       <div
         ref={cardRef}
         className={`bg-white rounded-xl border overflow-hidden transition-colors ${
-          focused ? "border-indigo-300 ring-2 ring-indigo-100" : "border-gray-100"
+          focused
+            ? "border-indigo-300 ring-2 ring-indigo-100"
+            : "border-gray-100"
         }`}
       >
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: this can be looked another time */}
@@ -301,7 +347,9 @@ function OfferCard({
                 sizes="56px"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
+              <div className="w-full h-full flex items-center justify-center text-xl">
+                📦
+              </div>
             )}
           </div>
 
@@ -316,24 +364,31 @@ function OfferCard({
             <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500 flex-wrap">
               {person && (
                 <span className="flex items-center gap-1">
-                  <Avatar name={person.display_name} avatarUrl={person.avatar_url} />
+                  <Avatar
+                    name={person.display_name}
+                    avatarUrl={person.avatar_url}
+                  />
                   {isSeller ? "from" : "to"} {person.display_name}
                 </span>
               )}
               <span>·</span>
               <span className="font-semibold text-gray-900 text-sm">
-                {sym}{offer.amount.toLocaleString()}
+                {sym}
+                {offer.amount.toLocaleString()}
               </span>
               {listing?.price && (
                 <span className="text-gray-400">
-                  (asking {sym}{listing.price.toLocaleString()})
+                  (asking {sym}
+                  {listing.price.toLocaleString()})
                 </span>
               )}
             </div>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${cfg.bg} ${cfg.text}`}>
+            <span
+              className={`text-xs font-medium px-2.5 py-1 rounded-full ${cfg.bg} ${cfg.text}`}
+            >
               {cfg.label}
             </span>
             {offer.status === "pending" && (
@@ -368,26 +423,41 @@ function OfferCard({
             {offer.counter_amount && (
               <div className="bg-indigo-50 rounded-xl p-3">
                 <p className="text-xs text-indigo-600 mb-1 font-medium">
-                  Counter offer: {sym}{offer.counter_amount.toLocaleString()}
+                  Counter offer: {sym}
+                  {offer.counter_amount.toLocaleString()}
                 </p>
                 {offer.counter_message && (
-                  <p className="text-sm text-indigo-700">{offer.counter_message}</p>
+                  <p className="text-sm text-indigo-700">
+                    {offer.counter_message}
+                  </p>
                 )}
               </div>
             )}
 
             {/* Review prompt for accepted offers */}
             {offer.status === "accepted" && person && (
-              <div className={`rounded-xl p-3 flex items-center justify-between gap-3 ${
-                hasReviewed ? "bg-amber-50 border border-amber-100" : "bg-green-50 border border-green-100"
-              }`}>
+              <div
+                className={`rounded-xl p-3 flex items-center justify-between gap-3 ${
+                  hasReviewed
+                    ? "bg-amber-50 border border-amber-100"
+                    : "bg-green-50 border border-green-100"
+                }`}
+              >
                 <div className="flex items-center gap-2">
-                  <Star className={`w-4 h-4 ${hasReviewed ? "text-amber-500 fill-amber-500" : "text-green-600"}`} />
+                  <Star
+                    className={`w-4 h-4 ${hasReviewed ? "text-amber-500 fill-amber-500" : "text-green-600"}`}
+                  />
                   <div>
-                    <p className={`text-xs font-medium ${hasReviewed ? "text-amber-800" : "text-green-800"}`}>
-                      {hasReviewed ? "You reviewed this transaction" : "How was it?"}
+                    <p
+                      className={`text-xs font-medium ${hasReviewed ? "text-amber-800" : "text-green-800"}`}
+                    >
+                      {hasReviewed
+                        ? "You reviewed this transaction"
+                        : "How was it?"}
                     </p>
-                    <p className={`text-xs ${hasReviewed ? "text-amber-600" : "text-green-600"}`}>
+                    <p
+                      className={`text-xs ${hasReviewed ? "text-amber-600" : "text-green-600"}`}
+                    >
                       {hasReviewed
                         ? existingRating !== null
                           ? `You gave ${person.display_name} ${existingRating} star${existingRating !== 1 ? "s" : ""}`
@@ -398,8 +468,8 @@ function OfferCard({
                 </div>
                 {!hasReviewed && (
                   <button
-                      disabled={loading === "review"}
-                      type="button"
+                    disabled={loading === "review"}
+                    type="button"
                     onClick={() => setShowReviewModal(true)}
                     className="shrink-0 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors flex items-center gap-1.5"
                   >
@@ -416,16 +486,20 @@ function OfferCard({
                 {!showCounter ? (
                   <div className="flex gap-2">
                     <button
-                        type="button"
+                      type="button"
                       onClick={() => setConfirmAction({ type: "accepted" })}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
-                      {loading === "accepted" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                      {loading === "accepted" ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Check className="w-4 h-4" />
+                      )}
                       Accept
                     </button>
                     <button
-                        type="button"
+                      type="button"
                       onClick={() => setShowCounter(true)}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-medium hover:bg-indigo-100 transition-colors disabled:opacity-50"
@@ -434,12 +508,16 @@ function OfferCard({
                       Counter
                     </button>
                     <button
-                        type="button"
+                      type="button"
                       onClick={() => setConfirmAction({ type: "declined" })}
                       disabled={!!loading}
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
                     >
-                      {loading === "declined" ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
+                      {loading === "declined" ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <X className="w-4 h-4" />
+                      )}
                       Decline
                     </button>
                   </div>
@@ -449,7 +527,9 @@ function OfferCard({
                       Your counter offer amount
                     </span>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">{sym}</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        {sym}
+                      </span>
                       <input
                         type="number"
                         min="1"
@@ -468,21 +548,27 @@ function OfferCard({
                     />
                     <div className="flex gap-2">
                       <button
-                          type="button"
-                        onClick={() => setConfirmAction({
-                          type: "countered",
-                          extras: {
-                            counter_amount: Number(counterAmount),
-                            counter_message: counterMessage || null,
-                          },
-                        })}
+                        type="button"
+                        onClick={() =>
+                          setConfirmAction({
+                            type: "countered",
+                            extras: {
+                              counter_amount: Number(counterAmount),
+                              counter_message: counterMessage || null,
+                            },
+                          })
+                        }
                         disabled={!counterAmount || !!loading}
                         className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
                       >
-                        {loading === "countered" ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Send Counter"}
+                        {loading === "countered" ? (
+                          <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+                        ) : (
+                          "Send Counter"
+                        )}
                       </button>
                       <button
-                          type="button"
+                        type="button"
                         onClick={() => setShowCounter(false)}
                         className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
                       >
@@ -495,58 +581,78 @@ function OfferCard({
             )}
 
             {/* Buyer actions */}
-            {!isSeller && (offer.status === "pending" || offer.status === "countered") && (
-              <button
+            {!isSeller &&
+              (offer.status === "pending" || offer.status === "countered") && (
+                <button
                   type="button"
-                onClick={() => setConfirmAction({ type: "withdrawn" })}
-                disabled={!!loading}
-                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
-              >
-                {loading === "withdrawn" ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
-                Withdraw offer
-              </button>
-            )}
+                  onClick={() => setConfirmAction({ type: "withdrawn" })}
+                  disabled={!!loading}
+                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
+                >
+                  {loading === "withdrawn" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <X className="w-4 h-4" />
+                  )}
+                  Withdraw offer
+                </button>
+              )}
 
-            {!isSeller && offer.status === "countered" && offer.counter_amount != null && (
-              <div className="flex gap-2">
-                <button
+            {!isSeller &&
+              offer.status === "countered" &&
+              offer.counter_amount != null && (
+                <div className="flex gap-2">
+                  <button
                     type="button"
-                  onClick={() => setConfirmAction({ type: "accepted" })}
-                  disabled={!!loading}
-                  className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1.5"
-                >
-                  {loading === "accepted" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                  Accept {sym}{offer.counter_amount.toLocaleString()}
-                </button>
-                <button
+                    onClick={() => setConfirmAction({ type: "accepted" })}
+                    disabled={!!loading}
+                    className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  >
+                    {loading === "accepted" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4" />
+                    )}
+                    Accept {sym}
+                    {offer.counter_amount.toLocaleString()}
+                  </button>
+                  <button
                     type="button"
-                  onClick={() => setConfirmAction({ type: "declined" })}
-                  disabled={!!loading}
-                  className="flex-1 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-50 flex items-center justify-center gap-1.5"
-                >
-                  {loading === "declined" ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
-                  Decline
-                </button>
-              </div>
-            )}
+                    onClick={() => setConfirmAction({ type: "declined" })}
+                    disabled={!!loading}
+                    className="flex-1 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  >
+                    {loading === "declined" ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <X className="w-4 h-4" />
+                    )}
+                    Decline
+                  </button>
+                </div>
+              )}
 
             {/* Delete button — only for terminal offers */}
             {isTerminal && (
               <div className="pt-1 border-t border-gray-50">
                 {deleteConfirm ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500 flex-1">Remove this offer permanently?</span>
+                    <span className="text-xs text-gray-500 flex-1">
+                      Remove this offer permanently?
+                    </span>
                     <button
-                        type="button"
+                      type="button"
                       onClick={handleDelete}
                       disabled={loading === "delete"}
                       className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
                     >
-                      {loading === "delete" ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                      {loading === "delete" ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : null}
                       Delete
                     </button>
                     <button
-                        type="button"
+                      type="button"
                       onClick={() => setDeleteConfirm(false)}
                       className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
                     >
@@ -555,7 +661,7 @@ function OfferCard({
                   </div>
                 ) : (
                   <button
-                      type="button"
+                    type="button"
                     onClick={() => setDeleteConfirm(true)}
                     className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
                   >
@@ -568,7 +674,9 @@ function OfferCard({
 
             {/* Error message */}
             {actionError && (
-              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{actionError}</p>
+              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">
+                {actionError}
+              </p>
             )}
           </div>
         )}
@@ -594,7 +702,11 @@ function OfferCard({
             ? offer.counter_amount.toLocaleString()
             : offer.amount.toLocaleString()
         }. The ${isSeller ? "buyer" : "seller"} will be notified.`}
-        icon={<div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center"><Check className="w-6 h-6 text-green-600" /></div>}
+        icon={
+          <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
+            <Check className="w-6 h-6 text-green-600" />
+          </div>
+        }
         confirmLabel="Accept"
         confirmClassName="bg-green-600 hover:bg-green-700"
         loading={loading === "accepted"}
@@ -606,7 +718,11 @@ function OfferCard({
         open={confirmAction?.type === "declined"}
         title="Decline this offer?"
         description={`The ${isSeller ? "buyer" : "seller"} will be notified that you declined.`}
-        icon={<div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center"><X className="w-6 h-6 text-red-600" /></div>}
+        icon={
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+            <X className="w-6 h-6 text-red-600" />
+          </div>
+        }
         confirmLabel="Decline"
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={loading === "declined"}
@@ -622,7 +738,11 @@ function OfferCard({
             ? Number(confirmAction.extras.counter_amount).toLocaleString()
             : "—"
         }. The buyer will be notified.`}
-        icon={<div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center"><RotateCcw className="w-6 h-6 text-indigo-600" /></div>}
+        icon={
+          <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
+            <RotateCcw className="w-6 h-6 text-indigo-600" />
+          </div>
+        }
         confirmLabel="Send Counter"
         confirmClassName="bg-indigo-600 hover:bg-indigo-700"
         loading={loading === "countered"}
@@ -634,7 +754,11 @@ function OfferCard({
         open={confirmAction?.type === "withdrawn"}
         title="Withdraw this offer?"
         description={`Your offer of ${sym}${offer.amount.toLocaleString()} will be withdrawn and the seller will be notified.`}
-        icon={<div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center"><X className="w-6 h-6 text-gray-500" /></div>}
+        icon={
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+            <X className="w-6 h-6 text-gray-500" />
+          </div>
+        }
         confirmLabel="Withdraw"
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={loading === "withdrawn"}
@@ -673,21 +797,21 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
   const defaultTab: "received" | "sent" = "received";
   const [tab, setTab] = useState<"received" | "sent">(defaultTab);
   const [receivedPage, setReceivedPage] = useState(0);
-  const [sentPage, setSentPage]         = useState(0);
-  const [received, setReceived]         = useState<Offer[]>([]);
-  const [sent, setSent]                 = useState<Offer[]>([]);
+  const [sentPage, setSentPage] = useState(0);
+  const [received, setReceived] = useState<Offer[]>([]);
+  const [sent, setSent] = useState<Offer[]>([]);
   const [receivedTotal, setReceivedTotal] = useState(0);
-  const [sentTotal, setSentTotal]         = useState(0);
+  const [sentTotal, setSentTotal] = useState(0);
   const [pageLoading, setPageLoading] = useState(false);
 
   const RECEIVED_SELECT = `*, listings(id,title,slug,primary_image_url,price,currency), buyer:profiles!offers_buyer_id_fkey(id,display_name,avatar_url)`;
-  const SENT_SELECT     = `*, listings(id,title,slug,primary_image_url,price,currency), seller:profiles!offers_seller_id_fkey(id,display_name,avatar_url)`;
+  const SENT_SELECT = `*, listings(id,title,slug,primary_image_url,price,currency), seller:profiles!offers_seller_id_fkey(id,display_name,avatar_url)`;
 
   const fetchPage = useCallback(
     async (which: "received" | "sent", page: number) => {
       setPageLoading(true);
       const from = page * PAGE_SIZE;
-      const to   = from + PAGE_SIZE - 1;
+      const to = from + PAGE_SIZE - 1;
 
       if (which === "received") {
         const { data, count } = await supabase
@@ -720,8 +844,12 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
   }, [fetchPage]);
 
   // Reload when page changes
-  useEffect(() => { fetchPage("received", receivedPage); }, [fetchPage, receivedPage]);
-  useEffect(() => { fetchPage("sent",     sentPage);     }, [fetchPage, sentPage]);
+  useEffect(() => {
+    fetchPage("received", receivedPage);
+  }, [fetchPage, receivedPage]);
+  useEffect(() => {
+    fetchPage("sent", sentPage);
+  }, [fetchPage, sentPage]);
 
   // ── Realtime offer updates ──────────────────────────────────────────────
   // Without this, the buyer's "Sent" tab stays stale after the seller counters
@@ -745,9 +873,19 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
     table: "offers",
     event: "UPDATE",
     onPayload: ({ new: patch }) => {
-      const p = patch as Partial<Offer> & { id: string; buyer_id: string; seller_id: string };
-      if (p.buyer_id === userId) setSent((prev) => prev.map((o) => (o.id === p.id ? { ...o, ...p } : o)));
-      if (p.seller_id === userId) setReceived((prev) => prev.map((o) => (o.id === p.id ? { ...o, ...p } : o)));
+      const p = patch as Partial<Offer> & {
+        id: string;
+        buyer_id: string;
+        seller_id: string;
+      };
+      if (p.buyer_id === userId)
+        setSent((prev) =>
+          prev.map((o) => (o.id === p.id ? { ...o, ...p } : o)),
+        );
+      if (p.seller_id === userId)
+        setReceived((prev) =>
+          prev.map((o) => (o.id === p.id ? { ...o, ...p } : o)),
+        );
     },
     enabled: !!userId,
   });
@@ -758,7 +896,11 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
     if (sent.some((o) => o.id === focusOfferId)) setTab("sent");
   }, [focusOfferId, sent]);
 
-  function updateOffer(list: Offer[], id: string, patch: Partial<Offer>): Offer[] {
+  function updateOffer(
+    list: Offer[],
+    id: string,
+    patch: Partial<Offer>,
+  ): Offer[] {
     return list.map((o) => (o.id === id ? { ...o, ...patch } : o));
   }
 
@@ -772,15 +914,16 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
     }
   }
 
-  const pendingReceivedCount = receivedTotal > 0
-    ? received.filter((o) => o.status === "pending").length
-    : 0;
+  const pendingReceivedCount =
+    receivedTotal > 0
+      ? received.filter((o) => o.status === "pending").length
+      : 0;
 
-  const offers       = tab === "received" ? received : sent;
-  const total        = tab === "received" ? receivedTotal : sentTotal;
-  const page         = tab === "received" ? receivedPage : sentPage;
-  const setPage      = tab === "received" ? setReceivedPage : setSentPage;
-  const isSeller     = tab === "received";
+  const offers = tab === "received" ? received : sent;
+  const total = tab === "received" ? receivedTotal : sentTotal;
+  const page = tab === "received" ? receivedPage : sentPage;
+  const setPage = tab === "received" ? setReceivedPage : setSentPage;
+  const isSeller = tab === "received";
 
   return (
     <div className="space-y-6">
@@ -794,11 +937,13 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
         <button
-            disabled={pageLoading}
-            type="button"
+          disabled={pageLoading}
+          type="button"
           onClick={() => setTab("received")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            tab === "received" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            tab === "received"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
           }`}
         >
           Received
@@ -809,11 +954,13 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
           )}
         </button>
         <button
-            disabled={pageLoading}
-            type="button"
+          disabled={pageLoading}
+          type="button"
           onClick={() => setTab("sent")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            tab === "sent" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+            tab === "sent"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
           }`}
         >
           Sent
@@ -831,8 +978,12 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
         </div>
       ) : offers.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-indigo-50" : "bg-gray-50"}`}>
-            <Tag className={`w-7 h-7 ${isSeller ? "text-indigo-400" : "text-gray-400"}`} />
+          <div
+            className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-indigo-50" : "bg-gray-50"}`}
+          >
+            <Tag
+              className={`w-7 h-7 ${isSeller ? "text-indigo-400" : "text-gray-400"}`}
+            />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-1">
             {isSeller ? "No offers yet" : "No offers sent"}

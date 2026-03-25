@@ -113,14 +113,17 @@ export default function ListingsClient({
   useEffect(() => {
     setTab(tabFromParams());
     setSelected(new Set());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.get("tab")]);
 
   // ── Single-item actions ──────────────────────────────────────────────────
 
   async function updateStatus(id: string, status: string) {
     setLoadingAction(id);
-    const { error } = await supabase.from("listings").update({ status }).eq("id", id);
+    const { error } = await supabase
+      .from("listings")
+      .update({ status })
+      .eq("id", id);
     if (error) {
       toast.error("Failed to update listing status.");
     } else {
@@ -225,14 +228,20 @@ export default function ListingsClient({
     const newExpiresAt = new Date(Date.now() + LISTING_ACTIVE_MS).toISOString();
     const { error } = await supabase
       .from("listings")
-      .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
+      .update({
+        status: "active",
+        expires_at: newExpiresAt,
+        expiry_warning_sent: false,
+      })
       .eq("id", id);
     if (error) {
       toast.error("Failed to renew listing.");
     } else {
       setListings((prev) =>
         prev.map((l) =>
-          l.id === id ? { ...l, status: "active", expires_at: newExpiresAt } : l,
+          l.id === id
+            ? { ...l, status: "active", expires_at: newExpiresAt }
+            : l,
         ),
       );
       toast.success("Listing renewed for 30 days");
@@ -263,7 +272,9 @@ export default function ListingsClient({
       toast.error("Failed to delete listings.");
     } else {
       setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
-      toast.success(`${ids.length} listing${ids.length !== 1 ? "s" : ""} deleted`);
+      toast.success(
+        `${ids.length} listing${ids.length !== 1 ? "s" : ""} deleted`,
+      );
     }
     clearSelection();
     setShowDeleteConfirm(false);
@@ -273,14 +284,19 @@ export default function ListingsClient({
   async function bulkMarkSold() {
     setBulkLoading(true);
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
-    const { error } = await supabase.from("listings").update({ status: "sold" }).in("id", ids);
+    const { error } = await supabase
+      .from("listings")
+      .update({ status: "sold" })
+      .in("id", ids);
     if (error) {
       toast.error("Failed to update listings.");
     } else {
       setListings((prev) =>
         prev.map((l) => (ids.includes(l.id) ? { ...l, status: "sold" } : l)),
       );
-      toast.success(`${ids.length} listing${ids.length !== 1 ? "s" : ""} marked as sold`);
+      toast.success(
+        `${ids.length} listing${ids.length !== 1 ? "s" : ""} marked as sold`,
+      );
       setTab("sold");
     }
     clearSelection();
@@ -337,7 +353,9 @@ export default function ListingsClient({
     }
 
     setListings((prev) => [...newListings, ...prev]);
-    toast.success(`${newListings.length} listing${newListings.length !== 1 ? "s" : ""} relisted`);
+    toast.success(
+      `${newListings.length} listing${newListings.length !== 1 ? "s" : ""} relisted`,
+    );
     clearSelection();
     setBulkLoading(false);
     setTab("active");
@@ -349,17 +367,25 @@ export default function ListingsClient({
     const newExpiresAt = new Date(Date.now() + LISTING_ACTIVE_MS).toISOString();
     const { error } = await supabase
       .from("listings")
-      .update({ status: "active", expires_at: newExpiresAt, expiry_warning_sent: false })
+      .update({
+        status: "active",
+        expires_at: newExpiresAt,
+        expiry_warning_sent: false,
+      })
       .in("id", ids);
     if (error) {
       toast.error("Failed to renew listings.");
     } else {
       setListings((prev) =>
         prev.map((l) =>
-          ids.includes(l.id) ? { ...l, status: "active", expires_at: newExpiresAt } : l,
+          ids.includes(l.id)
+            ? { ...l, status: "active", expires_at: newExpiresAt }
+            : l,
         ),
       );
-      toast.success(`${ids.length} listing${ids.length !== 1 ? "s" : ""} renewed`);
+      toast.success(
+        `${ids.length} listing${ids.length !== 1 ? "s" : ""} renewed`,
+      );
       setTab("active");
     }
     clearSelection();
@@ -549,12 +575,17 @@ export default function ListingsClient({
                     <span>·</span>
                     <span>{timeAgo(listing.created_at)}</span>
                     {(() => {
-                      const badge = expiryBadge(listing.expires_at, listing.status);
+                      const badge = expiryBadge(
+                        listing.expires_at,
+                        listing.status,
+                      );
                       if (!badge) return null;
                       return (
                         <>
                           <span>·</span>
-                          <span className={`flex items-center gap-0.5 font-medium ${badge.critical ? "text-red-500" : "text-amber-500"}`}>
+                          <span
+                            className={`flex items-center gap-0.5 font-medium ${badge.critical ? "text-red-500" : "text-amber-500"}`}
+                          >
                             <Clock className="w-3 h-3" />
                             {badge.label}
                           </span>
@@ -577,26 +608,39 @@ export default function ListingsClient({
                 </div>
 
                 {/* Renew CTA — expiring-soon active listings */}
-                {listing.status === "active" && expiryBadge(listing.expires_at, listing.status) && (
-                  <button
-                    onClick={() => setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title })}
-                    disabled={loadingAction === listing.id}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 shrink-0"
-                  >
-                    {loadingAction === listing.id ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <Clock className="w-3 h-3" />
-                    )}
-                    Renew
-                  </button>
-                )}
+                {listing.status === "active" &&
+                  expiryBadge(listing.expires_at, listing.status) && (
+                    <button
+                      onClick={() =>
+                        setConfirmAction({
+                          type: "renew",
+                          listingId: listing.id,
+                          listingTitle: listing.title,
+                        })
+                      }
+                      disabled={loadingAction === listing.id}
+                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 shrink-0"
+                    >
+                      {loadingAction === listing.id ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Clock className="w-3 h-3" />
+                      )}
+                      Renew
+                    </button>
+                  )}
 
                 {/* Renew + Relist CTAs — expired listings */}
                 {listing.status === "expired" && (
                   <div className="hidden sm:flex items-center gap-1.5 shrink-0">
                     <button
-                      onClick={() => setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title })}
+                      onClick={() =>
+                        setConfirmAction({
+                          type: "renew",
+                          listingId: listing.id,
+                          listingTitle: listing.title,
+                        })
+                      }
                       disabled={loadingAction === listing.id}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
                     >
@@ -655,7 +699,11 @@ export default function ListingsClient({
                         <button
                           onClick={() => {
                             setOpenMenu(null);
-                            setConfirmAction({ type: "sold", listingId: listing.id, listingTitle: listing.title });
+                            setConfirmAction({
+                              type: "sold",
+                              listingId: listing.id,
+                              listingTitle: listing.title,
+                            });
                           }}
                           className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
                         >
@@ -666,7 +714,11 @@ export default function ListingsClient({
                         <button
                           onClick={() => {
                             setOpenMenu(null);
-                            setConfirmAction({ type: "reactivate", listingId: listing.id, listingTitle: listing.title });
+                            setConfirmAction({
+                              type: "reactivate",
+                              listingId: listing.id,
+                              listingTitle: listing.title,
+                            });
                           }}
                           className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
                         >
@@ -677,7 +729,11 @@ export default function ListingsClient({
                         <button
                           onClick={() => {
                             setOpenMenu(null);
-                            setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title });
+                            setConfirmAction({
+                              type: "renew",
+                              listingId: listing.id,
+                              listingTitle: listing.title,
+                            });
                           }}
                           className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 w-full"
                         >
@@ -689,7 +745,11 @@ export default function ListingsClient({
                           <button
                             onClick={() => {
                               setOpenMenu(null);
-                              setConfirmAction({ type: "renew", listingId: listing.id, listingTitle: listing.title });
+                              setConfirmAction({
+                                type: "renew",
+                                listingId: listing.id,
+                                listingTitle: listing.title,
+                              });
                             }}
                             className="flex items-center gap-2.5 px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 w-full"
                           >
@@ -706,7 +766,11 @@ export default function ListingsClient({
                       <button
                         onClick={() => {
                           setOpenMenu(null);
-                          setConfirmAction({ type: "delete", listingId: listing.id, listingTitle: listing.title });
+                          setConfirmAction({
+                            type: "delete",
+                            listingId: listing.id,
+                            listingTitle: listing.title,
+                          });
                         }}
                         className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full"
                       >

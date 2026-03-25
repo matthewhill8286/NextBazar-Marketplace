@@ -92,7 +92,8 @@ export default function MyShopTab({ userId }: Props) {
         })
         .catch(() => {
           toast.error("Verification failed", {
-            description: "We couldn't verify your subscription. Please refresh the page.",
+            description:
+              "We couldn't verify your subscription. Please refresh the page.",
           });
         })
         .finally(() => setVerifying(false));
@@ -361,16 +362,18 @@ export default function MyShopTab({ userId }: Props) {
           style={{
             background: `linear-gradient(135deg, ${accentColor}, ${
               /^#[0-9A-Fa-f]{6}$/.test(accentColor)
-                ? (() => {
-                    const num = parseInt(accentColor.replace("#", ""), 16);
-                    const amt = Math.round(2.55 * -25);
-                    const clamp = (v: number) =>
-                      Math.max(0, Math.min(255, v));
-                    const R = clamp((num >> 16) + amt);
-                    const G = clamp(((num >> 8) & 0xff) + amt);
-                    const B = clamp((num & 0xff) + amt);
-                    return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
-                  })()
+                ? (
+                    () => {
+                      const num = parseInt(accentColor.replace("#", ""), 16);
+                      const amt = Math.round(2.55 * -25);
+                      const clamp = (v: number) =>
+                        Math.max(0, Math.min(255, v));
+                      const R = clamp((num >> 16) + amt);
+                      const G = clamp(((num >> 8) & 0xff) + amt);
+                      const B = clamp((num & 0xff) + amt);
+                      return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
+                    }
+                  )()
                 : "#4338ca"
             })`,
           }}

@@ -20,7 +20,10 @@ import type { MapLocation } from "@/app/components/listings-map";
 const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
   ssr: false,
   loading: () => (
-    <div className="w-full rounded-2xl bg-gray-100 animate-pulse" style={{ height: 420 }} />
+    <div
+      className="w-full rounded-2xl bg-gray-100 animate-pulse"
+      style={{ height: 420 }}
+    />
   ),
 });
 import CategoryIcon, {
@@ -106,7 +109,9 @@ export default function SearchClient({
   // ─── Persist last-used location slug so the home page can show trending ────
   useEffect(() => {
     if (locationSlug) {
-      try { localStorage.setItem(LAST_SEARCH_LOCATION_KEY, locationSlug); } catch {}
+      try {
+        localStorage.setItem(LAST_SEARCH_LOCATION_KEY, locationSlug);
+      } catch {}
     }
   }, [locationSlug]);
 
@@ -211,7 +216,17 @@ export default function SearchClient({
     }
     loadMap();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode, submittedQuery, categorySlug, subcategorySlug, priceMin, priceMax, categories, subcategories, supabase.from]);
+  }, [
+    viewMode,
+    submittedQuery,
+    categorySlug,
+    subcategorySlug,
+    priceMin,
+    priceMax,
+    categories,
+    subcategories,
+    supabase.from,
+  ]);
 
   // ─── Load auth once (categories/locations already hydrated from server) ─────
   useEffect(() => {
@@ -261,7 +276,15 @@ export default function SearchClient({
       p.set("offset", String(pageOffset));
       return p;
     },
-    [categorySlug, subcategorySlug, locationSlug, sortBy, priceMin, priceMax, PAGE_SIZE],
+    [
+      categorySlug,
+      subcategorySlug,
+      locationSlug,
+      sortBy,
+      priceMin,
+      priceMax,
+      PAGE_SIZE,
+    ],
   );
 
   // ─── Core search ──────────────────────────────────────────────────────────
@@ -964,10 +987,7 @@ export default function SearchClient({
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {listings.map((listing) => (
-                <ListingCard
-                  key={listing.id}
-                  listing={listing}
-                />
+                <ListingCard key={listing.id} listing={listing} />
               ))}
             </div>
             {listings.length < totalHits && (
@@ -1019,10 +1039,7 @@ export default function SearchClient({
             ) : featuredListings.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {featuredListings.map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing}
-                  />
+                  <ListingCard key={listing.id} listing={listing} />
                 ))}
               </div>
             ) : (

@@ -6,7 +6,8 @@ import OnboardingWizard from "./onboarding-wizard";
 
 export const metadata: Metadata = {
   title: "Welcome to NextBazar — Set Up Your Profile",
-  description: "Complete your profile to start buying and selling on NextBazar.",
+  description:
+    "Complete your profile to start buying and selling on NextBazar.",
 };
 
 export default async function OnboardingPage() {
@@ -22,7 +23,9 @@ export default async function OnboardingPage() {
   // Check if already onboarded
   const { data: profile } = await supabase
     .from("profiles")
-    .select("onboarding_completed, display_name, bio, avatar_url, telegram_username, instagram_username, facebook_username, location_id")
+    .select(
+      "onboarding_completed, display_name, bio, avatar_url, telegram_username, instagram_username, facebook_username, location_id",
+    )
     .eq("id", user.id)
     .single();
 

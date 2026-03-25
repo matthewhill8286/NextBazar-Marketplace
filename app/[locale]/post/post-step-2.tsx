@@ -10,12 +10,23 @@ import {
   PenLine,
   Sparkles,
 } from "lucide-react";
-import type { FormData, Location, PricingData, VehicleAttributes } from "./post-types";
+import type {
+  FormData,
+  Location,
+  PricingData,
+  VehicleAttributes,
+} from "./post-types";
 
 type Props = {
   formData: Pick<
     FormData,
-    "title" | "price" | "price_type" | "description" | "condition" | "location_id" | "contact_phone"
+    | "title"
+    | "price"
+    | "price_type"
+    | "description"
+    | "condition"
+    | "location_id"
+    | "contact_phone"
   >;
   locations: Location[];
   pricingData: PricingData | null;
@@ -35,7 +46,17 @@ type Props = {
 
 const FUEL_TYPES = ["petrol", "diesel", "electric", "hybrid", "lpg"] as const;
 const TRANSMISSIONS = ["automatic", "manual"] as const;
-const BODY_TYPES = ["sedan", "suv", "hatchback", "coupe", "convertible", "wagon", "van", "truck", "pickup"] as const;
+const BODY_TYPES = [
+  "sedan",
+  "suv",
+  "hatchback",
+  "coupe",
+  "convertible",
+  "wagon",
+  "van",
+  "truck",
+  "pickup",
+] as const;
 const DRIVE_TYPES = [
   { value: "fwd", label: "FWD" },
   { value: "rwd", label: "RWD" },
@@ -112,7 +133,9 @@ export default function PostStep2({
           {/* Row 1: Make, Model, Year */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Make</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Make
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -122,7 +145,9 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Model</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Model
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -132,7 +157,9 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Year</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Year
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -146,7 +173,9 @@ export default function PostStep2({
           {/* Row 2: Mileage, Fuel Type, Transmission */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Mileage (km)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Mileage (km)
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -156,28 +185,40 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Fuel Type</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Fuel Type
+              </label>
               <select
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
                 value={vehicleAttrs.fuel_type}
-                onChange={(e) => onVehicleAttrUpdate("fuel_type", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdate("fuel_type", e.target.value)
+                }
               >
                 <option value="">Select</option>
                 {FUEL_TYPES.map((ft) => (
-                  <option key={ft} value={ft}>{capitalize(ft)}</option>
+                  <option key={ft} value={ft}>
+                    {capitalize(ft)}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Transmission</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Transmission
+              </label>
               <select
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
                 value={vehicleAttrs.transmission}
-                onChange={(e) => onVehicleAttrUpdate("transmission", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdate("transmission", e.target.value)
+                }
               >
                 <option value="">Select</option>
                 {TRANSMISSIONS.map((t) => (
-                  <option key={t} value={t}>{capitalize(t)}</option>
+                  <option key={t} value={t}>
+                    {capitalize(t)}
+                  </option>
                 ))}
               </select>
             </div>
@@ -186,7 +227,9 @@ export default function PostStep2({
           {/* Row 3: Color, Body Type, Engine Size */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Color</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Color
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -196,26 +239,36 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Body Type</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Body Type
+              </label>
               <select
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
                 value={vehicleAttrs.body_type}
-                onChange={(e) => onVehicleAttrUpdate("body_type", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdate("body_type", e.target.value)
+                }
               >
                 <option value="">Select</option>
                 {BODY_TYPES.map((bt) => (
-                  <option key={bt} value={bt}>{capitalize(bt)}</option>
+                  <option key={bt} value={bt}>
+                    {capitalize(bt)}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Engine (L)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Engine (L)
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
                 placeholder="e.g. 2.0"
                 value={vehicleAttrs.engine_size}
-                onChange={(e) => onVehicleAttrUpdate("engine_size", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdate("engine_size", e.target.value)
+                }
               />
             </div>
           </div>
@@ -223,7 +276,9 @@ export default function PostStep2({
           {/* Row 4: Doors, Drive Type, Owners, Service History */}
           <div className="grid grid-cols-4 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Doors</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Doors
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -233,20 +288,28 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Drive</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Drive
+              </label>
               <select
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
                 value={vehicleAttrs.drive_type}
-                onChange={(e) => onVehicleAttrUpdate("drive_type", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdate("drive_type", e.target.value)
+                }
               >
                 <option value="">Select</option>
                 {DRIVE_TYPES.map((dt) => (
-                  <option key={dt.value} value={dt.value}>{dt.label}</option>
+                  <option key={dt.value} value={dt.value}>
+                    {dt.label}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Owners</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Owners
+              </label>
               <input
                 type="text"
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
@@ -256,22 +319,29 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Service</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Service
+              </label>
               <select
                 className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
                 value={vehicleAttrs.service_history}
-                onChange={(e) => onVehicleAttrUpdate("service_history", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdate("service_history", e.target.value)
+                }
               >
                 <option value="">Select</option>
                 {SERVICE_HISTORY.map((sh) => (
-                  <option key={sh} value={sh}>{capitalize(sh)}</option>
+                  <option key={sh} value={sh}>
+                    {capitalize(sh)}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
 
           <p className="text-[10px] text-blue-400 text-center">
-            These details help buyers find your vehicle and improve your listing quality
+            These details help buyers find your vehicle and improve your listing
+            quality
           </p>
         </div>
       )}
@@ -393,13 +463,17 @@ export default function PostStep2({
                   : "bg-white/80 hover:ring-2 hover:ring-indigo-200"
               }`}
             >
-              <div className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "low" ? "text-green-700" : "text-gray-500"}`}>
+              <div
+                className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "low" ? "text-green-700" : "text-gray-500"}`}
+              >
                 Quick Sale
               </div>
               <div className="text-lg font-bold text-gray-900">
                 €{pricingData.price_low?.toLocaleString()}
               </div>
-              <div className={`text-[10px] ${selectedPriceKey === "low" ? "text-green-700 font-semibold" : "text-green-600"}`}>
+              <div
+                className={`text-[10px] ${selectedPriceKey === "low" ? "text-green-700 font-semibold" : "text-green-600"}`}
+              >
                 {selectedPriceKey === "low" ? "✓ Selected" : "Competitive"}
               </div>
             </button>
@@ -408,7 +482,10 @@ export default function PostStep2({
             <button
               type="button"
               onClick={() => {
-                onUpdate("price", pricingData.suggested_price?.toString() || "");
+                onUpdate(
+                  "price",
+                  pricingData.suggested_price?.toString() || "",
+                );
                 onSelectPriceKey("suggested");
               }}
               className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
@@ -441,13 +518,17 @@ export default function PostStep2({
                   : "bg-white/80 hover:ring-2 hover:ring-indigo-200"
               }`}
             >
-              <div className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "high" ? "text-amber-700" : "text-gray-500"}`}>
+              <div
+                className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "high" ? "text-amber-700" : "text-gray-500"}`}
+              >
                 Premium
               </div>
               <div className="text-lg font-bold text-gray-900">
                 €{pricingData.price_high?.toLocaleString()}
               </div>
-              <div className={`text-[10px] ${selectedPriceKey === "high" ? "text-amber-700 font-semibold" : "text-amber-600"}`}>
+              <div
+                className={`text-[10px] ${selectedPriceKey === "high" ? "text-amber-700 font-semibold" : "text-amber-600"}`}
+              >
                 {selectedPriceKey === "high" ? "✓ Selected" : "Patient sell"}
               </div>
             </button>

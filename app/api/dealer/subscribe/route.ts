@@ -74,7 +74,9 @@ export async function POST(request: NextRequest) {
   } catch (err: unknown) {
     console.error("Dealer subscribe error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to create checkout" },
+      {
+        error: err instanceof Error ? err.message : "Failed to create checkout",
+      },
       { status: 500 },
     );
   }

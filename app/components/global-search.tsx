@@ -16,7 +16,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useCallback } from "react";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import { createClient } from "@/lib/supabase/client";
 import { formatPrice } from "@/lib/format-helpers";
 
@@ -68,7 +70,8 @@ export default function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState(-1);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [recentSearches, setRecentSearches] = useState<string[]>(recentSearchesStore);
+  const [recentSearches, setRecentSearches] =
+    useState<string[]>(recentSearchesStore);
   const [trending, setTrending] = useState<TrendingItem[]>([]);
   const [categories, setCategories] = useState<CategoryChip[]>([]);
   const [trendingLoaded, setTrendingLoaded] = useState(false);
@@ -83,7 +86,9 @@ export default function GlobalSearch() {
     const [{ data: trendData }, { data: catData }] = await Promise.all([
       supabase
         .from("listings")
-        .select("id, title, slug, price, currency, primary_image_url, view_count")
+        .select(
+          "id, title, slug, price, currency, primary_image_url, view_count",
+        )
         .eq("status", "active")
         .order("view_count", { ascending: false })
         .limit(MAX_TRENDING),
@@ -153,14 +158,20 @@ export default function GlobalSearch() {
       return;
     }
     setLoading(true);
-    debounceRef.current = setTimeout(() => search(query, activeCategory), DEBOUNCE_MS);
+    debounceRef.current = setTimeout(
+      () => search(query, activeCategory),
+      DEBOUNCE_MS,
+    );
     return () => clearTimeout(debounceRef.current as any);
   }, [query, activeCategory, search]);
 
   // ── Close dropdown on outside click ─────────────────────────────────────
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setOpen(false);
       }
     }
@@ -171,7 +182,8 @@ export default function GlobalSearch() {
   // ── Lock body scroll while dropdown is open ─────────────────────────────
   useEffect(() => {
     if (open) {
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = "hidden";
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
@@ -188,7 +200,10 @@ export default function GlobalSearch() {
   function addRecent(q: string) {
     const trimmed = q.trim();
     if (!trimmed) return;
-    recentSearchesStore = [trimmed, ...recentSearchesStore.filter((s) => s !== trimmed)].slice(0, MAX_RECENT);
+    recentSearchesStore = [
+      trimmed,
+      ...recentSearchesStore.filter((s) => s !== trimmed),
+    ].slice(0, MAX_RECENT);
     setRecentSearches(recentSearchesStore);
   }
 
@@ -243,14 +258,20 @@ export default function GlobalSearch() {
 
   const trimmedQuery = query.trim();
   const hasQuery = trimmedQuery.length >= 2;
-  const showSuggestions = open && !hasQuery && (recentSearches.length > 0 || trending.length > 0);
+  const showSuggestions =
+    open && !hasQuery && (recentSearches.length > 0 || trending.length > 0);
   const showResults = open && hasQuery;
 
   // ── Detect macOS for shortcut hint ────────────────────────────────────
-  const isMac = typeof navigator !== "undefined" && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+  const isMac =
+    typeof navigator !== "undefined" &&
+    /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 
   return (
-    <div ref={containerRef} className="relative flex-1 max-w-xl hidden md:block">
+    <div
+      ref={containerRef}
+      className="relative flex-1 max-w-xl hidden md:block"
+    >
       {/* Search input */}
       <div className="relative">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -376,13 +397,19 @@ export default function GlobalSearch() {
                           sizes="36px"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">📦</div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">
+                          📦
+                        </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-800 truncate">{item.title}</p>
+                      <p className="text-sm text-gray-800 truncate">
+                        {item.title}
+                      </p>
                       <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span className="font-semibold text-gray-700">{formatPrice(item.price, item.currency)}</span>
+                        <span className="font-semibold text-gray-700">
+                          {formatPrice(item.price, item.currency)}
+                        </span>
                         <span className="flex items-center gap-0.5 text-amber-500">
                           <Flame className="w-3 h-3" />
                           {item.view_count.toLocaleString()}
@@ -419,7 +446,11 @@ export default function GlobalSearch() {
                   <button
                     key={cat.id}
                     type="button"
-                    onClick={() => setActiveCategory(activeCategory === cat.slug ? null : cat.slug)}
+                    onClick={() =>
+                      setActiveCategory(
+                        activeCategory === cat.slug ? null : cat.slug,
+                      )
+                    }
                     className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                       activeCategory === cat.slug
                         ? "bg-indigo-600 text-white"
@@ -440,7 +471,9 @@ export default function GlobalSearch() {
             </div>
           ) : results.length === 0 ? (
             <div className="px-4 py-6 text-center">
-              <p className="text-sm text-gray-500">{t("noResults", { query: trimmedQuery })}</p>
+              <p className="text-sm text-gray-500">
+                {t("noResults", { query: trimmedQuery })}
+              </p>
               <button
                 type="button"
                 onClick={() => goToSearch()}

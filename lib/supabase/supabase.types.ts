@@ -33,7 +33,12 @@ export type LocationJoin = Pick<Tables<"locations">, "name" | "slug">;
 /** profiles join shape used in listing card queries */
 export type CardProfileJoin = Pick<
   Tables<"profiles">,
-  "display_name" | "avatar_url" | "verified" | "rating" | "total_reviews" | "is_dealer"
+  | "display_name"
+  | "avatar_url"
+  | "verified"
+  | "rating"
+  | "total_reviews"
+  | "is_dealer"
 >;
 
 /** profiles join shape used in listing detail queries (fuller set of fields) */
@@ -62,10 +67,23 @@ export type ListingImageJoin = Pick<
 /** Columns returned by CARD_SELECT (excludes heavy embedding / search_vector). */
 type ListingCardColumns = Pick<
   Tables<"listings">,
-  | "id" | "user_id" | "category_id" | "location_id"
-  | "title" | "slug" | "price" | "currency" | "price_type" | "condition" | "status"
-  | "primary_image_url" | "is_promoted" | "is_urgent"
-  | "view_count" | "favorite_count" | "created_at"
+  | "id"
+  | "user_id"
+  | "category_id"
+  | "location_id"
+  | "title"
+  | "slug"
+  | "price"
+  | "currency"
+  | "price_type"
+  | "condition"
+  | "status"
+  | "primary_image_url"
+  | "is_promoted"
+  | "is_urgent"
+  | "view_count"
+  | "favorite_count"
+  | "created_at"
 >;
 
 /**
@@ -81,13 +99,33 @@ export type ListingCardRow = ListingCardColumns & {
 /** Columns returned by LISTING_DETAIL_SELECT (excludes embedding / search_vector). */
 type ListingDetailColumns = Pick<
   Tables<"listings">,
-  | "id" | "user_id" | "category_id" | "subcategory_id" | "location_id"
-  | "title" | "slug" | "description" | "price" | "currency" | "price_type"
-  | "condition" | "status" | "primary_image_url" | "image_count" | "video_url"
-  | "is_promoted" | "promoted_until" | "is_urgent"
-  | "view_count" | "favorite_count" | "message_count"
-  | "contact_phone" | "attributes"
-  | "expires_at" | "created_at" | "updated_at"
+  | "id"
+  | "user_id"
+  | "category_id"
+  | "subcategory_id"
+  | "location_id"
+  | "title"
+  | "slug"
+  | "description"
+  | "price"
+  | "currency"
+  | "price_type"
+  | "condition"
+  | "status"
+  | "primary_image_url"
+  | "image_count"
+  | "video_url"
+  | "is_promoted"
+  | "promoted_until"
+  | "is_urgent"
+  | "view_count"
+  | "favorite_count"
+  | "message_count"
+  | "contact_phone"
+  | "attributes"
+  | "expires_at"
+  | "created_at"
+  | "updated_at"
 >;
 
 /**

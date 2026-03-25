@@ -109,8 +109,10 @@ export async function POST(request: NextRequest) {
           .update({ is_dealer: true })
           .eq("id", userId);
 
-        if (shopError) console.error("Failed to upsert dealer shop:", shopError);
-        if (profileError) console.error("Failed to update dealer profile:", profileError);
+        if (shopError)
+          console.error("Failed to upsert dealer shop:", shopError);
+        if (profileError)
+          console.error("Failed to update dealer profile:", profileError);
         else console.log(`Activated dealer subscription for user ${userId}`);
       }
     }
@@ -125,12 +127,17 @@ export async function POST(request: NextRequest) {
     const userId = subscription.metadata?.user_id;
 
     if (userId && subscription.metadata?.type === "dealer_subscription") {
-      const isActive = subscription.status === "active" || subscription.status === "trialing";
+      const isActive =
+        subscription.status === "active" || subscription.status === "trialing";
 
       await supabaseAdmin
         .from("dealer_shops")
         .update({
-          plan_status: isActive ? "active" : subscription.status === "past_due" ? "past_due" : "cancelled",
+          plan_status: isActive
+            ? "active"
+            : subscription.status === "past_due"
+              ? "past_due"
+              : "cancelled",
           plan_expires_at: subscription.current_period_end
             ? new Date(subscription.current_period_end * 1000).toISOString()
             : null,

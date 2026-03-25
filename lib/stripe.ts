@@ -31,7 +31,8 @@ export type PromotionType = keyof typeof PROMOTION_PRICES;
 export const DEALER_PLAN = {
   priceId: process.env.STRIPE_DEALER_PRICE_ID || "",
   name: "Dealer Pro",
-  description: "Unlimited listings, branded shop page, analytics & inventory tools",
+  description:
+    "Unlimited listings, branded shop page, analytics & inventory tools",
   amount: 3500, // €35.00
   interval: "month" as const,
 } as const;

@@ -97,7 +97,9 @@ export default function MessagesPage() {
     table: "conversations",
     event: "*",
     filter: userId ? `buyer_id=eq.${userId}` : undefined,
-    onPayload: () => { if (userId) loadConversations(userId); },
+    onPayload: () => {
+      if (userId) loadConversations(userId);
+    },
     enabled: !!userId,
   });
   useRealtimeTable({
@@ -105,7 +107,9 @@ export default function MessagesPage() {
     table: "conversations",
     event: "*",
     filter: userId ? `seller_id=eq.${userId}` : undefined,
-    onPayload: () => { if (userId) loadConversations(userId); },
+    onPayload: () => {
+      if (userId) loadConversations(userId);
+    },
     enabled: !!userId,
   });
 
@@ -150,7 +154,6 @@ export default function MessagesPage() {
     setDeleting(false);
     setDeleteTarget(null);
   }
-
 
   const filtered = conversations.filter((c) => {
     if (!searchQuery) return true;

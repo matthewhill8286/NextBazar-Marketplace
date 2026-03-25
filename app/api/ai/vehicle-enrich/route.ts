@@ -52,7 +52,10 @@ Description: ${description || ""}`,
     // Parse AI response, stripping any markdown fences
     let attributes: Record<string, string> = {};
     try {
-      const cleaned = raw.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
+      const cleaned = raw
+        .replace(/```json?\n?/g, "")
+        .replace(/```/g, "")
+        .trim();
       attributes = JSON.parse(cleaned);
     } catch {
       // If parsing fails, return empty — user can fill manually

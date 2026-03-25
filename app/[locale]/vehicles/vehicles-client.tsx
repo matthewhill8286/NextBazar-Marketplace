@@ -1,8 +1,13 @@
 "use client";
 
 import { Bike, Car, Cog, Store, Truck } from "lucide-react";
-import CategoryLanding, { type TabConfig } from "@/app/components/category-landing";
-import type { ListingCardRow, Subcategory } from "@/lib/supabase/supabase.types";
+import CategoryLanding, {
+  type TabConfig,
+} from "@/app/components/category-landing";
+import type {
+  ListingCardRow,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 const TABS: TabConfig[] = [
   {

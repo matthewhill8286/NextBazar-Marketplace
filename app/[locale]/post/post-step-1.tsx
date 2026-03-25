@@ -1,7 +1,9 @@
 "use client";
 
 import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";
-import CategoryIcon, { getCategoryConfig } from "@/app/components/category-icon";
+import CategoryIcon, {
+  getCategoryConfig,
+} from "@/app/components/category-icon";
 import ImageUpload from "@/app/components/image-upload";
 import type {
   Category,

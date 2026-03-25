@@ -19,8 +19,14 @@ async function seedRecentlyViewed(
 
 test.describe("Recently Viewed — tracking on listing detail page", () => {
   /** Wait until the listing detail has fully loaded (skeleton gone, title visible) */
-  async function waitForListingLoad(page: Parameters<typeof mockSupabase>[0], title: string) {
-    await page.getByText(title).first().waitFor({ state: "visible", timeout: 12_000 });
+  async function waitForListingLoad(
+    page: Parameters<typeof mockSupabase>[0],
+    title: string,
+  ) {
+    await page
+      .getByText(title)
+      .first()
+      .waitFor({ state: "visible", timeout: 12_000 });
   }
 
   test("visiting a listing page stores its ID in localStorage", async ({
@@ -90,9 +96,9 @@ test.describe("Recently Viewed — home page section", () => {
     await mockSupabase(page);
     await page.goto("/");
 
-    await expect(
-      page.getByText("Recently Viewed"),
-    ).not.toBeVisible({ timeout: 5_000 });
+    await expect(page.getByText("Recently Viewed")).not.toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test("section appears when localStorage has valid listing IDs", async ({
@@ -103,9 +109,9 @@ test.describe("Recently Viewed — home page section", () => {
     await seedRecentlyViewed(page, ["listing-1", "listing-2"]);
     await page.goto("/");
 
-    await expect(
-      page.getByText("Recently Viewed"),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Recently Viewed")).toBeVisible({
+      timeout: 10_000,
+    });
   });
 
   test("shows listing cards matching the stored IDs", async ({ page }) => {
@@ -114,9 +120,9 @@ test.describe("Recently Viewed — home page section", () => {
     await page.goto("/");
 
     // Both listing titles from mocks should be visible
-    await expect(
-      page.getByText("Recently Viewed"),
-    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Recently Viewed")).toBeVisible({
+      timeout: 10_000,
+    });
 
     await expect(
       page.getByText("iPhone 14 Pro").or(page.getByText("MacBook Pro")).first(),

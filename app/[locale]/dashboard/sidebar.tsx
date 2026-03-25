@@ -43,7 +43,11 @@ const NAV_ITEMS = [
   { href: "/dashboard/purchases", label: "Purchases", icon: ShoppingBag },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  { href: "/dashboard/saved-searches", label: "Saved Searches", icon: BookMarked },
+  {
+    href: "/dashboard/saved-searches",
+    label: "Saved Searches",
+    icon: BookMarked,
+  },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
@@ -107,14 +111,20 @@ export default function DashboardSidebar({
             <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
               {stats.active}
             </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">Active</div>
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">
+              Active
+            </div>
           </Link>
           <Link
             href="/dashboard?tab=sold"
             className="bg-gray-50 rounded-lg p-2.5 text-center hover:bg-indigo-50 hover:ring-1 hover:ring-indigo-200 transition-all group"
           >
-            <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">{stats.sold}</div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">Sold</div>
+            <div className="text-lg font-bold text-gray-900 group-hover:text-indigo-700">
+              {stats.sold}
+            </div>
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">
+              Sold
+            </div>
           </Link>
           <Link
             href="/dashboard/analytics"
@@ -128,7 +138,9 @@ export default function DashboardSidebar({
                   : stats.views}
               </span>
             </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">Views</div>
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-indigo-500">
+              Views
+            </div>
           </Link>
           <Link
             href="/saved"
@@ -140,7 +152,9 @@ export default function DashboardSidebar({
                 {stats.favorites}
               </span>
             </div>
-            <div className="text-[10px] text-gray-500 font-medium group-hover:text-rose-400">Saved</div>
+            <div className="text-[10px] text-gray-500 font-medium group-hover:text-rose-400">
+              Saved
+            </div>
           </Link>
         </div>
       </div>
@@ -174,34 +188,39 @@ export default function DashboardSidebar({
         })}
 
         {/* My Shop link — gated behind feature flag */}
-        {FEATURE_FLAGS.DEALERS && (() => {
-          const shopActive = pathname === "/dashboard" && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("view") === "my-shop";
-          return profile.is_dealer ? (
-            <Link
-              href="/dashboard?view=my-shop"
-              className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                shopActive
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-              )}
-            >
-              <Store className="w-4 h-4" />
-              My Shop
-            </Link>
-          ) : (
-            <Link
-              href="/dashboard?view=my-shop"
-              className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
-                "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
-              )}
-            >
-              <Crown className="w-4 h-4" />
-              Become a Pro Seller
-            </Link>
-          );
-        })()}
+        {FEATURE_FLAGS.DEALERS &&
+          (() => {
+            const shopActive =
+              pathname === "/dashboard" &&
+              typeof window !== "undefined" &&
+              new URLSearchParams(window.location.search).get("view") ===
+                "my-shop";
+            return profile.is_dealer ? (
+              <Link
+                href="/dashboard?view=my-shop"
+                className={clsx(
+                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  shopActive
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                )}
+              >
+                <Store className="w-4 h-4" />
+                My Shop
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard?view=my-shop"
+                className={clsx(
+                  "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
+                  "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+                )}
+              >
+                <Crown className="w-4 h-4" />
+                Become a Pro Seller
+              </Link>
+            );
+          })()}
         {/* end shop link */}
       </nav>
     </aside>

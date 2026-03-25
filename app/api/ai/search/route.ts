@@ -122,7 +122,9 @@ Respond in JSON:
   } catch (err: unknown) {
     console.error("AI search error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to process search" },
+      {
+        error: err instanceof Error ? err.message : "Failed to process search",
+      },
       { status: 500 },
     );
   }
