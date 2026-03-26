@@ -194,7 +194,7 @@ describe("RealtimeToasts", () => {
   });
 
   it("suppresses toast when user is already viewing that conversation", async () => {
-    mockPathname = "/en/messages/conv-1";
+    mockPathname = "/en/dashboard/messages/conv-1";
     render(<RealtimeToasts />);
     await flushAsync();
 
@@ -215,7 +215,7 @@ describe("RealtimeToasts", () => {
   });
 
   it("allows toast when user is viewing a DIFFERENT conversation", async () => {
-    mockPathname = "/en/messages/conv-99";
+    mockPathname = "/en/dashboard/messages/conv-99";
     render(<RealtimeToasts />);
     await flushAsync();
 
@@ -336,7 +336,7 @@ describe("RealtimeToasts", () => {
     const btn = getButton("button", { name: /view conversation/i });
     btn.click();
 
-    expect(mockPush).toHaveBeenCalledWith("/messages/conv-42");
+    expect(mockPush).toHaveBeenCalledWith("/dashboard/messages/conv-42");
   });
 
   // ── Offer toasts ──────────────────────────────────────────────────────────
