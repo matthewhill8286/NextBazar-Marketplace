@@ -37,8 +37,7 @@ function SidebarSkeleton() {
       {/* Nav items */}
       <div className="bg-white rounded-2xl border border-gray-100 p-3 space-y-1">
         {Array.from({ length: 7 }).map((_, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
-          <Bone key={i} className="h-10 rounded-xl" />
+          <Bone key={`nav-item-${i}`} className="h-10 rounded-xl" />
         ))}
       </div>
     </aside>
@@ -57,8 +56,7 @@ function ContentSkeleton() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
-            key={i}
+            key={`content-stats-${i}`}
             className="bg-white rounded-xl border border-gray-100 p-4 space-y-3"
           >
             <div className="flex items-center gap-2">
@@ -75,8 +73,7 @@ function ContentSkeleton() {
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
-            key={i}
+            key={`content-row-${i}`}
             className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4"
           >
             <Bone className="w-16 h-12 rounded-lg shrink-0" />

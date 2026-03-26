@@ -980,8 +980,6 @@ export default function ListingDetail({
                         }
                         className="font-semibold text-gray-900 truncate transition-colors"
                         style={shopAccentColor ? { ["--seller-accent" as string]: shopAccentColor } : undefined}
-                        onMouseEnter={(e) => e.currentTarget.style.color = shopAccentColor || "#4f46e5"}
-                        onMouseLeave={(e) => e.currentTarget.style.color = ""}
                       >
                         {profile?.display_name || "Seller"}
                       </Link>
