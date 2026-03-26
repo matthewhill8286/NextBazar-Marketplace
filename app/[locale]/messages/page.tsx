@@ -81,7 +81,7 @@ export default function MessagesPage() {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        router.push("/auth/login?redirect=/messages");
+        router.push("/auth/login?redirect=/dashboard/messages");
         return;
       }
       setUserId(user.id);
@@ -168,14 +168,31 @@ export default function MessagesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+      <div className="mx-auto px-4 py-6">
+        <div className="h-7 w-32 bg-gray-200 rounded-lg animate-pulse mb-6" />
+        <div className="h-10 w-full bg-gray-200 rounded-xl animate-pulse mb-4" />
+        <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3.5 p-4">
+              <div className="w-12 h-12 rounded-full bg-gray-200 animate-pulse shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="h-4 w-28 bg-gray-200 rounded-lg animate-pulse" />
+                  <div className="h-3 w-10 bg-gray-200 rounded-lg animate-pulse" />
+                </div>
+                <div className="h-3 w-48 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="h-3 w-36 bg-gray-200 rounded-lg animate-pulse" />
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-gray-200 animate-pulse shrink-0" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
+    <div className="mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Messages</h1>
 
       {conversations.length > 0 && (
@@ -216,7 +233,7 @@ export default function MessagesPage() {
                 )}
 
                 <Link
-                  href={`/messages/${conv.id}`}
+                  href={`/dashboard/messages/${conv.id}`}
                   className="flex items-center gap-3.5 p-4 flex-1 min-w-0"
                 >
                   {/* Avatar */}

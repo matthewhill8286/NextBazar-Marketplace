@@ -99,9 +99,6 @@ export default function ShopClient({
     return formatDate(profile.created_at);
   }, [profile?.created_at]);
 
-  const hasSocials =
-    shop.website || shop.facebook || shop.instagram || shop.tiktok;
-
   const promotedCount = listings.filter((l) => l.is_promoted).length;
 
   const filtered = useMemo(() => {
@@ -267,54 +264,68 @@ export default function ShopClient({
               </div>
 
               {/* Social links + Contact */}
-              {hasSocials && (
-                <div className="flex items-center gap-2 shrink-0 md:mt-0 mt-2">
-                  {shop.website && (
-                    <a
-                      href={shop.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
-                      title="Website"
-                    >
-                      <Globe className="w-5 h-5" />
-                    </a>
-                  )}
-                  {shop.facebook && (
-                    <a
-                      href={shop.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all"
-                      title="Facebook"
-                    >
-                      <Facebook className="w-5 h-5" />
-                    </a>
-                  )}
-                  {shop.instagram && (
-                    <a
-                      href={shop.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition-all"
-                      title="Instagram"
-                    >
-                      <Instagram className="w-5 h-5" />
-                    </a>
-                  )}
-                  {shop.tiktok && (
-                    <a
-                      href={shop.tiktok}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
-                      title="TikTok"
-                    >
-                      <Music className="w-5 h-5" />
-                    </a>
-                  )}
-                </div>
-              )}
+              <div className="flex items-center gap-2 shrink-0 md:mt-0 mt-2">
+                {shop.website ? (
+                  <a
+                    href={shop.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                    title="Website"
+                  >
+                    <Globe className="w-5 h-5" />
+                  </a>
+                ) : (
+                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="Website — not set">
+                    <Globe className="w-5 h-5" />
+                  </span>
+                )}
+                {shop.facebook ? (
+                  <a
+                    href={shop.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                    title="Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                ) : (
+                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="Facebook — not set">
+                    <Facebook className="w-5 h-5" />
+                  </span>
+                )}
+                {shop.instagram ? (
+                  <a
+                    href={shop.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition-all"
+                    title="Instagram"
+                  >
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                ) : (
+                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="Instagram — not set">
+                    <Instagram className="w-5 h-5" />
+                  </span>
+                )}
+                {shop.tiktok ? (
+                  <a
+                    href={shop.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+                    title="TikTok"
+                  >
+                    <Music className="w-5 h-5" />
+                  </a>
+                ) : (
+                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="TikTok — not set">
+                    <Music className="w-5 h-5" />
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -400,7 +411,7 @@ export default function ShopClient({
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
               {filtered.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
+                <ListingCard key={listing.id} listing={listing} accentColor={accentColor} />
               ))}
             </div>
 

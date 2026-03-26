@@ -713,38 +713,6 @@ export type Database = {
           },
         ];
       };
-      promo_codes: {
-        Row: {
-          id: string;
-          code: string;
-          redeemed_by: string | null;
-          redeemed_at: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          code: string;
-          redeemed_by?: string | null;
-          redeemed_at?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          code?: string;
-          redeemed_by?: string | null;
-          redeemed_at?: string | null;
-          created_at?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "promo_codes_redeemed_by_fkey";
-            columns: ["redeemed_by"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       profiles: {
         Row: {
           avatar_url: string | null;

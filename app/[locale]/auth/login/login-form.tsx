@@ -33,21 +33,6 @@ export default function LoginForm() {
       return;
     }
 
-    // Check if user has completed onboarding
-    if (data.user) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_completed")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profile && !profile.onboarding_completed) {
-        router.push("/onboarding");
-        router.refresh();
-        return;
-      }
-    }
-
     router.push(redirect);
     router.refresh();
   }

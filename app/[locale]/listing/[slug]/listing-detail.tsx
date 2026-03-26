@@ -190,12 +190,14 @@ type Props = {
   slug: string;
   initialListing?: ListingDetailRow | null;
   initialRelated?: ListingCardRow[];
+  initialAccentColor?: string | null;
 };
 
 export default function ListingDetail({
   slug,
   initialListing = null,
   initialRelated = [],
+  initialAccentColor = null,
 }: Props) {
   const t = useTranslations("listing");
   const tCommon = useTranslations("common");
@@ -225,6 +227,7 @@ export default function ListingDetail({
   } | null>(null);
   const [offerCount, setOfferCount] = useState(0);
   const [shopSlug, setShopSlug] = useState<string | null>(null);
+  const [shopAccentColor, setShopAccentColor] = useState<string | null>(initialAccentColor);
 
   const dateLocale = locale === "el" ? "el-GR" : "en-GB";
 
@@ -361,11 +364,12 @@ export default function ListingDetail({
       if (FEATURE_FLAGS.DEALERS && data.profiles?.is_pro_seller) {
         supabase
           .from("dealer_shops")
-          .select("slug")
+          .select("slug, accent_color")
           .eq("user_id", data.user_id)
           .single()
           .then(({ data: shop }) => {
             if (shop?.slug) setShopSlug(shop.slug);
+            if (shop?.accent_color) setShopAccentColor(shop.accent_color);
           });
       }
 
@@ -974,15 +978,24 @@ export default function ListingDetail({
                             ? `/shop/${shopSlug}`
                             : `/profile/${listing.user_id}`
                         }
-                        className="font-semibold text-gray-900 truncate hover:text-indigo-600 transition-colors"
+                        className="font-semibold text-gray-900 truncate transition-colors"
+                        style={shopAccentColor ? { ["--seller-accent" as string]: shopAccentColor } : undefined}
+                        onMouseEnter={(e) => e.currentTarget.style.color = shopAccentColor || "#4f46e5"}
+                        onMouseLeave={(e) => e.currentTarget.style.color = ""}
                       >
                         {profile?.display_name || "Seller"}
                       </Link>
                       {profile?.verified && (
-                        <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
+                        <Shield className="w-4 h-4 shrink-0" style={shopAccentColor ? { color: shopAccentColor } : { color: "#6366f1" }} />
                       )}
                       {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                        <span className="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full shrink-0">
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
+                          style={shopAccentColor
+                            ? { backgroundColor: `${shopAccentColor}14`, color: shopAccentColor }
+                            : { backgroundColor: "rgb(243 232 255)", color: "rgb(126 34 206)" }
+                          }
+                        >
                           PRO
                         </span>
                       )}
@@ -1008,16 +1021,16 @@ export default function ListingDetail({
                   </div>
                 </div>
 
-                {!isOwner && (
-                  <ContactButtons
-                    listingId={listing.id}
-                    sellerId={listing.user_id}
-                    listingTitle={listing.title}
-                    contactPhone={listing.contact_phone}
-                    whatsappNumber={profile?.whatsapp_number || null}
-                    telegramUsername={profile?.telegram_username || null}
-                  />
-                )}
+                <ContactButtons
+                  listingId={listing.id}
+                  sellerId={listing.user_id}
+                  listingTitle={listing.title}
+                  contactPhone={listing.contact_phone}
+                  whatsappNumber={profile?.whatsapp_number || null}
+                  telegramUsername={profile?.telegram_username || null}
+                  disabled={isOwner}
+                  accentColor={shopAccentColor}
+                />
 
                 {/* Make an Offer / Offer state — non-owners only */}
                 {!isOwner && listing.price && listing.status === "active" && (
@@ -1153,7 +1166,8 @@ export default function ListingDetail({
                         ? `/shop/${shopSlug}`
                         : `/profile/${listing.user_id}`
                     }
-                    className="text-sm text-indigo-600 font-medium hover:underline"
+                    className="text-sm font-medium hover:underline"
+                    style={{ color: shopAccentColor || "#4f46e5" }}
                   >
                     {shopSlug ? t("visitShop") : t("viewSellerProfile")}
                   </Link>

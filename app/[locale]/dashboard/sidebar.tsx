@@ -7,7 +7,9 @@ import {
   BookMarked,
   Crown,
   Flag,
+  Heart,
   LayoutDashboard,
+  MessageCircle,
   Settings,
   Shield,
   ShoppingBag,
@@ -31,6 +33,8 @@ type SidebarProps = {
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
+  { href: "/dashboard/saved", label: "Saved", icon: Heart },
   { href: "/dashboard/offers", label: "Offers", icon: Tag },
   { href: "/dashboard/purchases", label: "Purchases", icon: ShoppingBag },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },

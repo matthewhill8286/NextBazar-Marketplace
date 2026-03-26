@@ -87,7 +87,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/messages"
+                  href="/dashboard/messages"
                   className="hover:text-white transition-colors"
                 >
                   {t("messages")}
@@ -95,7 +95,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/saved"
+                  href="/dashboard/saved"
                   className="hover:text-white transition-colors"
                 >
                   {t("savedItems")}

@@ -45,6 +45,13 @@ const TABS = [
   { key: "draft", label: "Drafts" },
 ];
 
+/** Returns true when an active listing expires within 1 day. */
+function expiresSoon(expiresAt: string | null, status: string): boolean {
+  if (status !== "active" || !expiresAt) return false;
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  return ms > 0 && ms <= 86_400_000; // within 24 hours
+}
+
 export default function ListingsClient({
   initialListings,
   isProSeller = false,
@@ -564,11 +571,15 @@ export default function ListingsClient({
 
           {filtered.map((listing) => {
             const isSelected = selected.has(listing.id);
+            const isExpiringSoon = expiresSoon(listing.expires_at, listing.status);
             return (
               <div
                 key={listing.id}
-                className={`flex items-center gap-3 p-4 hover:bg-gray-50/50 transition-colors ${isSelected ? "bg-indigo-50/40" : ""}`}
+                className={`relative flex items-center gap-3 p-4 hover:bg-gray-50/50 transition-colors ${isSelected ? "bg-indigo-50/40" : isExpiringSoon ? "bg-amber-50/50" : ""}`}
               >
+                {isExpiringSoon && (
+                  <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-400 rounded-r" />
+                )}
                 {/* Checkbox — Pro Sellers only */}
                 {isProSeller && (
                   <button
@@ -715,8 +726,9 @@ export default function ListingsClient({
                   </div>
                 </div>
 
-                {/* Renew CTA — expiring-soon active listings */}
+                {/* Renew CTA — pro sellers or expiring within 1 day */}
                 {listing.status === "active" &&
+                  (isProSeller || expiresSoon(listing.expires_at, listing.status)) &&
                   expiryBadge(listing.expires_at, listing.status) && (
                     <button
                       onClick={() =>
@@ -835,7 +847,8 @@ export default function ListingsClient({
                           <RotateCcw className="w-3.5 h-3.5" /> Reactivate
                         </button>
                       )}
-                      {listing.status === "active" && (
+                      {listing.status === "active" &&
+                        (isProSeller || expiresSoon(listing.expires_at, listing.status)) && (
                         <button
                           onClick={() => {
                             setOpenMenu(null);

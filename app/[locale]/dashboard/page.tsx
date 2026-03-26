@@ -8,6 +8,7 @@ import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import { useDashboardData } from "./dashboard-context";
 import ProSellerModal from "./dealer/pro-seller-modal";
 import ListingsClient from "./listings/listings-client";
+import ProfileNudge from "./profile-nudge";
 
 export default function DashboardPage() {
   const {
@@ -48,6 +49,9 @@ export default function DashboardPage() {
           <Plus className="w-4 h-4" /> New Listing
         </Link>
       </div>
+
+      {/* Profile completion nudge for pro sellers missing photo/bio */}
+      {isDealer && <ProfileNudge />}
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

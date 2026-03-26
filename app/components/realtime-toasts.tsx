@@ -424,7 +424,7 @@ export default function RealtimeToasts() {
     event: "INSERT",
     onPayload: async ({ new: msg }) => {
       if (!userId || msg.sender_id === userId) return;
-      if (pathnameRef.current.includes(`/messages/${msg.conversation_id}`))
+      if (pathnameRef.current.includes(`/dashboard/messages/${msg.conversation_id}`))
         return;
 
       const [{ data: sender }, { data: conv }] = await Promise.all([
@@ -459,7 +459,7 @@ export default function RealtimeToasts() {
             isOffer={isOffer}
             onNavigate={() => {
               toast.dismiss(t);
-              router.push(`/messages/${msg.conversation_id}`);
+              router.push(`/dashboard/messages/${msg.conversation_id}`);
             }}
           />
         ),

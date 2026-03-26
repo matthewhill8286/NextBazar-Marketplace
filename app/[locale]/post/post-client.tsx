@@ -211,6 +211,21 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
       return;
     }
 
+    // Ensure the user has a display name before publishing
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name, location_id")
+      .eq("id", userId)
+      .single();
+
+    if (!profile?.display_name) {
+      setError(
+        "Please add a display name before posting. Go to Dashboard → Settings to set one up.",
+      );
+      setLoading(false);
+      return;
+    }
+
     const pendingUploads = images.some((img) => img.uploading);
     if (pendingUploads) {
       setError("Please wait for all images to finish uploading.");

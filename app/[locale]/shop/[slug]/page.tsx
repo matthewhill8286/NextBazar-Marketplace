@@ -1,4 +1,6 @@
+import { Store } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { Tables } from "@/lib/supabase/database.types";
@@ -68,7 +70,40 @@ export default async function ShopPage(props: PageProps) {
 
   const shop = shopRaw as DealerShop | null;
 
-  if (!shop || shop.plan_status !== "active") {
+  if (!shop) {
+    notFound();
+  }
+
+  // Show a friendly "shop closed" page instead of a generic 404
+  if (shop.plan_status === "closed") {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <Store className="w-8 h-8 text-gray-400" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            This shop is currently closed
+          </h1>
+          <p className="text-gray-500 text-sm mb-6">
+            <span className="font-medium text-gray-700">
+              {shop.shop_name}
+            </span>{" "}
+            is not accepting orders right now. The seller may reopen in the
+            future.
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors"
+          >
+            Browse Marketplace
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (shop.plan_status !== "active") {
     notFound();
   }
 

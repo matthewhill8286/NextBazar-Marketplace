@@ -72,7 +72,7 @@ export default function ChatThread({
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        router.push("/auth/login?redirect=/messages");
+        router.push("/auth/login?redirect=/dashboard/messages");
         return;
       }
       setUserId(user.id);
@@ -91,7 +91,7 @@ export default function ChatThread({
         .single();
 
       if (!conv) {
-        router.push("/messages");
+        router.push("/dashboard/messages");
         return;
       }
       setConversation(conv);
@@ -246,7 +246,7 @@ export default function ChatThread({
   async function handleDeleteConversation() {
     setDeletingConv(true);
     await supabase.from("conversations").delete().eq("id", conversationId);
-    router.push("/messages");
+    router.push("/dashboard/messages");
   }
 
   async function handleDeleteMessage() {
@@ -266,7 +266,7 @@ export default function ChatThread({
 
   async function handleSendOffer() {
     const price = parseFloat(offerPrice);
-    if (!price || price <= 0 || !userId) return;
+    if (!price || price <= 0 || !userId || !conversation) return;
     setSendingOffer(true);
 
     const optimistic: Message = {
@@ -304,6 +304,21 @@ export default function ChatThread({
       setMessages((prev) =>
         prev.map((m) => (m.id === optimistic.id ? inserted : m)),
       );
+
+      // Also create a row in the offers table so it shows in the Offers tab
+      const listingCurrency = conversation.listings?.currency || "EUR";
+      await supabase.from("offers").insert({
+        listing_id: conversation.listing_id,
+        buyer_id: userId,
+        seller_id:
+          userId === conversation.buyer_id
+            ? conversation.seller_id
+            : conversation.buyer_id,
+        amount: price,
+        currency: listingCurrency,
+        message: null,
+      });
+
       await supabase
         .from("conversations")
         .update({
@@ -329,6 +344,25 @@ export default function ChatThread({
       .from("messages")
       .update({ offer_status: status })
       .eq("id", msg.id);
+
+    // Sync the corresponding row in the offers table
+    if (conversation && msg.offer_price) {
+      const buyerId =
+        msg.sender_id === conversation.buyer_id
+          ? conversation.buyer_id
+          : conversation.seller_id;
+      await supabase
+        .from("offers")
+        .update({
+          status,
+          responded_at: new Date().toISOString(),
+        })
+        .eq("listing_id", conversation.listing_id)
+        .eq("buyer_id", buyerId)
+        .eq("amount", msg.offer_price)
+        .eq("status", "pending");
+    }
+
     // Send a follow-up text message
     const reply =
       status === "accepted"
@@ -407,7 +441,7 @@ export default function ChatThread({
       {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0">
         <Link
-          href="/messages"
+          href="/dashboard/messages"
           className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
         >
           <ArrowLeft className="w-5 h-5" />

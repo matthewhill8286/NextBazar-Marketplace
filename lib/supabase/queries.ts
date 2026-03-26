@@ -187,6 +187,22 @@ export const getRelatedListingsCached = unstable_cache(
   { revalidate: 60, tags: ["listings"] },
 );
 
+// ─── Shop accent color (for branded listing pages) ───────────────────────────
+
+export const getShopAccentColorCached = unstable_cache(
+  async (userId: string): Promise<string | null> => {
+    const { data } = await publicClient()
+      .from("dealer_shops")
+      .select("accent_color")
+      .eq("user_id", userId)
+      .eq("plan_status", "active")
+      .single();
+    return data?.accent_color ?? null;
+  },
+  ["shop-accent-color"],
+  { revalidate: 60, tags: ["dealer_shops"] },
+);
+
 // ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
 
 export const getCategoryBySlugCached = unstable_cache(

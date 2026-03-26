@@ -84,7 +84,7 @@ export default function Navbar() {
           <Image
             src="/nextbazar-logo.svg"
             alt="NextBazar"
-            width={220}
+            width={180}
             height={55}
             priority
             className="hidden md:block h-10.5 w-auto"
@@ -127,7 +127,7 @@ export default function Navbar() {
           {/* Messages — logged-in only */}
           {userId && (
             <Link
-              href="/messages"
+              href="/dashboard/messages"
               className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
             >
               <MessageCircle className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function Navbar() {
           {/* Saved — logged-in only */}
           {userId && (
             <Link
-              href="/saved"
+              href="/dashboard/saved"
               className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
             >
               <Bookmark className="w-4 h-4" />

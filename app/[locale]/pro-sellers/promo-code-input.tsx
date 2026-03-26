@@ -44,7 +44,7 @@ export default function PromoCodeInput() {
 
       // Redirect to shop setup after a brief moment
       setTimeout(() => {
-        router.push("/dashboard/shop?setup=true");
+        router.push("/shop-onboarding");
         router.refresh();
       }, 1500);
     } catch {
@@ -57,7 +57,7 @@ export default function PromoCodeInput() {
     return (
       <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 inline-flex items-center gap-2.5 text-emerald-700 font-medium">
         <Gift className="w-5 h-5" />
-        Pro Seller activated — redirecting to your shop...
+        Pro Seller activated — setting up your shop...
       </div>
     );
   }
@@ -77,7 +77,7 @@ export default function PromoCodeInput() {
             setPromoError("");
           }}
           onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
-          placeholder="e.g. NEXTPRO-A1B2C3"
+          placeholder="Enter promo code"
           className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 font-mono tracking-wider"
           disabled={promoLoading}
         />

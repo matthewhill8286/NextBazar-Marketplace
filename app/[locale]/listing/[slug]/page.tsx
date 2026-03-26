@@ -1,6 +1,7 @@
 import {
   getListingBySlugCached,
   getRelatedListingsCached,
+  getShopAccentColorCached,
 } from "@/lib/supabase/queries";
 import ListingDetail from "./listing-detail";
 
@@ -14,16 +15,22 @@ export default async function ListingPage(
 
   const listing = await getListingBySlugCached(slug);
 
-  // Fetch related listings in parallel only when listing is found
-  const related = listing
-    ? await getRelatedListingsCached(listing.category_id, listing.id)
-    : [];
+  // Fetch related listings + shop accent color in parallel
+  const [related, accentColor] = await Promise.all([
+    listing
+      ? getRelatedListingsCached(listing.category_id, listing.id)
+      : Promise.resolve([]),
+    listing?.profiles && !Array.isArray(listing.profiles) && listing.profiles.is_pro_seller
+      ? getShopAccentColorCached(listing.user_id)
+      : Promise.resolve(null),
+  ]);
 
   return (
     <ListingDetail
       slug={slug}
       initialListing={listing}
       initialRelated={related}
+      initialAccentColor={accentColor}
     />
   );
 }

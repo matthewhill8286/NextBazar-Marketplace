@@ -1,0 +1,107 @@
+"use client";
+
+import { Loader2, Store } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import ShopOnboardingWizard from "./shop-onboarding-wizard";
+
+interface Props {
+  stripeSessionId: string;
+  userId: string;
+  userName: string;
+  alreadyOnboarded: boolean;
+  shopName: string;
+  shopSlug: string;
+}
+
+/**
+ * Wraps the onboarding wizard with a Stripe session verification step.
+ * When users land here after Stripe Checkout, we need to verify their
+ * payment before showing the wizard.
+ */
+export default function ShopOnboardingClient({
+  stripeSessionId,
+  ...wizardProps
+}: Props) {
+  const router = useRouter();
+  const [verifying, setVerifying] = useState(true);
+  const [verified, setVerified] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function verify() {
+      try {
+        const res = await fetch("/api/dealer/verify-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: stripeSessionId }),
+        });
+        const data = await res.json();
+
+        if (
+          data.status === "activated" ||
+          data.status === "already_active"
+        ) {
+          setVerified(true);
+          toast.success("Payment confirmed!", {
+            description: "Let's set up your shop.",
+          });
+        } else {
+          setError(data.error || "Payment verification failed");
+        }
+      } catch {
+        setError("Network error — could not verify your payment.");
+      } finally {
+        setVerifying(false);
+      }
+    }
+    verify();
+  }, [stripeSessionId]);
+
+  if (verifying) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 via-white to-white flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto">
+            <Store className="w-8 h-8 text-indigo-600" />
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span className="text-sm font-medium">
+              Confirming your payment...
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50/50 via-white to-white flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-md px-4">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto">
+            <Store className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900">
+            Something went wrong
+          </h2>
+          <p className="text-sm text-gray-500">{error}</p>
+          <button
+            onClick={() => router.push("/pro-sellers")}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors"
+          >
+            Back to Pro Sellers
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (verified) {
+    return <ShopOnboardingWizard {...wizardProps} />;
+  }
+
+  return null;
+}

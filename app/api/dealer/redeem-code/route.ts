@@ -2,7 +2,9 @@ import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Service role — bypasses RLS on promo_codes table
+const MASTER_PROMO_CODE = "NEXTBAZAR";
+
+// Service role — bypasses RLS
 const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -17,6 +19,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Promo code is required" },
         { status: 400 },
+      );
+    }
+
+    // Validate the promo code (case-insensitive)
+    const normalised = code.trim().toUpperCase();
+
+    // ── TEMP DEBUG — remove after confirming fix ──
+    console.log("REDEEM DEBUG:", JSON.stringify({
+      raw: code,
+      normalised,
+      expected: MASTER_PROMO_CODE,
+      rawLen: code.length,
+      normLen: normalised.length,
+      expLen: MASTER_PROMO_CODE.length,
+      match: normalised === MASTER_PROMO_CODE,
+      charCodes: [...normalised].map((c) => c.charCodeAt(0)),
+    }));
+
+    if (normalised !== MASTER_PROMO_CODE) {
+      return NextResponse.json(
+        {
+          error: "Invalid promo code",
+          // TEMP: include debug in response so we can see in network tab
+          _debug: {
+            received: normalised,
+            expected: MASTER_PROMO_CODE,
+            rawLen: code.length,
+            normLen: normalised.length,
+            match: normalised === MASTER_PROMO_CODE,
+          },
+        },
+        { status: 404 },
       );
     }
 
@@ -44,46 +78,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Look up the code (case-insensitive)
-    const normalised = code.trim().toUpperCase();
-    const { data: promoCode, error: lookupError } = await supabaseAdmin
-      .from("promo_codes")
-      .select("id, code, redeemed_by")
-      .eq("code", normalised)
-      .single();
-
-    if (lookupError || !promoCode) {
-      return NextResponse.json(
-        { error: "Invalid promo code" },
-        { status: 404 },
-      );
-    }
-
-    if (promoCode.redeemed_by) {
-      return NextResponse.json(
-        { error: "This code has already been used" },
-        { status: 410 },
-      );
-    }
-
-    // ── Redeem: mark code as used ──────────────────────────────────────────
-    const { error: redeemError } = await supabaseAdmin
-      .from("promo_codes")
-      .update({
-        redeemed_by: user.id,
-        redeemed_at: new Date().toISOString(),
-      })
-      .eq("id", promoCode.id)
-      .is("redeemed_by", null); // Prevent race condition
-
-    if (redeemError) {
-      console.error("Failed to redeem promo code:", redeemError);
-      return NextResponse.json(
-        { error: "Failed to redeem code" },
-        { status: 500 },
-      );
-    }
-
     // ── Activate Pro Seller for 1 month ────────────────────────────────────
     const now = new Date();
     const expiresAt = new Date(now);
@@ -99,7 +93,6 @@ export async function POST(request: NextRequest) {
           plan_status: "active",
           plan_started_at: now.toISOString(),
           plan_expires_at: expiresAt.toISOString(),
-          // No Stripe IDs — this is a free promo activation
         },
         { onConflict: "user_id" },
       );

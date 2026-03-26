@@ -1,6 +1,15 @@
 "use client";
 
-import { CreditCard, ExternalLink, Store } from "lucide-react";
+import {
+  AlertTriangle,
+  CreditCard,
+  ExternalLink,
+  Loader2,
+  RefreshCw,
+  Store,
+  StoreIcon,
+  XCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -72,6 +81,9 @@ export default function ShopPage() {
   const [bannerUploading, setBannerUploading] = useState(false);
   const [dealerPrice, setDealerPrice] = useState("€25");
   const [dealerInterval, setDealerInterval] = useState("month");
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const [reopening, setReopening] = useState(false);
 
   // Branding form state
   const [branding, setBranding] = useState<BrandingState>({
@@ -165,6 +177,7 @@ export default function ShopPage() {
   }, [searchParams, shop?.plan_status, router]);
 
   const isActive = shop?.plan_status === "active";
+  const isClosed = shop?.plan_status === "closed";
 
   // ─── Actions ────────────────────────────────────────────────────────
   async function handleSubscribe() {
@@ -290,10 +303,128 @@ export default function ShopPage() {
     toast.success("Banner removed");
   }
 
+  // ─── Close / reopen shop ──────────────────────────────────────────
+  async function handleCloseShop() {
+    setClosing(true);
+    try {
+      const res = await fetch("/api/dealer/close-shop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error("Failed to close shop", {
+          description: data.error || "Please try again.",
+        });
+        setClosing(false);
+        return;
+      }
+
+      toast.success("Shop closed", {
+        description:
+          "Your shop and listings are no longer visible to buyers.",
+      });
+      setShowCloseConfirm(false);
+      router.refresh();
+      // Reload to reflect new state
+      window.location.reload();
+    } catch {
+      toast.error("Network error", {
+        description: "Could not reach the server. Please try again.",
+      });
+      setClosing(false);
+    }
+  }
+
+  async function handleReopenShop() {
+    setReopening(true);
+    try {
+      const res = await fetch("/api/dealer/reopen-shop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+
+      if (res.status === 402 && data.requiresSubscription) {
+        // Need to re-subscribe via Stripe
+        toast.info("Subscription required", {
+          description: "Redirecting you to subscribe again...",
+        });
+        setReopening(false);
+        handleSubscribe();
+        return;
+      }
+
+      if (!res.ok) {
+        toast.error("Failed to reopen shop", {
+          description: data.error || "Please try again.",
+        });
+        setReopening(false);
+        return;
+      }
+
+      toast.success("Shop reopened!", {
+        description: "Your shop is back online.",
+      });
+      router.refresh();
+      window.location.reload();
+    } catch {
+      toast.error("Network error", {
+        description: "Could not reach the server. Please try again.",
+      });
+      setReopening(false);
+    }
+  }
+
   // ─── Conditional renders ───────────────────────────────────────────
   if (authLoading || loading) return <ShopSkeleton />;
 
   if (verifying) return <VerifyingSpinner />;
+
+  // ─── Closed shop — show reopen option ─────────────────────────────
+  if (isClosed) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-gray-900">My Shop</h1>
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-sm">
+          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <StoreIcon className="w-8 h-8 text-gray-400" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            Your shop is closed
+          </h2>
+          <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
+            Your shop and listings are no longer visible to buyers. You can
+            reopen your shop at any time to pick up where you left off.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={handleReopenShop}
+              disabled={reopening}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-sm shadow-indigo-200"
+            >
+              {reopening ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              Reopen My Shop
+            </button>
+          </div>
+
+          {shop?.stripe_subscription_id && (
+            <p className="text-xs text-gray-400 mt-4">
+              Your Stripe subscription was cancelled. Reopening will require a
+              new subscription.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (!isActive) {
     return (
@@ -367,6 +498,77 @@ export default function ShopPage() {
         onBannerRemove={handleBannerRemove}
         onSave={handleSaveBranding}
       />
+
+      {/* ── Close Shop — danger zone ────────────────────────────────── */}
+      <div className="border border-red-100 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 bg-red-50/50 border-b border-red-100">
+          <h3 className="text-sm font-semibold text-red-800 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            Danger Zone
+          </h3>
+        </div>
+        <div className="px-6 py-5 bg-white">
+          {!showCloseConfirm ? (
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  Close your shop
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Your shop page and all active listings will be hidden from
+                  buyers. You can reopen at any time.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCloseConfirm(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors shrink-0"
+              >
+                <XCircle className="w-3.5 h-3.5" />
+                Close Shop
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+                <p className="text-sm font-semibold text-red-800 mb-1">
+                  Are you sure you want to close your shop?
+                </p>
+                <ul className="text-xs text-red-700 space-y-1 mt-2">
+                  <li>• Your shop page will no longer be visible to buyers</li>
+                  <li>• All your active listings will be set to inactive</li>
+                  {shop?.stripe_subscription_id && (
+                    <li>• Your Stripe subscription will be cancelled</li>
+                  )}
+                  <li>
+                    • You can reopen your shop later — your branding and
+                    settings will be preserved
+                  </li>
+                </ul>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleCloseShop}
+                  disabled={closing}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50"
+                >
+                  {closing ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <XCircle className="w-3.5 h-3.5" />
+                  )}
+                  Yes, Close My Shop
+                </button>
+                <button
+                  onClick={() => setShowCloseConfirm(false)}
+                  className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

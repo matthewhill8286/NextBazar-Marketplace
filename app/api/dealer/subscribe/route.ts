@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
       customer: customerId,
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${origin}/dashboard/shop?setup=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/dashboard/shop`,
+      success_url: `${origin}/shop-onboarding?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/pro-sellers`,
       metadata: {
         user_id: user.id,
         type: "dealer_subscription",

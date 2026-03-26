@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, LogOut, Settings, Store } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -109,7 +109,7 @@ export default function UserMenu() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2) || user.email[0].toUpperCase();
+      .slice(0, 2) || user.email[0]?.toUpperCase();
 
   return (
     <div className="relative" ref={menuRef}>
@@ -149,16 +149,6 @@ export default function UserMenu() {
               <LayoutDashboard className="w-4 h-4 text-gray-400" />
               {tDash("overview")}
             </Link>
-            {FEATURE_FLAGS.DEALERS && user.is_pro_seller && (
-              <Link
-                href="/dashboard/shop"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <Store className="w-4 h-4 text-gray-400" />
-                My Shop
-              </Link>
-            )}
             <Link
               href="/dashboard/settings"
               onClick={() => setOpen(false)}

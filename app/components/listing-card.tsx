@@ -41,12 +41,17 @@ type ListingCardProps = {
     locations?: LocLike | null;
     profiles?: { is_pro_seller?: boolean } | null;
   };
+  /** Optional shop brand colour — used on shop pages to tint interactive elements. */
+  accentColor?: string;
   userId?: string | null;
   isSaved?: boolean;
   onUnsave?: () => void;
 };
 
-export default function ListingCard({ listing }: ListingCardProps) {
+export default function ListingCard({
+  listing,
+  accentColor,
+}: ListingCardProps) {
   const t = useTranslations("listing");
   const { add, remove, isCompared, isFull } = useCompare();
 
@@ -78,10 +83,16 @@ export default function ListingCard({ listing }: ListingCardProps) {
     return key ? t(key) : condition.replace(/_/g, " ");
   }
 
+  // CSS custom property lets us use the accent colour in hover states
+  const cardStyle = accentColor
+    ? ({ "--card-accent": accentColor } as React.CSSProperties)
+    : undefined;
+
   return (
     <Link
       href={`/listing/${listing.slug}`}
       className="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-gray-200/80 hover:border-gray-200 hover:-translate-y-1 block"
+      style={cardStyle}
     >
       {/* Image */}
       <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
@@ -181,12 +192,27 @@ export default function ListingCard({ listing }: ListingCardProps) {
 
       {/* Body */}
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 group-hover:text-indigo-600 transition-colors duration-150">
+        <h3
+          className={`font-semibold text-gray-900 text-sm leading-snug line-clamp-2 mb-2 transition-colors duration-150 ${
+            accentColor
+              ? "group-hover:[color:var(--card-accent)]"
+              : "group-hover:text-indigo-600"
+          }`}
+        >
           {listing.title}
         </h3>
 
         {FEATURE_FLAGS.DEALERS && listing.profiles?.is_pro_seller && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full mb-1">
+          <span
+            className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full mb-1 ${
+              accentColor ? "" : "bg-purple-50 text-purple-700"
+            }`}
+            style={
+              accentColor
+                ? { backgroundColor: `${accentColor}14`, color: accentColor }
+                : undefined
+            }
+          >
             <Store className="w-2.5 h-2.5" /> Pro Seller
           </span>
         )}
@@ -225,6 +251,14 @@ export default function ListingCard({ listing }: ListingCardProps) {
       {/* Red accent stripe for urgent listings */}
       {listing.is_urgent && !listing.is_promoted && (
         <div className="absolute left-0 bottom-0 right-0 h-0.5 bg-linear-to-r from-red-400 via-rose-500 to-red-400" />
+      )}
+
+      {/* Shop brand accent stripe — shown when not featured/urgent */}
+      {accentColor && !listing.is_promoted && !listing.is_urgent && (
+        <div
+          className="absolute left-0 bottom-0 right-0 h-0.5"
+          style={{ backgroundColor: accentColor }}
+        />
       )}
     </Link>
   );

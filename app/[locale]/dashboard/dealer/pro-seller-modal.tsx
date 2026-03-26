@@ -65,7 +65,7 @@ export default function ProSellerModal({
 
       // Redirect to shop setup after a brief moment
       setTimeout(() => {
-        router.push("/dashboard/shop?setup=true");
+        router.push("/shop-onboarding");
         router.refresh();
       }, 1500);
     } catch {
@@ -136,7 +136,7 @@ export default function ProSellerModal({
           {promoSuccess ? (
             <div className="bg-emerald-500/20 border border-emerald-400/30 rounded-xl px-5 py-4 inline-flex items-center gap-2.5 text-emerald-200 font-medium">
               <Gift className="w-5 h-5" />
-              Pro Seller activated — redirecting to your shop...
+              Pro Seller activated — setting up your shop...
             </div>
           ) : (
             <>
@@ -155,7 +155,7 @@ export default function ProSellerModal({
                       setPromoError("");
                     }}
                     onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
-                    placeholder="e.g. NEXTPRO-A1B2C3"
+                    placeholder="Enter promo code"
                     className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/30 font-mono tracking-wider"
                     disabled={promoLoading}
                   />

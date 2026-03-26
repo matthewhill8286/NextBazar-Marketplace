@@ -9,7 +9,7 @@ import {
   Palette,
   Save,
   ShieldCheck,
-  Sparkles,
+  Sparkles, Store,
   Upload,
   X,
 } from "lucide-react";
@@ -235,7 +235,7 @@ export default function BrandingForm({
         />
       </div>
 
-      {/* ── Live shop preview ─────────────────────────────────────────── */}
+      {/* ── Live shop preview — mirrors /shop/[slug] ──────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="block text-sm font-medium text-gray-700">
@@ -252,104 +252,157 @@ export default function BrandingForm({
             </Link>
           )}
         </div>
-        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
-          {/* Banner area */}
-          <div
-            className="relative h-32 sm:h-36 w-full overflow-hidden"
-            style={{
-              backgroundImage: bannerUrl
-                ? `url(${bannerUrl})`
-                : `linear-gradient(135deg, ${accentColor} 0%, ${darkenHex(accentColor)} 50%, ${darkenHex(darkenHex(accentColor))} 100%)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            {bannerUrl && (
-              <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
-            )}
-            {!bannerUrl && (
-              <div className="absolute inset-0 opacity-10">
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%)",
-                  }}
-                />
-              </div>
-            )}
+        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm">
+          {/* Hero banner */}
+          <div className="relative">
+            <div
+              className="h-36 sm:h-44 w-full overflow-hidden"
+              style={{
+                backgroundImage: bannerUrl
+                  ? `url(${bannerUrl})`
+                  : `linear-gradient(135deg, ${accentColor} 0%, ${darkenHex(accentColor)} 50%, ${darkenHex(darkenHex(accentColor))} 100%)`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            >
+              {bannerUrl && (
+                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
+              )}
+              {!bannerUrl && (
+                <div className="absolute inset-0 opacity-10">
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%)",
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Shop info card overlapping the banner */}
-          <div className="px-5 pb-5 -mt-10 relative z-10">
-            <div className="flex items-end gap-3 mb-3">
-              {/* Logo / initials */}
-              <div
-                className="w-16 h-16 rounded-xl overflow-hidden border-[3px] border-white shadow-md shrink-0"
-                style={{
-                  background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
-                }}
-              >
-                <div className="w-full h-full flex items-center justify-center text-white text-lg font-bold">
-                  {shopName
-                    ? shopName
-                        .split(" ")
-                        .slice(0, 2)
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                    : "?"}
+          {/* Shop info card */}
+          <div className="mx-3 -mt-10 relative z-10">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="p-5">
+                <div className="flex items-start gap-4">
+                  {/* Logo */}
+                  <div
+                    className="w-16 h-16 rounded-2xl overflow-hidden border-4 border-white shadow-md shrink-0 -mt-10"
+                    style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+                  >
+                    <div
+                      className="w-full h-full flex items-center justify-center text-white text-xl font-bold"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
+                      }}
+                    >
+                      {shopName
+                        ? shopName
+                            .split(" ")
+                            .slice(0, 2)
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                        : "?"}
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0 pt-0.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 mb-2">
+                      <h3 className="text-lg font-bold text-gray-900 truncate">
+                        {shopName || "Your Shop"}
+                      </h3>
+                      <span
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-white text-[10px] font-semibold w-fit"
+                        style={{
+                          background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
+                        }}
+                      >
+                        <ShieldCheck className="w-3 h-3" />
+                        Verified Pro Seller
+                      </span>
+                    </div>
+
+                    {description ? (
+                      <p className="text-sm text-gray-600 leading-relaxed mb-3 line-clamp-2">
+                        {description}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-gray-300 italic mb-3">
+                        Add a description to tell buyers about your business...
+                      </p>
+                    )}
+
+                    {/* Meta chips */}
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                      <span className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-full">
+                        /shop/{slug || "..."}
+                      </span>
+                      {website && (
+                        <span className="p-1.5 rounded-lg bg-gray-50">
+                          <Globe className="w-3.5 h-3.5 text-gray-400" />
+                        </span>
+                      )}
+                      {facebook && (
+                        <span className="p-1.5 rounded-lg bg-gray-50">
+                          <Facebook className="w-3.5 h-3.5 text-gray-400" />
+                        </span>
+                      )}
+                      {instagram && (
+                        <span className="p-1.5 rounded-lg bg-gray-50">
+                          <Instagram className="w-3.5 h-3.5 text-gray-400" />
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Name + badge */}
-              <div className="flex-1 min-w-0 pb-0.5">
-                <h3 className="text-base font-bold text-gray-900 truncate leading-tight">
-                  {shopName || "Your Shop"}
-                </h3>
-                <span
-                  className="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-white text-[10px] font-semibold"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
-                  }}
-                >
-                  <ShieldCheck className="w-2.5 h-2.5" />
-                  Verified Pro Seller
-                </span>
+              {/* Stats bar */}
+              <div className="border-t border-gray-100 bg-gray-50/50">
+                <div className="grid grid-cols-3 divide-x divide-gray-100">
+                  <div className="text-center py-3 px-3">
+                    <div className="text-lg font-bold text-gray-900">0</div>
+                    <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                      Active Listings
+                    </div>
+                  </div>
+                  <div className="text-center py-3 px-3">
+                    <div className="text-lg font-bold text-gray-900">0</div>
+                    <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                      Total Views
+                    </div>
+                  </div>
+                  <div className="text-center py-3 px-3">
+                    <div className="text-lg font-bold text-gray-900 flex items-center justify-center gap-1">
+                      <ShieldCheck
+                        className="w-4 h-4"
+                        style={{ color: accentColor }}
+                      />
+                      PRO
+                    </div>
+                    <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                      Seller Status
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Description */}
-            {description ? (
-              <p className="text-xs text-gray-500 line-clamp-2 mb-3">
-                {description}
+          {/* Empty listings area */}
+          <div className="mx-3 mt-3 mb-3">
+            <div className="bg-white rounded-2xl border border-gray-100 py-8 text-center">
+              <Store className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-gray-900 mb-1">
+                No listings yet
               </p>
-            ) : (
-              <p className="text-xs text-gray-300 italic mb-3">
-                Add a description to tell buyers about your business...
+              <p className="text-xs text-gray-500">
+                Listings will appear here once posted.
               </p>
-            )}
-
-            {/* Meta row — URL + social icons */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-[11px] text-gray-400 font-mono bg-gray-50 px-2 py-0.5 rounded">
-                /shop/{slug || "..."}
-              </span>
-
-              {website && <Globe className="w-3.5 h-3.5 text-gray-400" />}
-              {facebook && <Facebook className="w-3.5 h-3.5 text-gray-400" />}
-              {instagram && <Instagram className="w-3.5 h-3.5 text-gray-400" />}
-            </div>
-
-            {/* Fake listing placeholders */}
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="rounded-lg bg-gray-100 aspect-square animate-pulse"
-                  style={{ animationDelay: `${i * 150}ms` }}
-                />
-              ))}
             </div>
           </div>
         </div>
