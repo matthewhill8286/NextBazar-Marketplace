@@ -50,7 +50,7 @@ const LISTING_SELECT = `
   categories(name, slug, icon),
   subcategories(name, slug),
   locations(name, slug),
-  profiles!listings_user_id_fkey(id, display_name, avatar_url, verified, rating, total_reviews, is_dealer, created_at, whatsapp_number, telegram_username),
+  profiles!listings_user_id_fkey(id, display_name, avatar_url, verified, rating, total_reviews, is_pro_seller, created_at, whatsapp_number, telegram_username),
   listing_images(id, url, thumbnail_url, sort_order)
 `;
 
@@ -358,7 +358,7 @@ export default function ListingDetail({
       }
 
       // If seller is a Pro Seller, fetch their shop slug for linking
-      if (FEATURE_FLAGS.DEALERS && data.profiles?.is_dealer) {
+      if (FEATURE_FLAGS.DEALERS && data.profiles?.is_pro_seller) {
         supabase
           .from("dealer_shops")
           .select("slug")
@@ -858,7 +858,8 @@ export default function ListingDetail({
                       key: "engine_size",
                       label: "Engine",
                       icon: Gauge,
-                      format: (v) => `${v}L`,
+                      format: (v) =>
+                        String(v).endsWith("L") ? String(v) : `${v}L`,
                     },
                     { key: "doors", label: "Doors", icon: Car },
                     {
@@ -980,7 +981,7 @@ export default function ListingDetail({
                       {profile?.verified && (
                         <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
                       )}
-                      {FEATURE_FLAGS.DEALERS && profile?.is_dealer && (
+                      {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
                         <span className="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full shrink-0">
                           PRO
                         </span>

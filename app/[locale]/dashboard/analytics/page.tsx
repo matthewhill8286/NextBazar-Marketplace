@@ -255,7 +255,7 @@ export default function AnalyticsPage() {
       const [{ data: profile }, { data: shop }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("is_dealer")
+          .select("is_pro_seller")
           .eq("id", authUserId!)
           .single(),
         supabase
@@ -265,7 +265,7 @@ export default function AnalyticsPage() {
           .single(),
       ]);
 
-      const isPro = !!profile?.is_dealer && shop?.plan_status === "active";
+      const isPro = !!profile?.is_pro_seller && shop?.plan_status === "active";
       setIsProSeller(isPro);
 
       // Fetch pricing for CTA

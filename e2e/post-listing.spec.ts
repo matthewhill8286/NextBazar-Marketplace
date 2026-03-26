@@ -26,7 +26,7 @@ test.describe("Post listing — authenticated", () => {
           verified: false,
           rating: 0,
           total_reviews: 0,
-          is_dealer: false,
+          is_pro_seller: false,
           created_at: "2024-01-01T00:00:00Z",
           whatsapp_number: null,
           telegram_username: null,

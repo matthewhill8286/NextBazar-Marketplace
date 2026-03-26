@@ -31,7 +31,7 @@ type ShopProfile = {
   display_name: string | null;
   avatar_url: string | null;
   verified: boolean;
-  is_dealer: boolean;
+  is_pro_seller: boolean;
   created_at: string;
 };
 

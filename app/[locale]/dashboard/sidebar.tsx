@@ -24,7 +24,7 @@ type SidebarProps = {
     email: string;
     avatar_url: string | null;
     verified: boolean;
-    is_dealer: boolean;
+    is_pro_seller: boolean;
   };
   isAdmin?: boolean;
 };
@@ -82,7 +82,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               )}
             </div>
             <p className="text-xs text-gray-500 truncate">{profile.email}</p>
-            {profile.is_dealer && (
+            {profile.is_pro_seller && (
               <span className="inline-block mt-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
                 Pro Seller
               </span>
@@ -121,7 +121,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
 
         {/* My Shop — Pro Sellers get a direct link, others see upgrade CTA */}
         {FEATURE_FLAGS.DEALERS &&
-          (profile.is_dealer ? (
+          (profile.is_pro_seller ? (
             <Link
               href="/dashboard/shop"
               className={clsx(
@@ -136,7 +136,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
             </Link>
           ) : (
             <Link
-              href="/dealers"
+              href="/pro-sellers"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
                 "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",

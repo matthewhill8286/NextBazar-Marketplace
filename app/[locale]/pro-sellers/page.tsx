@@ -16,6 +16,7 @@ import { PRO_SELLER_FEATURE_GROUPS } from "@/app/[locale]/dashboard/dealer/pro-s
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { getClientPricing } from "@/lib/stripe";
 import DealersSubscribeButton from "./subscribe-button";
+import PromoCodeInput from "./promo-code-input";
 
 export const metadata: Metadata = {
   title: "Pro Seller — NextBazar",
@@ -128,13 +129,15 @@ export default async function DealersPage() {
             <DealersSubscribeButton
               label={`Subscribe — ${dealerPrice}/${dealerInterval}`}
             />
-            <a
-              href="/auth/signup"
-              className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-7 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-            >
-              Start for free
-            </a>
           </div>
+
+          {/* Promo code section */}
+          <div className="flex items-center gap-3 my-6 max-w-md mx-auto">
+            <div className="flex-1 border-t border-gray-200" />
+            <span className="text-gray-400 text-xs font-medium">or</span>
+            <div className="flex-1 border-t border-gray-200" />
+          </div>
+          <PromoCodeInput />
         </div>
       </section>
 

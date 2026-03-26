@@ -78,7 +78,7 @@ export default function AdminReportsPage() {
       // Replace with your actual admin email(s) or a proper role check
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_dealer")
+        .select("is_pro_seller")
         .eq("id", user.id)
         .single();
 

@@ -49,6 +49,14 @@ vi.mock("next/image", () => ({
     React.createElement("img", props),
 }));
 
+vi.mock("@/lib/hooks/use-realtime-table", () => ({
+  useRealtimeTable: vi.fn(),
+}));
+
+vi.mock("sonner", () => ({
+  toast: { custom: vi.fn(), dismiss: vi.fn(), success: vi.fn(), error: vi.fn() },
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     href,
@@ -162,6 +170,30 @@ async function expand(waitFor_text: string | RegExp = /Withdraw offer/i) {
   );
 }
 
+/**
+ * Click an action button and then confirm in the ConfirmDialog.
+ * Actions now go through a ConfirmDialog — button click opens the dialog,
+ * then we click the confirm button inside it.
+ *
+ * dialogTitle is used to wait for the dialog to appear; confirmLabel targets
+ * the actual confirm button inside the dialog.
+ */
+async function clickAndConfirm(
+  actionText: string | RegExp,
+  dialogTitle: string | RegExp,
+  confirmLabel: string | RegExp,
+) {
+  fireEvent.click(screen.getByText(actionText));
+  // Wait for confirm dialog to appear
+  await waitFor(() =>
+    expect(screen.getByText(dialogTitle)).toBeInTheDocument(),
+  );
+  // The confirm button is inside the dialog; grab all matches and pick the last one
+  // (the first might be the original action button, the second is the dialog's confirm)
+  const buttons = screen.getAllByText(confirmLabel);
+  fireEvent.click(buttons[buttons.length - 1]);
+}
+
 // ── Setup ─────────────────────────────────────────────────────────────────
 
 beforeEach(() => {
@@ -187,7 +219,7 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
   it("sends status=withdrawn to Supabase on click", async () => {
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() =>
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ status: "withdrawn" }),
@@ -198,14 +230,14 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
   it("calls router.refresh() after a successful withdraw", async () => {
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });
 
   it("calls onUpdate with the new status after success", async () => {
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() =>
       expect(onUpdate).toHaveBeenCalledWith(
         "offer-1",
@@ -218,7 +250,7 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
     mockUpdateEq.mockResolvedValue({ error: { message: "RLS violation" } });
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() =>
       expect(screen.getByText(/Couldn't update offer/i)).toBeInTheDocument(),
     );
@@ -228,7 +260,7 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
     mockUpdateEq.mockResolvedValue({ error: { message: "RLS violation" } });
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() =>
       expect(screen.getByText(/Couldn't update offer/i)).toBeInTheDocument(),
     );
@@ -238,13 +270,10 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
   });
 
   it("(bug regression) clears loading and shows error when Supabase throws", async () => {
-    // Before the fix: the lack of try/catch/finally in respond() meant that
-    // a thrown exception skipped setLoading(null), permanently leaving
-    // disabled={!!loading} === true and all buttons unresponsive.
     mockUpdateEq.mockRejectedValue(new Error("network failure"));
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() =>
       expect(screen.getByText(/Couldn't update offer/i)).toBeInTheDocument(),
     );
@@ -263,7 +292,8 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
     );
     renderBuyer();
     await expand();
-    fireEvent.click(screen.getByText(/Withdraw offer/i));
+    await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
+    // The Withdraw confirm button in the dialog should be in loading state
     await waitFor(() =>
       expect(
         screen.getByText(/Withdraw offer/i).closest("button"),
@@ -290,7 +320,7 @@ describe("BuyerOfferCard — accept / decline counter offer", () => {
   it("sends status=accepted when Accept counter is clicked", async () => {
     renderBuyer(COUNTERED_OFFER);
     await expand();
-    fireEvent.click(screen.getByText(/Accept €175/i));
+    await clickAndConfirm(/Accept €175/i, /Accept this offer/, /^Accept$/);
     await waitFor(() =>
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ status: "accepted" }),
@@ -301,7 +331,7 @@ describe("BuyerOfferCard — accept / decline counter offer", () => {
   it("sends status=declined when Decline is clicked", async () => {
     renderBuyer(COUNTERED_OFFER);
     await expand();
-    fireEvent.click(screen.getByText(/^Decline$/i));
+    await clickAndConfirm(/^Decline$/i, /Decline this offer/, /^Decline$/);
     await waitFor(() =>
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ status: "declined" }),
@@ -313,7 +343,7 @@ describe("BuyerOfferCard — accept / decline counter offer", () => {
     mockUpdateEq.mockRejectedValue(new Error("timeout"));
     renderBuyer(COUNTERED_OFFER);
     await expand();
-    fireEvent.click(screen.getByText(/Accept €175/i));
+    await clickAndConfirm(/Accept €175/i, /Accept this offer/, /^Accept$/);
     await waitFor(() =>
       expect(screen.getByText(/Couldn't update offer/i)).toBeInTheDocument(),
     );
@@ -333,7 +363,7 @@ describe("BuyerOfferCard — accept / decline counter offer", () => {
     );
     renderBuyer(COUNTERED_OFFER);
     await expand();
-    fireEvent.click(screen.getByText(/Accept €175/i));
+    await clickAndConfirm(/Accept €175/i, /Accept this offer/, /^Accept$/);
     await waitFor(() =>
       expect(screen.getByText(/Accept €175/i).closest("button")).toBeDisabled(),
     );
@@ -362,7 +392,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
   it("sends status=accepted when Accept is clicked", async () => {
     renderSeller();
     await expand(/^Accept$/);
-    fireEvent.click(screen.getByText(/^Accept$/));
+    await clickAndConfirm(/^Accept$/, /Accept this offer/, /^Accept$/);
     await waitFor(() =>
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ status: "accepted" }),
@@ -373,7 +403,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
   it("sends status=declined when Decline is clicked", async () => {
     renderSeller();
     await expand(/^Accept$/);
-    fireEvent.click(screen.getByText(/^Decline$/));
+    await clickAndConfirm(/^Decline$/, /Decline this offer/, /^Decline$/);
     await waitFor(() =>
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({ status: "declined" }),
@@ -384,7 +414,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
   it("calls router.refresh() after a successful accept", async () => {
     renderSeller();
     await expand(/^Accept$/);
-    fireEvent.click(screen.getByText(/^Accept$/));
+    await clickAndConfirm(/^Accept$/, /Accept this offer/, /^Accept$/);
     await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });
 
@@ -392,7 +422,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
     mockUpdateEq.mockResolvedValue({ error: { message: "forbidden" } });
     renderSeller();
     await expand(/^Accept$/);
-    fireEvent.click(screen.getByText(/^Decline$/));
+    await clickAndConfirm(/^Decline$/, /Decline this offer/, /^Decline$/);
     await waitFor(() =>
       expect(screen.getByText(/Couldn't update offer/i)).toBeInTheDocument(),
     );
@@ -404,7 +434,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
     mockUpdateEq.mockRejectedValue(new Error("network failure"));
     renderSeller();
     await expand(/^Accept$/);
-    fireEvent.click(screen.getByText(/^Accept$/));
+    await clickAndConfirm(/^Accept$/, /Accept this offer/, /^Accept$/);
     await waitFor(() =>
       expect(screen.getByText(/Couldn't update offer/i)).toBeInTheDocument(),
     );
@@ -422,7 +452,7 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
     );
     renderSeller();
     await expand(/^Accept$/);
-    fireEvent.click(screen.getByText(/^Accept$/));
+    await clickAndConfirm(/^Accept$/, /Accept this offer/, /^Accept$/);
     await waitFor(() =>
       expect(screen.getByText(/^Accept$/).closest("button")).toBeDisabled(),
     );
@@ -445,7 +475,8 @@ describe("SellerOfferCard — accept / decline incoming offer", () => {
     fireEvent.change(screen.getByPlaceholderText(/Optional message/i), {
       target: { value: "How about €180?" },
     });
-    fireEvent.click(screen.getByText(/Send Counter/i));
+    // Click Send Counter in the form — this opens the ConfirmDialog
+    await clickAndConfirm(/Send Counter/i, /Send counter offer/, /Send Counter/);
     await waitFor(() =>
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({

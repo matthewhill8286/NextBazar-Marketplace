@@ -154,7 +154,7 @@ const LISTING_DETAIL_SELECT = `
   categories(name, slug, icon),
   subcategories(name, slug),
   locations(name, slug),
-  profiles!listings_user_id_fkey(id, display_name, avatar_url, verified, rating, total_reviews, is_dealer, created_at, whatsapp_number, telegram_username),
+  profiles!listings_user_id_fkey(id, display_name, avatar_url, verified, rating, total_reviews, is_pro_seller, created_at, whatsapp_number, telegram_username),
   listing_images(id, url, thumbnail_url, sort_order)
 `;
 
@@ -434,7 +434,7 @@ export async function getListingBySlug(slug: string) {
       *,
       category:categories(name, slug, icon),
       location:locations(name, slug),
-      profile:profiles(id, display_name, avatar_url, verified, rating, total_reviews, is_dealer, created_at),
+      profile:profiles(id, display_name, avatar_url, verified, rating, total_reviews, is_pro_seller, created_at),
       images:listing_images(id, url, thumbnail_url, sort_order)
     `,
     )

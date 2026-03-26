@@ -39,7 +39,7 @@ type ListingCardProps = {
     categories?: CatLike | null;
     location?: LocLike | null;
     locations?: LocLike | null;
-    profiles?: { is_dealer?: boolean } | null;
+    profiles?: { is_pro_seller?: boolean } | null;
   };
   userId?: string | null;
   isSaved?: boolean;
@@ -185,7 +185,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
           {listing.title}
         </h3>
 
-        {FEATURE_FLAGS.DEALERS && listing.profiles?.is_dealer && (
+        {FEATURE_FLAGS.DEALERS && listing.profiles?.is_pro_seller && (
           <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full mb-1">
             <Store className="w-2.5 h-2.5" /> Pro Seller
           </span>
