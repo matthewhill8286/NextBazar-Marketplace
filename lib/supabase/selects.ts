@@ -10,5 +10,5 @@ export const CARD_SELECT = `
   view_count, favorite_count, created_at,
   categories(name, slug, icon),
   locations(name, slug),
-  profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews, is_dealer)
+  profiles!listings_user_id_fkey(display_name, avatar_url, verified, rating, total_reviews, is_pro_seller)
 `;

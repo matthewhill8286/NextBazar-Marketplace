@@ -61,7 +61,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E tests
-        run: npm run test:e2e -- --project=chromium
+        run: npx playwright test --project=chromium
         # We run chromium only in CI for speed; mobile-chrome can be added later.
         # The webServer block in playwright.config.ts starts Next.js automatically.
 

@@ -26,7 +26,7 @@ type DealerShop = Tables<"dealer_shops">;
 
 type Props = {
   shop: DealerShop | null;
-  profile: { display_name: string | null; is_dealer: boolean } | null;
+  profile: { display_name: string | null; is_pro_seller: boolean } | null;
   listings: ListingRow[];
   userId: string;
   userEmail: string;

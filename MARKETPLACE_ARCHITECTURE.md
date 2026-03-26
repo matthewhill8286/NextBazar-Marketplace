@@ -36,7 +36,7 @@ create table public.profiles (
   phone text,
   location_id uuid references locations(id),
   bio text,
-  is_dealer boolean default false,
+  is_pro_seller boolean default false,
   rating numeric(3,2) default 0,
   total_reviews int default 0,
   verified boolean default false,

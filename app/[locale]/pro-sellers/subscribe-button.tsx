@@ -22,7 +22,7 @@ export default function DealersSubscribeButton({
   async function handleClick() {
     // If not logged in, send to signup first
     if (!userId) {
-      router.push("/auth/signup?redirect=/dealers");
+      router.push("/auth/signup?redirect=/pro-sellers");
       return;
     }
 

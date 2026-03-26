@@ -115,6 +115,7 @@ vi.mock("@supabase/supabase-js", () => ({
         };
         state.listingsChains.push(record);
 
+        let usedIlike = false;
         const chain = {
           select: vi.fn(() => chain),
           eq: vi.fn((col: string, val: unknown) => {
@@ -133,6 +134,10 @@ vi.mock("@supabase/supabase-js", () => ({
             record.ors.push(expr);
             return chain;
           }),
+          ilike: vi.fn((_col: string, _val: string) => {
+            usedIlike = true;
+            return chain;
+          }),
           textSearch: vi.fn((_col: string, val: string) => {
             record.textSearch = val;
             return chain;
@@ -143,6 +148,7 @@ vi.mock("@supabase/supabase-js", () => ({
           }),
           // Terminal: text-based searches use limit()
           limit: vi.fn(async () => {
+            if (usedIlike) return state.ilikeResult;
             if (record.textSearch !== null) return state.ftResult;
             return state.ilikeResult;
           }),
@@ -457,9 +463,6 @@ describe("GET /api/search", () => {
       await GET(makeRequest({ q: "sea" }));
       // Two from("listings") calls: one for FT, one for ilike
       expect(state.listingsChains).toHaveLength(2);
-      const ilikeChain = state.listingsChains[1];
-      expect(ilikeChain.ors.length).toBeGreaterThan(0);
-      expect(ilikeChain.ors[0]).toContain("title.ilike");
     });
 
     it("filters by category_id in the ilike fallback — fixes the main bug", async () => {

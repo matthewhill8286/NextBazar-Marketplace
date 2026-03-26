@@ -38,7 +38,7 @@ export type CardProfileJoin = Pick<
   | "verified"
   | "rating"
   | "total_reviews"
-  | "is_dealer"
+  | "is_pro_seller"
 >;
 
 /** profiles join shape used in listing detail queries (fuller set of fields) */
@@ -50,7 +50,7 @@ export type DetailProfileJoin = Pick<
   | "verified"
   | "rating"
   | "total_reviews"
-  | "is_dealer"
+  | "is_pro_seller"
   | "created_at"
   | "whatsapp_number"
   | "telegram_username"

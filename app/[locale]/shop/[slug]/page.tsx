@@ -84,7 +84,7 @@ export default async function ShopPage(props: PageProps) {
 
     supabase
       .from("profiles")
-      .select("id, display_name, avatar_url, verified, is_dealer, created_at")
+      .select("id, display_name, avatar_url, verified, is_pro_seller, created_at")
       .eq("id", shop.user_id)
       .single(),
   ]);
@@ -100,7 +100,7 @@ export default async function ShopPage(props: PageProps) {
               display_name: profile.display_name,
               avatar_url: profile.avatar_url,
               verified: profile.verified,
-              is_dealer: profile.is_dealer,
+              is_pro_seller: profile.is_pro_seller,
               created_at: profile.created_at,
             }
           : null

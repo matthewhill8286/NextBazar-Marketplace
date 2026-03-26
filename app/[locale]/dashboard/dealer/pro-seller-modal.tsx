@@ -1,6 +1,16 @@
 "use client";
 
-import { Check, CreditCard, Crown, Loader2, X } from "lucide-react";
+import {
+  Check,
+  CreditCard,
+  Crown,
+  Gift,
+  Loader2,
+  Ticket,
+  X,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { PRO_SELLER_FEATURES } from "./pro-seller-features";
 
 type Props = {
@@ -24,6 +34,46 @@ export default function ProSellerModal({
   heading = "Become a Pro Seller",
   subheading = "Everything you need to grow your business on NextBazar.",
 }: Props) {
+  const router = useRouter();
+  const [showPromo, setShowPromo] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [promoError, setPromoError] = useState("");
+  const [promoSuccess, setPromoSuccess] = useState(false);
+
+  async function handleRedeem() {
+    if (!promoCode.trim()) return;
+    setPromoLoading(true);
+    setPromoError("");
+
+    try {
+      const res = await fetch("/api/dealer/redeem-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoCode.trim() }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPromoError(data.error || "Something went wrong");
+        setPromoLoading(false);
+        return;
+      }
+
+      setPromoSuccess(true);
+      setPromoLoading(false);
+
+      // Redirect to shop setup after a brief moment
+      setTimeout(() => {
+        router.push("/dashboard/shop?setup=true");
+        router.refresh();
+      }, 1500);
+    } catch {
+      setPromoError("Network error — please try again");
+      setPromoLoading(false);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -82,18 +132,78 @@ export default function ProSellerModal({
             ))}
           </div>
 
-          <button
-            onClick={onSubscribe}
-            disabled={subscribing}
-            className="bg-white text-indigo-700 font-bold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10 disabled:opacity-50 inline-flex items-center gap-2"
-          >
-            {subscribing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <CreditCard className="w-4 h-4" />
-            )}
-            Subscribe Now
-          </button>
+          {/* ── Promo code section ─────────────────────────────────────── */}
+          {promoSuccess ? (
+            <div className="bg-emerald-500/20 border border-emerald-400/30 rounded-xl px-5 py-4 inline-flex items-center gap-2.5 text-emerald-200 font-medium">
+              <Gift className="w-5 h-5" />
+              Pro Seller activated — redirecting to your shop...
+            </div>
+          ) : (
+            <>
+              {/* Promo code input — always visible, no card needed */}
+              <div className="bg-white/10 rounded-xl px-4 py-4 max-w-sm mx-auto">
+                <p className="text-white/70 text-xs font-medium mb-2.5 flex items-center justify-center gap-1.5">
+                  <Ticket className="w-3.5 h-3.5" />
+                  Have a promo code? Get started free
+                </p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => {
+                      setPromoCode(e.target.value.toUpperCase());
+                      setPromoError("");
+                    }}
+                    onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
+                    placeholder="e.g. NEXTPRO-A1B2C3"
+                    className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-white/30 font-mono tracking-wider"
+                    disabled={promoLoading}
+                  />
+                  <button
+                    onClick={handleRedeem}
+                    disabled={promoLoading || !promoCode.trim()}
+                    className="bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
+                  >
+                    {promoLoading ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Gift className="w-3.5 h-3.5" />
+                    )}
+                    Redeem
+                  </button>
+                </div>
+                {promoError && (
+                  <p className="text-red-300 text-xs mt-2 text-left">
+                    {promoError}
+                  </p>
+                )}
+                <p className="text-white/40 text-[10px] mt-2">
+                  No credit card required
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3 my-4 max-w-sm mx-auto">
+                <div className="flex-1 border-t border-white/15" />
+                <span className="text-white/40 text-xs font-medium">or</span>
+                <div className="flex-1 border-t border-white/15" />
+              </div>
+
+              {/* Subscribe with card */}
+              <button
+                onClick={onSubscribe}
+                disabled={subscribing}
+                className="bg-white text-indigo-700 font-bold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10 disabled:opacity-50 inline-flex items-center gap-2"
+              >
+                {subscribing ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <CreditCard className="w-4 h-4" />
+                )}
+                Subscribe with Card
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

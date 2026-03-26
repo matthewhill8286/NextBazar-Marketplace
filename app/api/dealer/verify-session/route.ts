@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
  *
  * Called when the user lands back on /dashboard/dealer?setup=true after Stripe
  * Checkout. Verifies the Checkout Session is paid, then provisions the
- * dealer_shops row + flips is_dealer if the webhook hasn't done so yet.
+ * dealer_shops row + flips is_pro_seller if the webhook hasn't done so yet.
  *
  * This avoids the race condition where the redirect beats the webhook.
  */
@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Flip is_dealer on profile
+    // Flip is_pro_seller on profile
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
-      .update({ is_dealer: true })
+      .update({ is_pro_seller: true })
       .eq("id", user.id);
 
     if (profileError) {

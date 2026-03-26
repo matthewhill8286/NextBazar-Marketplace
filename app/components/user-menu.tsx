@@ -14,7 +14,7 @@ type UserProfile = {
   email: string;
   display_name: string | null;
   avatar_url: string | null;
-  is_dealer: boolean;
+  is_pro_seller: boolean;
 };
 
 export default function UserMenu() {
@@ -55,7 +55,7 @@ export default function UserMenu() {
     const supabase = createClient();
     supabase
       .from("profiles")
-      .select("display_name, avatar_url, is_dealer")
+      .select("display_name, avatar_url, is_pro_seller")
       .eq("id", authUserId)
       .single()
       .then(({ data: profile }) => {
@@ -64,7 +64,7 @@ export default function UserMenu() {
           email: "", // email not needed for display
           display_name: profile?.display_name || null,
           avatar_url: profile?.avatar_url || null,
-          is_dealer: profile?.is_dealer || false,
+          is_pro_seller: profile?.is_pro_seller || false,
         });
         setLoading(false);
       });
@@ -149,7 +149,7 @@ export default function UserMenu() {
               <LayoutDashboard className="w-4 h-4 text-gray-400" />
               {tDash("overview")}
             </Link>
-            {FEATURE_FLAGS.DEALERS && user.is_dealer && (
+            {FEATURE_FLAGS.DEALERS && user.is_pro_seller && (
               <Link
                 href="/dashboard/shop"
                 onClick={() => setOpen(false)}

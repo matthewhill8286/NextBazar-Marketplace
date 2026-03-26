@@ -146,7 +146,7 @@ export default function DashboardShell({
         email: user.email || "",
         avatar_url: prof?.avatar_url || null,
         verified: prof?.verified || false,
-        is_dealer: prof?.is_dealer || false,
+        is_pro_seller: prof?.is_pro_seller || false,
       });
 
       // Simple admin check by email — swap in your own address
@@ -156,7 +156,7 @@ export default function DashboardShell({
       const items = listingData || [];
       setListings(items);
 
-      const dealer = prof?.is_dealer || false;
+      const dealer = prof?.is_pro_seller || false;
       setIsDealer(dealer);
       setIsProSeller(!!dealer && shop?.plan_status === "active");
 

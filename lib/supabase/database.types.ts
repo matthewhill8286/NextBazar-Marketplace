@@ -713,6 +713,38 @@ export type Database = {
           },
         ];
       };
+      promo_codes: {
+        Row: {
+          id: string;
+          code: string;
+          redeemed_by: string | null;
+          redeemed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          redeemed_by?: string | null;
+          redeemed_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          code?: string;
+          redeemed_by?: string | null;
+          redeemed_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "promo_codes_redeemed_by_fkey";
+            columns: ["redeemed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -722,7 +754,7 @@ export type Database = {
           facebook_username: string | null;
           id: string;
           instagram_username: string | null;
-          is_dealer: boolean;
+          is_pro_seller: boolean;
           location_id: string | null;
           location_lat: number | null;
           location_lng: number | null;
@@ -745,7 +777,7 @@ export type Database = {
           facebook_username?: string | null;
           id: string;
           instagram_username?: string | null;
-          is_dealer?: boolean;
+          is_pro_seller?: boolean;
           location_id?: string | null;
           location_lat?: number | null;
           location_lng?: number | null;
@@ -768,7 +800,7 @@ export type Database = {
           facebook_username?: string | null;
           id?: string;
           instagram_username?: string | null;
-          is_dealer?: boolean;
+          is_pro_seller?: boolean;
           location_id?: string | null;
           location_lat?: number | null;
           location_lng?: number | null;
