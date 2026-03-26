@@ -5,9 +5,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // Mocks
 // ---------------------------------------------------------------------------
 
-// Mock PROMOTION_PRICES from lib/stripe (crypto route imports it for price data)
+// Mock getPromotionPrices from lib/stripe (crypto route calls it for price data)
 vi.mock("@/lib/stripe", () => ({
-  PROMOTION_PRICES: {
+  getPromotionPrices: vi.fn(async () => ({
     featured: {
       priceId: "price_featured_test",
       name: "Featured Listing",
@@ -22,7 +22,7 @@ vi.mock("@/lib/stripe", () => ({
       amount: 299,
       duration: 3,
     },
-  },
+  })),
 }));
 
 // ---------------------------------------------------------------------------

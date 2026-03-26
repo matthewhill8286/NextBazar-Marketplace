@@ -17,8 +17,12 @@ vi.mock("@/lib/stripe", () => ({
         create: mockSessionCreate,
       },
     },
+    products: { create: vi.fn(async () => ({ id: "prod_test" })) },
+    prices: {
+      create: vi.fn(async () => ({ id: "price_dynamic_test" })),
+    },
   },
-  PROMOTION_PRICES: {
+  getPromotionPrices: vi.fn(async () => ({
     featured: {
       priceId: "price_featured_test",
       name: "Featured Listing",
@@ -31,7 +35,7 @@ vi.mock("@/lib/stripe", () => ({
       amount: 299,
       duration: 3,
     },
-  },
+  })),
 }));
 
 // ---------------------------------------------------------------------------
