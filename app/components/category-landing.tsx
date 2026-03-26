@@ -71,8 +71,8 @@ function filterListings(
       (l) =>
         l.profiles &&
         typeof l.profiles === "object" &&
-        "is_dealer" in l.profiles &&
-        (l.profiles as { is_dealer?: boolean }).is_dealer === true,
+        "is_pro_seller" in l.profiles &&
+        (l.profiles as { is_pro_seller?: boolean }).is_pro_seller === true,
     );
   }
 

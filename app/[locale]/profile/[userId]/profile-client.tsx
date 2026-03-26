@@ -14,7 +14,7 @@ type Profile = {
   avatar_url: string | null;
   bio: string | null;
   verified: boolean;
-  is_dealer: boolean;
+  is_pro_seller: boolean;
   created_at: string;
   rating: number | null;
   total_reviews: number | null;
@@ -122,7 +122,7 @@ export default function ProfileClient({
                     Verified
                   </span>
                 )}
-                {FEATURE_FLAGS.DEALERS && profile.is_dealer && (
+                {FEATURE_FLAGS.DEALERS && profile.is_pro_seller && (
                   <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-amber-100">
                     🏪 Pro Seller
                   </span>

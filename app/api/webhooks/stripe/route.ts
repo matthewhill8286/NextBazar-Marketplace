@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
             { onConflict: "user_id" },
           );
 
-        // Flip is_dealer on profile
+        // Flip is_pro_seller on profile
         const { error: profileError } = await supabaseAdmin
           .from("profiles")
-          .update({ is_dealer: true })
+          .update({ is_pro_seller: true })
           .eq("id", userId);
 
         if (shopError)
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
 
       await supabaseAdmin
         .from("profiles")
-        .update({ is_dealer: isActive })
+        .update({ is_pro_seller: isActive })
         .eq("id", userId);
 
       console.log(

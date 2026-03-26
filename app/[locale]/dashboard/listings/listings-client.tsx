@@ -63,20 +63,13 @@ export default function ListingsClient({
     return validTabs.includes(t) ? t : "active";
   }
 
-  const [listings, setListingsInternal] = useState(initialListings);
+  const [listings, setListings] = useState(initialListings);
 
-  // Wrapper that notifies the parent whenever listings change
-  function setListings(
-    updater:
-      | DashboardListing[]
-      | ((prev: DashboardListing[]) => DashboardListing[]),
-  ) {
-    setListingsInternal((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      onListingsChange?.(next);
-      return next;
-    });
-  }
+  // Notify parent whenever listings change — done in an effect to avoid
+  // calling setState in a parent component during this component's render.
+  useEffect(() => {
+    onListingsChange?.(listings);
+  }, [listings, onListingsChange]);
   const [tab, setTab] = useState(tabFromParams);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
