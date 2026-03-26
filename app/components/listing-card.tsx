@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 import { useCompare } from "@/lib/compare-context";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
@@ -48,7 +49,7 @@ type ListingCardProps = {
   onUnsave?: () => void;
 };
 
-export default function ListingCard({
+function ListingCard({
   listing,
   accentColor,
 }: ListingCardProps) {
@@ -263,3 +264,5 @@ export default function ListingCard({
     </Link>
   );
 }
+
+export default memo(ListingCard);

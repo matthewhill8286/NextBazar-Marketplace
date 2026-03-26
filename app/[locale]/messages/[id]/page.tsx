@@ -1,8 +1,6 @@
-import ChatThread from "./chat-thread";
+import { redirect } from "next/navigation";
 
-export default async function ChatPage(
-  props: PageProps<"/[locale]/messages/[id]">,
-) {
+export default async function ChatRedirect(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
-  return <ChatThread conversationId={id} />;
+  redirect(`/dashboard/messages/${id}`);
 }

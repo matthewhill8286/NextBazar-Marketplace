@@ -2,11 +2,13 @@ import { Store } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { Tables } from "@/lib/supabase/database.types";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import { createClient } from "@/lib/supabase/server";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
+import { createClient as createPublicClient } from "@supabase/supabase-js";
 import ShopClient from "./shop-client";
 
 export const revalidate = 60;
@@ -20,19 +22,31 @@ type DealerShop = Omit<
   "stripe_customer_id" | "stripe_subscription_id"
 >;
 
+// ── Cached shop fetch (shared by generateMetadata + page component) ──────────
+const getShopBySlugCached = unstable_cache(
+  async (slug: string) => {
+    const sb = createPublicClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+    const { data } = await sb
+      .from("dealer_shops")
+      .select(SHOP_SELECT)
+      .eq("slug", slug)
+      .single();
+    return data as DealerShop | null;
+  },
+  ["shop-by-slug"],
+  { revalidate: 60, tags: ["dealer_shops"] },
+);
+
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
 }
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const { slug } = await props.params;
-  const supabase = await createClient();
-
-  const { data: shop } = await supabase
-    .from("dealer_shops")
-    .select(SHOP_SELECT)
-    .eq("slug", slug)
-    .single();
+  const shop = await getShopBySlugCached(slug);
 
   if (!shop) {
     return {
@@ -61,14 +75,8 @@ export default async function ShopPage(props: PageProps) {
   const { slug } = await props.params;
   const supabase = await createClient();
 
-  // Step 1: Fetch the shop by slug
-  const { data: shopRaw } = await supabase
-    .from("dealer_shops")
-    .select(SHOP_SELECT)
-    .eq("slug", slug)
-    .single();
-
-  const shop = shopRaw as DealerShop | null;
+  // Reuses the same cache entry as generateMetadata — no duplicate DB call
+  const shop = await getShopBySlugCached(slug);
 
   if (!shop) {
     notFound();
