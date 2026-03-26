@@ -1,6 +1,7 @@
 "use client";
 
 import { LayoutDashboard, LogOut, Settings } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -119,10 +120,12 @@ export default function UserMenu() {
         className="pointer-events-auto relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
       >
         {user.avatar_url ? (
-          <img
+          <Image
             src={user.avatar_url}
             alt="user avatar"
-            className="w-full h-full rounded-full object-cover hover:pointer-events-auto"
+            width={36}
+            height={36}
+            className="w-full h-full rounded-full object-cover"
           />
         ) : (
           initials

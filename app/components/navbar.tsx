@@ -11,7 +11,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
@@ -46,6 +46,13 @@ export default function Navbar() {
     setNotifCount(nCount || 0);
   }, [userId]);
 
+  // Debounced version — coalesces rapid-fire realtime events into one DB call
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedLoadCounts = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => loadCounts(), 500);
+  }, [loadCounts]);
+
   // Initial load and refresh whenever userId changes
   useEffect(() => {
     loadCounts();
@@ -56,14 +63,14 @@ export default function Navbar() {
     channelName: "nav-msg-insert",
     table: "messages",
     event: "INSERT",
-    onPayload: loadCounts,
+    onPayload: debouncedLoadCounts,
     enabled: !!userId,
   });
   useRealtimeTable({
     channelName: "nav-msg-update",
     table: "messages",
     event: "UPDATE",
-    onPayload: loadCounts,
+    onPayload: debouncedLoadCounts,
     enabled: !!userId,
   });
   useRealtimeTable({
@@ -71,7 +78,7 @@ export default function Navbar() {
     table: "notifications",
     event: "*",
     filter: userId ? `user_id=eq.${userId}` : undefined,
-    onPayload: loadCounts,
+    onPayload: debouncedLoadCounts,
     enabled: !!userId,
   });
 

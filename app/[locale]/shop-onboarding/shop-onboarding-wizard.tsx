@@ -334,7 +334,7 @@ export default function ShopOnboardingWizard({
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/dashboard/listings/new"
+              href="/post"
               className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5"
             >
               <Plus className="w-4 h-4" />

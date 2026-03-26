@@ -10,9 +10,14 @@ import { useCallback, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { ClientPricing } from "@/lib/stripe";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-);
+// Lazy-load Stripe only when needed (avoids ~100KB+ on every page load)
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
+function getStripe() {
+  if (!stripePromise) {
+    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+  }
+  return stripePromise;
+}
 
 type Props = {
   listingId: string;
@@ -223,7 +228,7 @@ export default function StripeCheckoutModal({
           ) : (
             <div className="p-1">
               <EmbeddedCheckoutProvider
-                stripe={stripePromise}
+                stripe={getStripe()}
                 options={{ fetchClientSecret }}
               >
                 <EmbeddedCheckout />

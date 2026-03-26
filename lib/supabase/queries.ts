@@ -203,6 +203,65 @@ export const getShopAccentColorCached = unstable_cache(
   { revalidate: 60, tags: ["dealer_shops"] },
 );
 
+// ─── Combined listing detail page data (single waterfall) ────────────────────
+// Fetches listing + related + accent color with only 1 sequential hop
+// (listing first, then related & accent in parallel).
+
+export type ListingPageData = {
+  listing: ListingDetailRow | null;
+  related: ListingCardRow[];
+  accentColor: string | null;
+  shopSlug: string | null;
+};
+
+export const getListingPageDataCached = unstable_cache(
+  async (slug: string): Promise<ListingPageData> => {
+    const sb = publicClient();
+
+    // 1. Fetch listing (must come first — everything else depends on it)
+    const { data: listing } = await sb
+      .from("listings")
+      .select(LISTING_DETAIL_SELECT)
+      .eq("slug", slug)
+      .single();
+
+    if (!listing) return { listing: null, related: [], accentColor: null, shopSlug: null };
+
+    const typedListing = listing as unknown as ListingDetailRow;
+    const profile = typedListing.profiles;
+    const isPro = profile && !Array.isArray(profile) && profile.is_pro_seller;
+
+    // 2. Fetch related + accent color in parallel (single hop)
+    const [relResult, accentResult] = await Promise.all([
+      sb
+        .from("listings")
+        .select(CARD_SELECT)
+        .eq("status", "active")
+        .eq("category_id", typedListing.category_id)
+        .neq("id", typedListing.id)
+        .order("created_at", { ascending: false })
+        .limit(4),
+      isPro
+        ? sb
+            .from("dealer_shops")
+            .select("slug, accent_color")
+            .eq("user_id", typedListing.user_id)
+            .eq("plan_status", "active")
+            .single()
+        : Promise.resolve({ data: null }),
+    ]);
+
+    return {
+      listing: typedListing,
+      related: (relResult.data ?? []) as unknown as ListingCardRow[],
+      accentColor: accentResult.data?.accent_color ?? null,
+      shopSlug: accentResult.data?.slug ?? null,
+    };
+  },
+  ["listing-page-data"],
+  { revalidate: 60, tags: ["listings", "dealer_shops"] },
+);
+
 // ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
 
 export const getCategoryBySlugCached = unstable_cache(

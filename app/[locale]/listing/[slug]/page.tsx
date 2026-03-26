@@ -1,36 +1,97 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import {
   getListingBySlugCached,
-  getRelatedListingsCached,
-  getShopAccentColorCached,
+  getListingPageDataCached,
 } from "@/lib/supabase/queries";
-import ListingDetail from "./listing-detail";
+import ListingDetailServer from "./listing-detail-server";
 
 // Revalidate ISR every 60 seconds — matches the cache TTL in queries.ts
 export const revalidate = 60;
+
+// ─── SEO metadata (reuses the same cache as the page component) ──────────────
+export async function generateMetadata(
+  props: PageProps<"/[locale]/listing/[slug]">,
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const listing = await getListingBySlugCached(slug);
+
+  if (!listing) {
+    return {
+      title: "Listing Not Found — NextBazar",
+      description: "This listing could not be found on NextBazar.",
+    };
+  }
+
+  const profile = listing.profiles && !Array.isArray(listing.profiles) ? listing.profiles : null;
+  const category = listing.categories && !Array.isArray(listing.categories) ? listing.categories : null;
+  const price =
+    listing.price !== null
+      ? `${listing.currency === "EUR" ? "€" : listing.currency}${listing.price.toLocaleString()}`
+      : "Contact for price";
+
+  const title = `${listing.title} — ${price} | NextBazar`;
+  const description = listing.description
+    ? listing.description.slice(0, 160)
+    : `${listing.title} for ${price} in ${category?.name || "marketplace"}. ${profile?.display_name ? `Sold by ${profile.display_name}.` : ""} Browse on NextBazar.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: listing.primary_image_url
+        ? [{ url: listing.primary_image_url, width: 800, height: 600 }]
+        : [],
+      type: "website",
+    },
+    twitter: {
+      card: listing.primary_image_url ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: listing.primary_image_url ? [listing.primary_image_url] : [],
+    },
+  };
+}
 
 export default async function ListingPage(
   props: PageProps<"/[locale]/listing/[slug]">,
 ) {
   const { slug } = await props.params;
 
-  const listing = await getListingBySlugCached(slug);
+  // Single cached call: listing + related + accent color + shop slug
+  // Internally runs listing first, then related & accent in parallel
+  const { listing, related, accentColor, shopSlug } =
+    await getListingPageDataCached(slug);
 
-  // Fetch related listings + shop accent color in parallel
-  const [related, accentColor] = await Promise.all([
-    listing
-      ? getRelatedListingsCached(listing.category_id, listing.id)
-      : Promise.resolve([]),
-    listing?.profiles && !Array.isArray(listing.profiles) && listing.profiles.is_pro_seller
-      ? getShopAccentColorCached(listing.user_id)
-      : Promise.resolve(null),
-  ]);
+  // Not-found state
+  if (!listing) {
+    const t = await getTranslations("listing");
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
+        <div className="text-6xl mb-4">🔍</div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          {t("notFound")}
+        </h1>
+        <p className="text-gray-500 mb-6">{t("notFoundDesc")}</p>
+        <Link
+          href="/"
+          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
+        >
+          {t("browseListings")}
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <ListingDetail
-      slug={slug}
-      initialListing={listing}
-      initialRelated={related}
-      initialAccentColor={accentColor}
+    <ListingDetailServer
+      listing={listing}
+      related={related}
+      accentColor={accentColor}
+      shopSlug={shopSlug}
     />
   );
 }

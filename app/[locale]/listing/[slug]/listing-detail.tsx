@@ -270,15 +270,12 @@ export default function ListingDetail({
 
   useEffect(() => {
     async function load() {
-      let data = listing; // may already be hydrated from server
-      let userId: string | null = null;
-
-      // Use auth context — no getUser() network call needed
-      userId = authUserId;
+      let data = initialListing; // may already be hydrated from server
+      const userId = authUserId;
       setCurrentUserId(userId);
 
       if (!data) {
-        // Client-side fallback: fetch listing
+        // Client-side fallback: fetch listing + related in parallel where possible
         const { data: fetched, error } = await supabase
           .from("listings")
           .select(LISTING_SELECT)
@@ -294,8 +291,8 @@ export default function ListingDetail({
         data = fetched as ListingDetailRow;
         setListing(data);
 
-        // Also fetch related on client-side fallback
-        const { data: rel } = await supabase
+        // Fetch related + shop data in parallel (client-side fallback only)
+        const relatedPromise = supabase
           .from("listings")
           .select(`*, categories(name, slug, icon), locations(name, slug)`)
           .eq("status", "active")
@@ -303,7 +300,33 @@ export default function ListingDetail({
           .neq("id", data.id)
           .order("created_at", { ascending: false })
           .limit(4);
-        setRelated((rel || []) as ListingCardRow[]);
+
+        const shopPromise =
+          FEATURE_FLAGS.DEALERS && data.profiles?.is_pro_seller
+            ? supabase
+                .from("dealer_shops")
+                .select("slug, accent_color")
+                .eq("user_id", data.user_id)
+                .single()
+            : Promise.resolve({ data: null });
+
+        const [relResult, shopResult] = await Promise.all([relatedPromise, shopPromise]);
+        setRelated((relResult.data || []) as ListingCardRow[]);
+        if (shopResult.data?.slug) setShopSlug(shopResult.data.slug);
+        if (shopResult.data?.accent_color) setShopAccentColor(shopResult.data.accent_color);
+      } else {
+        // Server already provided the listing — only fetch shop slug if needed
+        // (accent color is already provided via initialAccentColor)
+        if (FEATURE_FLAGS.DEALERS && data.profiles?.is_pro_seller) {
+          supabase
+            .from("dealer_shops")
+            .select("slug")
+            .eq("user_id", data.user_id)
+            .single()
+            .then(({ data: shop }) => {
+              if (shop?.slug) setShopSlug(shop.slug);
+            });
+        }
       }
 
       // Track recently viewed (store up to 12 listing IDs, newest first)
@@ -317,9 +340,8 @@ export default function ListingDetail({
         localStorage.setItem("recentlyViewed", JSON.stringify(updated));
       } catch {}
 
-      // Reuse userId resolved above — no extra getUser() call needed
+      // Fetch offer history and record analytics in parallel (non-blocking)
       if (userId && userId !== data.user_id) {
-        // Fetch offer history and record analytics in parallel
         const offersPromise = supabase
           .from("offers")
           .select("id, status, amount, counter_amount, currency")
@@ -350,7 +372,6 @@ export default function ListingDetail({
           body: JSON.stringify({ listing_id: data.id }),
         }).catch(() => {});
 
-        // Fire both without blocking the loading state
         Promise.all([offersPromise, analyticsPromise]);
       }
 
@@ -360,24 +381,11 @@ export default function ListingDetail({
         supabase.rpc("increment_view_count", { p_listing_id: data.id }).then();
       }
 
-      // If seller is a Pro Seller, fetch their shop slug for linking
-      if (FEATURE_FLAGS.DEALERS && data.profiles?.is_pro_seller) {
-        supabase
-          .from("dealer_shops")
-          .select("slug, accent_color")
-          .eq("user_id", data.user_id)
-          .single()
-          .then(({ data: shop }) => {
-            if (shop?.slug) setShopSlug(shop.slug);
-            if (shop?.accent_color) setShopAccentColor(shop.accent_color);
-          });
-      }
-
       setLoading(false);
     }
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, listing, supabase.from, authUserId]);
+  }, [slug, authUserId]);
 
   // ── Realtime: listing status (e.g. active → sold) ────────────────────────
   // Fires when the seller marks the item sold or the status changes for any
