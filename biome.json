@@ -43,7 +43,8 @@
       },
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
       },
       "performance": {
         "noImgElement": "off"
