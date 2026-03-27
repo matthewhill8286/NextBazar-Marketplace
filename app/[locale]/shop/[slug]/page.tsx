@@ -11,8 +11,6 @@ import { createClient } from "@/lib/supabase/server";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import ShopClient from "./shop-client";
 
-export const revalidate = 60;
-
 /** Public-safe subset — exclude Stripe secrets. */
 const SHOP_SELECT =
   "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, website, facebook, instagram, tiktok, plan_status, plan_started_at, plan_expires_at, created_at, updated_at";

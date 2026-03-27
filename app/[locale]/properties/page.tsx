@@ -13,8 +13,6 @@ export const metadata: Metadata = {
     "Browse houses, apartments, land, and commercial properties for sale and rent across Cyprus. New developments, existing builds, and rental listings.",
 };
 
-export const revalidate = 60;
-
 export default async function PropertiesPage() {
   const category = await getCategoryBySlugCached("property");
   if (!category)

@@ -13,8 +13,6 @@ export const metadata: Metadata = {
     "Browse new and used cars, motorcycles, and commercial vehicles from private sellers and Pro Sellers across Cyprus.",
 };
 
-export const revalidate = 60;
-
 export default async function VehiclesPage() {
   const category = await getCategoryBySlugCached("vehicles");
   if (!category)

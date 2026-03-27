@@ -15,8 +15,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 60;
-
 export default async function ShopsPage() {
   if (!FEATURE_FLAGS.DEALERS) notFound();
   const shops = await getActiveShopsCached();
