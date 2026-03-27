@@ -1,14 +1,14 @@
+import { createClient as createPublicClient } from "@supabase/supabase-js";
 import { Store } from "lucide-react";
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { unstable_cache } from "next/cache";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { Tables } from "@/lib/supabase/database.types";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import { createClient } from "@/lib/supabase/server";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
-import { createClient as createPublicClient } from "@supabase/supabase-js";
 import ShopClient from "./shop-client";
 
 export const revalidate = 60;
@@ -94,9 +94,7 @@ export default async function ShopPage(props: PageProps) {
             This shop is currently closed
           </h1>
           <p className="text-gray-500 text-sm mb-6">
-            <span className="font-medium text-gray-700">
-              {shop.shop_name}
-            </span>{" "}
+            <span className="font-medium text-gray-700">{shop.shop_name}</span>{" "}
             is not accepting orders right now. The seller may reopen in the
             future.
           </p>
@@ -127,7 +125,9 @@ export default async function ShopPage(props: PageProps) {
 
     supabase
       .from("profiles")
-      .select("id, display_name, avatar_url, verified, is_pro_seller, created_at")
+      .select(
+        "id, display_name, avatar_url, verified, is_pro_seller, created_at",
+      )
       .eq("id", shop.user_id)
       .single(),
   ]);

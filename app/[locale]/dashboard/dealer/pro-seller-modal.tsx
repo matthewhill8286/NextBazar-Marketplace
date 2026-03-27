@@ -35,7 +35,6 @@ export default function ProSellerModal({
   subheading = "Everything you need to grow your business on NextBazar.",
 }: Props) {
   const router = useRouter();
-  const [showPromo, setShowPromo] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState("");
@@ -193,7 +192,7 @@ export default function ProSellerModal({
               <button
                 onClick={onSubscribe}
                 disabled={subscribing}
-                className="bg-white text-indigo-700 font-bold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10 disabled:opacity-50 inline-flex items-center gap-2"
+                className="bg-white text-indigo-700 font-bold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-sm shadow-black/10 disabled:opacity-50 inline-flex items-center gap-2"
               >
                 {subscribing ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

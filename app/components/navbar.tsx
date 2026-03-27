@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  Bookmark,
-  MessageCircle,
-  Plus,
-  Search,
-  Store,
-} from "lucide-react";
+import { Bell, Heart, MessageCircle, Plus, Search, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -18,6 +11,12 @@ import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
 import GlobalSearch from "./global-search";
+import {
+  MessagesPreview,
+  NavPreviewWrapper,
+  NotificationsPreview,
+  SavedPreview,
+} from "./nav-previews";
 import UserMenu from "./user-menu";
 
 export default function Navbar() {
@@ -131,58 +130,46 @@ export default function Navbar() {
             <Search className="w-5 h-5" />
           </Link>
 
-          {/* Messages — logged-in only */}
+          {/* Messages — logged-in only, with hover preview */}
           {userId && (
-            <Link
+            <NavPreviewWrapper
               href="/dashboard/messages"
-              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+              badge={unreadCount}
+              badgeColor="bg-red-500"
+              icon={<MessageCircle className="w-4 h-4" />}
             >
-              <MessageCircle className="w-4 h-4" />
-              <span className="hidden font-medium">{t("messages")}</span>
-              {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </Link>
+              {() => <MessagesPreview />}
+            </NavPreviewWrapper>
           )}
 
-          {/* Saved — logged-in only */}
+          {/* Saved — logged-in only, with hover preview */}
           {userId && (
-            <Link
+            <NavPreviewWrapper
               href="/dashboard/saved"
-              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+              badge={savedCount}
+              badgeColor="bg-rose-500"
+              icon={<Heart className="w-4 h-4" />}
             >
-              <Bookmark className="w-4 h-4" />
-              <span className="hidden font-medium">{t("saved")}</span>
-              {savedCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-rose-500 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
-                  {savedCount > 9 ? "9+" : savedCount}
-                </span>
-              )}
-            </Link>
+              {() => <SavedPreview />}
+            </NavPreviewWrapper>
           )}
 
-          {/* Notifications — logged-in only */}
+          {/* Notifications — logged-in only, with hover preview */}
           {userId && (
-            <Link
+            <NavPreviewWrapper
               href="/dashboard/notifications"
-              className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+              badge={notifCount}
+              badgeColor="bg-indigo-600"
+              icon={<Bell className="w-4 h-4" />}
             >
-              <Bell className="w-4 h-4" />
-              <span className="hidden font-medium">{t("alerts")}</span>
-              {notifCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-indigo-600 text-white text-[10px] font-bold min-w-4.5 h-4.5 flex items-center justify-center rounded-full">
-                  {notifCount > 9 ? "9+" : notifCount}
-                </span>
-              )}
-            </Link>
+              {() => <NotificationsPreview />}
+            </NavPreviewWrapper>
           )}
 
           {/* Post Ad — primary CTA */}
           <Link
             href="/post"
-            className="bg-linear-to-r from-indigo-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-indigo-700 transition-all flex items-center gap-1.5 shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300"
+            className="bg-linear-to-r from-indigo-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-indigo-700 transition-all flex items-center gap-1.5 shadow-md shadow-indigo-200 hover:shadow-sm hover:shadow-indigo-300"
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">{t("postAd")}</span>

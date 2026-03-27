@@ -90,7 +90,7 @@ export default function ImageGallery({
             {/* Centered SOLD stamp */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="border-4 border-white/80 rounded-xl px-8 py-3 rotate-[-12deg] select-none">
-                <span className="text-white font-black text-4xl uppercase tracking-[0.25em] drop-shadow-lg">
+                <span className="text-white font-black text-4xl uppercase tracking-[0.25em] drop-shadow-sm">
                   Sold
                 </span>
               </div>
@@ -102,17 +102,17 @@ export default function ImageGallery({
         {listingStatus !== "sold" && offerStatus && (
           <div className="absolute top-3 left-3 pointer-events-none">
             {offerStatus === "accepted" && (
-              <span className="flex items-center gap-1.5 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+              <span className="flex items-center gap-1.5 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                 ✓ Offer Accepted
               </span>
             )}
             {offerStatus === "countered" && (
-              <span className="flex items-center gap-1.5 bg-indigo-600/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+              <span className="flex items-center gap-1.5 bg-indigo-600/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                 ↔ Counter Offer
               </span>
             )}
             {offerStatus === "pending" && (
-              <span className="flex items-center gap-1.5 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+              <span className="flex items-center gap-1.5 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                 ⏳ Offer Pending
               </span>
             )}

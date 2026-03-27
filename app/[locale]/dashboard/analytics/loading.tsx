@@ -1,4 +1,9 @@
-import { Bone, HeaderSkeleton, ListRowSkeleton, StatsGridSkeleton } from "../loading-skeleton";
+import {
+  Bone,
+  HeaderSkeleton,
+  ListRowSkeleton,
+  StatsGridSkeleton,
+} from "../loading-skeleton";
 
 export default function AnalyticsLoading() {
   return (

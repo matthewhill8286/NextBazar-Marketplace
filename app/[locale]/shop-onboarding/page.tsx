@@ -50,8 +50,7 @@ export default async function ShopOnboardingPage({
 
   const wizardProps = {
     userId: user.id,
-    userName:
-      profile?.display_name ?? user.user_metadata?.full_name ?? "",
+    userName: profile?.display_name ?? user.user_metadata?.full_name ?? "",
     alreadyOnboarded: profile?.onboarding_completed ?? false,
     shopName: shop?.shop_name ?? "My Shop",
     shopSlug: shop?.slug ?? user.id.slice(0, 8),

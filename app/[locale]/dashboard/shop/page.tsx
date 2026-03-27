@@ -322,8 +322,7 @@ export default function ShopPage() {
       }
 
       toast.success("Shop closed", {
-        description:
-          "Your shop and listings are no longer visible to buyers.",
+        description: "Your shop and listings are no longer visible to buyers.",
       });
       setShowCloseConfirm(false);
       router.refresh();

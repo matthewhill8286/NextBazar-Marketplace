@@ -9,11 +9,11 @@ import {
   Palette,
   Save,
   ShieldCheck,
-  Sparkles, Store,
+  Sparkles,
+  Store,
   Upload,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
@@ -146,94 +146,14 @@ export default function BrandingForm({
         </p>
       </div>
 
-      {/* Banner upload */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          Shop Banner
-        </label>
-
-        {/* Drop zone — shown when no banner */}
-        {!bannerUrl && (
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragOver(true);
-            }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-            onClick={() => bannerInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors bg-white ${
-              dragOver
-                ? "border-indigo-400 bg-indigo-50"
-                : "border-gray-300 hover:border-indigo-400"
-            }`}
-          >
-            {bannerUploading ? (
-              <Loader2 className="w-10 h-10 text-indigo-400 mx-auto mb-3 animate-spin" />
-            ) : (
-              <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-            )}
-            <p className="font-semibold text-gray-900 mb-1">Upload Banner</p>
-            <p className="text-sm text-gray-500">
-              Drag & drop or click to browse. JPG, PNG, WebP — recommended 1200
-              x 300px.
-            </p>
-          </div>
-        )}
-
-        {/* Banner preview — shown when banner exists */}
-        {bannerUrl && (
-          <div className="relative rounded-2xl overflow-hidden border border-gray-200 group">
-            <Image
-              src={bannerUrl}
-              alt="Shop banner"
-              width={1200}
-              height={300}
-              className="w-full h-44 object-cover"
-            />
-
-            {/* Uploading overlay */}
-            {bannerUploading && (
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <Loader2 className="w-6 h-6 text-white animate-spin" />
-              </div>
-            )}
-
-            {/* Change banner — click whole image */}
-            {!bannerUploading && (
-              <div
-                onClick={() => bannerInputRef.current?.click()}
-                className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center cursor-pointer"
-              >
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                  <Upload className="w-3.5 h-3.5" />
-                  Change Banner
-                </span>
-              </div>
-            )}
-
-            {/* Remove button */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onBannerRemove();
-              }}
-              className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-
-        <input
-          ref={bannerInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="hidden"
-          onChange={handleBannerSelect}
-        />
-      </div>
+      {/* Hidden file input for banner */}
+      <input
+        ref={bannerInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handleBannerSelect}
+      />
 
       {/* ── Live shop preview — mirrors /shop/[slug] ──────────────────── */}
       <div>
@@ -253,10 +173,19 @@ export default function BrandingForm({
           )}
         </div>
         <div className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm">
-          {/* Hero banner */}
-          <div className="relative">
+          {/* Hero banner — doubles as upload drop zone */}
+          <div
+            className="relative group/banner cursor-pointer"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            onClick={() => bannerInputRef.current?.click()}
+          >
             <div
-              className="h-36 sm:h-44 w-full overflow-hidden"
+              className={`h-36 sm:h-44 w-full overflow-hidden transition-all ${dragOver ? "ring-2 ring-inset ring-indigo-400" : ""}`}
               style={{
                 backgroundImage: bannerUrl
                   ? `url(${bannerUrl})`
@@ -280,37 +209,41 @@ export default function BrandingForm({
                 </div>
               )}
             </div>
+
+            {/* Upload / change overlay */}
+            {bannerUploading ? (
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+                <Loader2 className="w-6 h-6 text-white animate-spin" />
+              </div>
+            ) : (
+              <div className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-indigo-600/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}>
+                <span className={`flex items-center gap-2 bg-white/90 text-gray-700 text-xs font-semibold px-3.5 py-2 rounded-full shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}>
+                  <Upload className="w-3.5 h-3.5" />
+                  {bannerUrl ? "Change Banner" : "Upload Banner"}
+                </span>
+              </div>
+            )}
+
+            {/* Remove button — only when banner exists */}
+            {bannerUrl && !bannerUploading && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onBannerRemove();
+                }}
+                className="absolute top-2.5 right-2.5 p-1.5 bg-black/60 rounded-full text-white opacity-0 group-hover/banner:opacity-100 transition-opacity hover:bg-black/80 z-20"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Shop info card */}
           <div className="mx-3 -mt-10 relative z-10">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="p-5">
-                <div className="flex items-start gap-4">
-                  {/* Logo */}
-                  <div
-                    className="w-16 h-16 rounded-2xl overflow-hidden border-4 border-white shadow-md shrink-0 -mt-10"
-                    style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
-                  >
-                    <div
-                      className="w-full h-full flex items-center justify-center text-white text-xl font-bold"
-                      style={{
-                        background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
-                      }}
-                    >
-                      {shopName
-                        ? shopName
-                            .split(" ")
-                            .slice(0, 2)
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                        : "?"}
-                    </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0 pt-0.5">
+                <div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 mb-2">
                       <h3 className="text-lg font-bold text-gray-900 truncate">
                         {shopName || "Your Shop"}
@@ -338,9 +271,6 @@ export default function BrandingForm({
 
                     {/* Meta chips */}
                     <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                      <span className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-full">
-                        /shop/{slug || "..."}
-                      </span>
                       {website && (
                         <span className="p-1.5 rounded-lg bg-gray-50">
                           <Globe className="w-3.5 h-3.5 text-gray-400" />
@@ -357,7 +287,6 @@ export default function BrandingForm({
                         </span>
                       )}
                     </div>
-                  </div>
                 </div>
               </div>
 

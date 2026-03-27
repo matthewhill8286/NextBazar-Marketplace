@@ -42,6 +42,13 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
       if (error || !data) {
         setNotFound(true);
       } else {
+        // Sort images by sort_order so drag-reorder is preserved
+        if (data.images) {
+          data.images.sort(
+            (a: { sort_order: number }, b: { sort_order: number }) =>
+              a.sort_order - b.sort_order,
+          );
+        }
         setListing(data);
       }
       setLoading(false);

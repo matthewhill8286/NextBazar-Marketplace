@@ -13,7 +13,7 @@ const supabaseAdmin = createAdminClient(
  * (no Stripe subscription). For Stripe-subscribed shops, the user needs to
  * re-subscribe through the normal subscribe flow.
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -98,8 +98,7 @@ export async function POST(request: NextRequest) {
     console.error("Reopen shop error:", err);
     return NextResponse.json(
       {
-        error:
-          err instanceof Error ? err.message : "Failed to reopen shop",
+        error: err instanceof Error ? err.message : "Failed to reopen shop",
       },
       { status: 500 },
     );

@@ -276,7 +276,10 @@ export default function ShopClient({
                     <Globe className="w-5 h-5" />
                   </a>
                 ) : (
-                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="Website — not set">
+                  <span
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    title="Website — not set"
+                  >
                     <Globe className="w-5 h-5" />
                   </span>
                 )}
@@ -291,7 +294,10 @@ export default function ShopClient({
                     <Facebook className="w-5 h-5" />
                   </a>
                 ) : (
-                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="Facebook — not set">
+                  <span
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    title="Facebook — not set"
+                  >
                     <Facebook className="w-5 h-5" />
                   </span>
                 )}
@@ -306,7 +312,10 @@ export default function ShopClient({
                     <Instagram className="w-5 h-5" />
                   </a>
                 ) : (
-                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="Instagram — not set">
+                  <span
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    title="Instagram — not set"
+                  >
                     <Instagram className="w-5 h-5" />
                   </span>
                 )}
@@ -321,7 +330,10 @@ export default function ShopClient({
                     <Music className="w-5 h-5" />
                   </a>
                 ) : (
-                  <span className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed" title="TikTok — not set">
+                  <span
+                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    title="TikTok — not set"
+                  >
                     <Music className="w-5 h-5" />
                   </span>
                 )}
@@ -411,7 +423,11 @@ export default function ShopClient({
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
               {filtered.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} accentColor={accentColor} />
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  accentColor={accentColor}
+                />
               ))}
             </div>
 

@@ -2,7 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { embed, listingToText } from "@/lib/embeddings";
 
-export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const SYNC_SECRET = process.env.SYNC_SECRET;

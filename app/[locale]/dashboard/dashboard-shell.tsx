@@ -177,12 +177,7 @@ export default function DashboardShell({
     <DashboardProvider value={{ listings, isDealer, isProSeller }}>
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-          {profile && (
-            <DashboardSidebar
-              profile={profile}
-              isAdmin={isAdmin}
-            />
-          )}
+          {profile && <DashboardSidebar profile={profile} isAdmin={isAdmin} />}
           <div className="min-w-0">{children}</div>
         </div>
       </div>

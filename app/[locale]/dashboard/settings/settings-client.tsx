@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Camera,
   FileText,
   Loader2,
   Mail,
@@ -9,14 +10,16 @@ import {
   Save,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   ErrorBanner,
   FormInput,
   FormTextarea,
-  SuccessBanner,
 } from "@/app/components/ui";
+import PhoneInput from "@/app/components/phone-input";
 import { createClient } from "@/lib/supabase/client";
 
 type ProfileData = {
@@ -28,6 +31,7 @@ type ProfileData = {
   email: string;
   whatsapp_number: string | null;
   telegram_username: string | null;
+  avatar_url: string | null;
 };
 
 export default function SettingsClient({ profile }: { profile: ProfileData }) {
@@ -35,8 +39,10 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
   const supabase = createClient();
 
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || "");
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     display_name: profile.display_name || "",
     username: profile.username || "",
@@ -49,9 +55,45 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
   const update = (key: string, value: string) =>
     setFormData((prev) => ({ ...prev, [key]: value }));
 
+  async function handleAvatarUpload(file: File) {
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Image must be under 2 MB");
+      return;
+    }
+    setAvatarUploading(true);
+    setError("");
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${profile.id}/avatar.${ext}`;
+      const { error: uploadErr } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true });
+      if (uploadErr) {
+        setError(uploadErr.message);
+        setAvatarUploading(false);
+        return;
+      }
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(path);
+      const urlWithBust = `${publicUrl}?t=${Date.now()}`;
+
+      await supabase
+        .from("profiles")
+        .update({ avatar_url: urlWithBust })
+        .eq("id", profile.id);
+
+      setAvatarUrl(urlWithBust);
+      toast.success("Profile photo updated");
+      router.refresh();
+    } catch {
+      setError("Avatar upload failed. Please try again.");
+    }
+    setAvatarUploading(false);
+  }
+
   async function handleSave() {
     setError("");
-    setSuccess(false);
     setLoading(true);
 
     const { error: updateError } = await supabase
@@ -70,7 +112,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
     if (updateError) {
       setError(updateError.message);
     } else {
-      setSuccess(true);
+      toast.success("Profile updated");
       router.refresh();
     }
     setLoading(false);
@@ -81,9 +123,70 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
       <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
 
       <ErrorBanner message={error} />
-      <SuccessBanner message={success ? "Profile updated!" : null} />
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
+        {/* Avatar upload */}
+        <div className="flex items-center gap-5">
+          <div
+            className="relative group cursor-pointer shrink-0"
+            onClick={() => avatarInputRef.current?.click()}
+          >
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt="Profile photo"
+                width={80}
+                height={80}
+                className="w-20 h-20 rounded-full object-cover border-2 border-gray-100"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center border-2 border-gray-100">
+                <User className="w-8 h-8 text-indigo-400" />
+              </div>
+            )}
+
+            {/* Hover overlay */}
+            {avatarUploading ? (
+              <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
+                <Loader2 className="w-5 h-5 text-white animate-spin" />
+              </div>
+            ) : (
+              <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-gray-900">Profile Photo</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              JPG, PNG or WebP. Max 2 MB.
+            </p>
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors disabled:opacity-50"
+            >
+              {avatarUrl ? "Change photo" : "Upload photo"}
+            </button>
+          </div>
+
+          <input
+            ref={avatarInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleAvatarUpload(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
+
+        <div className="border-t border-gray-100" />
+
         <div>
           <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
             <User className="w-3.5 h-3.5" /> Display Name
@@ -116,24 +219,25 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </p>
         </div>
 
-        <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
-            <Phone className="w-3.5 h-3.5" /> Phone Number
-          </label>
-          <FormInput
-            type="tel"
-            placeholder="+357 99 123456"
-            value={formData.phone}
-            onChange={(e) => update("phone", e.target.value)}
-          />
-        </div>
-
         {/* Contact Methods */}
         <div className="pt-2 border-t border-gray-100">
           <p className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-1.5">
             <MessageCircle className="w-3.5 h-3.5" /> Contact Methods
           </p>
           <div className="space-y-4">
+            <div>
+              <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+                <Phone className="w-3.5 h-3.5" /> Phone Number
+              </label>
+              <PhoneInput
+                value={formData.phone}
+                onChange={(v) => update("phone", v)}
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Your primary contact number for buyers.
+              </p>
+            </div>
+
             <div>
               <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
                 {/* WhatsApp icon */}
@@ -146,16 +250,13 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                 </svg>
                 WhatsApp Number
               </label>
-              <input
-                type="tel"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none text-sm"
-                placeholder="+357 99 123456"
+              <PhoneInput
                 value={formData.whatsapp_number}
-                onChange={(e) => update("whatsapp_number", e.target.value)}
+                onChange={(v) => update("whatsapp_number", v)}
+                focusClass="focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-100"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Include country code (e.g. +357 for Cyprus). Buyers will be able
-                to message you directly on WhatsApp.
+                Buyers will be able to message you directly on WhatsApp.
               </p>
             </div>
 

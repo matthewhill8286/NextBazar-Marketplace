@@ -15,8 +15,8 @@ import { notFound } from "next/navigation";
 import { PRO_SELLER_FEATURE_GROUPS } from "@/app/[locale]/dashboard/dealer/pro-seller-features";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { getClientPricing } from "@/lib/stripe";
-import DealersSubscribeButton from "./subscribe-button";
 import PromoCodeInput from "./promo-code-input";
+import DealersSubscribeButton from "./subscribe-button";
 
 export const metadata: Metadata = {
   title: "Pro Seller — NextBazar",

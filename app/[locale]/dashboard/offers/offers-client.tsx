@@ -160,10 +160,7 @@ function Pagination({
         </button>
         {Array.from({ length: totalPages }, (_, i) => (
           <button
-            key={`pagination-${
-              // biome-ignore lint/suspicious/noArrayIndexKey: string key here
-              i
-            }`}
+            key={`pagination-${i}`}
             type="button"
             onClick={() => onPage(i)}
             className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${

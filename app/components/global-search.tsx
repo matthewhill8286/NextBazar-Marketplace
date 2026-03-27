@@ -255,6 +255,12 @@ export default function GlobalSearch() {
     loadSuggestions();
   }
 
+  function handleBlur(e: React.FocusEvent) {
+    // If focus moves to another element inside the container, keep open
+    if (containerRef.current?.contains(e.relatedTarget as Node)) return;
+    setOpen(false);
+  }
+
   const trimmedQuery = query.trim();
   const hasQuery = trimmedQuery.length >= 2;
   const showSuggestions =
@@ -264,6 +270,7 @@ export default function GlobalSearch() {
   return (
     <div
       ref={containerRef}
+      onBlur={handleBlur}
       className="relative flex-1 max-w-xl hidden md:block"
     >
       {/* Search input */}

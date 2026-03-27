@@ -26,6 +26,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import MakeOfferModal from "@/app/components/make-offer-modal";
+import { useTimeAgoDays } from "@/app/helpers/time-ago";
 import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_KEYS } from "@/lib/format-helpers";
@@ -227,9 +228,17 @@ export default function ListingDetail({
   } | null>(null);
   const [offerCount, setOfferCount] = useState(0);
   const [shopSlug, setShopSlug] = useState<string | null>(null);
-  const [shopAccentColor, setShopAccentColor] = useState<string | null>(initialAccentColor);
+  const [shopAccentColor, setShopAccentColor] = useState<string | null>(
+    initialAccentColor,
+  );
 
   const dateLocale = locale === "el" ? "el-GR" : "en-GB";
+
+  // Defer Date.now() to the client to avoid prerender errors
+  const timeAgoDaysResult = useTimeAgoDays(
+    listing?.created_at ?? "",
+    "listing",
+  );
 
   function formatPrice(p: number | null, currency: string): string {
     if (p === null) return t("contactForPrice");
@@ -238,13 +247,9 @@ export default function ListingDetail({
   }
 
   function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return t("timeMinutes", { n: mins });
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return t("timeHours", { n: hrs });
-    const days = Math.floor(hrs / 24);
-    if (days < 30) return t("timeDays", { n: days });
+    if (timeAgoDaysResult === null) return "";
+    if (typeof timeAgoDaysResult === "number" && timeAgoDaysResult < 30)
+      return t("timeDays", { n: timeAgoDaysResult });
     return new Date(dateStr).toLocaleDateString(dateLocale, {
       day: "numeric",
       month: "short",
@@ -310,10 +315,14 @@ export default function ListingDetail({
                 .single()
             : Promise.resolve({ data: null });
 
-        const [relResult, shopResult] = await Promise.all([relatedPromise, shopPromise]);
+        const [relResult, shopResult] = await Promise.all([
+          relatedPromise,
+          shopPromise,
+        ]);
         setRelated((relResult.data || []) as ListingCardRow[]);
         if (shopResult.data?.slug) setShopSlug(shopResult.data.slug);
-        if (shopResult.data?.accent_color) setShopAccentColor(shopResult.data.accent_color);
+        if (shopResult.data?.accent_color)
+          setShopAccentColor(shopResult.data.accent_color);
       } else {
         // Server already provided the listing — only fetch shop slug if needed
         // (accent color is already provided via initialAccentColor)
@@ -987,19 +996,37 @@ export default function ListingDetail({
                             : `/profile/${listing.user_id}`
                         }
                         className="font-semibold text-gray-900 truncate transition-colors"
-                        style={shopAccentColor ? { ["--seller-accent" as string]: shopAccentColor } : undefined}
+                        style={
+                          shopAccentColor
+                            ? { ["--seller-accent" as string]: shopAccentColor }
+                            : undefined
+                        }
                       >
                         {profile?.display_name || "Seller"}
                       </Link>
                       {profile?.verified && (
-                        <Shield className="w-4 h-4 shrink-0" style={shopAccentColor ? { color: shopAccentColor } : { color: "#6366f1" }} />
+                        <Shield
+                          className="w-4 h-4 shrink-0"
+                          style={
+                            shopAccentColor
+                              ? { color: shopAccentColor }
+                              : { color: "#6366f1" }
+                          }
+                        />
                       )}
                       {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
                         <span
                           className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
-                          style={shopAccentColor
-                            ? { backgroundColor: `${shopAccentColor}14`, color: shopAccentColor }
-                            : { backgroundColor: "rgb(243 232 255)", color: "rgb(126 34 206)" }
+                          style={
+                            shopAccentColor
+                              ? {
+                                  backgroundColor: `${shopAccentColor}14`,
+                                  color: shopAccentColor,
+                                }
+                              : {
+                                  backgroundColor: "rgb(243 232 255)",
+                                  color: "rgb(126 34 206)",
+                                }
                           }
                         >
                           PRO

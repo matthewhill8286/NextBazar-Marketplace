@@ -7,9 +7,6 @@ import {
 } from "@/lib/supabase/queries";
 import ListingDetailServer from "./listing-detail-server";
 
-// Revalidate ISR every 60 seconds — matches the cache TTL in queries.ts
-export const revalidate = 60;
-
 // ─── SEO metadata (reuses the same cache as the page component) ──────────────
 export async function generateMetadata(
   props: PageProps<"/[locale]/listing/[slug]">,
@@ -24,8 +21,14 @@ export async function generateMetadata(
     };
   }
 
-  const profile = listing.profiles && !Array.isArray(listing.profiles) ? listing.profiles : null;
-  const category = listing.categories && !Array.isArray(listing.categories) ? listing.categories : null;
+  const profile =
+    listing.profiles && !Array.isArray(listing.profiles)
+      ? listing.profiles
+      : null;
+  const category =
+    listing.categories && !Array.isArray(listing.categories)
+      ? listing.categories
+      : null;
   const price =
     listing.price !== null
       ? `${listing.currency === "EUR" ? "€" : listing.currency}${listing.price.toLocaleString()}`

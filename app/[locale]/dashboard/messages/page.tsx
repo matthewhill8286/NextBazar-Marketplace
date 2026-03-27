@@ -304,7 +304,7 @@ export default function MessagesPage() {
                         className="fixed inset-0 z-20"
                         onClick={() => setActiveMenu(null)}
                       />
-                      <div className="absolute right-0 top-full mt-1 z-30 bg-white border border-gray-100 rounded-xl shadow-lg py-1 min-w-[160px]">
+                      <div className="absolute right-0 top-full mt-1 z-30 bg-white border border-gray-100 rounded-xl shadow-sm py-1 min-w-[160px]">
                         <button
                           onClick={(e) => handlePin(conv, e)}
                           className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

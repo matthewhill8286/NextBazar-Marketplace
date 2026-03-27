@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import PurchasesClient from "./purchases-client";
@@ -54,7 +53,10 @@ export default function PurchasesPage() {
         {/* Tabs skeleton */}
         <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-9 flex-1 bg-gray-200 rounded-lg animate-pulse" />
+            <div
+              key={i}
+              className="h-9 flex-1 bg-gray-200 rounded-lg animate-pulse"
+            />
           ))}
         </div>
         {/* List rows skeleton */}

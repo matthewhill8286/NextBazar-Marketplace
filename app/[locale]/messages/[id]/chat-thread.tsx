@@ -435,7 +435,7 @@ export default function ChatThread({
 
   return (
     <div
-      className="max-w-3xl mx-auto flex flex-col"
+      className="mx-auto flex flex-col"
       style={{ height: "calc(100vh - 80px)" }}
     >
       {/* Header */}
@@ -621,7 +621,7 @@ export default function ChatThread({
 
                       {activeMenu === msg.id && (
                         <div
-                          className={`absolute bottom-full mb-1 z-20 bg-white border border-gray-100 rounded-xl shadow-lg py-1 min-w-[140px] ${isMe ? "right-0" : "left-0"}`}
+                          className={`absolute bottom-full mb-1 z-20 bg-white border border-gray-100 rounded-xl shadow-sm py-1 min-w-[140px] ${isMe ? "right-0" : "left-0"}`}
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button

@@ -133,7 +133,7 @@ export default function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-60 bg-white rounded-xl border border-gray-100 shadow-lg py-2 z-50">
+        <div className="absolute right-0 top-12 w-60 bg-white rounded-xl border border-gray-100 shadow-sm py-2 z-50">
           {/* User info */}
           <div className="px-4 py-2.5 border-b border-gray-100">
             <p className="text-sm font-semibold text-gray-900 truncate">

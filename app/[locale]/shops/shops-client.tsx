@@ -104,7 +104,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
                 placeholder="Search shops by name or description..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-0 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-white/20 transition-all shadow-lg shadow-indigo-900/20"
+                className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-0 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-white/20 transition-all shadow-sm shadow-indigo-900/20"
               />
             </div>
           </div>
@@ -188,7 +188,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
   return (
     <Link
       href={`/shop/${shop.slug}`}
-      className="group block bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all duration-300"
+      className="group block bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-sm hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all duration-300"
     >
       {/* Banner */}
       <div

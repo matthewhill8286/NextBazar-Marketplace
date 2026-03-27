@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Sparkles, Upload, X } from "lucide-react";
+import { GripVertical, Loader2, Sparkles, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -30,6 +30,8 @@ export default function ImageUpload({
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
   const supabase = createClient();
 
   // Client-side compression: resize to ≤1600px and convert to WebP before upload
@@ -214,19 +216,54 @@ export default function ImageUpload({
         />
       </div>
 
-      {/* Image previews */}
+      {/* Image previews — drag to reorder */}
       {images.length > 0 && (
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
           {images.map((img, idx) => (
             <div
               key={img.id}
-              className="relative aspect-square rounded-xl overflow-hidden border border-gray-200 group bg-gray-100"
+              draggable={!img.uploading}
+              onDragStart={(e) => {
+                setDragIdx(idx);
+                e.dataTransfer.effectAllowed = "move";
+                // Use a tiny transparent image so the default ghost is replaced by our CSS
+                const ghost = document.createElement("div");
+                ghost.style.opacity = "0";
+                document.body.appendChild(ghost);
+                e.dataTransfer.setDragImage(ghost, 0, 0);
+                requestAnimationFrame(() => ghost.remove());
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "move";
+                if (dragIdx !== null && idx !== overIdx) {
+                  setOverIdx(idx);
+                }
+              }}
+              onDragEnd={() => {
+                if (dragIdx !== null && overIdx !== null && dragIdx !== overIdx) {
+                  const reordered = [...images];
+                  const [moved] = reordered.splice(dragIdx, 1);
+                  reordered.splice(overIdx, 0, moved);
+                  onChangeAction(reordered);
+                }
+                setDragIdx(null);
+                setOverIdx(null);
+              }}
+              onDrop={(e) => e.preventDefault()}
+              className={`relative aspect-square rounded-xl overflow-hidden border-2 group bg-gray-100 cursor-grab active:cursor-grabbing transition-all duration-150 ${
+                dragIdx === idx
+                  ? "opacity-40 scale-95 border-indigo-400"
+                  : overIdx === idx && dragIdx !== null
+                    ? "border-indigo-400 ring-2 ring-indigo-200 scale-[1.02]"
+                    : "border-gray-200"
+              }`}
             >
               <Image
                 src={img.preview}
                 alt={`Upload ${idx + 1}`}
                 fill
-                className="object-cover"
+                className="object-cover pointer-events-none"
                 sizes="150px"
               />
 
@@ -243,6 +280,11 @@ export default function ImageUpload({
                   Cover
                 </span>
               )}
+
+              {/* Drag handle hint */}
+              <div className="absolute top-1.5 left-1.5 p-0.5 bg-black/50 rounded text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                <GripVertical className="w-3.5 h-3.5" />
+              </div>
 
               {/* Remove button */}
               <button

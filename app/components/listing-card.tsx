@@ -11,7 +11,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useCompare } from "@/lib/compare-context";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
@@ -49,10 +49,7 @@ type ListingCardProps = {
   onUnsave?: () => void;
 };
 
-function ListingCard({
-  listing,
-  accentColor,
-}: ListingCardProps) {
+function ListingCard({ listing, accentColor }: ListingCardProps) {
   const t = useTranslations("listing");
   const { add, remove, isCompared, isFull } = useCompare();
 
@@ -69,15 +66,20 @@ function ListingCard({
     return `${sym}${price.toLocaleString()}`;
   }
 
-  function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return t("timeMinutes", { n: mins });
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return t("timeHours", { n: hrs });
-    const days = Math.floor(hrs / 24);
-    return t("timeDays", { n: days });
-  }
+  const [timeAgoLabel, setTimeAgoLabel] = useState("");
+
+  useEffect(() => {
+    function computeTimeAgo(dateStr: string): string {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 60) return t("timeMinutes", { n: mins });
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return t("timeHours", { n: hrs });
+      const days = Math.floor(hrs / 24);
+      return t("timeDays", { n: days });
+    }
+    setTimeAgoLabel(computeTimeAgo(listing.created_at));
+  }, [listing.created_at, t]);
 
   function formatCondition(condition: string): string {
     const key = CONDITION_KEYS[condition];
@@ -132,7 +134,7 @@ function ListingCard({
         {/* Sold overlay */}
         {isSold && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <span className="bg-white text-gray-900 text-sm font-bold px-5 py-1.5 rounded-full shadow-lg tracking-widest uppercase">
+            <span className="bg-white text-gray-900 text-sm font-bold px-5 py-1.5 rounded-full shadow-sm tracking-widest uppercase">
               {t("sold")}
             </span>
           </div>
@@ -239,7 +241,7 @@ function ListingCard({
           </span>
           <span className="flex items-center gap-1 text-[11px] text-gray-400">
             <Clock className="w-3 h-3" />
-            {timeAgo(listing.created_at)}
+            {timeAgoLabel}
           </span>
         </div>
       </div>
