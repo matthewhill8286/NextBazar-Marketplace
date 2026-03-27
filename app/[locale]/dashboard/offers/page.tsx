@@ -8,6 +8,7 @@ import OffersClient from "./offers-client";
 export default function OffersPage() {
   const searchParams = useSearchParams();
   const focusOfferId = searchParams.get("offer") ?? undefined;
+  const initialTab = (searchParams.get("tab") as "received" | "sent") ?? undefined;
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,5 +46,5 @@ export default function OffersPage() {
 
   if (!userId) return null;
 
-  return <OffersClient userId={userId} focusOfferId={focusOfferId} />;
+  return <OffersClient userId={userId} focusOfferId={focusOfferId} initialTab={initialTab} />;
 }

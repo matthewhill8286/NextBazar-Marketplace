@@ -13,7 +13,8 @@
     "viewAllResults": "Δείτε όλα τα αποτελέσματα για \"{query}\"",
     "recentSearches": "Πρόσφατα",
     "trending": "Δημοφιλή",
-    "categories": "Κατηγορίες"
+    "categories": "Κατηγορίες",
+    "noMessages": "No messages yet"
   },
   "footer": {
     "tagline": "Η πιο έξυπνη αγορά της Κύπρου για αγοραπωλησίες.",

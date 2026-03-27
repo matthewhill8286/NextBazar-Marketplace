@@ -10,7 +10,7 @@ type Props = {
   revieweeId: string;
   revieweeName: string;
   onCloseAction: () => void;
-  onReviewedAction: () => void;
+  onReviewedAction: (rating: number) => void;
 };
 
 export default function LeaveReviewModal({
@@ -64,7 +64,7 @@ export default function LeaveReviewModal({
     setDone(true);
     setLoading(false);
     setTimeout(() => {
-      onReviewedAction();
+      onReviewedAction(rating);
       onCloseAction();
     }, 1500);
   }

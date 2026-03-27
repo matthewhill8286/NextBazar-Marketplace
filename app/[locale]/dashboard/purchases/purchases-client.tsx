@@ -269,8 +269,9 @@ function PurchaseCard({
           revieweeId={seller.id}
           revieweeName={seller.display_name}
           onCloseAction={() => setShowReview(false)}
-          onReviewedAction={() => {
+          onReviewedAction={(rating) => {
             setHasReviewed(true);
+            setExistingRating(rating);
             setShowReview(false);
           }}
         />

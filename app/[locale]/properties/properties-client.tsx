@@ -16,7 +16,7 @@ const TABS: TabConfig[] = [
     icon: Building2,
     description:
       "Find your dream home — browse apartments, houses, villas, land plots, and commercial properties for sale across Cyprus.",
-    subcategorySlugs: ["apartments-sale", "houses-sale", "commercial", "land"],
+    subcategorySlugs: ["for-sale", "commercial", "land"],
   },
   {
     key: "rent",
@@ -24,7 +24,7 @@ const TABS: TabConfig[] = [
     icon: Key,
     description:
       "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets across Cyprus.",
-    subcategorySlugs: ["apartments-rent", "houses-rent"],
+    subcategorySlugs: ["for-rent"],
   },
   {
     key: "new-developments",
@@ -32,7 +32,7 @@ const TABS: TabConfig[] = [
     icon: Hammer,
     description:
       "Explore off-plan and newly built projects from trusted developers — modern designs, payment plans, and early-bird pricing.",
-    subcategorySlugs: [],
+    subcategorySlugs: ["new-developments"],
   },
 ];
 
