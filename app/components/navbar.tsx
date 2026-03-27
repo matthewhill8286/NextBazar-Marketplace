@@ -85,7 +85,7 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
         {/* Logo — full wordmark on desktop, icon only on mobile */}
-        <Link href="/" className="shrink-0 flex items-center">
+        <Link href="/" className="shrink-0 flex items-center gap-2">
           {/* Desktop: full wordmark */}
           <Image
             src="/nextbazar-logo.svg"
@@ -104,6 +104,9 @@ export default function Navbar() {
             priority
             className="md:hidden h-10 w-10"
           />
+          <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+            Beta
+          </span>
         </Link>
 
         {/* Global search — desktop only */}

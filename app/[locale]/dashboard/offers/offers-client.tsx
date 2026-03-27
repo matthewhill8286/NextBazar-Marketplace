@@ -65,6 +65,7 @@ type Offer = {
 type Props = {
   userId: string;
   focusOfferId?: string;
+  initialTab?: "received" | "sent";
 };
 
 const STATUS_CONFIG: Record<
@@ -688,7 +689,10 @@ function OfferCard({
           revieweeId={person.id}
           revieweeName={person.display_name}
           onCloseAction={() => setShowReviewModal(false)}
-          onReviewedAction={() => setHasReviewed(true)}
+          onReviewedAction={(rating) => {
+            setHasReviewed(true);
+            setExistingRating(rating);
+          }}
         />
       )}
 
@@ -790,11 +794,10 @@ export function SellerOfferCard(props: OfferCardPublicProps) {
   return <OfferCard {...props} isSeller={true} />;
 }
 
-export default function OffersClient({ userId, focusOfferId }: Props) {
+export default function OffersClient({ userId, focusOfferId, initialTab }: Props) {
   const supabase = createClient();
 
-  const defaultTab: "received" | "sent" = "received";
-  const [tab, setTab] = useState<"received" | "sent">(defaultTab);
+  const [tab, setTab] = useState<"received" | "sent">(initialTab ?? "received");
   const [receivedPage, setReceivedPage] = useState(0);
   const [sentPage, setSentPage] = useState(0);
   const [received, setReceived] = useState<Offer[]>([]);
@@ -889,11 +892,11 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
     enabled: !!userId,
   });
 
-  // If there's a focused offer and it's in the sent list, switch to that tab
+  // If there's a focused offer but no explicit tab, auto-detect from data
   useEffect(() => {
-    if (!focusOfferId) return;
+    if (!focusOfferId || initialTab) return;
     if (sent.some((o) => o.id === focusOfferId)) setTab("sent");
-  }, [focusOfferId, sent]);
+  }, [focusOfferId, initialTab, sent]);
 
   function updateOffer(
     list: Offer[],
@@ -913,16 +916,62 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
     }
   }
 
-  const pendingReceivedCount =
-    receivedTotal > 0
-      ? received.filter((o) => o.status === "pending").length
-      : 0;
-
   const offers = tab === "received" ? received : sent;
   const total = tab === "received" ? receivedTotal : sentTotal;
   const page = tab === "received" ? receivedPage : sentPage;
   const setPage = tab === "received" ? setReceivedPage : setSentPage;
   const isSeller = tab === "received";
+
+  // ── Group offers by status ──────────────────────────────────────────────
+  const STATUS_SECTIONS: {
+    key: string;
+    label: string;
+    icon: React.ReactNode;
+    statuses: string[];
+    emptyLabel: string;
+  }[] = [
+    {
+      key: "pending",
+      label: "Pending",
+      icon: <Clock className="w-4 h-4 text-amber-500" />,
+      statuses: ["pending"],
+      emptyLabel: "No pending offers",
+    },
+    {
+      key: "countered",
+      label: "Countered",
+      icon: <RotateCcw className="w-4 h-4 text-indigo-500" />,
+      statuses: ["countered"],
+      emptyLabel: "No countered offers",
+    },
+    {
+      key: "accepted",
+      label: "Accepted",
+      icon: <Check className="w-4 h-4 text-green-500" />,
+      statuses: ["accepted"],
+      emptyLabel: "No accepted offers",
+    },
+    {
+      key: "closed",
+      label: "Declined & Expired",
+      icon: <X className="w-4 h-4 text-gray-400" />,
+      statuses: ["declined", "withdrawn", "expired"],
+      emptyLabel: "No declined or expired offers",
+    },
+  ];
+
+  const grouped = STATUS_SECTIONS.map((section) => ({
+    ...section,
+    offers: offers.filter((o) => section.statuses.includes(o.status)),
+  }));
+
+  // Count badges
+  const pendingReceivedCount = received.filter(
+    (o) => o.status === "pending",
+  ).length;
+  const pendingSentCount = sent.filter(
+    (o) => o.status === "pending" || o.status === "countered",
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -963,9 +1012,9 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
           }`}
         >
           Sent
-          {sent.filter((o) => o.status === "pending").length > 0 && (
+          {pendingSentCount > 0 && (
             <span className="bg-gray-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-              {sent.filter((o) => o.status === "pending").length}
+              {pendingSentCount}
             </span>
           )}
         </button>
@@ -1002,22 +1051,45 @@ export default function OffersClient({ userId, focusOfferId }: Props) {
           )}
         </div>
       ) : (
-        <div className="space-y-3">
-          {offers.map((offer) => (
-            <OfferCard
-              key={offer.id}
-              offer={offer}
-              isSeller={isSeller}
-              userId={userId}
-              focused={offer.id === focusOfferId}
-              onUpdate={(id, patch) =>
-                isSeller
-                  ? setReceived((prev) => updateOffer(prev, id, patch))
-                  : setSent((prev) => updateOffer(prev, id, patch))
-              }
-              onDelete={handleDelete}
-            />
-          ))}
+        <div className="space-y-8">
+          {grouped.map(
+            (section) =>
+              section.offers.length > 0 && (
+                <div key={section.key}>
+                  {/* Section header */}
+                  <div className="flex items-center gap-2 mb-3">
+                    {section.icon}
+                    <h2 className="text-sm font-semibold text-gray-700">
+                      {section.label}
+                    </h2>
+                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                      {section.offers.length}
+                    </span>
+                  </div>
+
+                  {/* Offer cards */}
+                  <div className="space-y-3">
+                    {section.offers.map((offer) => (
+                      <OfferCard
+                        key={offer.id}
+                        offer={offer}
+                        isSeller={isSeller}
+                        userId={userId}
+                        focused={offer.id === focusOfferId}
+                        onUpdate={(id, patch) =>
+                          isSeller
+                            ? setReceived((prev) =>
+                                updateOffer(prev, id, patch),
+                              )
+                            : setSent((prev) => updateOffer(prev, id, patch))
+                        }
+                        onDelete={handleDelete}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ),
+          )}
 
           <Pagination page={page} total={total} onPage={setPage} />
         </div>

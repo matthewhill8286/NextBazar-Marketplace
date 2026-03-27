@@ -14,9 +14,10 @@ import {
   ShieldCheck,
   Sparkles,
   Store,
+  X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+/* Image import removed — banner now uses CSS background-image */
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -147,6 +148,7 @@ export default function ShopOnboardingWizard({
   // Banner upload
   const [bannerUrl, setBannerUrl] = useState("");
   const [bannerUploading, setBannerUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-advance from welcome after 3 seconds
@@ -523,58 +525,18 @@ export default function ShopOnboardingWizard({
               />
             </div>
 
-            {/* Banner upload */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Shop Banner{" "}
-                <span className="text-gray-400 font-normal">(optional)</span>
-              </label>
-              {bannerUrl ? (
-                <div className="relative rounded-xl overflow-hidden border border-gray-200 h-32">
-                  <Image
-                    src={bannerUrl}
-                    alt="Shop banner"
-                    fill
-                    className="object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setBannerUrl("")}
-                    className="absolute top-2 right-2 w-7 h-7 bg-black/50 hover:bg-black/70 rounded-lg flex items-center justify-center text-white transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => bannerInputRef.current?.click()}
-                  disabled={bannerUploading}
-                  className="w-full h-24 rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-300 transition-colors flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:text-indigo-500"
-                >
-                  {bannerUploading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Sparkles className="w-5 h-5" />
-                      <span className="text-xs font-medium">
-                        Upload a banner image
-                      </span>
-                    </>
-                  )}
-                </button>
-              )}
-              <input
-                ref={bannerInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleBannerUpload(file);
-                }}
-              />
-            </div>
+            {/* Hidden file input for banner */}
+            <input
+              ref={bannerInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleBannerUpload(file);
+                e.target.value = "";
+              }}
+            />
           </div>
 
           {/* ── Live shop preview ──────────────────────────────────────────── */}
@@ -586,25 +548,36 @@ export default function ShopOnboardingWizard({
               </span>
             </div>
 
-            {/* Hero banner */}
-            <div className="relative">
-              {bannerUrl ? (
-                <div className="h-36 sm:h-44 w-full overflow-hidden relative">
-                  <Image
-                    src={bannerUrl}
-                    alt="Shop banner"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                </div>
-              ) : (
-                <div
-                  className="h-36 sm:h-44 w-full overflow-hidden"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentColor} 0%, ${darkenHex(accentColor)} 50%, ${darkenHex(darkenHex(accentColor))} 100%)`,
-                  }}
-                >
+            {/* Hero banner — doubles as upload drop zone */}
+            <div
+              className="relative group/banner cursor-pointer"
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOver(true);
+              }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setDragOver(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file) handleBannerUpload(file);
+              }}
+              onClick={() => bannerInputRef.current?.click()}
+            >
+              <div
+                className={`h-36 sm:h-44 w-full overflow-hidden transition-all ${dragOver ? "ring-2 ring-inset ring-indigo-400" : ""}`}
+                style={{
+                  backgroundImage: bannerUrl
+                    ? `url(${bannerUrl})`
+                    : `linear-gradient(135deg, ${accentColor} 0%, ${darkenHex(accentColor)} 50%, ${darkenHex(darkenHex(accentColor))} 100%)`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                {bannerUrl && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
+                )}
+                {!bannerUrl && (
                   <div className="absolute inset-0 opacity-10">
                     <div
                       className="absolute inset-0"
@@ -614,7 +587,35 @@ export default function ShopOnboardingWizard({
                       }}
                     />
                   </div>
+                )}
+              </div>
+
+              {/* Upload / change overlay */}
+              {bannerUploading ? (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+                  <Loader2 className="w-6 h-6 text-white animate-spin" />
                 </div>
+              ) : (
+                <div className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-indigo-600/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}>
+                  <span className={`flex items-center gap-2 bg-white/90 text-gray-700 text-xs font-semibold px-3.5 py-2 rounded-full shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    {bannerUrl ? "Change Banner" : "Upload Banner"}
+                  </span>
+                </div>
+              )}
+
+              {/* Remove button — only when banner exists */}
+              {bannerUrl && !bannerUploading && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setBannerUrl("");
+                  }}
+                  className="absolute top-2.5 right-2.5 p-1.5 bg-black/60 rounded-full text-white opacity-0 group-hover/banner:opacity-100 transition-opacity hover:bg-black/80 z-20"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
               )}
             </div>
 

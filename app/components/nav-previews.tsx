@@ -162,7 +162,7 @@ export function MessagesPreview() {
       <div className="px-4 py-6 text-center">
         <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
         <p className="text-sm text-gray-400">
-          {t("no-messages") || "No messages yet"}
+          {t("noMessages")}
         </p>
       </div>
     );
@@ -393,6 +393,18 @@ export function NotificationsPreview() {
     );
   }
 
+  function handleClick(n: NotificationPreview) {
+    if (!n.read) {
+      // Mark as read in the database
+      const supabase = createClient();
+      supabase.from("notifications").update({ read: true }).eq("id", n.id).then();
+      // Update local state immediately
+      setNotifs((prev) =>
+        prev.map((item) => (item.id === n.id ? { ...item, read: true } : item)),
+      );
+    }
+  }
+
   return (
     <>
       <div className="divide-y divide-gray-50">
@@ -403,7 +415,8 @@ export function NotificationsPreview() {
             <Wrapper
               key={n.id}
               {...(wrapperProps as any)}
-              className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${!n.read ? "bg-indigo-50/40" : ""}`}
+              onClick={() => handleClick(n)}
+              className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer ${!n.read ? "bg-indigo-50/40" : ""}`}
             >
               <span className="text-base shrink-0 mt-0.5">
                 {NOTIF_ICONS[n.type] || "📋"}
@@ -428,12 +441,27 @@ export function NotificationsPreview() {
           );
         })}
       </div>
-      <Link
-        href="/dashboard/notifications"
-        className="block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 py-2.5 border-t border-gray-100 hover:bg-gray-50 transition-colors"
-      >
-        View all notifications →
-      </Link>
+      <div className="flex items-center border-t border-gray-100">
+        {notifs.some((n) => !n.read) && (
+          <button
+            onClick={() => {
+              const supabase = createClient();
+              const unreadIds = notifs.filter((n) => !n.read).map((n) => n.id);
+              supabase.from("notifications").update({ read: true }).in("id", unreadIds).then();
+              setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+            }}
+            className="flex-1 text-center text-xs font-semibold text-green-600 hover:text-green-700 py-2.5 hover:bg-green-50/50 transition-colors flex items-center justify-center gap-1"
+          >
+            ✓ Mark all read
+          </button>
+        )}
+        <Link
+          href="/dashboard/notifications"
+          className={`flex-1 block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 py-2.5 hover:bg-gray-50 transition-colors ${notifs.some((n) => !n.read) ? "border-l border-gray-100" : ""}`}
+        >
+          View all notifications →
+        </Link>
+      </div>
     </>
   );
 }

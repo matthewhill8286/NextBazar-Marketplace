@@ -13,7 +13,8 @@
     "viewAllResults": "View all results for \"{query}\"",
     "recentSearches": "Recent",
     "trending": "Trending",
-    "categories": "Categories"
+    "categories": "Categories",
+    "noMessages": "No messages yet"
   },
   "footer": {
     "tagline": "Cyprus's smartest marketplace for buying and selling anything.",
