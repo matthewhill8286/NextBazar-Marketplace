@@ -1,5 +1,4 @@
 import {
-  Activity,
   ArrowLeft,
   Box,
   Calendar,
@@ -29,11 +28,7 @@ import type {
   ListingDetailRow,
 } from "@/lib/supabase/supabase.types";
 import ImageGallery from "./image-gallery";
-import {
-  FavoriteAction,
-  ReportAction,
-  ShareAction,
-} from "./listing-actions";
+import { FavoriteAction, ReportAction, ShareAction } from "./listing-actions";
 import ListingInteractions from "./listing-interactions";
 import OwnerInsights from "./owner-insights";
 import PriceHistory from "./price-history";
@@ -134,555 +129,546 @@ export default async function ListingDetailServer({
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50">
-        {/* Breadcrumb */}
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-gray-500 overflow-x-auto hide-scrollbar">
-            <Link
-              href="/"
-              className="hover:text-gray-700 flex items-center gap-1 shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {tCommon("home")}
-            </Link>
-            <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
-            <Link
-              href={`/search?category=${listing.categories?.slug || ""}`}
-              className="hover:text-gray-700 shrink-0"
-            >
-              {listing.categories?.name || "Listing"}
-            </Link>
-            {listing.subcategories && (
-              <>
-                <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
-                <Link
-                  href={`/search?category=${listing.categories?.slug || ""}&subcategory=${listing.subcategories.slug}`}
-                  className="hover:text-gray-700 shrink-0"
-                >
-                  {listing.subcategories.name}
-                </Link>
-              </>
-            )}
-            <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
-            <span className="text-gray-900 font-medium truncate">
-              {listing.title}
-            </span>
-          </nav>
-        </div>
-
-        {/* Gallery — client component, renders immediately with server data */}
-        <div className="max-w-7xl mx-auto px-4 mb-6">
-          <ImageGallery
-            images={galleryImages}
-            title={listing.title}
-            videoUrl={listing.video_url}
-            listingStatus={listing.status}
-            offerStatus={null}
-          />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* ═══ LEFT COLUMN ═══ */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Title card */}
-              <div
-                className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}
+    <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <nav className="flex items-center gap-1.5 text-sm text-gray-500 overflow-x-auto hide-scrollbar">
+          <Link
+            href="/"
+            className="hover:text-gray-700 flex items-center gap-1 shrink-0"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            {tCommon("home")}
+          </Link>
+          <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+          <Link
+            href={`/search?category=${listing.categories?.slug || ""}`}
+            className="hover:text-gray-700 shrink-0"
+          >
+            {listing.categories?.name || "Listing"}
+          </Link>
+          {listing.subcategories && (
+            <>
+              <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+              <Link
+                href={`/search?category=${listing.categories?.slug || ""}&subcategory=${listing.subcategories.slug}`}
+                className="hover:text-gray-700 shrink-0"
               >
-                {/* Sold banner */}
-                {listing.status === "sold" && (
-                  <div className="flex items-center justify-center gap-3 bg-gray-900 text-white py-3 px-6">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">
-                      ━━━
-                    </span>
-                    <span className="text-sm font-black uppercase tracking-[0.2em]">
-                      {t("sold")}
-                    </span>
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">
-                      ━━━
-                    </span>
-                  </div>
-                )}
-                <div className="p-6">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    {listing.is_promoted && (
-                      <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                        {t("featured")}
-                      </span>
-                    )}
-                    {listing.is_urgent && (
-                      <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-                        {t("urgent")}
-                      </span>
-                    )}
-                    <span
-                      className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5`}
-                    >
-                      <CategoryIcon slug={listing.categories?.slug} size={12} />
-                      <span
-                        className={
-                          getCategoryConfig(listing.categories?.slug).color
-                        }
-                      >
-                        {listing.categories?.name}
-                      </span>
-                    </span>
-                    {listing.condition && (
-                      <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                        {conditionLabel(listing.condition)}
-                      </span>
-                    )}
-                    {listing.price_type === "negotiable" && (
-                      <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                        {tCommon("negotiable")}
-                      </span>
-                    )}
-                    {listing.price_type === "free" && (
-                      <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                        {tCommon("free")}
-                      </span>
-                    )}
-                  </div>
+                {listing.subcategories.name}
+              </Link>
+            </>
+          )}
+          <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+          <span className="text-gray-900 font-medium truncate">
+            {listing.title}
+          </span>
+        </nav>
+      </div>
 
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
-                    {listing.title}
-                  </h1>
+      {/* Gallery — client component, renders immediately with server data */}
+      <div className="max-w-7xl mx-auto px-4 mb-6">
+        <ImageGallery
+          images={galleryImages}
+          title={listing.title}
+          videoUrl={listing.video_url}
+          listingStatus={listing.status}
+          offerStatus={null}
+        />
+      </div>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500 mb-5">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      {listing.locations?.name || "Cyprus"}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      {timeAgo(listing.created_at, locale, timeLabels)}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Eye className="w-4 h-4 text-gray-400" />
-                      {t("views", {
-                        count: (listing.view_count || 0).toLocaleString(),
-                      })}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Heart className="w-4 h-4 text-gray-400" />
-                      {t("savedCount", {
-                        count: (listing.favorite_count || 0).toLocaleString(),
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="flex items-end gap-3 mb-1">
-                    <span className="text-3xl md:text-4xl font-bold text-gray-900">
-                      {formatPrice(
-                        listing.price,
-                        listing.currency,
-                        t("contactForPrice"),
-                      )}
-                    </span>
-                    {listing.price_type === "negotiable" && (
-                      <span className="text-sm text-green-600 font-medium pb-1">
-                        {t("priceNegotiable")}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Owner-only market value is rendered inside ListingInteractions */}
-
-                  <div className="flex items-center gap-2 pt-2">
-                    <FavoriteAction listingId={listing.id} />
-                    <ShareAction title={listing.title} slug={listing.slug} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Details grid */}
-              <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  {t("details")}
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <Tag className="w-4 h-4 text-gray-500" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
-                        {t("category")}
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900">
-                        {listing.categories?.name || "—"}
-                      </div>
-                    </div>
-                  </div>
-                  {listing.condition && (
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                      <div className="p-2 bg-white rounded-lg shadow-sm">
-                        <Box className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div>
-                        <div className="text-[11px] text-gray-500 font-medium">
-                          {t("condition")}
-                        </div>
-                        <div className="text-sm font-semibold text-gray-900">
-                          {conditionLabel(listing.condition)}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <MapPin className="w-4 h-4 text-gray-500" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
-                        {t("location")}
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900">
-                        {listing.locations?.name || "Cyprus"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
-                        {t("posted")}
-                      </div>
-                      <div className="text-sm font-semibold text-gray-900">
-                        {formatDate(listing.created_at, locale)}
-                      </div>
-                    </div>
-                  </div>
-                  {/* Owner quality score rendered client-side in ListingInteractions */}
-                </div>
-              </div>
-
-              {/* Vehicle Attributes */}
-              {listing.categories?.slug === "vehicles" &&
-                listing.attributes &&
-                typeof listing.attributes === "object" &&
-                !Array.isArray(listing.attributes) &&
-                (() => {
-                  const rawAttrs = listing.attributes as Record<
-                    string,
-                    unknown
-                  >;
-                  const attrs: Record<string, string> = {};
-                  for (const [k, v] of Object.entries(rawAttrs)) {
-                    if (v != null && v !== "") attrs[k] = String(v);
-                  }
-                  const fields: {
-                    key: string;
-                    label: string;
-                    icon: typeof Car;
-                    format?: (v: string) => string;
-                  }[] = [
-                    { key: "make", label: "Make", icon: Car },
-                    { key: "model", label: "Model", icon: Car },
-                    { key: "year", label: "Year", icon: Calendar },
-                    {
-                      key: "mileage",
-                      label: "Mileage",
-                      icon: Gauge,
-                      format: (v) => `${Number(v).toLocaleString()} km`,
-                    },
-                    {
-                      key: "fuel_type",
-                      label: "Fuel",
-                      icon: Fuel,
-                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
-                    },
-                    {
-                      key: "transmission",
-                      label: "Transmission",
-                      icon: Tag,
-                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
-                    },
-                    { key: "color", label: "Color", icon: Palette },
-                    {
-                      key: "body_type",
-                      label: "Body Type",
-                      icon: Car,
-                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
-                    },
-                    {
-                      key: "engine_size",
-                      label: "Engine",
-                      icon: Gauge,
-                      format: (v) =>
-                        String(v).endsWith("L") ? String(v) : `${v}L`,
-                    },
-                    { key: "doors", label: "Doors", icon: Car },
-                    {
-                      key: "drive_type",
-                      label: "Drive",
-                      icon: Car,
-                      format: (v) => v.toUpperCase(),
-                    },
-                    { key: "owners", label: "Owners", icon: Shield },
-                    {
-                      key: "service_history",
-                      label: "Service History",
-                      icon: Shield,
-                      format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
-                    },
-                  ];
-                  const visible = fields.filter((f) => attrs[f.key]?.trim());
-                  if (visible.length === 0) return null;
-                  return (
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Car className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-lg font-semibold text-gray-900">
-                          Vehicle Specifications
-                        </h2>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {visible.map((field) => {
-                          const Icon = field.icon;
-                          const raw = attrs[field.key];
-                          const display = field.format
-                            ? field.format(raw)
-                            : raw;
-                          return (
-                            <div
-                              key={field.key}
-                              className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5"
-                            >
-                              <div className="p-2 bg-white rounded-lg shadow-sm">
-                                <Icon className="w-4 h-4 text-blue-500" />
-                              </div>
-                              <div>
-                                <div className="text-[11px] text-gray-500 font-medium">
-                                  {field.label}
-                                </div>
-                                <div className="text-sm font-semibold text-gray-900">
-                                  {display}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })()}
-
-              {/* Description */}
-              {listing.description && (
-                <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">
-                    {t("description")}
-                  </h2>
-                  <div className="text-gray-600 leading-relaxed whitespace-pre-wrap text-[15px]">
-                    {listing.description}
-                  </div>
+      <div className="max-w-7xl mx-auto px-4 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* ═══ LEFT COLUMN ═══ */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Title card */}
+            <div
+              className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}
+            >
+              {/* Sold banner */}
+              {listing.status === "sold" && (
+                <div className="flex items-center justify-center gap-3 bg-gray-900 text-white py-3 px-6">
+                  <span className="text-xs font-black uppercase tracking-widest opacity-60">
+                    ━━━
+                  </span>
+                  <span className="text-sm font-black uppercase tracking-[0.2em]">
+                    {t("sold")}
+                  </span>
+                  <span className="text-xs font-black uppercase tracking-widest opacity-60">
+                    ━━━
+                  </span>
                 </div>
               )}
+              <div className="p-6">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {listing.is_promoted && (
+                    <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                      {t("featured")}
+                    </span>
+                  )}
+                  {listing.is_urgent && (
+                    <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                      {t("urgent")}
+                    </span>
+                  )}
+                  <span
+                    className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5`}
+                  >
+                    <CategoryIcon slug={listing.categories?.slug} size={12} />
+                    <span
+                      className={
+                        getCategoryConfig(listing.categories?.slug).color
+                      }
+                    >
+                      {listing.categories?.name}
+                    </span>
+                  </span>
+                  {listing.condition && (
+                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                      {conditionLabel(listing.condition)}
+                    </span>
+                  )}
+                  {listing.price_type === "negotiable" && (
+                    <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                      {tCommon("negotiable")}
+                    </span>
+                  )}
+                  {listing.price_type === "free" && (
+                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                      {tCommon("free")}
+                    </span>
+                  )}
+                </div>
 
-              {/* Owner-only: AI Insights, market value, quality score */}
-              <OwnerInsights
-                listingId={listing.id}
-                listingUserId={listing.user_id}
-                price={listing.price}
-                currency={listing.currency || "EUR"}
-                descriptionLength={listing.description?.length ?? 0}
-                galleryImageCount={galleryImages.length}
-              />
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                  {listing.title}
+                </h1>
 
-              {/* Price History */}
-              <PriceHistory
-                listingId={listing.id}
-                currentPrice={listing.price}
-                currency={listing.currency || "EUR"}
-              />
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500 mb-5">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    {listing.locations?.name || "Cyprus"}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-gray-400" />
+                    {timeAgo(listing.created_at, locale, timeLabels)}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Eye className="w-4 h-4 text-gray-400" />
+                    {t("views", {
+                      count: (listing.view_count || 0).toLocaleString(),
+                    })}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Heart className="w-4 h-4 text-gray-400" />
+                    {t("savedCount", {
+                      count: (listing.favorite_count || 0).toLocaleString(),
+                    })}
+                  </span>
+                </div>
 
-              <div className="flex justify-end">
-                <ReportAction listingId={listing.id} />
+                <div className="flex items-end gap-3 mb-1">
+                  <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                    {formatPrice(
+                      listing.price,
+                      listing.currency,
+                      t("contactForPrice"),
+                    )}
+                  </span>
+                  {listing.price_type === "negotiable" && (
+                    <span className="text-sm text-green-600 font-medium pb-1">
+                      {t("priceNegotiable")}
+                    </span>
+                  )}
+                </div>
+
+                {/* Owner-only market value is rendered inside ListingInteractions */}
+
+                <div className="flex items-center gap-2 pt-2">
+                  <FavoriteAction listingId={listing.id} />
+                  <ShareAction title={listing.title} slug={listing.slug} />
+                </div>
               </div>
             </div>
 
-            {/* ═══ RIGHT COLUMN ═══ */}
-            <div className="space-y-4">
-              {/* Seller card */}
-              <div className="bg-white rounded-2xl p-6 border border-gray-100 sticky top-20">
-                <div className="flex items-center gap-3.5 mb-5">
-                  <div className="w-14 h-14 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md shadow-indigo-100">
-                    {profile?.avatar_url ? (
-                      <img
-                        src={profile.avatar_url}
-                        alt={profile?.display_name || "Seller"}
-                        loading="eager"
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      (profile?.display_name || "U")[0].toUpperCase()
-                    )}
+            {/* Details grid */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                {t("details")}
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <Tag className="w-4 h-4 text-gray-500" />
                   </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <Link
-                        href={
-                          shopSlug
-                            ? `/shop/${shopSlug}`
-                            : `/profile/${listing.user_id}`
-                        }
-                        className="font-semibold text-gray-900 truncate transition-colors"
-                        style={
-                          accentColor
-                            ? {
-                                ["--seller-accent" as string]: accentColor,
-                              }
-                            : undefined
-                        }
-                      >
-                        {profile?.display_name || "Seller"}
-                      </Link>
-                      {profile?.verified && (
-                        <Shield
-                          className="w-4 h-4 shrink-0"
-                          style={
-                            accentColor
-                              ? { color: accentColor }
-                              : { color: "#6366f1" }
-                          }
-                        />
-                      )}
-                      {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                        <span
-                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
-                          style={
-                            accentColor
-                              ? {
-                                  backgroundColor: `${accentColor}14`,
-                                  color: accentColor,
-                                }
-                              : {
-                                  backgroundColor: "rgb(243 232 255)",
-                                  color: "rgb(126 34 206)",
-                                }
-                          }
-                        >
-                          PRO
-                        </span>
-                      )}
+                  <div>
+                    <div className="text-[11px] text-gray-500 font-medium">
+                      {t("category")}
                     </div>
-                    <div className="flex items-center gap-1 mt-0.5">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <Star
-                          key={i}
-                          className="w-3.5 h-3.5"
-                          fill={
-                            i <= Math.round(sellerRating)
-                              ? "#f59e0b"
-                              : "none"
-                          }
-                          stroke="#f59e0b"
-                        />
-                      ))}
-                      <span className="text-xs text-gray-500 ml-1">
-                        {sellerRating} ({sellerReviews})
-                      </span>
+                    <div className="text-sm font-semibold text-gray-900">
+                      {listing.categories?.name || "—"}
                     </div>
-                    <p className="text-[11px] text-gray-400 mt-0.5">
-                      {t("memberSince")} {sellerYear}
-                    </p>
                   </div>
                 </div>
+                {listing.condition && (
+                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
+                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                      <Box className="w-4 h-4 text-gray-500" />
+                    </div>
+                    <div>
+                      <div className="text-[11px] text-gray-500 font-medium">
+                        {t("condition")}
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900">
+                        {conditionLabel(listing.condition)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <MapPin className="w-4 h-4 text-gray-500" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-gray-500 font-medium">
+                      {t("location")}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      {listing.locations?.name || "Cyprus"}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                  </div>
+                  <div>
+                    <div className="text-[11px] text-gray-500 font-medium">
+                      {t("posted")}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      {formatDate(listing.created_at, locale)}
+                    </div>
+                  </div>
+                </div>
+                {/* Owner quality score rendered client-side in ListingInteractions */}
+              </div>
+            </div>
 
-                {/* ContactButtons + Offer section + realtime + view tracking */}
-                <ListingInteractions
-                  listing={listing}
-                  accentColor={accentColor}
-                  shopSlug={shopSlug}
-                />
+            {/* Vehicle Attributes */}
+            {listing.categories?.slug === "vehicles" &&
+              listing.attributes &&
+              typeof listing.attributes === "object" &&
+              !Array.isArray(listing.attributes) &&
+              (() => {
+                const rawAttrs = listing.attributes as Record<string, unknown>;
+                const attrs: Record<string, string> = {};
+                for (const [k, v] of Object.entries(rawAttrs)) {
+                  if (v != null && v !== "") attrs[k] = String(v);
+                }
+                const fields: {
+                  key: string;
+                  label: string;
+                  icon: typeof Car;
+                  format?: (v: string) => string;
+                }[] = [
+                  { key: "make", label: "Make", icon: Car },
+                  { key: "model", label: "Model", icon: Car },
+                  { key: "year", label: "Year", icon: Calendar },
+                  {
+                    key: "mileage",
+                    label: "Mileage",
+                    icon: Gauge,
+                    format: (v) => `${Number(v).toLocaleString()} km`,
+                  },
+                  {
+                    key: "fuel_type",
+                    label: "Fuel",
+                    icon: Fuel,
+                    format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                  },
+                  {
+                    key: "transmission",
+                    label: "Transmission",
+                    icon: Tag,
+                    format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                  },
+                  { key: "color", label: "Color", icon: Palette },
+                  {
+                    key: "body_type",
+                    label: "Body Type",
+                    icon: Car,
+                    format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                  },
+                  {
+                    key: "engine_size",
+                    label: "Engine",
+                    icon: Gauge,
+                    format: (v) =>
+                      String(v).endsWith("L") ? String(v) : `${v}L`,
+                  },
+                  { key: "doors", label: "Doors", icon: Car },
+                  {
+                    key: "drive_type",
+                    label: "Drive",
+                    icon: Car,
+                    format: (v) => v.toUpperCase(),
+                  },
+                  { key: "owners", label: "Owners", icon: Shield },
+                  {
+                    key: "service_history",
+                    label: "Service History",
+                    icon: Shield,
+                    format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
+                  },
+                ];
+                const visible = fields.filter((f) => attrs[f.key]?.trim());
+                if (visible.length === 0) return null;
+                return (
+                  <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Car className="w-5 h-5 text-blue-600" />
+                      <h2 className="text-lg font-semibold text-gray-900">
+                        Vehicle Specifications
+                      </h2>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {visible.map((field) => {
+                        const Icon = field.icon;
+                        const raw = attrs[field.key];
+                        const display = field.format ? field.format(raw) : raw;
+                        return (
+                          <div
+                            key={field.key}
+                            className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5"
+                          >
+                            <div className="p-2 bg-white rounded-lg shadow-sm">
+                              <Icon className="w-4 h-4 text-blue-500" />
+                            </div>
+                            <div>
+                              <div className="text-[11px] text-gray-500 font-medium">
+                                {field.label}
+                              </div>
+                              <div className="text-sm font-semibold text-gray-900">
+                                {display}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
 
-                <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                  <Link
-                    href={
-                      shopSlug
-                        ? `/shop/${shopSlug}`
-                        : `/profile/${listing.user_id}`
-                    }
-                    className="text-sm font-medium hover:underline"
-                    style={{ color: accentColor || "#4f46e5" }}
-                  >
-                    {shopSlug ? t("visitShop") : t("viewSellerProfile")}
-                  </Link>
+            {/* Description */}
+            {listing.description && (
+              <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                <h2 className="text-lg font-semibold text-gray-900 mb-3">
+                  {t("description")}
+                </h2>
+                <div className="text-gray-600 leading-relaxed whitespace-pre-wrap text-[15px]">
+                  {listing.description}
                 </div>
               </div>
+            )}
 
-              {/* Safety tips */}
-              <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
-                <p className="text-sm text-amber-800 font-semibold mb-2">
-                  🛡️ {t("safetyTips")}
-                </p>
-                <ul className="space-y-1.5 text-xs text-amber-700 leading-relaxed">
-                  <li className="flex gap-2">
-                    <span className="shrink-0">•</span>
-                    {t("safetyTip1")}
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="shrink-0">•</span>
-                    {t("safetyTip2")}
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="shrink-0">•</span>
-                    {t("safetyTip3")}
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="shrink-0">•</span>
-                    {t("safetyTip4")}
-                  </li>
-                </ul>
-              </div>
+            {/* Owner-only: AI Insights, market value, quality score */}
+            <OwnerInsights
+              listingId={listing.id}
+              listingUserId={listing.user_id}
+              price={listing.price}
+              currency={listing.currency || "EUR"}
+              descriptionLength={listing.description?.length ?? 0}
+              galleryImageCount={galleryImages.length}
+            />
 
-              {/* Leave a review — shown only when listing is sold */}
-              {listing.status === "sold" && profile?.id && (
-                <LeaveReviewPrompt
-                  listingId={listing.id}
-                  sellerId={profile.id}
-                  sellerName={profile.display_name || "the seller"}
-                />
-              )}
+            {/* Price History */}
+            <PriceHistory
+              listingId={listing.id}
+              currentPrice={listing.price}
+              currency={listing.currency || "EUR"}
+            />
 
-              {/* Seller reviews */}
-              {profile?.id && (
-                <SellerReviews
-                  sellerId={profile.id}
-                  avgRating={sellerRating}
-                  totalReviews={sellerReviews}
-                />
-              )}
+            <div className="flex justify-end">
+              <ReportAction listingId={listing.id} />
             </div>
           </div>
 
-          {/* Related Listings */}
-          {related.length > 0 && (
-            <section className="mt-12">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {t("similarListings")}
-                </h2>
+          {/* ═══ RIGHT COLUMN ═══ */}
+          <div className="space-y-4">
+            {/* Seller card */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-100 sticky top-20">
+              <div className="flex items-center gap-3.5 mb-5">
+                <div className="w-14 h-14 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md shadow-indigo-100">
+                  {profile?.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile?.display_name || "Seller"}
+                      loading="eager"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    (profile?.display_name || "U")[0].toUpperCase()
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <Link
+                      href={
+                        shopSlug
+                          ? `/shop/${shopSlug}`
+                          : `/profile/${listing.user_id}`
+                      }
+                      className="font-semibold text-gray-900 truncate transition-colors"
+                      style={
+                        accentColor
+                          ? {
+                              ["--seller-accent" as string]: accentColor,
+                            }
+                          : undefined
+                      }
+                    >
+                      {profile?.display_name || "Seller"}
+                    </Link>
+                    {profile?.verified && (
+                      <Shield
+                        className="w-4 h-4 shrink-0"
+                        style={
+                          accentColor
+                            ? { color: accentColor }
+                            : { color: "#6366f1" }
+                        }
+                      />
+                    )}
+                    {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
+                      <span
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
+                        style={
+                          accentColor
+                            ? {
+                                backgroundColor: `${accentColor}14`,
+                                color: accentColor,
+                              }
+                            : {
+                                backgroundColor: "rgb(243 232 255)",
+                                color: "rgb(126 34 206)",
+                              }
+                        }
+                      >
+                        PRO
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5"
+                        fill={
+                          i <= Math.round(sellerRating) ? "#f59e0b" : "none"
+                        }
+                        stroke="#f59e0b"
+                      />
+                    ))}
+                    <span className="text-xs text-gray-500 ml-1">
+                      {sellerRating} ({sellerReviews})
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    {t("memberSince")} {sellerYear}
+                  </p>
+                </div>
+              </div>
+
+              {/* ContactButtons + Offer section + realtime + view tracking */}
+              <ListingInteractions
+                listing={listing}
+                accentColor={accentColor}
+                shopSlug={shopSlug}
+              />
+
+              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                 <Link
-                  href={`/search?category=${listing.categories?.slug || ""}`}
-                  className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1"
+                  href={
+                    shopSlug
+                      ? `/shop/${shopSlug}`
+                      : `/profile/${listing.user_id}`
+                  }
+                  className="text-sm font-medium hover:underline"
+                  style={{ color: accentColor || "#4f46e5" }}
                 >
-                  {t("viewMore")} <ChevronRight className="w-3.5 h-3.5" />
+                  {shopSlug ? t("visitShop") : t("viewSellerProfile")}
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {related.map((item) => (
-                  <ListingCard key={item.id} listing={item} />
-                ))}
-              </div>
-            </section>
-          )}
+            </div>
+
+            {/* Safety tips */}
+            <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
+              <p className="text-sm text-amber-800 font-semibold mb-2">
+                🛡️ {t("safetyTips")}
+              </p>
+              <ul className="space-y-1.5 text-xs text-amber-700 leading-relaxed">
+                <li className="flex gap-2">
+                  <span className="shrink-0">•</span>
+                  {t("safetyTip1")}
+                </li>
+                <li className="flex gap-2">
+                  <span className="shrink-0">•</span>
+                  {t("safetyTip2")}
+                </li>
+                <li className="flex gap-2">
+                  <span className="shrink-0">•</span>
+                  {t("safetyTip3")}
+                </li>
+                <li className="flex gap-2">
+                  <span className="shrink-0">•</span>
+                  {t("safetyTip4")}
+                </li>
+              </ul>
+            </div>
+
+            {/* Leave a review — shown only when listing is sold */}
+            {listing.status === "sold" && profile?.id && (
+              <LeaveReviewPrompt
+                listingId={listing.id}
+                sellerId={profile.id}
+                sellerName={profile.display_name || "the seller"}
+              />
+            )}
+
+            {/* Seller reviews */}
+            {profile?.id && (
+              <SellerReviews
+                sellerId={profile.id}
+                avgRating={sellerRating}
+                totalReviews={sellerReviews}
+              />
+            )}
+          </div>
         </div>
+
+        {/* Related Listings */}
+        {related.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-bold text-gray-900">
+                {t("similarListings")}
+              </h2>
+              <Link
+                href={`/search?category=${listing.categories?.slug || ""}`}
+                className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1"
+              >
+                {t("viewMore")} <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {related.map((item) => (
+                <ListingCard key={item.id} listing={item} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
-    </>
+    </div>
   );
 }

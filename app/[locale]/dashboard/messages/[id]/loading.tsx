@@ -3,7 +3,7 @@ import { Bone } from "../../loading-skeleton";
 export default function ChatLoading() {
   return (
     <div
-      className="max-w-3xl mx-auto flex flex-col"
+      className="mx-auto flex flex-col"
       style={{ height: "calc(100vh - 80px)" }}
     >
       {/* Header */}

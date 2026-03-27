@@ -269,7 +269,8 @@ export default function ShopOnboardingWizard({
             </div>
 
             <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-3">
-              Welcome to Pro Seller{firstName !== "there" ? `, ${firstName}` : ""}!
+              Welcome to Pro Seller
+              {firstName !== "there" ? `, ${firstName}` : ""}!
             </h1>
             <p className="text-lg text-gray-500 mb-8 max-w-md mx-auto">
               You now have access to unlimited listings, analytics, a verified
@@ -279,7 +280,7 @@ export default function ShopOnboardingWizard({
             <button
               type="button"
               onClick={() => setPhase("setup")}
-              className="inline-flex items-center gap-2.5 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-base hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-200 hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2.5 px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-base hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-200 hover:-translate-y-0.5"
             >
               <Rocket className="w-5 h-5" />
               Set Up My Shop
@@ -313,7 +314,7 @@ export default function ShopOnboardingWizard({
           {/* Success icon */}
           <div className="relative mx-auto mb-8 w-20 h-20">
             <div className="absolute inset-0 rounded-full bg-emerald-100 animate-ping opacity-20" />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-200">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-sm shadow-emerald-200">
               <Check className="w-10 h-10 text-white" strokeWidth={3} />
             </div>
           </div>
@@ -335,7 +336,7 @@ export default function ShopOnboardingWizard({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/post"
-              className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5"
             >
               <Plus className="w-4 h-4" />
               Add Your First Listing
@@ -448,7 +449,6 @@ export default function ShopOnboardingWizard({
                 }}
                 placeholder="e.g. Elite Motors, Vintage Finds, Tech Hub"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
-                autoFocus
               />
             </div>
 
@@ -580,9 +580,7 @@ export default function ShopOnboardingWizard({
           {/* ── Live shop preview ──────────────────────────────────────────── */}
           <div className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden bg-gray-50">
             <div className="px-4 py-2.5 border-b border-gray-100 bg-white flex items-center justify-between">
-              <p className="text-xs font-medium text-gray-500">
-                Live Preview
-              </p>
+              <p className="text-xs font-medium text-gray-500">Live Preview</p>
               <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-0.5 rounded-full">
                 Updates as you type
               </span>
@@ -679,8 +677,8 @@ export default function ShopOnboardingWizard({
                           Member since March 2026
                         </span>
                         <span className="inline-flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-full">
-                          <Package className="w-3.5 h-3.5 text-gray-400" />
-                          0 listings
+                          <Package className="w-3.5 h-3.5 text-gray-400" />0
+                          listings
                         </span>
                       </div>
                     </div>
@@ -728,10 +726,7 @@ export default function ShopOnboardingWizard({
                     background: `linear-gradient(135deg, ${accentColor}20, ${darkenHex(accentColor)}20)`,
                   }}
                 >
-                  <Store
-                    className="w-6 h-6"
-                    style={{ color: accentColor }}
-                  />
+                  <Store className="w-6 h-6" style={{ color: accentColor }} />
                 </div>
                 <h3 className="text-sm font-bold text-gray-900 mb-1">
                   No listings yet
@@ -761,7 +756,7 @@ export default function ShopOnboardingWizard({
             type="button"
             onClick={finishOnboarding}
             disabled={saving || !shopNameValue.trim()}
-            className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />

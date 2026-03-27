@@ -9,7 +9,7 @@ const supabaseAdmin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 );
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -86,8 +86,7 @@ export async function POST(request: NextRequest) {
     console.error("Close shop error:", err);
     return NextResponse.json(
       {
-        error:
-          err instanceof Error ? err.message : "Failed to close shop",
+        error: err instanceof Error ? err.message : "Failed to close shop",
       },
       { status: 500 },
     );

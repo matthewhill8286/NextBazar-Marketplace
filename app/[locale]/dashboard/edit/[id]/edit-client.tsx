@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, PenLine, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
@@ -10,6 +10,7 @@ import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 type ListingData = {
   id: string;
@@ -34,8 +35,6 @@ export default function EditClient({ listing }: { listing: ListingData }) {
   const { categories, locations } = useReferenceData();
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [images, setImages] = useState<UploadedImage[]>(
     listing.images.map((img) => ({
       id: img.id,
@@ -59,6 +58,8 @@ export default function EditClient({ listing }: { listing: ListingData }) {
       : null,
   );
 
+  const [descLoading, setDescLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     title: listing.title,
     description: listing.description || "",
@@ -77,15 +78,41 @@ export default function EditClient({ listing }: { listing: ListingData }) {
     setImages(newImages);
   }, []);
 
+  async function handleAiDescription() {
+    if (!formData.title) return;
+    setDescLoading(true);
+    try {
+      const firstImage = images.find((img) => img.url && !img.uploading);
+      const category = categories.find((c) => c.id === formData.category_id);
+      const res = await fetch("/api/ai/describe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          category: category?.name,
+          condition: formData.condition,
+          price: formData.price || null,
+          imageUrl: firstImage?.url || null,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.description) {
+        setFormData((prev) => ({ ...prev, description: data.description }));
+      }
+    } catch {
+      // Silent fail — user can still write manually
+    }
+    setDescLoading(false);
+  }
+
   async function handleSave() {
-    setError("");
-    setSuccess(false);
     setLoading(true);
 
     const uploadedUrls = images.filter((img) => img.url).map((img) => img.url!);
 
     if (video?.uploading) {
-      setError("Please wait for your video to finish uploading.");
+      toast.error("Please wait for your video to finish uploading.");
       setLoading(false);
       return;
     }
@@ -108,7 +135,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
       .eq("id", listing.id);
 
     if (updateError) {
-      setError(updateError.message);
+      toast.error(updateError.message);
       setLoading(false);
       return;
     }
@@ -141,9 +168,9 @@ export default function EditClient({ listing }: { listing: ListingData }) {
       );
     }
 
-    setSuccess(true);
+    toast.success("Listing updated successfully!");
     setLoading(false);
-    router.refresh();
+    router.push("/dashboard/listings");
   }
 
   return (
@@ -157,17 +184,6 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">Edit Listing</h1>
       </div>
-
-      {error && (
-        <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-100">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="bg-green-50 text-green-700 text-sm px-4 py-3 rounded-xl border border-green-100">
-          Listing updated successfully!
-        </div>
-      )}
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-6">
         {/* Images */}
@@ -215,13 +231,34 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           />
         </div>
 
-        {/* Description */}
+        {/* Description with AI writer */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            Description
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-sm font-medium text-gray-700">
+              Description
+            </label>
+            <button
+              type="button"
+              onClick={handleAiDescription}
+              disabled={descLoading || !formData.title}
+              className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+            >
+              {descLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <PenLine className="w-3 h-3" />
+              )}
+              {descLoading ? "Writing..." : "Write with AI"}
+              {!descLoading && (
+                <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+                  Beta
+                </span>
+              )}
+            </button>
+          </div>
           <textarea
             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-32 resize-none"
+            placeholder="Describe your item — or click 'Write with AI' to generate a description..."
             value={formData.description}
             onChange={(e) => update("description", e.target.value)}
           />

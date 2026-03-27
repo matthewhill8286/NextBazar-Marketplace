@@ -28,11 +28,7 @@ type ExistingOffer = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function ListingInteractions({
-  listing,
-  accentColor,
-  shopSlug,
-}: Props) {
+export default function ListingInteractions({ listing, accentColor }: Props) {
   const t = useTranslations("listing");
   const { userId: authUserId } = useAuth();
   const supabase = createClient();
@@ -64,9 +60,7 @@ export default function ListingInteractions({
     // Increment view count atomically — once per page visit
     if (!viewCounted.current) {
       viewCounted.current = true;
-      supabase
-        .rpc("increment_view_count", { p_listing_id: listing.id })
-        .then();
+      supabase.rpc("increment_view_count", { p_listing_id: listing.id }).then();
     }
 
     // Fetch offer history and analytics (non-blocking)
@@ -198,115 +192,113 @@ export default function ListingInteractions({
       />
 
       {/* Make an Offer / Offer state — non-owners only */}
-      {!isOwner &&
-        listing.price &&
-        currentStatus === "active" && (
-          <div className="mt-3">
-            {existingOffer ? (
-              existingOffer.status === "accepted" ? (
-                <div className="w-full rounded-xl overflow-hidden border-2 border-emerald-200">
-                  <div className="bg-emerald-500 px-4 py-2 flex items-center gap-2">
-                    <Tag className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wide">
-                      Offer accepted!
-                    </span>
-                  </div>
-                  <div className="bg-emerald-50 px-4 py-3 flex items-center justify-between gap-3">
-                    <div className="text-xs text-emerald-700">
-                      <span className="block text-[11px] text-emerald-500 mb-0.5">
-                        Accepted amount
-                      </span>
-                      <span className="font-extrabold text-emerald-800 text-base">
-                        {fmtPrice(existingOffer.amount, existingOffer.currency)}
-                      </span>
-                    </div>
-                    <Link
-                      href={`/dashboard/offers${existingOffer.id ? `?offer=${existingOffer.id}` : ""}`}
-                      className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
-                    >
-                      View →
-                    </Link>
-                  </div>
+      {!isOwner && listing.price && currentStatus === "active" && (
+        <div className="mt-3">
+          {existingOffer ? (
+            existingOffer.status === "accepted" ? (
+              <div className="w-full rounded-xl overflow-hidden border-2 border-emerald-200">
+                <div className="bg-emerald-500 px-4 py-2 flex items-center gap-2">
+                  <Tag className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wide">
+                    Offer accepted!
+                  </span>
                 </div>
-              ) : existingOffer.status === "countered" ? (
-                <Link
-                  href={`/dashboard/offers${existingOffer.id ? `?offer=${existingOffer.id}` : ""}`}
-                  className="block w-full rounded-xl overflow-hidden border-2 border-indigo-200 hover:border-indigo-300 transition-all group"
-                >
-                  <div className="bg-indigo-600 px-4 py-2 flex items-center gap-2">
-                    <Tag className="w-3.5 h-3.5 text-indigo-200 shrink-0" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wide">
-                      Counter offer received
+                <div className="bg-emerald-50 px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="text-xs text-emerald-700">
+                    <span className="block text-[11px] text-emerald-500 mb-0.5">
+                      Accepted amount
+                    </span>
+                    <span className="font-extrabold text-emerald-800 text-base">
+                      {fmtPrice(existingOffer.amount, existingOffer.currency)}
                     </span>
                   </div>
-                  <div className="bg-indigo-50 group-hover:bg-indigo-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
-                    <div className="text-xs text-indigo-600">
-                      <span className="block text-[11px] text-indigo-400 mb-0.5">
-                        Your offer
-                      </span>
-                      <span className="font-bold">
-                        {fmtPrice(existingOffer.amount, existingOffer.currency)}
-                      </span>
-                    </div>
-                    <div className="w-px h-6 bg-indigo-200" />
-                    <div className="text-xs text-indigo-600">
-                      <span className="block text-[11px] text-indigo-400 mb-0.5">
-                        Counter
-                      </span>
-                      <span className="font-extrabold text-indigo-700">
-                        {fmtPrice(
-                          existingOffer.counter_amount,
-                          existingOffer.currency,
-                        )}
-                      </span>
-                    </div>
-                    <span className="ml-auto text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-                      Respond →
-                    </span>
-                  </div>
-                </Link>
-              ) : (
-                <Link
-                  href={`/dashboard/offers${existingOffer.id ? `?offer=${existingOffer.id}` : ""}`}
-                  className="block w-full rounded-xl overflow-hidden border-2 border-amber-200 hover:border-amber-300 transition-all group"
-                >
-                  <div className="bg-amber-500 px-4 py-2 flex items-center gap-2">
-                    <Tag className="w-3.5 h-3.5 text-amber-100 shrink-0" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wide">
-                      Offer pending
-                    </span>
-                  </div>
-                  <div className="bg-amber-50 group-hover:bg-amber-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
-                    <div className="text-xs text-amber-700">
-                      <span className="block text-[11px] text-amber-500 mb-0.5">
-                        Your offer
-                      </span>
-                      <span className="font-extrabold text-amber-800 text-base">
-                        {fmtPrice(existingOffer.amount, existingOffer.currency)}
-                      </span>
-                    </div>
-                    <span className="ml-auto text-xs font-semibold text-amber-600 group-hover:text-amber-700">
-                      View →
-                    </span>
-                  </div>
-                </Link>
-              )
-            ) : offerCount >= 2 ? (
-              <div className="w-full py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
-                <Tag className="w-4 h-4" />
-                {t("offerLimitReached")}
+                  <Link
+                    href={`/dashboard/offers${existingOffer.id ? `?offer=${existingOffer.id}` : ""}`}
+                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+                  >
+                    View →
+                  </Link>
+                </div>
               </div>
-            ) : (
-              <button
-                onClick={() => setShowOfferModal(true)}
-                className="w-full py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center justify-center gap-2"
+            ) : existingOffer.status === "countered" ? (
+              <Link
+                href={`/dashboard/offers${existingOffer.id ? `?offer=${existingOffer.id}` : ""}`}
+                className="block w-full rounded-xl overflow-hidden border-2 border-indigo-200 hover:border-indigo-300 transition-all group"
               >
-                <Tag className="w-4 h-4" />
-                {t("makeOffer")}
-              </button>
-            )}
-          </div>
-        )}
+                <div className="bg-indigo-600 px-4 py-2 flex items-center gap-2">
+                  <Tag className="w-3.5 h-3.5 text-indigo-200 shrink-0" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wide">
+                    Counter offer received
+                  </span>
+                </div>
+                <div className="bg-indigo-50 group-hover:bg-indigo-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="text-xs text-indigo-600">
+                    <span className="block text-[11px] text-indigo-400 mb-0.5">
+                      Your offer
+                    </span>
+                    <span className="font-bold">
+                      {fmtPrice(existingOffer.amount, existingOffer.currency)}
+                    </span>
+                  </div>
+                  <div className="w-px h-6 bg-indigo-200" />
+                  <div className="text-xs text-indigo-600">
+                    <span className="block text-[11px] text-indigo-400 mb-0.5">
+                      Counter
+                    </span>
+                    <span className="font-extrabold text-indigo-700">
+                      {fmtPrice(
+                        existingOffer.counter_amount,
+                        existingOffer.currency,
+                      )}
+                    </span>
+                  </div>
+                  <span className="ml-auto text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
+                    Respond →
+                  </span>
+                </div>
+              </Link>
+            ) : (
+              <Link
+                href={`/dashboard/offers${existingOffer.id ? `?offer=${existingOffer.id}` : ""}`}
+                className="block w-full rounded-xl overflow-hidden border-2 border-amber-200 hover:border-amber-300 transition-all group"
+              >
+                <div className="bg-amber-500 px-4 py-2 flex items-center gap-2">
+                  <Tag className="w-3.5 h-3.5 text-amber-100 shrink-0" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wide">
+                    Offer pending
+                  </span>
+                </div>
+                <div className="bg-amber-50 group-hover:bg-amber-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
+                  <div className="text-xs text-amber-700">
+                    <span className="block text-[11px] text-amber-500 mb-0.5">
+                      Your offer
+                    </span>
+                    <span className="font-extrabold text-amber-800 text-base">
+                      {fmtPrice(existingOffer.amount, existingOffer.currency)}
+                    </span>
+                  </div>
+                  <span className="ml-auto text-xs font-semibold text-amber-600 group-hover:text-amber-700">
+                    View →
+                  </span>
+                </div>
+              </Link>
+            )
+          ) : offerCount >= 2 ? (
+            <div className="w-full py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+              <Tag className="w-4 h-4" />
+              {t("offerLimitReached")}
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowOfferModal(true)}
+              className="w-full py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center justify-center gap-2"
+            >
+              <Tag className="w-4 h-4" />
+              {t("makeOffer")}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Sold state — shown instead of CTA when listing is no longer active */}
       {!isOwner && currentStatus === "sold" && (

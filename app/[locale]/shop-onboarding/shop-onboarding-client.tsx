@@ -39,10 +39,7 @@ export default function ShopOnboardingClient({
         });
         const data = await res.json();
 
-        if (
-          data.status === "activated" ||
-          data.status === "already_active"
-        ) {
+        if (data.status === "activated" || data.status === "already_active") {
           setVerified(true);
           toast.success("Payment confirmed!", {
             description: "Let's set up your shop.",

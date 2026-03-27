@@ -96,7 +96,7 @@ export default function ProfileClient({
         <div className="max-w-5xl mx-auto px-4 py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-3xl font-bold shrink-0 overflow-hidden shadow-lg">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-3xl font-bold shrink-0 overflow-hidden shadow-sm">
               {profile.avatar_url ? (
                 <Image
                   src={profile.avatar_url}

@@ -266,7 +266,6 @@ export default function ComparePage() {
                 {/* Empty slot filler(s) for layout stability */}
                 {listings.length < 3 &&
                   Array.from({ length: 3 - listings.length }).map((_, i) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
                     <th key={`empty-${i}`} className="pb-6 px-3 align-top">
                       <div className="rounded-2xl border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center">
                         <p className="text-xs text-gray-400 text-center px-2">
@@ -299,7 +298,6 @@ export default function ComparePage() {
                   ))}
                   {listings.length < 3 &&
                     Array.from({ length: 3 - listings.length }).map((_, i) => (
-                      // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
                       <td key={`empty-${i}`} className="py-3 px-3" />
                     ))}
                 </tr>
@@ -326,7 +324,6 @@ export default function ComparePage() {
                 })}
                 {listings.length < 3 &&
                   Array.from({ length: 3 - listings.length }).map((_, i) => (
-                    // biome-ignore lint/suspicious/noArrayIndexKey: loading skeleton is fine for ith listing
                     <td key={`empty-${i}`} />
                   ))}
               </tr>

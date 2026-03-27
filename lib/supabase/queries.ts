@@ -1,5 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import { CARD_SELECT } from "./constants";
 import { createClient } from "./server";
 import type {
@@ -14,8 +14,7 @@ import type {
 export { CARD_SELECT };
 
 // ─── Public (no-auth) Supabase client ────────────────────────────────────────
-// Used inside unstable_cache wrappers so the cache key is stable and we don't
-// pull in the cookies() dynamic API (which would bust the cache every request).
+// Used inside cached functions so we don't pull in the cookies() dynamic API.
 function publicClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,41 +24,41 @@ function publicClient() {
 
 // ─── Cached reference data (revalidate: 1 hour) ───────────────────────────────
 
-export const getCategoriesCached = unstable_cache(
-  async (): Promise<Category[]> => {
-    const { data } = await publicClient()
-      .from("categories")
-      .select("*")
-      .order("sort_order");
-    return (data ?? []) as Category[];
-  },
-  ["categories"],
-  { revalidate: 3600, tags: ["categories"] },
-);
+export async function getCategoriesCached(): Promise<Category[]> {
+  "use cache";
+  cacheLife("reference");
+  cacheTag("categories");
 
-export const getSubcategoriesCached = unstable_cache(
-  async (): Promise<Subcategory[]> => {
-    const { data } = await publicClient()
-      .from("subcategories")
-      .select("id, category_id, name, slug")
-      .order("sort_order");
-    return (data ?? []) as Subcategory[];
-  },
-  ["subcategories"],
-  { revalidate: 3600, tags: ["subcategories"] },
-);
+  const { data } = await publicClient()
+    .from("categories")
+    .select("*")
+    .order("sort_order");
+  return (data ?? []) as Category[];
+}
 
-export const getLocationsCached = unstable_cache(
-  async (): Promise<Location[]> => {
-    const { data } = await publicClient()
-      .from("locations")
-      .select("id, name, slug")
-      .order("sort_order");
-    return (data ?? []) as Location[];
-  },
-  ["locations"],
-  { revalidate: 3600, tags: ["locations"] },
-);
+export async function getSubcategoriesCached(): Promise<Subcategory[]> {
+  "use cache";
+  cacheLife("reference");
+  cacheTag("subcategories");
+
+  const { data } = await publicClient()
+    .from("subcategories")
+    .select("id, category_id, name, slug")
+    .order("sort_order");
+  return (data ?? []) as Subcategory[];
+}
+
+export async function getLocationsCached(): Promise<Location[]> {
+  "use cache";
+  cacheLife("reference");
+  cacheTag("locations");
+
+  const { data } = await publicClient()
+    .from("locations")
+    .select("id, name, slug")
+    .order("sort_order");
+  return (data ?? []) as Location[];
+}
 
 // ─── Cached pricing data (revalidate: 5 min) ─────────────────────────────────
 
@@ -77,18 +76,18 @@ export type PricingRow = {
   metadata: Record<string, unknown>;
 };
 
-export const getPricingCached = unstable_cache(
-  async (): Promise<PricingRow[]> => {
-    const { data } = await publicClient()
-      .from("pricing")
-      .select("*")
-      .eq("is_active", true)
-      .order("sort_order");
-    return (data ?? []) as PricingRow[];
-  },
-  ["pricing"],
-  { revalidate: 300, tags: ["pricing"] },
-);
+export async function getPricingCached(): Promise<PricingRow[]> {
+  "use cache";
+  cacheLife("pricing");
+  cacheTag("pricing");
+
+  const { data } = await publicClient()
+    .from("pricing")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order");
+  return (data ?? []) as PricingRow[];
+}
 
 /** Convenience: returns a map keyed by pricing.key (e.g. "featured", "urgent", "dealer_pro") */
 export async function getPricingMap(): Promise<Record<string, PricingRow>> {
@@ -98,46 +97,60 @@ export async function getPricingMap(): Promise<Record<string, PricingRow>> {
 
 // ─── Cached home-page listing data (revalidate: 60 s) ────────────────────────
 
-export const getFeaturedListingsCached = unstable_cache(
-  async (): Promise<ListingCardRow[]> => {
-    const { data } = await publicClient()
-      .from("listings")
-      .select(CARD_SELECT)
-      .eq("status", "active")
-      .eq("is_promoted", true)
-      .order("created_at", { ascending: false })
-      .limit(4);
-    return (data ?? []) as unknown as ListingCardRow[];
-  },
-  ["featured-listings"],
-  { revalidate: 60, tags: ["listings"] },
-);
+export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
 
-export const getRecentListingsCached = unstable_cache(
-  async (): Promise<ListingCardRow[]> => {
-    const { data } = await publicClient()
-      .from("listings")
-      .select(CARD_SELECT)
-      .eq("status", "active")
-      .order("created_at", { ascending: false })
-      .limit(8);
-    return (data ?? []) as unknown as ListingCardRow[];
-  },
-  ["recent-listings"],
-  { revalidate: 60, tags: ["listings"] },
-);
+  const { data } = await publicClient()
+    .from("listings")
+    .select(CARD_SELECT)
+    .eq("status", "active")
+    .eq("is_promoted", true)
+    .order("created_at", { ascending: false })
+    .limit(4);
+  return (data ?? []) as unknown as ListingCardRow[];
+}
 
-export const getActiveListingCountCached = unstable_cache(
-  async (): Promise<number> => {
-    const { count } = await publicClient()
-      .from("listings")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "active");
-    return count ?? 0;
-  },
-  ["listing-count"],
-  { revalidate: 300, tags: ["listings"] },
-);
+export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
+
+  const { data } = await publicClient()
+    .from("listings")
+    .select(CARD_SELECT)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(8);
+  return (data ?? []) as unknown as ListingCardRow[];
+}
+
+export async function getActiveListingCountCached(): Promise<number> {
+  "use cache";
+  cacheLife("pricing"); // 5 min — count doesn't need to be real-time
+  cacheTag("listings");
+
+  const { count } = await publicClient()
+    .from("listings")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+  return count ?? 0;
+}
+
+export async function getTrendingListingsCached(): Promise<ListingCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
+
+  const { data } = await publicClient()
+    .from("listings")
+    .select(CARD_SELECT)
+    .eq("status", "active")
+    .order("view_count", { ascending: false })
+    .limit(8);
+  return (data ?? []) as unknown as ListingCardRow[];
+}
 
 // ─── Cached listing detail + related (revalidate: 60 s) ──────────────────────
 
@@ -158,50 +171,57 @@ const LISTING_DETAIL_SELECT = `
   listing_images(id, url, thumbnail_url, sort_order)
 `;
 
-export const getListingBySlugCached = unstable_cache(
-  async (slug: string): Promise<ListingDetailRow | null> => {
-    const { data } = await publicClient()
-      .from("listings")
-      .select(LISTING_DETAIL_SELECT)
-      .eq("slug", slug)
-      .single();
-    return (data ?? null) as ListingDetailRow | null;
-  },
-  ["listing-by-slug"],
-  { revalidate: 60, tags: ["listings"] },
-);
+export async function getListingBySlugCached(
+  slug: string,
+): Promise<ListingDetailRow | null> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
 
-export const getRelatedListingsCached = unstable_cache(
-  async (categoryId: string, excludeId: string): Promise<ListingCardRow[]> => {
-    const { data } = await publicClient()
-      .from("listings")
-      .select(CARD_SELECT)
-      .eq("status", "active")
-      .eq("category_id", categoryId)
-      .neq("id", excludeId)
-      .order("created_at", { ascending: false })
-      .limit(4);
-    return (data ?? []) as unknown as ListingCardRow[];
-  },
-  ["related-listings"],
-  { revalidate: 60, tags: ["listings"] },
-);
+  const { data } = await publicClient()
+    .from("listings")
+    .select(LISTING_DETAIL_SELECT)
+    .eq("slug", slug)
+    .single();
+  return (data ?? null) as ListingDetailRow | null;
+}
+
+export async function getRelatedListingsCached(
+  categoryId: string,
+  excludeId: string,
+): Promise<ListingCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
+
+  const { data } = await publicClient()
+    .from("listings")
+    .select(CARD_SELECT)
+    .eq("status", "active")
+    .eq("category_id", categoryId)
+    .neq("id", excludeId)
+    .order("created_at", { ascending: false })
+    .limit(4);
+  return (data ?? []) as unknown as ListingCardRow[];
+}
 
 // ─── Shop accent color (for branded listing pages) ───────────────────────────
 
-export const getShopAccentColorCached = unstable_cache(
-  async (userId: string): Promise<string | null> => {
-    const { data } = await publicClient()
-      .from("dealer_shops")
-      .select("accent_color")
-      .eq("user_id", userId)
-      .eq("plan_status", "active")
-      .single();
-    return data?.accent_color ?? null;
-  },
-  ["shop-accent-color"],
-  { revalidate: 60, tags: ["dealer_shops"] },
-);
+export async function getShopAccentColorCached(
+  userId: string,
+): Promise<string | null> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("dealer_shops");
+
+  const { data } = await publicClient()
+    .from("dealer_shops")
+    .select("accent_color")
+    .eq("user_id", userId)
+    .eq("plan_status", "active")
+    .single();
+  return data?.accent_color ?? null;
+}
 
 // ─── Combined listing detail page data (single waterfall) ────────────────────
 // Fetches listing + related + accent color with only 1 sequential hop
@@ -214,134 +234,137 @@ export type ListingPageData = {
   shopSlug: string | null;
 };
 
-export const getListingPageDataCached = unstable_cache(
-  async (slug: string): Promise<ListingPageData> => {
-    const sb = publicClient();
+export async function getListingPageDataCached(
+  slug: string,
+): Promise<ListingPageData> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings", "dealer_shops");
 
-    // 1. Fetch listing (must come first — everything else depends on it)
-    const { data: listing } = await sb
-      .from("listings")
-      .select(LISTING_DETAIL_SELECT)
-      .eq("slug", slug)
-      .single();
+  const sb = publicClient();
 
-    if (!listing) return { listing: null, related: [], accentColor: null, shopSlug: null };
+  // 1. Fetch listing (must come first — everything else depends on it)
+  const { data: listing } = await sb
+    .from("listings")
+    .select(LISTING_DETAIL_SELECT)
+    .eq("slug", slug)
+    .single();
 
-    const typedListing = listing as unknown as ListingDetailRow;
-    const profile = typedListing.profiles;
-    const isPro = profile && !Array.isArray(profile) && profile.is_pro_seller;
+  if (!listing)
+    return { listing: null, related: [], accentColor: null, shopSlug: null };
 
-    // 2. Fetch related + accent color in parallel (single hop)
-    const [relResult, accentResult] = await Promise.all([
-      sb
-        .from("listings")
-        .select(CARD_SELECT)
-        .eq("status", "active")
-        .eq("category_id", typedListing.category_id)
-        .neq("id", typedListing.id)
-        .order("created_at", { ascending: false })
-        .limit(4),
-      isPro
-        ? sb
-            .from("dealer_shops")
-            .select("slug, accent_color")
-            .eq("user_id", typedListing.user_id)
-            .eq("plan_status", "active")
-            .single()
-        : Promise.resolve({ data: null }),
-    ]);
+  const typedListing = listing as unknown as ListingDetailRow;
+  const profile = typedListing.profiles;
+  const isPro = profile && !Array.isArray(profile) && profile.is_pro_seller;
 
-    return {
-      listing: typedListing,
-      related: (relResult.data ?? []) as unknown as ListingCardRow[],
-      accentColor: accentResult.data?.accent_color ?? null,
-      shopSlug: accentResult.data?.slug ?? null,
-    };
-  },
-  ["listing-page-data"],
-  { revalidate: 60, tags: ["listings", "dealer_shops"] },
-);
-
-// ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
-
-export const getCategoryBySlugCached = unstable_cache(
-  async (slug: string) => {
-    const { data } = await publicClient()
-      .from("categories")
-      .select("id, name, slug, icon")
-      .eq("slug", slug)
-      .single();
-    return data as {
-      id: string;
-      name: string;
-      slug: string;
-      icon: string | null;
-    } | null;
-  },
-  ["category-by-slug"],
-  { revalidate: 3600, tags: ["categories"] },
-);
-
-export const getCategoryListingsCached = unstable_cache(
-  async (
-    categoryId: string,
-    opts: { promoted?: boolean; limit?: number } = {},
-  ): Promise<ListingCardRow[]> => {
-    let q = publicClient()
+  // 2. Fetch related + accent color in parallel (single hop)
+  const [relResult, accentResult] = await Promise.all([
+    sb
       .from("listings")
       .select(CARD_SELECT)
       .eq("status", "active")
-      .eq("category_id", categoryId);
-    if (opts.promoted) q = q.eq("is_promoted", true);
-    q = q.order("created_at", { ascending: false }).limit(opts.limit ?? 12);
-    const { data } = await q;
-    return (data ?? []) as unknown as ListingCardRow[];
-  },
-  ["category-listings"],
-  { revalidate: 60, tags: ["listings"] },
-);
+      .eq("category_id", typedListing.category_id)
+      .neq("id", typedListing.id)
+      .order("created_at", { ascending: false })
+      .limit(4),
+    isPro
+      ? sb
+          .from("dealer_shops")
+          .select("slug, accent_color")
+          .eq("user_id", typedListing.user_id)
+          .eq("plan_status", "active")
+          .single()
+      : Promise.resolve({ data: null }),
+  ]);
 
-export const getCategoryStatsCached = unstable_cache(
-  async (categoryId: string) => {
-    const now = new Date();
-    const weekAgo = new Date(
-      now.getTime() - 7 * 24 * 60 * 60 * 1000,
-    ).toISOString();
+  return {
+    listing: typedListing,
+    related: (relResult.data ?? []) as unknown as ListingCardRow[],
+    accentColor: accentResult.data?.accent_color ?? null,
+    shopSlug: accentResult.data?.slug ?? null,
+  };
+}
 
-    const [totalRes, newThisWeekRes, avgPriceRes] = await Promise.all([
-      publicClient()
-        .from("listings")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "active")
-        .eq("category_id", categoryId),
-      publicClient()
-        .from("listings")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "active")
-        .eq("category_id", categoryId)
-        .gte("created_at", weekAgo),
-      publicClient()
-        .from("listings")
-        .select("price")
-        .eq("status", "active")
-        .eq("category_id", categoryId)
-        .not("price", "is", null)
-        .limit(500),
-    ]);
+// ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
 
-    const total = totalRes.count ?? 0;
-    const newThisWeek = newThisWeekRes.count ?? 0;
-    const prices = (avgPriceRes.data ?? []).map((r) => r.price as number);
-    const avgPrice =
-      prices.length > 0
-        ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-        : 0;
+export async function getCategoryBySlugCached(slug: string) {
+  "use cache";
+  cacheLife("reference");
+  cacheTag("categories");
 
-    return { total, newThisWeek, avgPrice };
-  },
-  ["category-stats"],
-  { revalidate: 300, tags: ["listings"] },
-);
+  const { data } = await publicClient()
+    .from("categories")
+    .select("id, name, slug, icon")
+    .eq("slug", slug)
+    .single();
+  return data as {
+    id: string;
+    name: string;
+    slug: string;
+    icon: string | null;
+  } | null;
+}
+
+export async function getCategoryListingsCached(
+  categoryId: string,
+  opts: { promoted?: boolean; limit?: number } = {},
+): Promise<ListingCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
+
+  let q = publicClient()
+    .from("listings")
+    .select(CARD_SELECT)
+    .eq("status", "active")
+    .eq("category_id", categoryId);
+  if (opts.promoted) q = q.eq("is_promoted", true);
+  q = q.order("created_at", { ascending: false }).limit(opts.limit ?? 12);
+  const { data } = await q;
+  return (data ?? []) as unknown as ListingCardRow[];
+}
+
+export async function getCategoryStatsCached(categoryId: string) {
+  "use cache";
+  cacheLife("pricing"); // 5 min
+  cacheTag("listings");
+
+  const now = new Date();
+  const weekAgo = new Date(
+    now.getTime() - 7 * 24 * 60 * 60 * 1000,
+  ).toISOString();
+
+  const [totalRes, newThisWeekRes, avgPriceRes] = await Promise.all([
+    publicClient()
+      .from("listings")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active")
+      .eq("category_id", categoryId),
+    publicClient()
+      .from("listings")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active")
+      .eq("category_id", categoryId)
+      .gte("created_at", weekAgo),
+    publicClient()
+      .from("listings")
+      .select("price")
+      .eq("status", "active")
+      .eq("category_id", categoryId)
+      .not("price", "is", null)
+      .limit(500),
+  ]);
+
+  const total = totalRes.count ?? 0;
+  const newThisWeek = newThisWeekRes.count ?? 0;
+  const prices = (avgPriceRes.data ?? []).map((r) => r.price as number);
+  const avgPrice =
+    prices.length > 0
+      ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+      : 0;
+
+  return { total, newThisWeek, avgPrice };
+}
 
 // ─── Cached dealer shops (revalidate: 60 s) ─────────────────────────────────
 
@@ -368,76 +391,78 @@ export type ShopCardRow = {
   } | null;
 };
 
-export const getActiveShopsCached = unstable_cache(
-  async (): Promise<ShopCardRow[]> => {
-    const sb = publicClient();
+export async function getActiveShopsCached(): Promise<ShopCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("shops", "listings");
 
-    // Fetch all active dealer shops
-    const { data: shops } = await sb
-      .from("dealer_shops")
-      .select(SHOP_CARD_SELECT)
-      .eq("plan_status", "active")
-      .order("created_at", { ascending: false });
+  const sb = publicClient();
 
-    if (!shops || shops.length === 0) return [];
+  // Fetch all active dealer shops
+  const { data: shops } = await sb
+    .from("dealer_shops")
+    .select(SHOP_CARD_SELECT)
+    .eq("plan_status", "active")
+    .order("created_at", { ascending: false });
 
-    // Collect user_ids and fetch profiles + listing counts in parallel
-    const userIds = shops.map((s) => s.user_id);
+  if (!shops || shops.length === 0) return [];
 
-    // Fetch profiles and per-user listing counts concurrently
-    const [{ data: profiles }, ...countResults] = await Promise.all([
+  // Collect user_ids and fetch profiles + listing counts in parallel
+  const userIds = shops.map((s) => s.user_id);
+
+  // Fetch profiles and per-user listing counts concurrently
+  const [{ data: profiles }, ...countResults] = await Promise.all([
+    sb
+      .from("profiles")
+      .select("id, display_name, avatar_url, verified")
+      .in("id", userIds),
+    ...userIds.map((uid) =>
       sb
-        .from("profiles")
-        .select("id, display_name, avatar_url, verified")
-        .in("id", userIds),
-      ...userIds.map((uid) =>
-        sb
-          .from("listings")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", uid)
-          .eq("status", "active")
-          .then((res) => ({ user_id: uid, count: res.count ?? 0 })),
-      ),
-    ]);
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", uid)
+        .eq("status", "active")
+        .then((res) => ({ user_id: uid, count: res.count ?? 0 })),
+    ),
+  ]);
 
-    // Build lookup maps
-    const profileMap = new Map(
-      (profiles ?? []).map(
-        (p: {
-          id: string;
-          display_name: string | null;
-          avatar_url: string | null;
-          verified: boolean;
-        }) => [p.id, p],
-      ),
-    );
+  // Build lookup maps
+  const profileMap = new Map(
+    (profiles ?? []).map(
+      (p: {
+        id: string;
+        display_name: string | null;
+        avatar_url: string | null;
+        verified: boolean;
+      }) => [p.id, p],
+    ),
+  );
 
-    const countMap = new Map<string, number>();
-    for (const { user_id, count } of countResults) {
-      countMap.set(user_id, count);
-    }
+  const countMap = new Map<string, number>();
+  for (const { user_id, count } of countResults) {
+    countMap.set(user_id, count);
+  }
 
-    return shops.map((shop) => ({
-      ...shop,
-      listing_count: countMap.get(shop.user_id) ?? 0,
-      profile: profileMap.get(shop.user_id) ?? null,
-    }));
-  },
-  ["active-shops"],
-  { revalidate: 60, tags: ["shops", "listings"] },
-);
+  return shops.map((shop) => ({
+    ...shop,
+    listing_count: countMap.get(shop.user_id) ?? 0,
+    profile: profileMap.get(shop.user_id) ?? null,
+  }));
+}
 
-export const getFeaturedShopsCached = unstable_cache(
-  async (limit = 4): Promise<ShopCardRow[]> => {
-    const allShops = await getActiveShopsCached();
-    // Sort by listing count desc, take top N
-    return [...allShops]
-      .sort((a, b) => b.listing_count - a.listing_count)
-      .slice(0, limit);
-  },
-  ["featured-shops"],
-  { revalidate: 60, tags: ["shops", "listings"] },
-);
+export async function getFeaturedShopsCached(
+  limit = 4,
+): Promise<ShopCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("shops", "listings");
+
+  const allShops = await getActiveShopsCached();
+  // Sort by listing count desc, take top N
+  return [...allShops]
+    .sort((a, b) => b.listing_count - a.listing_count)
+    .slice(0, limit);
+}
 
 // ─── Non-cached helpers (used server-side with auth context) ─────────────────
 

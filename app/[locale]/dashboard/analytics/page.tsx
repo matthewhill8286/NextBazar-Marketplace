@@ -191,7 +191,7 @@ function AnalyticsLocked({
 
         {/* Lock overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-lg p-8 text-center max-w-md mx-4">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-sm p-8 text-center max-w-md mx-4">
             <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Lock className="w-7 h-7 text-indigo-600" />
             </div>

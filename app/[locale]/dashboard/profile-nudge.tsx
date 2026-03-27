@@ -1,13 +1,13 @@
 "use client";
 
-import { ArrowRight, Camera, Sparkles, X } from "lucide-react";
+import { ArrowRight, Camera, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 
 /**
- * A gentle nudge banner for pro sellers who haven't completed their profile.
+ * A gentle nudge banner for pro-sellers who haven't completed their profile.
  * Shows on the dashboard and shop pages until they add a photo + bio,
  * or until they dismiss it (stored in localStorage).
  */

@@ -191,7 +191,7 @@ export default function CategoryLanding({
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/search?category=${categorySlug}`}
-                className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10"
+                className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-colors shadow-sm shadow-black/10"
               >
                 <Search className="w-4 h-4" />
                 Browse All {categoryName}
@@ -380,7 +380,7 @@ export default function CategoryLanding({
             </p>
             <Link
               href="/post"
-              className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-lg shadow-black/10"
+              className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-sm shadow-black/10"
             >
               <Plus className="w-4 h-4" />
               {postLabel}

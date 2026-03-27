@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import SettingsClient from "./settings-client";
@@ -20,7 +19,7 @@ export default function SettingsPage() {
       const { data } = await supabase
         .from("profiles")
         .select(
-          "id, display_name, username, phone, bio, whatsapp_number, telegram_username",
+          "id, display_name, username, phone, bio, whatsapp_number, telegram_username, avatar_url",
         )
         .eq("id", user.id)
         .single();
@@ -34,6 +33,7 @@ export default function SettingsPage() {
         bio: data?.bio || null,
         whatsapp_number: data?.whatsapp_number || null,
         telegram_username: data?.telegram_username || null,
+        avatar_url: data?.avatar_url || null,
       });
       setLoading(false);
     }

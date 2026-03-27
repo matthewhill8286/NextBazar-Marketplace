@@ -2,7 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { embed } from "@/lib/embeddings";
 
-export const runtime = "nodejs";
+/** Short CDN + browser cache for search results (30s fresh, serve stale up to 5 min while revalidating) */
+const CACHE_HEADERS = {
+  "Cache-Control": "public, s-maxage=30, stale-while-revalidate=300",
+};
 
 function getSupabase() {
   return createClient(
@@ -100,11 +103,14 @@ export async function GET(req: NextRequest) {
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           );
         });
-        return NextResponse.json({
-          hits,
-          totalHits: hits.length,
-          source: "vector",
-        });
+        return NextResponse.json(
+          {
+            hits,
+            totalHits: hits.length,
+            source: "vector",
+          },
+          { headers: CACHE_HEADERS },
+        );
       }
       // Fall through to full-text if vector search returns nothing
     }
@@ -149,18 +155,24 @@ export async function GET(req: NextRequest) {
         .limit(limit);
 
       const hits = ilikeData || [];
-      return NextResponse.json({
-        hits,
-        totalHits: hits.length,
-        source: "ilike",
-      });
+      return NextResponse.json(
+        {
+          hits,
+          totalHits: hits.length,
+          source: "ilike",
+        },
+        { headers: CACHE_HEADERS },
+      );
     }
 
-    return NextResponse.json({
-      hits: ftData,
-      totalHits: ftData.length,
-      source: "fulltext",
-    });
+    return NextResponse.json(
+      {
+        hits: ftData,
+        totalHits: ftData.length,
+        source: "fulltext",
+      },
+      { headers: CACHE_HEADERS },
+    );
   }
 
   // ── Browse / filter-only mode (no query) ──────────────────────────────────
@@ -198,9 +210,12 @@ export async function GET(req: NextRequest) {
   if (error)
     return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({
-    hits: data || [],
-    totalHits: count ?? (data || []).length,
-    source: "browse",
-  });
+  return NextResponse.json(
+    {
+      hits: data || [],
+      totalHits: count ?? (data || []).length,
+      source: "browse",
+    },
+    { headers: CACHE_HEADERS },
+  );
 }

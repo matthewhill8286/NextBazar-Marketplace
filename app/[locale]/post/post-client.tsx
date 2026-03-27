@@ -71,7 +71,12 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
   const selectedCategory = categories.find(
     (c) => c.id === formData.category_id,
   );
-  const isVehicle = selectedCategory?.slug === VEHICLES_CATEGORY_SLUG;
+  const selectedSubcategory = subcategories.find(
+    (s) => s.id === formData.subcategory_id,
+  );
+  const isParts = selectedSubcategory?.slug === "parts-accessories";
+  const isVehicle =
+    selectedCategory?.slug === VEHICLES_CATEGORY_SLUG && !isParts;
 
   const { userId: authUserId } = useAuth();
 

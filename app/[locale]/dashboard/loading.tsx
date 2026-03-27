@@ -1,4 +1,10 @@
-import { Bone, HeaderSkeleton, StatsGridSkeleton, TabsSkeleton, ListRowSkeleton } from "./loading-skeleton";
+import {
+  Bone,
+  HeaderSkeleton,
+  ListRowSkeleton,
+  StatsGridSkeleton,
+  TabsSkeleton,
+} from "./loading-skeleton";
 
 /** Overview page loading skeleton. */
 export default function DashboardLoading() {

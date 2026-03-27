@@ -1,8 +1,4 @@
-import {
-  Bone,
-  TabsSkeleton,
-  ListRowSkeleton,
-} from "../loading-skeleton";
+import { Bone, ListRowSkeleton, TabsSkeleton } from "../loading-skeleton";
 
 export default function OffersLoading() {
   return (

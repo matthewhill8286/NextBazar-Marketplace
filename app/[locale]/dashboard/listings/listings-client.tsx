@@ -571,7 +571,10 @@ export default function ListingsClient({
 
           {filtered.map((listing) => {
             const isSelected = selected.has(listing.id);
-            const isExpiringSoon = expiresSoon(listing.expires_at, listing.status);
+            const isExpiringSoon = expiresSoon(
+              listing.expires_at,
+              listing.status,
+            );
             return (
               <div
                 key={listing.id}
@@ -728,7 +731,8 @@ export default function ListingsClient({
 
                 {/* Renew CTA — pro sellers or expiring within 1 day */}
                 {listing.status === "active" &&
-                  (isProSeller || expiresSoon(listing.expires_at, listing.status)) &&
+                  (isProSeller ||
+                    expiresSoon(listing.expires_at, listing.status)) &&
                   expiryBadge(listing.expires_at, listing.status) && (
                     <button
                       onClick={() =>
@@ -798,7 +802,7 @@ export default function ListingsClient({
                   )}
 
                   {openMenu === listing.id && (
-                    <div className="absolute right-0 top-10 w-48 bg-white rounded-xl border border-gray-100 shadow-lg py-1.5 z-20">
+                    <div className="absolute right-0 top-10 w-48 bg-white rounded-xl border border-gray-100 shadow-sm py-1.5 z-20">
                       <Link
                         href={`/dashboard/edit/${listing.id}`}
                         className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -848,21 +852,22 @@ export default function ListingsClient({
                         </button>
                       )}
                       {listing.status === "active" &&
-                        (isProSeller || expiresSoon(listing.expires_at, listing.status)) && (
-                        <button
-                          onClick={() => {
-                            setOpenMenu(null);
-                            setConfirmAction({
-                              type: "renew",
-                              listingId: listing.id,
-                              listingTitle: listing.title,
-                            });
-                          }}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 w-full"
-                        >
-                          <Clock className="w-3.5 h-3.5" /> Renew (30 days)
-                        </button>
-                      )}
+                        (isProSeller ||
+                          expiresSoon(listing.expires_at, listing.status)) && (
+                          <button
+                            onClick={() => {
+                              setOpenMenu(null);
+                              setConfirmAction({
+                                type: "renew",
+                                listingId: listing.id,
+                                listingTitle: listing.title,
+                              });
+                            }}
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 w-full"
+                          >
+                            <Clock className="w-3.5 h-3.5" /> Renew (30 days)
+                          </button>
+                        )}
                       {listing.status === "expired" && (
                         <>
                           <button
