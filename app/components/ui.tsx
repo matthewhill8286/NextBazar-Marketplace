@@ -11,14 +11,17 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+import {
+  EmptyListingsIllustration,
+} from "@/app/components/illustrations";
 
 // ─── Form primitives ──────────────────────────────────────────────────────────
 
 const INPUT_BASE =
-  "w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white";
+  "w-full px-4 py-3 border border-[#e8e6e3] focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 outline-none text-sm bg-white transition-colors";
 
 type FormInputProps = InputHTMLAttributes<HTMLInputElement> & {
-  /** Optional prefix symbol rendered inside the left of the input (e.g. "€") */
+  /** Optional prefix symbol rendered inside the left of the input (e.g. "\u20AC") */
   prefix?: string;
 };
 
@@ -31,7 +34,7 @@ export function FormInput({
   if (prefix) {
     return (
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium pointer-events-none">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#999] font-medium pointer-events-none">
           {prefix}
         </span>
         <input className={`${INPUT_BASE} pl-8 ${className}`} {...props} />
@@ -69,7 +72,7 @@ export function ErrorBanner({
 }) {
   if (!message) return null;
   return (
-    <div className="bg-red-50 text-red-700 text-sm px-4 py-3 rounded-xl border border-red-100">
+    <div className="bg-red-50 text-red-700 text-sm px-4 py-3 border border-red-100">
       {message}
     </div>
   );
@@ -83,7 +86,7 @@ export function SuccessBanner({
 }) {
   if (!message) return null;
   return (
-    <div className="bg-green-50 text-green-700 text-sm px-4 py-3 rounded-xl border border-green-100">
+    <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 border border-emerald-100">
       {message}
     </div>
   );
@@ -95,8 +98,8 @@ type SpinnerSize = "sm" | "md" | "lg";
 
 const SPINNER_SIZES: Record<SpinnerSize, string> = {
   sm: "w-4 h-4",
-  md: "w-6 h-6",
-  lg: "w-8 h-8",
+  md: "w-5 h-5",
+  lg: "w-7 h-7",
 };
 
 /**
@@ -107,7 +110,7 @@ export function LoadingSpinner({ size = "md" }: { size?: SpinnerSize }) {
   return (
     <div className="flex items-center justify-center py-20">
       <Loader2
-        className={`${SPINNER_SIZES[size]} text-indigo-500 animate-spin`}
+        className={`${SPINNER_SIZES[size]} text-[#999] animate-spin`}
       />
     </div>
   );
@@ -127,9 +130,10 @@ type EmptyStateProps = {
 
 /**
  * Consistent empty-state card used when a list has no items.
+ * Uses SVG illustration instead of emoji for a cleaner look.
  *
  * @example
- * <EmptyState emoji="📦" title="No active listings" description="Post something to get started." />
+ * <EmptyState title="No active listings" description="Post something to get started." />
  */
 export function EmptyState({
   emoji,
@@ -140,12 +144,24 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={`bg-white rounded-xl border border-gray-100 p-12 text-center ${className}`}
+      className={`bg-white border border-[#e8e6e3] p-14 text-center ${className}`}
     >
-      {emoji && <div className="text-4xl mb-3">{emoji}</div>}
-      <p className="font-semibold text-gray-700 mb-1">{title}</p>
-      {description && <p className="text-gray-400 text-sm">{description}</p>}
-      {action && <div className="mt-5">{action}</div>}
+      {/* Use illustration instead of emoji when possible */}
+      {emoji ? (
+        <div className="text-4xl mb-4">{emoji}</div>
+      ) : (
+        <EmptyListingsIllustration className="w-16 h-16 mx-auto mb-4 text-[#ccc]" />
+      )}
+      <p
+        className="font-light text-xl text-[#1a1a1a] mb-2"
+        style={{ fontFamily: "'Playfair Display', serif" }}
+      >
+        {title}
+      </p>
+      {description && (
+        <p className="text-[#999] text-sm max-w-sm mx-auto">{description}</p>
+      )}
+      {action && <div className="mt-6">{action}</div>}
     </div>
   );
 }
@@ -162,7 +178,7 @@ type ConfirmDialogProps = {
   confirmLabel?: string;
   /** Text on the cancel button — defaults to "Cancel" */
   cancelLabel?: string;
-  /** Tailwind classes for the confirm button — defaults to indigo */
+  /** Tailwind classes for the confirm button — defaults to dark */
   confirmClassName?: string;
   loading?: boolean;
   onConfirm: () => void;
@@ -171,17 +187,6 @@ type ConfirmDialogProps = {
 
 /**
  * A modal confirmation dialog with backdrop blur.
- *
- * @example
- * <ConfirmDialog
- *   open={showDelete}
- *   title="Delete listing?"
- *   description="This action is permanent and cannot be undone."
- *   confirmLabel="Delete"
- *   confirmClassName="bg-red-600 hover:bg-red-700"
- *   onConfirm={handleDelete}
- *   onCancel={() => setShowDelete(false)}
- * />
  */
 export function ConfirmDialog({
   open,
@@ -190,32 +195,37 @@ export function ConfirmDialog({
   icon,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
-  confirmClassName = "bg-indigo-600 hover:bg-indigo-700",
+  confirmClassName = "bg-[#8E7A6B] hover:bg-[#7A6657]",
   loading = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-150">
         {icon && <div className="flex justify-center mb-4">{icon}</div>}
-        <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+        <h3
+          className="text-xl font-light text-[#1a1a1a] mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          {title}
+        </h3>
         {description && (
-          <p className="text-sm text-gray-500 mb-6">{description}</p>
+          <p className="text-sm text-[#999] mb-6">{description}</p>
         )}
         <div className="flex gap-3">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors disabled:opacity-50"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${confirmClassName}`}
+            className={`flex-1 py-2.5 text-white text-sm font-medium tracking-wide transition-colors disabled:opacity-50 flex items-center justify-center gap-2 ${confirmClassName}`}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />

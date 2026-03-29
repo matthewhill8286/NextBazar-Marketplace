@@ -69,6 +69,12 @@ function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+const INPUT_CLASSES =
+  "w-full px-4 py-3 border border-[#e8e6e3] focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 outline-none text-sm bg-white";
+
+const VEHICLE_INPUT_CLASSES =
+  "w-full px-3 py-2.5 border border-[#e8e6e3] focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 outline-none text-sm bg-white";
+
 export default function PostStep2({
   formData,
   locations,
@@ -87,22 +93,30 @@ export default function PostStep2({
   onNext,
 }: Props) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">
-        Details &amp; Pricing
-      </h2>
+    <div className="space-y-8">
+      <div>
+        <h2
+          className="text-3xl font-light text-[#1a1a1a] mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Details &amp; Pricing
+        </h2>
+        <p className="text-sm text-[#999]">
+          The more detail you add, the faster it sells
+        </p>
+      </div>
 
       {/* Description with AI writer */}
       <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="block text-sm font-medium text-gray-700">
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999]">
             Description
           </label>
           <button
             type="button"
             onClick={onAiDescription}
             disabled={descLoading || !formData.title}
-            className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#ccc] disabled:cursor-not-allowed transition-colors"
           >
             {descLoading ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -111,14 +125,14 @@ export default function PostStep2({
             )}
             {descLoading ? "Writing..." : "Write with AI"}
             {!descLoading && (
-              <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+              <span className="text-[9px] bg-[#f0eeeb] text-[#999] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                 Beta
               </span>
             )}
           </button>
         </div>
         <textarea
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-32 resize-none"
+          className={`${INPUT_CLASSES} h-32 resize-none`}
           placeholder="Describe your item — or click 'Write with AI' to generate a description..."
           value={formData.description}
           onChange={(e) => onUpdate("description", e.target.value)}
@@ -127,10 +141,13 @@ export default function PostStep2({
 
       {/* Vehicle-specific attributes */}
       {isVehicle && (
-        <div className="bg-gradient-to-br from-blue-50 via-slate-50 to-blue-50 rounded-xl p-5 border border-blue-100 space-y-4">
+        <div className="bg-[#faf9f7] p-6 border border-[#e8e6e3] space-y-5">
           <div className="flex items-center gap-2">
-            <Car className="w-4 h-4 text-blue-600" />
-            <span className="font-semibold text-blue-900 text-sm">
+            <Car className="w-4 h-4 text-[#999]" />
+            <span
+              className="font-light text-[#1a1a1a] text-base"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               Vehicle Details
             </span>
           </div>
@@ -138,36 +155,36 @@ export default function PostStep2({
           {/* Row 1: Make, Model, Year */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Make
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. Toyota"
                 value={vehicleAttrs.make}
                 onChange={(e) => onVehicleAttrUpdate("make", e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Model
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. Corolla"
                 value={vehicleAttrs.model}
                 onChange={(e) => onVehicleAttrUpdate("model", e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Year
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 2020"
                 value={vehicleAttrs.year}
                 onChange={(e) => onVehicleAttrUpdate("year", e.target.value)}
@@ -178,23 +195,23 @@ export default function PostStep2({
           {/* Row 2: Mileage, Fuel Type, Transmission */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Mileage (km)
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 45000"
                 value={vehicleAttrs.mileage}
                 onChange={(e) => onVehicleAttrUpdate("mileage", e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Fuel Type
               </label>
               <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 value={vehicleAttrs.fuel_type}
                 onChange={(e) =>
                   onVehicleAttrUpdate("fuel_type", e.target.value)
@@ -209,11 +226,11 @@ export default function PostStep2({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Transmission
               </label>
               <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 value={vehicleAttrs.transmission}
                 onChange={(e) =>
                   onVehicleAttrUpdate("transmission", e.target.value)
@@ -232,23 +249,23 @@ export default function PostStep2({
           {/* Row 3: Color, Body Type, Engine Size */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Color
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. Black"
                 value={vehicleAttrs.color}
                 onChange={(e) => onVehicleAttrUpdate("color", e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Body Type
               </label>
               <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 value={vehicleAttrs.body_type}
                 onChange={(e) =>
                   onVehicleAttrUpdate("body_type", e.target.value)
@@ -263,12 +280,12 @@ export default function PostStep2({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Engine (L)
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 2.0"
                 value={vehicleAttrs.engine_size}
                 onChange={(e) =>
@@ -281,23 +298,23 @@ export default function PostStep2({
           {/* Row 4: Doors, Drive Type, Owners, Service History */}
           <div className="grid grid-cols-4 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Doors
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 4"
                 value={vehicleAttrs.doors}
                 onChange={(e) => onVehicleAttrUpdate("doors", e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Drive
               </label>
               <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 value={vehicleAttrs.drive_type}
                 onChange={(e) =>
                   onVehicleAttrUpdate("drive_type", e.target.value)
@@ -312,23 +329,23 @@ export default function PostStep2({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Owners
               </label>
               <input
                 type="text"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 1"
                 value={vehicleAttrs.owners}
                 onChange={(e) => onVehicleAttrUpdate("owners", e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1.5">
                 Service
               </label>
               <select
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm bg-white"
+                className={VEHICLE_INPUT_CLASSES}
                 value={vehicleAttrs.service_history}
                 onChange={(e) =>
                   onVehicleAttrUpdate("service_history", e.target.value)
@@ -344,9 +361,8 @@ export default function PostStep2({
             </div>
           </div>
 
-          <p className="text-[10px] text-blue-400 text-center">
-            These details help buyers find your vehicle and improve your listing
-            quality
+          <p className="text-[10px] text-[#bbb] text-center tracking-wide">
+            These details help buyers find your vehicle and improve your listing quality
           </p>
         </div>
       )}
@@ -354,15 +370,15 @@ export default function PostStep2({
       {/* Price with AI pricing guide */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-sm font-medium text-gray-700">
-              Price (€)
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999]">
+              Price (&euro;)
             </label>
             <button
               type="button"
               onClick={onAiPricing}
               disabled={pricingLoading || !formData.title}
-              className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#ccc] disabled:cursor-not-allowed transition-colors"
             >
               {pricingLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -371,19 +387,19 @@ export default function PostStep2({
               )}
               {pricingLoading ? "Analyzing..." : "Get pricing guide"}
               {!pricingLoading && (
-                <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+                <span className="text-[9px] bg-[#f0eeeb] text-[#999] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                   Beta
                 </span>
               )}
             </button>
           </div>
           <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
-              €
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] font-medium">
+              &euro;
             </span>
             <input
               type="number"
-              className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+              className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 outline-none text-sm"
               placeholder="0.00"
               value={formData.price}
               onChange={(e) => onUpdate("price", e.target.value)}
@@ -391,11 +407,11 @@ export default function PostStep2({
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
             Condition
           </label>
           <select
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+            className={INPUT_CLASSES}
             value={formData.condition}
             onChange={(e) => onUpdate("condition", e.target.value)}
           >
@@ -410,11 +426,11 @@ export default function PostStep2({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
             Location
           </label>
           <select
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+            className={INPUT_CLASSES}
             value={formData.location_id}
             onChange={(e) => onUpdate("location_id", e.target.value)}
           >
@@ -427,11 +443,11 @@ export default function PostStep2({
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
             Price Type
           </label>
           <select
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+            className={INPUT_CLASSES}
             value={formData.price_type}
             onChange={(e) => onUpdate("price_type", e.target.value)}
           >
@@ -445,17 +461,20 @@ export default function PostStep2({
 
       {/* AI Pricing Guide Panel */}
       {pricingData && (
-        <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-xl p-5 border border-indigo-100 space-y-4">
+        <div className="bg-[#faf9f7] p-6 border border-[#e8e6e3] space-y-5">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-600" />
-            <span className="font-semibold text-indigo-900 text-sm">
+            <Sparkles className="w-4 h-4 text-[#999]" />
+            <span
+              className="font-light text-[#1a1a1a] text-base"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               AI Pricing Guide
             </span>
-            <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+            <span className="text-[9px] bg-[#f0eeeb] text-[#999] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em]">
               Beta
             </span>
             {(pricingData.market?.similar_count ?? 0) > 0 && (
-              <span className="text-xs text-indigo-400 ml-auto">
+              <span className="text-xs text-[#bbb] ml-auto">
                 Based on {pricingData.market!.similar_count} similar listings
               </span>
             )}
@@ -470,24 +489,23 @@ export default function PostStep2({
                 onUpdate("price", pricingData.price_low?.toString() || "");
                 onSelectPriceKey("low");
               }}
-              className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
+              className={`p-4 text-center transition-all cursor-pointer border ${
                 selectedPriceKey === "low"
-                  ? "bg-green-50 ring-2 ring-green-400 shadow-sm shadow-green-100"
-                  : "bg-white/80 hover:ring-2 hover:ring-indigo-200"
+                  ? "border-[#8E7A6B] bg-white ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
               }`}
             >
-              <div
-                className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "low" ? "text-green-700" : "text-gray-500"}`}
-              >
+              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1">
                 Quick Sale
               </div>
-              <div className="text-lg font-bold text-gray-900">
-                €{pricingData.price_low?.toLocaleString()}
-              </div>
               <div
-                className={`text-[10px] ${selectedPriceKey === "low" ? "text-green-700 font-semibold" : "text-green-600"}`}
+                className="text-xl font-light text-[#1a1a1a] mb-1"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                {selectedPriceKey === "low" ? "✓ Selected" : "Competitive"}
+                &euro;{pricingData.price_low?.toLocaleString()}
+              </div>
+              <div className="text-[10px] text-emerald-600">
+                {selectedPriceKey === "low" ? "Selected" : "Competitive"}
               </div>
             </button>
 
@@ -501,20 +519,23 @@ export default function PostStep2({
                 );
                 onSelectPriceKey("suggested");
               }}
-              className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
+              className={`p-4 text-center transition-all cursor-pointer border ${
                 selectedPriceKey === "suggested" || selectedPriceKey === null
-                  ? "bg-white ring-2 ring-indigo-400 shadow-sm shadow-indigo-100"
-                  : "bg-white/80 ring-2 ring-indigo-200"
+                  ? "border-[#8E7A6B] bg-white ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
               }`}
             >
-              <div className="text-[10px] text-indigo-600 font-semibold mb-0.5">
+              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#1a1a1a] mb-1">
                 Recommended
               </div>
-              <div className="text-lg font-bold text-gray-900">
-                €{pricingData.suggested_price?.toLocaleString()}
+              <div
+                className="text-xl font-light text-[#1a1a1a] mb-1"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                &euro;{pricingData.suggested_price?.toLocaleString()}
               </div>
-              <div className="text-[10px] text-indigo-600">
-                {selectedPriceKey === "suggested" ? "✓ Selected" : "Fair value"}
+              <div className="text-[10px] text-[#999]">
+                {selectedPriceKey === "suggested" ? "Selected" : "Fair value"}
               </div>
             </button>
 
@@ -525,31 +546,30 @@ export default function PostStep2({
                 onUpdate("price", pricingData.price_high?.toString() || "");
                 onSelectPriceKey("high");
               }}
-              className={`rounded-lg p-3 text-center transition-all cursor-pointer ${
+              className={`p-4 text-center transition-all cursor-pointer border ${
                 selectedPriceKey === "high"
-                  ? "bg-amber-50 ring-2 ring-amber-400 shadow-sm shadow-amber-100"
-                  : "bg-white/80 hover:ring-2 hover:ring-indigo-200"
+                  ? "border-[#8E7A6B] bg-white ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
               }`}
             >
-              <div
-                className={`text-[10px] font-medium mb-0.5 ${selectedPriceKey === "high" ? "text-amber-700" : "text-gray-500"}`}
-              >
+              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-1">
                 Premium
               </div>
-              <div className="text-lg font-bold text-gray-900">
-                €{pricingData.price_high?.toLocaleString()}
-              </div>
               <div
-                className={`text-[10px] ${selectedPriceKey === "high" ? "text-amber-700 font-semibold" : "text-amber-600"}`}
+                className="text-xl font-light text-[#1a1a1a] mb-1"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                {selectedPriceKey === "high" ? "✓ Selected" : "Patient sell"}
+                &euro;{pricingData.price_high?.toLocaleString()}
+              </div>
+              <div className="text-[10px] text-amber-600">
+                {selectedPriceKey === "high" ? "Selected" : "Patient sell"}
               </div>
             </button>
           </div>
 
           {/* Reasoning */}
           {pricingData.reasoning && (
-            <p className="text-xs text-gray-600 leading-relaxed">
+            <p className="text-xs text-[#666] leading-relaxed">
               {pricingData.reasoning}
             </p>
           )}
@@ -560,7 +580,7 @@ export default function PostStep2({
               {pricingData.tips.map((tip) => (
                 <div
                   key={tip}
-                  className="flex items-start gap-2 text-xs text-indigo-700"
+                  className="flex items-start gap-2 text-xs text-[#666]"
                 >
                   <Lightbulb className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
                   {tip}
@@ -570,7 +590,7 @@ export default function PostStep2({
           )}
 
           {/* Selection hint */}
-          <p className="text-[10px] text-indigo-400 text-center">
+          <p className="text-[10px] text-[#bbb] text-center tracking-wide">
             {selectedPriceKey
               ? "Price applied — you can change it anytime above"
               : "Click a price above to apply it"}
@@ -580,18 +600,18 @@ export default function PostStep2({
 
       {/* Phone number */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
           Phone Number{" "}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          <span className="text-[#ccc] font-normal normal-case tracking-normal text-xs">(optional)</span>
         </label>
         <input
           type="tel"
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+          className={INPUT_CLASSES}
           placeholder="+357 99 123456"
           value={formData.contact_phone}
           onChange={(e) => onUpdate("contact_phone", e.target.value)}
         />
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-[#bbb] mt-1.5">
           Add a phone number so buyers can call you directly. Leave blank to
           only use messaging.
         </p>
@@ -601,16 +621,16 @@ export default function PostStep2({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+          className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-3.5 h-3.5" /> Back
         </button>
         <button
           type="button"
           onClick={onNext}
-          className="flex-1 bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+          className="flex-1 bg-[#8E7A6B] text-white py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center justify-center gap-2"
         >
-          Continue <ArrowRight className="w-4 h-4" />
+          Continue <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

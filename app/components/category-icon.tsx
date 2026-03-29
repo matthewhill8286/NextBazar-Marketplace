@@ -86,9 +86,9 @@ const CONFIG: Record<string, CategoryConfig> = {
 
 const FALLBACK: CategoryConfig = {
   Icon: Tag,
-  bg: "bg-gray-50",
-  color: "text-gray-400",
-  gradient: "from-gray-400 to-gray-300",
+  bg: "bg-[#faf9f7]",
+  color: "text-[#bbb]",
+  gradient: "from-[#bbb] to-[#ccc]",
   accent: "#9CA3AF",
 };
 

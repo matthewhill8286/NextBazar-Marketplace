@@ -48,12 +48,12 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+    <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm">
       {/* Google Sign In */}
       <button
         type="button"
         onClick={handleGoogleLogin}
-        className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-3 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-6"
+        className="w-full flex items-center justify-center gap-3 bg-white border border-[#e8e6e3] py-3 font-medium text-[#666] hover:bg-[#faf9f7] transition-colors mb-6"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path
@@ -78,10 +78,10 @@ export default function LoginForm() {
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200" />
+          <div className="w-full border-t border-[#e8e6e3]" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-3 text-gray-400">
+          <span className="bg-white px-3 text-[#bbb]">
             or sign in with email
           </span>
         </div>
@@ -91,15 +91,15 @@ export default function LoginForm() {
         <ErrorBanner message={error} />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#bbb]" />
             <input
               type="email"
               required
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus:border-[#1a1a1a] focus:ring-2 focus:ring-[#1a1a1a]/5 outline-none text-sm"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -108,15 +108,15 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#bbb]" />
             <input
               type="password"
               required
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus:border-[#1a1a1a] focus:ring-2 focus:ring-[#1a1a1a]/5 outline-none text-sm"
               placeholder="Your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -127,7 +127,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
+          className="w-full bg-[#2C2826] text-white py-3 font-semibold hover:bg-[#3D3633] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm shadow-[#e8e6e3]"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign In"}
         </button>

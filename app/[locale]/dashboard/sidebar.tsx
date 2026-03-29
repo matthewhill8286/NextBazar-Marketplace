@@ -63,14 +63,14 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
   return (
     <aside className="space-y-4">
       {/* Profile Card */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
+      <div className="bg-white border border-[#e8e6e3] p-5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0">
+          <div className="w-12 h-12 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-lg shrink-0">
             {profile.avatar_url ? (
               <img
                 src={profile.avatar_url}
                 alt=""
-                className="w-full h-full rounded-full object-cover"
+                className="w-full h-full object-cover"
               />
             ) : (
               initials
@@ -78,16 +78,16 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="font-semibold text-gray-900 truncate">
+              <p className="font-medium text-[#1a1a1a] truncate">
                 {profile.display_name}
               </p>
               {profile.verified && (
-                <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
+                <Shield className="w-4 h-4 text-[#999] shrink-0" />
               )}
             </div>
-            <p className="text-xs text-gray-500 truncate">{profile.email}</p>
+            <p className="text-xs text-[#999] truncate">{profile.email}</p>
             {profile.is_pro_seller && (
-              <span className="inline-block mt-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
+              <span className="inline-block mt-1 text-[9px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5 tracking-[0.15em] uppercase">
                 Pro Seller
               </span>
             )}
@@ -96,7 +96,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="bg-white rounded-xl border border-gray-100 p-2">
+      <nav className="bg-white border border-[#e8e6e3] p-2">
         {[
           ...NAV_ITEMS,
           ...(isAdmin && FEATURE_FLAGS.REPORTS
@@ -111,10 +111,10 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                  ? "bg-[#f0eeeb] text-[#1a1a1a]"
+                  : "text-[#999] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <item.icon className="w-4 h-4" />
@@ -129,10 +129,10 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
             <Link
               href="/dashboard/shop"
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
                 pathname === "/dashboard/shop"
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                  ? "bg-[#f0eeeb] text-[#1a1a1a]"
+                  : "text-[#999] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <Store className="w-4 h-4" />
@@ -142,8 +142,8 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
             <Link
               href="/pro-sellers"
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
-                "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+                "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors mt-1 border border-dashed",
+                "text-[#999] border-[#e8e6e3] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <Crown className="w-4 h-4" />

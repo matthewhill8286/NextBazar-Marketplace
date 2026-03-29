@@ -59,7 +59,7 @@ const LISTING_SELECT = `
 
 function Bone({ className = "" }: { className?: string }) {
   return (
-    <div className={`bg-gray-200 rounded-lg animate-pulse ${className}`} />
+    <div className={`bg-[#e8e6e3] animate-pulse ${className}`} />
   );
 }
 
@@ -73,20 +73,20 @@ function ListingDetailSkeleton() {
         {/* ── Left column ── */}
         <div className="lg:col-span-2 space-y-4">
           {/* Image gallery */}
-          <Bone className="w-full aspect-4/3 rounded-2xl" />
+          <Bone className="w-full aspect-4/3 " />
 
           {/* Thumbnail strip */}
           <div className="flex gap-2">
             {[...Array(4)].map((_, i) => (
               <Bone
                 key={`${Math.random() + i}`}
-                className="w-16 h-16 rounded-xl shrink-0"
+                className="w-16 h-16 shrink-0"
               />
             ))}
           </div>
 
           {/* Title card */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
+          <div className="bg-white border border-[#e8e6e3] p-5 space-y-3">
             {/* Badge row */}
             <div className="flex gap-2">
               <Bone className="h-5 w-16 rounded-full" />
@@ -105,15 +105,15 @@ function ListingDetailSkeleton() {
           </div>
 
           {/* Details grid */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
+          <div className="bg-white border border-[#e8e6e3] p-5 space-y-3">
             <Bone className="h-5 w-24 mb-1" />
             <div className="grid grid-cols-2 gap-3">
               {[...Array(4)].map((_, i) => (
                 <div
                   key={`${Math.random() + i}`}
-                  className="bg-gray-50 rounded-xl p-3 flex gap-3 items-center"
+                  className="bg-[#faf9f7] p-3 flex gap-3 items-center"
                 >
-                  <Bone className="w-8 h-8 rounded-lg shrink-0" />
+                  <Bone className="w-8 h-8 shrink-0" />
                   <div className="space-y-1.5 flex-1">
                     <Bone className="h-3 w-16" />
                     <Bone className="h-4 w-24" />
@@ -124,7 +124,7 @@ function ListingDetailSkeleton() {
           </div>
 
           {/* Description */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-2.5">
+          <div className="bg-white border border-[#e8e6e3] p-5 space-y-2.5">
             <Bone className="h-5 w-28 mb-1" />
             <Bone className="h-4 w-full" />
             <Bone className="h-4 w-full" />
@@ -136,18 +136,18 @@ function ListingDetailSkeleton() {
         {/* ── Right column (sidebar) ── */}
         <div className="space-y-4">
           {/* Price / CTA card */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white border border-[#e8e6e3] p-5 space-y-4">
             <Bone className="h-9 w-1/2" />
-            <Bone className="h-12 w-full rounded-xl" />
-            <Bone className="h-12 w-full rounded-xl" />
+            <Bone className="h-12 w-full " />
+            <Bone className="h-12 w-full " />
             <div className="flex gap-3 pt-1">
-              <Bone className="h-10 flex-1 rounded-xl" />
-              <Bone className="h-10 flex-1 rounded-xl" />
+              <Bone className="h-10 flex-1 " />
+              <Bone className="h-10 flex-1 " />
             </div>
           </div>
 
           {/* Seller card */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+          <div className="bg-white border border-[#e8e6e3] p-5 space-y-4">
             <Bone className="h-5 w-16 mb-1" />
             <div className="flex items-center gap-3">
               <Bone className="w-12 h-12 rounded-full shrink-0" />
@@ -156,16 +156,16 @@ function ListingDetailSkeleton() {
                 <Bone className="h-3.5 w-24" />
               </div>
             </div>
-            <Bone className="h-px w-full bg-gray-100 rounded-full" />
+            <Bone className="h-px w-full bg-[#f0eeeb] rounded-full" />
             <div className="space-y-2">
               <Bone className="h-4 w-full" />
               <Bone className="h-4 w-3/4" />
             </div>
-            <Bone className="h-10 w-full rounded-xl" />
+            <Bone className="h-10 w-full " />
           </div>
 
           {/* Safety tips card */}
-          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 space-y-3">
+          <div className="bg-amber-50 border border-amber-100 p-5 space-y-3">
             <Bone className="h-5 w-28 bg-amber-200" />
             {[...Array(4)].map((_, i) => (
               <div
@@ -484,13 +484,13 @@ export default function ListingDetail({
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="text-6xl mb-4">🔍</div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
           {t("notFound")}
         </h1>
-        <p className="text-gray-500 mb-6">{t("notFoundDesc")}</p>
+        <p className="text-[#999] mb-6">{t("notFoundDesc")}</p>
         <Link
           href="/"
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
+          className="bg-[#8E7A6B] text-white px-6 py-3 font-semibold hover:bg-[#7A6657] transition-colors"
         >
           {t("browseListings")}
         </Link>
@@ -544,37 +544,37 @@ export default function ListingDetail({
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#faf9f7]">
         {/* Breadcrumb */}
         <div className="max-w-7xl mx-auto px-4 py-3">
-          <nav className="flex items-center gap-1.5 text-sm text-gray-500 overflow-x-auto hide-scrollbar">
+          <nav className="flex items-center gap-1.5 text-sm text-[#999] overflow-x-auto hide-scrollbar">
             <Link
               href="/"
-              className="hover:text-gray-700 flex items-center gap-1 shrink-0"
+              className="hover:text-[#666] flex items-center gap-1 shrink-0"
             >
               <ArrowLeft className="w-4 h-4" />
               {tCommon("home")}
             </Link>
-            <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+            <ChevronRight className="w-3 h-3 shrink-0 text-[#ccc]" />
             <Link
               href={`/search?category=${listing.categories?.slug || ""}`}
-              className="hover:text-gray-700 shrink-0"
+              className="hover:text-[#666] shrink-0"
             >
               {listing.categories?.name || "Listing"}
             </Link>
             {listing.subcategories && (
               <>
-                <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+                <ChevronRight className="w-3 h-3 shrink-0 text-[#ccc]" />
                 <Link
                   href={`/search?category=${listing.categories?.slug || ""}&subcategory=${listing.subcategories.slug}`}
-                  className="hover:text-gray-700 shrink-0"
+                  className="hover:text-[#666] shrink-0"
                 >
                   {listing.subcategories.name}
                 </Link>
               </>
             )}
-            <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
-            <span className="text-gray-900 font-medium truncate">
+            <ChevronRight className="w-3 h-3 shrink-0 text-[#ccc]" />
+            <span className="text-[#1a1a1a] font-medium truncate">
               {listing.title}
             </span>
           </nav>
@@ -597,11 +597,11 @@ export default function ListingDetail({
             <div className="lg:col-span-2 space-y-6">
               {/* Title card */}
               <div
-                className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}
+                className={`bg-white border overflow-hidden ${listing.status === "sold" ? "border-[#e8e6e3]" : "border-[#e8e6e3]"}`}
               >
                 {/* Sold banner — full-width strip at the very top of the card */}
                 {listing.status === "sold" && (
-                  <div className="flex items-center justify-center gap-3 bg-gray-900 text-white py-3 px-6">
+                  <div className="flex items-center justify-center gap-3 bg-[#2C2826] text-white py-3 px-6">
                     <span className="text-xs font-black uppercase tracking-widest opacity-60">
                       ━━━
                     </span>
@@ -638,7 +638,7 @@ export default function ListingDetail({
                       </span>
                     </span>
                     {listing.condition && (
-                      <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                      <span className="bg-[#faf9f7] text-[#1a1a1a] text-xs font-medium px-2.5 py-1 rounded">
                         {conditionLabel(listing.condition)}
                       </span>
                     )}
@@ -654,27 +654,27 @@ export default function ListingDetail({
                     )}
                   </div>
 
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                  <h1 className="text-2xl md:text-3xl font-bold text-[#1a1a1a] mb-3 leading-tight">
                     {listing.title}
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500 mb-5">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[#999] mb-5">
                     <span className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-gray-400" />
+                      <MapPin className="w-4 h-4 text-[#bbb]" />
                       {listing.locations?.name || "Cyprus"}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-gray-400" />
+                      <Clock className="w-4 h-4 text-[#bbb]" />
                       {timeAgo(listing.created_at)}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Eye className="w-4 h-4 text-gray-400" />
+                      <Eye className="w-4 h-4 text-[#bbb]" />
                       {t("views", {
                         count: (listing.view_count || 0).toLocaleString(),
                       })}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Heart className="w-4 h-4 text-gray-400" />
+                      <Heart className="w-4 h-4 text-[#bbb]" />
                       {t("savedCount", {
                         count: (listing.favorite_count || 0).toLocaleString(),
                       })}
@@ -682,7 +682,7 @@ export default function ListingDetail({
                   </div>
 
                   <div className="flex items-end gap-3 mb-1">
-                    <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                    <span className="text-3xl md:text-4xl font-bold text-[#1a1a1a]">
                       {formatPrice(listing.price, listing.currency)}
                     </span>
                     {listing.price_type === "negotiable" && (
@@ -693,28 +693,28 @@ export default function ListingDetail({
                   </div>
 
                   {price && isOwner && (
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
+                    <div className="flex items-center gap-1.5 text-xs text-[#999] mb-4">
                       <span className="flex items-center gap-1">
-                        <Shield className="w-3 h-3 text-indigo-500" />
+                        <Shield className="w-3 h-3 text-[#8E7A6B]" />
                         {t("marketValue")}
                       </span>
                       {aiMarketLoading ? (
-                        <span className="h-3.5 w-28 bg-gray-200 rounded animate-pulse inline-block" />
+                        <span className="h-3.5 w-28 bg-[#e8e6e3] rounded animate-pulse inline-block" />
                       ) : (
                         <>
-                          <span className="font-semibold text-gray-700">
+                          <span className="font-semibold text-[#666]">
                             {formatPrice(priceEstLow, listing.currency)} –{" "}
                             {formatPrice(priceEstHigh, listing.currency)}
                           </span>
                           {aiPrice?.price_verdict &&
                             aiPrice.price_verdict !== "no_data" && (
                               <span
-                                className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
+                                className={`ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
                                   aiPrice.price_verdict === "underpriced"
                                     ? "bg-green-100 text-green-700"
                                     : aiPrice.price_verdict === "overpriced"
                                       ? "bg-red-100 text-red-700"
-                                      : "bg-indigo-100 text-indigo-700"
+                                      : "bg-[#f0eeeb] text-[#1a1a1a]"
                                 }`}
                               >
                                 {aiPrice.price_verdict === "underpriced"
@@ -724,7 +724,7 @@ export default function ListingDetail({
                                     : t("fairPrice")}
                               </span>
                             )}
-                          <span className="text-[10px] text-gray-400 ml-0.5">
+                          <span className="text-[10px] text-[#bbb] ml-0.5">
                             · AI
                           </span>
                         </>
@@ -741,83 +741,83 @@ export default function ListingDetail({
               </div>
 
               {/* Details grid */}
-              <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="bg-white p-6 border border-[#e8e6e3]">
+                <h2 className="text-lg font-semibold text-[#1a1a1a] mb-4">
                   {t("details")}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <Tag className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                    <div className="p-2 bg-white shadow-sm">
+                      <Tag className="w-4 h-4 text-[#999]" />
                     </div>
                     <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
+                      <div className="text-[11px] text-[#999] font-medium">
                         {t("category")}
                       </div>
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-semibold text-[#1a1a1a]">
                         {listing.categories?.name || "—"}
                       </div>
                     </div>
                   </div>
                   {listing.condition && (
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                      <div className="p-2 bg-white rounded-lg shadow-sm">
-                        <Box className="w-4 h-4 text-gray-500" />
+                    <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                      <div className="p-2 bg-white shadow-sm">
+                        <Box className="w-4 h-4 text-[#999]" />
                       </div>
                       <div>
-                        <div className="text-[11px] text-gray-500 font-medium">
+                        <div className="text-[11px] text-[#999] font-medium">
                           {t("condition")}
                         </div>
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[#1a1a1a]">
                           {conditionLabel(listing.condition)}
                         </div>
                       </div>
                     </div>
                   )}
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <MapPin className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                    <div className="p-2 bg-white shadow-sm">
+                      <MapPin className="w-4 h-4 text-[#999]" />
                     </div>
                     <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
+                      <div className="text-[11px] text-[#999] font-medium">
                         {t("location")}
                       </div>
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-semibold text-[#1a1a1a]">
                         {listing.locations?.name || "Cyprus"}
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <Calendar className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                    <div className="p-2 bg-white shadow-sm">
+                      <Calendar className="w-4 h-4 text-[#999]" />
                     </div>
                     <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
+                      <div className="text-[11px] text-[#999] font-medium">
                         {t("posted")}
                       </div>
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-semibold text-[#1a1a1a]">
                         {formatDate(listing.created_at)}
                       </div>
                     </div>
                   </div>
                   {isOwner && (
-                    <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                      <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                      <div className="p-2 bg-white shadow-sm">
                         <Activity
                           className={`w-4 h-4 ${
                             qualityScore >= 80
                               ? "text-green-500"
                               : qualityScore >= 50
-                                ? "text-indigo-500"
+                                ? "text-[#8E7A6B]"
                                 : "text-amber-500"
                           }`}
                         />
                       </div>
                       <div>
-                        <div className="text-[11px] text-gray-500 font-medium">
+                        <div className="text-[11px] text-[#999] font-medium">
                           {t("listingQuality")}
                         </div>
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[#1a1a1a]">
                           {qualityScore}%
                         </div>
                       </div>
@@ -900,10 +900,10 @@ export default function ListingDetail({
                   const visible = fields.filter((f) => attrs[f.key]?.trim());
                   if (visible.length === 0) return null;
                   return (
-                    <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                    <div className="bg-white p-6 border border-[#e8e6e3]">
                       <div className="flex items-center gap-2 mb-4">
                         <Car className="w-5 h-5 text-blue-600" />
-                        <h2 className="text-lg font-semibold text-gray-900">
+                        <h2 className="text-lg font-semibold text-[#1a1a1a]">
                           Vehicle Specifications
                         </h2>
                       </div>
@@ -917,16 +917,16 @@ export default function ListingDetail({
                           return (
                             <div
                               key={field.key}
-                              className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5"
+                              className="flex items-center gap-3 bg-blue-50/60 p-3.5"
                             >
-                              <div className="p-2 bg-white rounded-lg shadow-sm">
+                              <div className="p-2 bg-white shadow-sm">
                                 <Icon className="w-4 h-4 text-blue-500" />
                               </div>
                               <div>
-                                <div className="text-[11px] text-gray-500 font-medium">
+                                <div className="text-[11px] text-[#999] font-medium">
                                   {field.label}
                                 </div>
-                                <div className="text-sm font-semibold text-gray-900">
+                                <div className="text-sm font-semibold text-[#1a1a1a]">
                                   {display}
                                 </div>
                               </div>
@@ -940,11 +940,11 @@ export default function ListingDetail({
 
               {/* Description */}
               {listing.description && (
-                <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-3">
+                <div className="bg-white p-6 border border-[#e8e6e3]">
+                  <h2 className="text-lg font-semibold text-[#1a1a1a] mb-3">
                     {t("description")}
                   </h2>
-                  <div className="text-gray-600 leading-relaxed whitespace-pre-wrap text-[15px]">
+                  <div className="text-[#666] leading-relaxed whitespace-pre-wrap text-[15px]">
                     {listing.description}
                   </div>
                 </div>
@@ -973,9 +973,9 @@ export default function ListingDetail({
             {/* ═══ RIGHT COLUMN ═══ */}
             <div className="space-y-4">
               {/* Seller card */}
-              <div className="bg-white rounded-2xl p-6 border border-gray-100 sticky top-20">
+              <div className="bg-white p-6 border border-[#e8e6e3] sticky top-20">
                 <div className="flex items-center gap-3.5 mb-5">
-                  <div className="w-14 h-14 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md shadow-indigo-100">
+                  <div className="w-14 h-14 bg-[#8E7A6B] rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-sm">
                     {profile?.avatar_url ? (
                       <img
                         src={profile.avatar_url}
@@ -995,7 +995,7 @@ export default function ListingDetail({
                             ? `/shop/${shopSlug}`
                             : `/profile/${listing.user_id}`
                         }
-                        className="font-semibold text-gray-900 truncate transition-colors"
+                        className="font-semibold text-[#1a1a1a] truncate transition-colors"
                         style={
                           shopAccentColor
                             ? { ["--seller-accent" as string]: shopAccentColor }
@@ -1015,20 +1015,7 @@ export default function ListingDetail({
                         />
                       )}
                       {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                        <span
-                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
-                          style={
-                            shopAccentColor
-                              ? {
-                                  backgroundColor: `${shopAccentColor}14`,
-                                  color: shopAccentColor,
-                                }
-                              : {
-                                  backgroundColor: "rgb(243 232 255)",
-                                  color: "rgb(126 34 206)",
-                                }
-                          }
-                        >
+                        <span className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase bg-red-50 text-red-600 border border-red-100">
                           PRO
                         </span>
                       )}
@@ -1044,11 +1031,11 @@ export default function ListingDetail({
                           stroke="#f59e0b"
                         />
                       ))}
-                      <span className="text-xs text-gray-500 ml-1">
+                      <span className="text-xs text-[#999] ml-1">
                         {sellerRating} ({sellerReviews})
                       </span>
                     </div>
-                    <p className="text-[11px] text-gray-400 mt-0.5">
+                    <p className="text-[11px] text-[#bbb] mt-0.5">
                       {t("memberSince")} {sellerYear}
                     </p>
                   </div>
@@ -1071,7 +1058,7 @@ export default function ListingDetail({
                     {existingOffer ? (
                       existingOffer.status === "accepted" ? (
                         // ── Offer accepted ───────────────────────────────
-                        <div className="w-full rounded-xl overflow-hidden border-2 border-emerald-200">
+                        <div className="w-full overflow-hidden border-2 border-emerald-200">
                           <div className="bg-emerald-500 px-4 py-2 flex items-center gap-2">
                             <Tag className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
                             <span className="text-xs font-bold text-white uppercase tracking-wide">
@@ -1101,37 +1088,37 @@ export default function ListingDetail({
                         // ── Counter offer received ────────────────────────
                         <Link
                           href={`/dashboard/offers${existingOffer?.id ? `?offer=${existingOffer.id}` : ""}`}
-                          className="block w-full rounded-xl overflow-hidden border-2 border-indigo-200 hover:border-indigo-300 transition-all group"
+                          className="block w-full overflow-hidden border-2 border-[#e8e6e3] hover:border-[#ccc] transition-all group"
                         >
-                          <div className="bg-indigo-600 px-4 py-2 flex items-center gap-2">
-                            <Tag className="w-3.5 h-3.5 text-indigo-200 shrink-0" />
+                          <div className="bg-[#8E7A6B] px-4 py-2 flex items-center gap-2">
+                            <Tag className="w-3.5 h-3.5 text-white shrink-0" />
                             <span className="text-xs font-bold text-white uppercase tracking-wide">
                               Counter offer received
                             </span>
                           </div>
-                          <div className="bg-indigo-50 group-hover:bg-indigo-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
-                            <div className="text-xs text-indigo-600">
-                              <span className="block text-[11px] text-indigo-400 mb-0.5">
+                          <div className="bg-[#faf9f7] group-hover:bg-[#f0eeeb] transition-colors px-4 py-3 flex items-center justify-between gap-3">
+                            <div className="text-xs text-[#666]">
+                              <span className="block text-[11px] text-[#999] mb-0.5">
                                 Your offer
                               </span>
-                              <span className="font-bold">
+                              <span className="font-semibold">
                                 {existingOffer.amount != null
                                   ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.amount.toLocaleString()}`
                                   : "—"}
                               </span>
                             </div>
-                            <div className="w-px h-6 bg-indigo-200" />
-                            <div className="text-xs text-indigo-600">
-                              <span className="block text-[11px] text-indigo-400 mb-0.5">
+                            <div className="w-px h-6 bg-[#e8e6e3]" />
+                            <div className="text-xs text-[#666]">
+                              <span className="block text-[11px] text-[#999] mb-0.5">
                                 Counter
                               </span>
-                              <span className="font-extrabold text-indigo-700">
+                              <span className="font-semibold text-[#1a1a1a]">
                                 {existingOffer.counter_amount != null
                                   ? `${existingOffer.currency === "EUR" ? "€" : existingOffer.currency}${existingOffer.counter_amount.toLocaleString()}`
                                   : "—"}
                               </span>
                             </div>
-                            <span className="ml-auto text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
+                            <span className="ml-auto text-xs font-semibold text-[#8E7A6B] group-hover:text-[#1a1a1a]">
                               Respond →
                             </span>
                           </div>
@@ -1140,7 +1127,7 @@ export default function ListingDetail({
                         // ── Offer pending ─────────────────────────────────
                         <Link
                           href={`/dashboard/offers${existingOffer?.id ? `?offer=${existingOffer.id}` : ""}`}
-                          className="block w-full rounded-xl overflow-hidden border-2 border-amber-200 hover:border-amber-300 transition-all group"
+                          className="block w-full overflow-hidden border-2 border-amber-200 hover:border-amber-300 transition-all group"
                         >
                           <div className="bg-amber-500 px-4 py-2 flex items-center gap-2">
                             <Tag className="w-3.5 h-3.5 text-amber-100 shrink-0" />
@@ -1167,7 +1154,7 @@ export default function ListingDetail({
                       )
                     ) : offerCount >= 2 ? (
                       // ── Offer limit reached ───────────────────────────
-                      <div className="w-full py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-gray-400 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+                      <div className="w-full py-3 border-2 border-[#e8e6e3] bg-[#faf9f7] text-[#bbb] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
                         <Tag className="w-4 h-4" />
                         {t("offerLimitReached")}
                       </div>
@@ -1175,7 +1162,7 @@ export default function ListingDetail({
                       // ── Make an offer ─────────────────────────────────
                       <button
                         onClick={() => setShowOfferModal(true)}
-                        className="w-full py-3 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-semibold hover:bg-indigo-100 hover:border-indigo-300 transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 border-2 border-[#e8e6e3] bg-[#faf9f7] text-[#1a1a1a] text-sm font-semibold hover:bg-[#f0eeeb] hover:border-[#ccc] transition-all flex items-center justify-center gap-2"
                       >
                         <Tag className="w-4 h-4" />
                         {t("makeOffer")}
@@ -1186,13 +1173,13 @@ export default function ListingDetail({
 
                 {/* Sold state — shown instead of CTA when listing is no longer active */}
                 {!isOwner && listing.status === "sold" && (
-                  <div className="mt-3 w-full py-3 px-4 rounded-xl bg-gray-100 border-2 border-gray-200 text-gray-500 text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
+                  <div className="mt-3 w-full py-3 px-4 bg-[#f0eeeb] border-2 border-[#e8e6e3] text-[#999] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
                     <span className="text-base">🏷️</span>
                     This item has been sold
                   </div>
                 )}
 
-                <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                <div className="mt-4 pt-4 border-t border-[#e8e6e3] text-center">
                   <Link
                     href={
                       shopSlug
@@ -1200,7 +1187,7 @@ export default function ListingDetail({
                         : `/profile/${listing.user_id}`
                     }
                     className="text-sm font-medium hover:underline"
-                    style={{ color: shopAccentColor || "#4f46e5" }}
+                    style={{ color: shopAccentColor || "#8E7A6B" }}
                   >
                     {shopSlug ? t("visitShop") : t("viewSellerProfile")}
                   </Link>
@@ -1208,7 +1195,7 @@ export default function ListingDetail({
               </div>
 
               {/* Safety tips */}
-              <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
+              <div className="bg-amber-50 p-5 border border-amber-100">
                 <p className="text-sm text-amber-800 font-semibold mb-2">
                   🛡️ {t("safetyTips")}
                 </p>
@@ -1256,12 +1243,12 @@ export default function ListingDetail({
           {related.length > 0 && (
             <section className="mt-12">
               <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-[#1a1a1a]">
                   {t("similarListings")}
                 </h2>
                 <Link
                   href={`/search?category=${listing.categories?.slug || ""}`}
-                  className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1"
+                  className="text-sm text-[#8E7A6B] font-medium hover:underline flex items-center gap-1"
                 >
                   {t("viewMore")} <ChevronRight className="w-3.5 h-3.5" />
                 </Link>

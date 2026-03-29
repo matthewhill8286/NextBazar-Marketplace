@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -90,14 +90,14 @@ export default function UserMenu() {
   }
 
   if (loading) {
-    return <div className="w-9 h-9 bg-gray-100 rounded-full animate-pulse" />;
+    return <div className="w-9 h-9 bg-[#f0eeeb] rounded-full animate-pulse" />;
   }
 
   if (!user) {
     return (
       <Link
         href="/auth/login"
-        className="text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+        className="text-sm text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors font-medium"
       >
         {tAuth("login")}
       </Link>
@@ -114,77 +114,80 @@ export default function UserMenu() {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Avatar button — shows a dot if there are unread alerts */}
+      {/* Avatar button with chevron indicator */}
       <button
         onClick={() => setOpen(!open)}
-        className="pointer-events-auto relative w-9 h-9 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold text-xs hover:shadow-md transition-shadow"
+        className="pointer-events-auto flex items-center gap-1.5 group"
       >
-        {user.avatar_url ? (
-          <Image
-            src={user.avatar_url}
-            alt="user avatar"
-            width={36}
-            height={36}
-            className="w-full h-full rounded-full object-cover"
-          />
-        ) : (
-          initials
-        )}
+        <div className="relative w-9 h-9 bg-[#8E7A6B] rounded-full flex items-center justify-center text-white font-semibold text-xs group-hover:shadow-md transition-shadow">
+          {user.avatar_url ? (
+            <Image
+              src={user.avatar_url}
+              alt="user avatar"
+              width={36}
+              height={36}
+              className="w-full h-full rounded-full object-cover"
+            />
+          ) : (
+            initials
+          )}
+        </div>
+        <ChevronDown className={`w-3.5 h-3.5 text-[#999] transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-60 bg-white rounded-xl border border-gray-100 shadow-sm py-2 z-50">
+        <div className="absolute right-0 top-12 w-60 bg-white border border-[#e8e6e3] shadow-sm py-2 z-50">
           {/* User info */}
-          <div className="px-4 py-2.5 border-b border-gray-100">
-            <p className="text-sm font-semibold text-gray-900 truncate">
+          <div className="px-4 py-2.5 border-b border-[#e8e6e3]">
+            <p className="text-sm font-semibold text-[#1a1a1a] truncate">
               {user.display_name || "User"}
             </p>
-            <p className="text-xs text-gray-500 truncate">{user.email}</p>
+            <p className="text-xs text-[#999] truncate">{user.email}</p>
           </div>
 
           {/* Navigation */}
-          <div className="py-1 border-b border-gray-100">
+          <div className="py-1 border-b border-[#e8e6e3]">
             <Link
               href="/dashboard"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
             >
-              <LayoutDashboard className="w-4 h-4 text-gray-400" />
+              <LayoutDashboard className="w-4 h-4 text-[#bbb]" />
               {tDash("overview")}
             </Link>
             <Link
               href="/dashboard/settings"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
             >
-              <Settings className="w-4 h-4 text-gray-400" />
+              <Settings className="w-4 h-4 text-[#bbb]" />
               {tDash("settings")}
             </Link>
           </div>
 
           {/* Language switcher — feature flagged until i18n is ready for release */}
           {FEATURE_FLAGS.LANGUAGE_SWITCHER && (
-            <div className="px-4 py-2.5 border-b border-gray-100">
-              <p className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">
+            <div className="px-4 py-2.5 border-b border-[#e8e6e3]">
+              <p className="text-xs font-medium text-[#bbb] mb-2 uppercase tracking-wide">
                 Language
               </p>
               <div className="flex gap-1.5">
                 <button
                   onClick={() => switchLocale("en")}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                  className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
                     currentLocale === "en"
-                      ? "bg-indigo-50 text-indigo-700 border-indigo-200"
-                      : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300"
+                      ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
+                      : "bg-[#faf9f7] text-[#999] border-[#e8e6e3] hover:border-[#e8e6e3]"
                   }`}
                 >
                   🇬🇧 English
                 </button>
                 <button
                   onClick={() => switchLocale("el")}
-                  className={`flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
+                  className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
                     currentLocale === "el"
-                      ? "bg-indigo-50 text-indigo-700 border-indigo-200"
-                      : "bg-gray-50 text-gray-500 border-gray-200 hover:border-gray-300"
+                      ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
+                      : "bg-[#faf9f7] text-[#999] border-[#e8e6e3] hover:border-[#e8e6e3]"
                   }`}
                 >
                   🇨🇾 Ελληνικά

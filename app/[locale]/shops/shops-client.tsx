@@ -68,62 +68,38 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
   }, [shops, search, sort]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#faf9f7]">
       {/* ── Hero Header ──────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-indigo-700">
-        {/* Background decoration */}
-        <div className="absolute inset-0 opacity-10">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.2) 0%, transparent 50%), radial-gradient(circle at 70% 80%, rgba(255,255,255,0.15) 0%, transparent 40%)",
-            }}
-          />
-        </div>
-
-        <div className="max-w-6xl mx-auto px-4 py-14 md:py-20 relative z-10">
+      <div className="bg-[#faf9f7] border-b border-[#e8e6e3]">
+        <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white text-xs font-semibold px-4 py-1.5 rounded-full mb-5">
+            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#8E7A6B] mb-4 flex items-center justify-center gap-2">
               <Store className="w-3.5 h-3.5" />
               Verified Pro Sellers
-            </div>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
+            </p>
+            <h1
+              className="text-3xl md:text-5xl font-light text-[#1a1a1a] mb-4"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               Browse Shops
             </h1>
-            <p className="text-white/70 text-base md:text-lg max-w-xl mx-auto mb-8">
+            <p className="text-[#999] text-base md:text-lg max-w-xl mx-auto mb-10">
               Discover trusted Pro Seller shops from across Cyprus. Each shop is
               run by a verified, premium seller.
             </p>
 
             {/* Search bar */}
             <div className="max-w-lg mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#bbb] pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search shops by name or description..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-0 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-white/20 transition-all shadow-sm shadow-indigo-900/20"
+                className="w-full pl-12 pr-4 py-3.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#bbb] focus:outline-none focus:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 transition-all"
               />
             </div>
           </div>
-        </div>
-
-        {/* Bottom curve */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg
-            viewBox="0 0 1440 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-8 md:h-12"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 60L1440 60L1440 0C1440 0 1080 60 720 60C360 60 0 0 0 0L0 60Z"
-              fill="#f9fafb"
-            />
-          </svg>
         </div>
       </div>
 
@@ -131,8 +107,8 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-gray-500">
-            <span className="font-semibold text-gray-900">
+          <p className="text-sm text-[#999]">
+            <span className="font-semibold text-[#1a1a1a]">
               {filtered.length}
             </span>{" "}
             {filtered.length === 1 ? "shop" : "shops"} found
@@ -140,7 +116,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
-            className="px-3 py-2 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 cursor-pointer"
+            className="px-3 py-2 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus:border-[#8E7A6B] cursor-pointer"
           >
             <option value="listings">Most Listings</option>
             <option value="newest">Newest</option>
@@ -156,14 +132,17 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-white rounded-2xl border border-gray-100">
-            <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Store className="w-7 h-7 text-purple-500" />
+          <div className="text-center py-24 bg-white border border-[#e8e6e3]">
+            <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
+              <Store className="w-7 h-7 text-[#8E7A6B]" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+            <h2
+              className="text-xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               {search.trim() ? "No shops found" : "No shops yet"}
             </h2>
-            <p className="text-gray-500 max-w-sm mx-auto text-sm">
+            <p className="text-[#999] max-w-sm mx-auto text-sm">
               {search.trim()
                 ? "Try a different search term."
                 : "Be the first to open a dealer shop on NextBazar!"}
@@ -178,17 +157,17 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
 /* ── Individual Shop Card ─────────────────────────────────────────────────── */
 
 function ShopCard({ shop }: { shop: ShopCardRow }) {
-  const accentColor = shop.accent_color || "#4f46e5";
+  const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);
-  const gradientStart = isValidHex ? accentColor : "#4f46e5";
+  const gradientStart = isValidHex ? accentColor : "#8E7A6B";
   const gradientEnd = isValidHex
     ? adjustBrightness(accentColor, -25)
-    : "#4338ca";
+    : "#7A6657";
 
   return (
     <Link
       href={`/shop/${shop.slug}`}
-      className="group block bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-sm hover:shadow-gray-200/60 hover:-translate-y-0.5 transition-all duration-300"
+      className="group block bg-white border border-[#e8e6e3] overflow-hidden hover:shadow-sm hover:shadow-[#e8e6e3]/60 hover:-translate-y-0.5 transition-all duration-300"
     >
       {/* Banner */}
       <div
@@ -202,21 +181,10 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
         }}
       >
         {shop.banner_url && <div className="absolute inset-0 bg-black/10" />}
-        {!shop.banner_url && (
-          <div className="absolute inset-0 opacity-20">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 50%)",
-              }}
-            />
-          </div>
-        )}
 
         {/* Listing count badge on banner */}
         <div className="absolute top-3 right-3">
-          <span className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-lg shadow-sm">
+          <span className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-[#666] text-xs font-medium px-2.5 py-1 shadow-sm">
             <Package className="w-3 h-3" />
             {shop.listing_count}
           </span>
@@ -224,7 +192,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 
         {/* Logo overlay */}
         <div className="absolute -bottom-8 left-5">
-          <div className="w-16 h-16 rounded-xl overflow-hidden border-[3px] border-white shadow-md bg-white">
+          <div className="w-16 h-16 overflow-hidden border-[3px] border-white shadow-md bg-white">
             {shop.logo_url ? (
               <Image
                 src={shop.logo_url}
@@ -235,7 +203,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
               />
             ) : (
               <div
-                className="w-full h-full flex items-center justify-center text-white text-lg font-bold"
+                className="w-full h-full flex items-center justify-center text-white text-lg font-semibold"
                 style={{
                   background: `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`,
                 }}
@@ -251,12 +219,12 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
       <div className="pt-12 pb-5 px-5">
         {/* Name + verified */}
         <div className="flex items-center gap-2 mb-1.5">
-          <h3 className="text-base font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">
+          <h3 className="text-base font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
             {shop.shop_name}
           </h3>
           {shop.profile?.verified && (
             <span
-              className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full text-white"
+              className="shrink-0 flex items-center justify-center w-5 h-5 text-white"
               style={{
                 background: `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`,
               }}
@@ -269,7 +237,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 
         {/* Description */}
         {shop.description ? (
-          <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+          <p className="text-sm text-[#999] line-clamp-2 mb-4 leading-relaxed">
             {shop.description}
           </p>
         ) : (
@@ -278,12 +246,12 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 
         {/* Footer */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[#bbb]">
             <span className="font-medium">
               {shop.listing_count}{" "}
               {shop.listing_count === 1 ? "listing" : "listings"}
             </span>
-            <span className="w-1 h-1 rounded-full bg-gray-300" />
+            <span className="w-1 h-1 bg-[#ccc]" />
             <span>
               Joined{" "}
               {new Date(shop.created_at).toLocaleDateString("en-US", {
@@ -292,7 +260,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
               })}
             </span>
           </div>
-          <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all" />
+          <ArrowRight className="w-4 h-4 text-[#ccc] group-hover:text-[#8E7A6B] group-hover:translate-x-0.5 transition-all" />
         </div>
       </div>
     </Link>
@@ -302,17 +270,17 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 /* ── Compact card for homepage featured section ───────────────────────────── */
 
 export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
-  const accentColor = shop.accent_color || "#4f46e5";
+  const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);
-  const gradientStart = isValidHex ? accentColor : "#4f46e5";
+  const gradientStart = isValidHex ? accentColor : "#8E7A6B";
   const gradientEnd = isValidHex
     ? adjustBrightness(accentColor, -25)
-    : "#4338ca";
+    : "#7A6657";
 
   return (
     <Link
       href={`/shop/${shop.slug}`}
-      className="group block bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+      className="group block bg-white border border-[#e8e6e3] overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* Mini banner */}
       <div
@@ -332,7 +300,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
       <div className="relative px-4 pb-4 pt-7">
         {/* Logo */}
         <div className="absolute -top-6 left-4">
-          <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-white shadow-sm bg-white">
+          <div className="w-12 h-12 overflow-hidden border-2 border-white shadow-sm bg-white">
             {shop.logo_url ? (
               <Image
                 src={shop.logo_url}
@@ -343,7 +311,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
               />
             ) : (
               <div
-                className="w-full h-full flex items-center justify-center text-white text-sm font-bold"
+                className="w-full h-full flex items-center justify-center text-white text-sm font-semibold"
                 style={{
                   background: `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`,
                 }}
@@ -355,12 +323,12 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
         </div>
 
         <div className="flex items-center gap-1.5 mb-1">
-          <h3 className="text-sm font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">
+          <h3 className="text-sm font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
             {shop.shop_name}
           </h3>
           {shop.profile?.verified && (
             <span
-              className="shrink-0 flex items-center justify-center w-4 h-4 rounded-full text-white"
+              className="shrink-0 flex items-center justify-center w-4 h-4 text-white"
               style={{
                 background: `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`,
               }}
@@ -370,7 +338,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 text-[11px] text-gray-400 font-medium">
+        <div className="flex items-center gap-1.5 text-[11px] text-[#bbb] font-medium">
           <Package className="w-3 h-3" />
           {shop.listing_count}{" "}
           {shop.listing_count === 1 ? "listing" : "listings"}

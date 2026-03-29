@@ -86,13 +86,13 @@ export default function ShopClient({
   const [sort, setSort] = useState<SortOption>("newest");
   const [copied, setCopied] = useState(false);
 
-  const accentColor = shop.accent_color || "#4f46e5";
+  const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);
-  const gradientStart = isValidHex ? accentColor : "#4f46e5";
+  const gradientStart = isValidHex ? accentColor : "#8E7A6B";
   const gradientEnd = isValidHex
     ? adjustBrightness(accentColor, -25)
-    : "#4338ca";
-  const accentRgb = isValidHex ? hexToRgb(accentColor) : "79, 70, 229";
+    : "#7A6657";
+  const accentRgb = isValidHex ? hexToRgb(accentColor) : "142, 122, 107";
 
   const memberSince = useMemo(() => {
     if (!profile?.created_at) return "";
@@ -144,7 +144,7 @@ export default function ShopClient({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#faf9f7]">
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <div className="relative">
         <div
@@ -176,7 +176,7 @@ export default function ShopClient({
         {/* Share button */}
         <button
           onClick={handleShare}
-          className="absolute top-4 right-4 p-2.5 rounded-xl bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white transition-all shadow-sm"
+          className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-sm text-[#666] hover:bg-white transition-all shadow-sm"
         >
           {copied ? (
             <Check className="w-4 h-4 text-green-600" />
@@ -188,12 +188,12 @@ export default function ShopClient({
 
       {/* ── Shop Info Card ────────────────────────────────────────────────── */}
       <div className="max-w-6xl mx-auto px-4 -mt-16 relative z-10">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white border border-[#e8e6e3] shadow-sm overflow-hidden">
           <div className="p-6 md:p-8">
             <div className="flex flex-col md:flex-row md:items-start gap-5">
               {/* Logo */}
               <div
-                className="w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden border-4 border-white shadow-md shrink-0 -mt-14 md:-mt-16"
+                className="w-20 h-20 md:w-24 md:h-24 overflow-hidden border-4 border-white shadow-md shrink-0 -mt-14 md:-mt-16"
                 style={{ boxShadow: `0 4px 20px rgba(${accentRgb}, 0.2)` }}
               >
                 {shop.logo_url ? (
@@ -219,7 +219,7 @@ export default function ShopClient({
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
-                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 truncate">
+                  <h1 className="text-2xl md:text-3xl font-bold text-[#1a1a1a] truncate">
                     {shop.shop_name}
                   </h1>
                   {profile?.verified && (
@@ -236,21 +236,21 @@ export default function ShopClient({
                 </div>
 
                 {shop.description && (
-                  <p className="text-gray-600 text-sm md:text-base leading-relaxed max-w-2xl mb-4">
+                  <p className="text-[#666] text-sm md:text-base leading-relaxed max-w-2xl mb-4">
                     {shop.description}
                   </p>
                 )}
 
                 {/* Meta chips */}
-                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-[#999]">
                   {memberSince && (
-                    <span className="inline-flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
-                      <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                    <span className="inline-flex items-center gap-1.5 bg-[#faf9f7] px-3 py-1.5 rounded-full">
+                      <Calendar className="w-3.5 h-3.5 text-[#bbb]" />
                       Member since {memberSince}
                     </span>
                   )}
-                  <span className="inline-flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-full">
-                    <Package className="w-3.5 h-3.5 text-gray-400" />
+                  <span className="inline-flex items-center gap-1.5 bg-[#faf9f7] px-3 py-1.5 rounded-full">
+                    <Package className="w-3.5 h-3.5 text-[#bbb]" />
                     {listings.length}{" "}
                     {listings.length === 1 ? "listing" : "listings"}
                   </span>
@@ -270,14 +270,14 @@ export default function ShopClient({
                     href={shop.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                    className="p-2.5 bg-[#faf9f7] text-[#666] hover:text-indigo-600 hover:bg-indigo-50 transition-all"
                     title="Website"
                   >
                     <Globe className="w-5 h-5" />
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
                     title="Website — not set"
                   >
                     <Globe className="w-5 h-5" />
@@ -288,14 +288,14 @@ export default function ShopClient({
                     href={shop.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all"
+                    className="p-2.5 bg-[#faf9f7] text-[#666] hover:text-blue-600 hover:bg-blue-50 transition-all"
                     title="Facebook"
                   >
                     <Facebook className="w-5 h-5" />
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
                     title="Facebook — not set"
                   >
                     <Facebook className="w-5 h-5" />
@@ -306,14 +306,14 @@ export default function ShopClient({
                     href={shop.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition-all"
+                    className="p-2.5 bg-[#faf9f7] text-[#666] hover:text-pink-600 hover:bg-pink-50 transition-all"
                     title="Instagram"
                   >
                     <Instagram className="w-5 h-5" />
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
                     title="Instagram — not set"
                   >
                     <Instagram className="w-5 h-5" />
@@ -324,14 +324,14 @@ export default function ShopClient({
                     href={shop.tiktok}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+                    className="p-2.5 bg-[#faf9f7] text-[#666] hover:text-[#1a1a1a] hover:bg-[#f0eeeb] transition-all"
                     title="TikTok"
                   >
                     <Music className="w-5 h-5" />
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 rounded-xl bg-gray-50 text-gray-300 cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
                     title="TikTok — not set"
                   >
                     <Music className="w-5 h-5" />
@@ -342,35 +342,35 @@ export default function ShopClient({
           </div>
 
           {/* ── Stats Bar ─────────────────────────────────────────────────── */}
-          <div className="border-t border-gray-100 bg-gray-50/50">
-            <div className="grid grid-cols-3 divide-x divide-gray-100">
+          <div className="border-t border-[#e8e6e3] bg-[#faf9f7]/50">
+            <div className="grid grid-cols-3 divide-x divide-[#e8e6e3]">
               <div className="text-center py-4 px-3">
-                <div className="text-xl md:text-2xl font-bold text-gray-900">
+                <div className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
                   {listings.length}
                 </div>
-                <div className="text-[11px] md:text-xs text-gray-500 mt-0.5 font-medium">
+                <div className="text-[11px] md:text-xs text-[#999] mt-0.5 font-medium">
                   Active Listings
                 </div>
               </div>
               <div className="text-center py-4 px-3">
-                <div className="text-xl md:text-2xl font-bold text-gray-900">
+                <div className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
                   {listings
                     .reduce((s, l) => s + (l.view_count ?? 0), 0)
                     .toLocaleString()}
                 </div>
-                <div className="text-[11px] md:text-xs text-gray-500 mt-0.5 font-medium">
+                <div className="text-[11px] md:text-xs text-[#999] mt-0.5 font-medium">
                   Total Views
                 </div>
               </div>
               <div className="text-center py-4 px-3">
-                <div className="text-xl md:text-2xl font-bold text-gray-900 flex items-center justify-center gap-1">
+                <div className="text-xl md:text-2xl font-bold text-[#1a1a1a] flex items-center justify-center gap-1">
                   <ShieldCheck
                     className="w-5 h-5"
                     style={{ color: gradientStart }}
                   />
                   PRO
                 </div>
-                <div className="text-[11px] md:text-xs text-gray-500 mt-0.5 font-medium">
+                <div className="text-[11px] md:text-xs text-[#999] mt-0.5 font-medium">
                   Seller Status
                 </div>
               </div>
@@ -385,10 +385,10 @@ export default function ShopClient({
           <>
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Grid3X3 className="w-5 h-5 text-gray-400" />
+              <h2 className="text-lg md:text-xl font-bold text-[#1a1a1a] flex items-center gap-2">
+                <Grid3X3 className="w-5 h-5 text-[#bbb]" />
                 Shop Listings
-                <span className="text-sm font-normal text-gray-400 ml-1">
+                <span className="text-sm font-normal text-[#bbb] ml-1">
                   ({filtered.length})
                 </span>
               </h2>
@@ -396,13 +396,13 @@ export default function ShopClient({
               <div className="flex items-center gap-3">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#bbb] pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Search listings..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all w-48 md:w-56"
+                    className="pl-10 pr-4 py-2.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all w-48 md:w-56"
                   />
                 </div>
 
@@ -410,7 +410,7 @@ export default function ShopClient({
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortOption)}
-                  className="px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 cursor-pointer"
+                  className="px-3 py-2.5 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 cursor-pointer"
                 >
                   <option value="newest">Newest First</option>
                   <option value="popular">Most Popular</option>
@@ -432,31 +432,31 @@ export default function ShopClient({
             </div>
 
             {filtered.length === 0 && search.trim() && (
-              <div className="text-center py-16 bg-white rounded-2xl border border-gray-100 mt-4">
-                <Search className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+              <div className="text-center py-16 bg-white border border-[#e8e6e3] mt-4">
+                <Search className="w-8 h-8 text-[#ccc] mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
                   No results found
                 </h3>
-                <p className="text-gray-500 text-sm">
+                <p className="text-[#999] text-sm">
                   Try a different search term.
                 </p>
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
+          <div className="text-center py-20 bg-white border border-[#e8e6e3]">
             <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              className="w-16 h-16 flex items-center justify-center mx-auto mb-4"
               style={{
                 background: `linear-gradient(135deg, ${gradientStart}20, ${gradientEnd}20)`,
               }}
             >
               <Store className="w-8 h-8" style={{ color: gradientStart }} />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+            <h2 className="text-xl font-bold text-[#1a1a1a] mb-2">
               No listings yet
             </h2>
-            <p className="text-gray-500 max-w-sm mx-auto text-sm">
+            <p className="text-[#999] max-w-sm mx-auto text-sm">
               This shop hasn&apos;t posted any items for sale yet. Check back
               soon for new arrivals!
             </p>

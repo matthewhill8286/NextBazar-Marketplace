@@ -51,7 +51,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
     shopName: shop?.shop_name ?? "",
     slug: shop?.slug ?? "",
     description: shop?.description ?? "",
-    accentColor: shop?.accent_color ?? "#4f46e5",
+    accentColor: shop?.accent_color ?? "#8E7A6B",
     bannerUrl: shop?.banner_url ?? "",
     website: shop?.website ?? "",
     facebook: shop?.facebook ?? "",
@@ -171,7 +171,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+            className="w-11 h-11 flex items-center justify-center shrink-0"
             style={{
               background: `linear-gradient(135deg, ${branding.accentColor}15, ${branding.accentColor}25)`,
             }}
@@ -182,10 +182,10 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
             />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
               {branding.shopName || "Your Shop"}
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#999]">
               Sellers Pro &mdash; manage your brand, listings, and analytics
             </p>
           </div>
@@ -193,14 +193,14 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
         <div className="flex items-center gap-2">
           <Link
             href={`/shop/${branding.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 rounded-xl hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 hover:bg-indigo-50 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
           </Link>
           <button
             onClick={handleManageBilling}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors"
           >
             <CreditCard className="w-3.5 h-3.5" />
             Billing
@@ -209,7 +209,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
+      <div className="flex gap-1 bg-[#f0eeeb] p-1 w-fit">
         {(
           [
             { key: "overview", label: "Overview", icon: BarChart2 },
@@ -220,10 +220,10 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex items-center justify-center gap-2 py-2.5 px-5 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex items-center justify-center gap-2 py-2.5 px-5 text-sm font-semibold transition-all ${
               tab === t.key
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-white text-[#1a1a1a] shadow-sm"
+                : "text-[#999] hover:text-[#666]"
             }`}
           >
             <t.icon className="w-4 h-4" />

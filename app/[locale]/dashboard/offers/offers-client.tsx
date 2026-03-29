@@ -77,11 +77,11 @@ const STATUS_CONFIG: Record<
   declined: { label: "Declined", bg: "bg-red-50", text: "text-red-600" },
   countered: {
     label: "Countered",
-    bg: "bg-indigo-50",
-    text: "text-indigo-700",
+    bg: "bg-[#faf9f7]",
+    text: "text-[#666]",
   },
-  withdrawn: { label: "Withdrawn", bg: "bg-gray-100", text: "text-gray-500" },
-  expired: { label: "Expired", bg: "bg-gray-100", text: "text-gray-500" },
+  withdrawn: { label: "Withdrawn", bg: "bg-[#f0eeeb]", text: "text-[#999]" },
+  expired: { label: "Expired", bg: "bg-[#f0eeeb]", text: "text-[#999]" },
 };
 
 function Avatar({
@@ -98,7 +98,7 @@ function Avatar({
     .toUpperCase()
     .slice(0, 2);
   return (
-    <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
+    <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#bbb] to-[#faf9f7]0 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
       {avatarUrl ? (
         <img
           src={avatarUrl}
@@ -127,7 +127,7 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={`w-3.5 h-3.5 ${n <= rating ? "text-amber-400 fill-amber-400" : "text-gray-200 fill-gray-200"}`}
+          className={`w-3.5 h-3.5 ${n <= rating ? "text-amber-400 fill-amber-400" : "text-[#ccc] fill-[#e8e6e3]"}`}
         />
       ))}
     </div>
@@ -147,7 +147,7 @@ function Pagination({
   if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between pt-2">
-      <span className="text-xs text-gray-400">
+      <span className="text-xs text-[#bbb]">
         Page {page + 1} of {totalPages} · {total} offer{total !== 1 ? "s" : ""}
       </span>
       <div className="flex items-center gap-1">
@@ -155,7 +155,7 @@ function Pagination({
           type="button"
           onClick={() => onPage(page - 1)}
           disabled={page === 0}
-          className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 border border-[#e8e6e3] text-[#999] hover:bg-[#faf9f7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -164,10 +164,10 @@ function Pagination({
             key={`pagination-${i}`}
             type="button"
             onClick={() => onPage(i)}
-            className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
+            className={`w-7 h-7 text-xs font-medium transition-colors ${
               i === page
-                ? "bg-indigo-600 text-white"
-                : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                ? "bg-[#2C2826] text-white"
+                : "border border-[#e8e6e3] text-[#666] hover:bg-[#faf9f7]"
             }`}
           >
             {i + 1}
@@ -177,7 +177,7 @@ function Pagination({
           type="button"
           onClick={() => onPage(page + 1)}
           disabled={page >= totalPages - 1}
-          className="p-1.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 border border-[#e8e6e3] text-[#999] hover:bg-[#faf9f7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -326,18 +326,18 @@ function OfferCard({
     <>
       <div
         ref={cardRef}
-        className={`bg-white rounded-xl border overflow-hidden transition-colors ${
+        className={`bg-white border overflow-hidden transition-colors ${
           focused
-            ? "border-indigo-300 ring-2 ring-indigo-100"
-            : "border-gray-100"
+            ? "border-[#e8e6e3] ring-2 ring-[#f0eeeb]"
+            : "border-[#e8e6e3]"
         }`}
       >
         <div
-          className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50/50 transition-colors"
+          className="flex items-center gap-4 p-4 cursor-pointer hover:bg-[#faf9f7]/50 transition-colors"
           onClick={() => setExpanded(!expanded)}
         >
           {/* Listing thumbnail */}
-          <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative">
+          <div className="w-14 h-14 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
             {listing?.primary_image_url ? (
               <Image
                 src={listing.primary_image_url}
@@ -356,12 +356,12 @@ function OfferCard({
           <div className="flex-1 min-w-0">
             <Link
               href={listing ? `/listing/${listing.slug}` : "#"}
-              className="font-medium text-gray-900 hover:text-indigo-600 transition-colors text-sm truncate block"
+              className="font-medium text-[#1a1a1a] hover:text-[#666] transition-colors text-sm truncate block"
               onClick={(e) => e.stopPropagation()}
             >
               {listing?.title || "Listing"}
             </Link>
-            <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500 flex-wrap">
+            <div className="flex items-center gap-2 mt-0.5 text-xs text-[#999] flex-wrap">
               {person && (
                 <span className="flex items-center gap-1">
                   <Avatar
@@ -372,12 +372,12 @@ function OfferCard({
                 </span>
               )}
               <span>·</span>
-              <span className="font-semibold text-gray-900 text-sm">
+              <span className="font-semibold text-[#1a1a1a] text-sm">
                 {sym}
                 {offer.amount.toLocaleString()}
               </span>
               {listing?.price && (
-                <span className="text-gray-400">
+                <span className="text-[#bbb]">
                   (asking {sym}
                   {listing.price.toLocaleString()})
                 </span>
@@ -392,7 +392,7 @@ function OfferCard({
               {cfg.label}
             </span>
             {offer.status === "pending" && (
-              <span className="flex items-center gap-1 text-xs text-gray-400">
+              <span className="flex items-center gap-1 text-xs text-[#bbb]">
                 <Clock className="w-3 h-3" />
                 {timeLeft(offer.expires_at)}
               </span>
@@ -401,33 +401,33 @@ function OfferCard({
               <StarRating rating={existingRating} />
             )}
             {expanded ? (
-              <ChevronUp className="w-4 h-4 text-gray-400" />
+              <ChevronUp className="w-4 h-4 text-[#bbb]" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-400" />
+              <ChevronDown className="w-4 h-4 text-[#bbb]" />
             )}
           </div>
         </div>
 
         {expanded && (
-          <div className="px-4 pb-4 border-t border-gray-50 pt-4 space-y-3">
+          <div className="px-4 pb-4 border-t border-[#faf9f7] pt-4 space-y-3">
             {offer.message && (
-              <div className="bg-gray-50 rounded-xl p-3">
-                <p className="text-xs text-gray-500 mb-1 font-medium">
+              <div className="bg-[#faf9f7] p-3">
+                <p className="text-xs text-[#999] mb-1 font-medium">
                   <MessageCircle className="w-3 h-3 inline mr-1" />
                   Buyer&apos;s message
                 </p>
-                <p className="text-sm text-gray-700">{offer.message}</p>
+                <p className="text-sm text-[#666]">{offer.message}</p>
               </div>
             )}
 
             {offer.counter_amount && (
-              <div className="bg-indigo-50 rounded-xl p-3">
-                <p className="text-xs text-indigo-600 mb-1 font-medium">
+              <div className="bg-[#faf9f7] p-3">
+                <p className="text-xs text-[#666] mb-1 font-medium">
                   Counter offer: {sym}
                   {offer.counter_amount.toLocaleString()}
                 </p>
                 {offer.counter_message && (
-                  <p className="text-sm text-indigo-700">
+                  <p className="text-sm text-[#666]">
                     {offer.counter_message}
                   </p>
                 )}
@@ -437,7 +437,7 @@ function OfferCard({
             {/* Review prompt for accepted offers */}
             {offer.status === "accepted" && person && (
               <div
-                className={`rounded-xl p-3 flex items-center justify-between gap-3 ${
+                className={`p-3 flex items-center justify-between gap-3 ${
                   hasReviewed
                     ? "bg-amber-50 border border-amber-100"
                     : "bg-green-50 border border-green-100"
@@ -471,7 +471,7 @@ function OfferCard({
                     disabled={loading === "review"}
                     type="button"
                     onClick={() => setShowReviewModal(true)}
-                    className="shrink-0 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors flex items-center gap-1.5"
+                    className="shrink-0 px-3 py-1.5 bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors flex items-center gap-1.5"
                   >
                     <Star className="w-3 h-3" />
                     Review
@@ -489,7 +489,7 @@ function OfferCard({
                       type="button"
                       onClick={() => setConfirmAction({ type: "accepted" })}
                       disabled={!!loading}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
                     >
                       {loading === "accepted" ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -502,7 +502,7 @@ function OfferCard({
                       type="button"
                       onClick={() => setShowCounter(true)}
                       disabled={!!loading}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 text-sm font-medium hover:bg-indigo-100 transition-colors disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-[#e8e6e3] bg-[#faf9f7] text-[#666] text-sm font-medium hover:bg-[#f0eeeb] transition-colors disabled:opacity-50"
                     >
                       <RotateCcw className="w-4 h-4" />
                       Counter
@@ -511,7 +511,7 @@ function OfferCard({
                       type="button"
                       onClick={() => setConfirmAction({ type: "declined" })}
                       disabled={!!loading}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 transition-colors disabled:opacity-50"
                     >
                       {loading === "declined" ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -523,11 +523,11 @@ function OfferCard({
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <span className="block text-xs font-medium text-gray-600">
+                    <span className="block text-xs font-medium text-[#666]">
                       Your counter offer amount
                     </span>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#bbb]">
                         {sym}
                       </span>
                       <input
@@ -535,7 +535,7 @@ function OfferCard({
                         min="1"
                         value={counterAmount}
                         onChange={(e) => setCounterAmount(e.target.value)}
-                        className="w-full pl-7 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm outline-none focus:border-[#1a1a1a] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         placeholder="Amount"
                       />
                     </div>
@@ -544,7 +544,7 @@ function OfferCard({
                       value={counterMessage}
                       onChange={(e) => setCounterMessage(e.target.value)}
                       placeholder="Optional message"
-                      className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-indigo-400 resize-none"
+                      className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm outline-none focus:border-[#1a1a1a] resize-none"
                     />
                     <div className="flex gap-2">
                       <button
@@ -559,7 +559,7 @@ function OfferCard({
                           })
                         }
                         disabled={!counterAmount || !!loading}
-                        className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                        className="flex-1 py-2.5 bg-[#2C2826] text-white text-sm font-medium hover:bg-[#3D3633] transition-colors disabled:opacity-50"
                       >
                         {loading === "countered" ? (
                           <Loader2 className="w-4 h-4 animate-spin mx-auto" />
@@ -570,7 +570,7 @@ function OfferCard({
                       <button
                         type="button"
                         onClick={() => setShowCounter(false)}
-                        className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
+                        className="px-4 py-2.5 border border-[#e8e6e3] text-sm text-[#666] hover:bg-[#faf9f7]"
                       >
                         Cancel
                       </button>
@@ -587,7 +587,7 @@ function OfferCard({
                   type="button"
                   onClick={() => setConfirmAction({ type: "withdrawn" })}
                   disabled={!!loading}
-                  className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 text-sm text-[#999] hover:text-red-600 transition-colors disabled:opacity-50"
                 >
                   {loading === "withdrawn" ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -606,7 +606,7 @@ function OfferCard({
                     type="button"
                     onClick={() => setConfirmAction({ type: "accepted" })}
                     disabled={!!loading}
-                    className="flex-1 py-2.5 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
                     {loading === "accepted" ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -620,7 +620,7 @@ function OfferCard({
                     type="button"
                     onClick={() => setConfirmAction({ type: "declined" })}
                     disabled={!!loading}
-                    className="flex-1 py-2.5 rounded-xl border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 border border-red-100 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-50 flex items-center justify-center gap-1.5"
                   >
                     {loading === "declined" ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -634,17 +634,17 @@ function OfferCard({
 
             {/* Delete button — only for terminal offers */}
             {isTerminal && (
-              <div className="pt-1 border-t border-gray-50">
+              <div className="pt-1 border-t border-[#faf9f7]">
                 {deleteConfirm ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-500 flex-1">
+                    <span className="text-xs text-[#999] flex-1">
                       Remove this offer permanently?
                     </span>
                     <button
                       type="button"
                       onClick={handleDelete}
                       disabled={loading === "delete"}
-                      className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                      className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-1"
                     >
                       {loading === "delete" ? (
                         <Loader2 className="w-3 h-3 animate-spin" />
@@ -654,7 +654,7 @@ function OfferCard({
                     <button
                       type="button"
                       onClick={() => setDeleteConfirm(false)}
-                      className="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+                      className="px-3 py-1.5 border border-[#e8e6e3] text-xs text-[#666] hover:bg-[#faf9f7] transition-colors"
                     >
                       Cancel
                     </button>
@@ -663,7 +663,7 @@ function OfferCard({
                   <button
                     type="button"
                     onClick={() => setDeleteConfirm(true)}
-                    className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-[#bbb] hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     Remove from history
@@ -674,7 +674,7 @@ function OfferCard({
 
             {/* Error message */}
             {actionError && (
-              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">
+              <p className="text-xs text-red-600 bg-red-50 px-3 py-2">
                 {actionError}
               </p>
             )}
@@ -742,12 +742,12 @@ function OfferCard({
             : "—"
         }. The buyer will be notified.`}
         icon={
-          <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
-            <RotateCcw className="w-6 h-6 text-indigo-600" />
+          <div className="w-12 h-12 rounded-full bg-[#faf9f7] flex items-center justify-center">
+            <RotateCcw className="w-6 h-6 text-[#666]" />
           </div>
         }
         confirmLabel="Send Counter"
-        confirmClassName="bg-indigo-600 hover:bg-indigo-700"
+        confirmClassName="bg-[#2C2826] hover:bg-[#3D3633]"
         loading={loading === "countered"}
         onConfirm={handleConfirmedAction}
         onCancel={() => setConfirmAction(null)}
@@ -758,8 +758,8 @@ function OfferCard({
         title="Withdraw this offer?"
         description={`Your offer of ${sym}${offer.amount.toLocaleString()} will be withdrawn and the seller will be notified.`}
         icon={
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-            <X className="w-6 h-6 text-gray-500" />
+          <div className="w-12 h-12 rounded-full bg-[#f0eeeb] flex items-center justify-center">
+            <X className="w-6 h-6 text-[#999]" />
           </div>
         }
         confirmLabel="Withdraw"
@@ -940,7 +940,7 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
     {
       key: "countered",
       label: "Countered",
-      icon: <RotateCcw className="w-4 h-4 text-indigo-500" />,
+      icon: <RotateCcw className="w-4 h-4 text-[#999]" />,
       statuses: ["countered"],
       emptyLabel: "No countered offers",
     },
@@ -954,7 +954,7 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
     {
       key: "closed",
       label: "Declined & Expired",
-      icon: <X className="w-4 h-4 text-gray-400" />,
+      icon: <X className="w-4 h-4 text-[#bbb]" />,
       statuses: ["declined", "withdrawn", "expired"],
       emptyLabel: "No declined or expired offers",
     },
@@ -976,27 +976,27 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Offers</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">Offers</h1>
+        <p className="text-sm text-[#999] mt-0.5">
           Manage offers you've received and sent.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-[#f0eeeb] p-1 w-fit">
         <button
           disabled={pageLoading}
           type="button"
           onClick={() => setTab("received")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
             tab === "received"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
+              ? "bg-white text-[#1a1a1a] shadow-sm"
+              : "text-[#999] hover:text-[#666]"
           }`}
         >
           Received
           {pendingReceivedCount > 0 && (
-            <span className="bg-indigo-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="bg-[#2C2826] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
               {pendingReceivedCount}
             </span>
           )}
@@ -1005,15 +1005,15 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
           disabled={pageLoading}
           type="button"
           onClick={() => setTab("sent")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
             tab === "sent"
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
+              ? "bg-white text-[#1a1a1a] shadow-sm"
+              : "text-[#999] hover:text-[#666]"
           }`}
         >
           Sent
           {pendingSentCount > 0 && (
-            <span className="bg-gray-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="bg-[#bbb] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
               {pendingSentCount}
             </span>
           )}
@@ -1022,21 +1022,21 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
 
       {pageLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
+          <Loader2 className="w-5 h-5 text-[#999] animate-spin" />
         </div>
       ) : offers.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
+        <div className="bg-white border border-[#e8e6e3] p-16 text-center">
           <div
-            className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-indigo-50" : "bg-gray-50"}`}
+            className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-[#faf9f7]" : "bg-[#faf9f7]"}`}
           >
             <Tag
-              className={`w-7 h-7 ${isSeller ? "text-indigo-400" : "text-gray-400"}`}
+              className={`w-7 h-7 ${isSeller ? "text-[#bbb]" : "text-[#bbb]"}`}
             />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+          <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             {isSeller ? "No offers yet" : "No offers sent"}
           </h3>
-          <p className="text-gray-500 text-sm mb-6">
+          <p className="text-[#999] text-sm mb-6">
             {isSeller
               ? "When buyers make offers on your listings, they'll appear here."
               : "Browse listings and make an offer when you find something you like."}
@@ -1044,7 +1044,7 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
           {!isSeller && (
             <Link
               href="/search"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2C2826] text-white text-sm font-medium hover:bg-[#3D3633] transition-colors"
             >
               Browse Listings
             </Link>
@@ -1059,10 +1059,10 @@ export default function OffersClient({ userId, focusOfferId, initialTab }: Props
                   {/* Section header */}
                   <div className="flex items-center gap-2 mb-3">
                     {section.icon}
-                    <h2 className="text-sm font-semibold text-gray-700">
+                    <h2 className="text-sm font-semibold text-[#666]">
                       {section.label}
                     </h2>
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                    <span className="text-xs text-[#bbb] bg-[#f0eeeb] px-2 py-0.5 rounded-full">
                       {section.offers.length}
                     </span>
                   </div>

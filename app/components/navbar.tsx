@@ -45,19 +45,16 @@ export default function Navbar() {
     setNotifCount(nCount || 0);
   }, [userId]);
 
-  // Debounced version — coalesces rapid-fire realtime events into one DB call
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debouncedLoadCounts = useCallback(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => loadCounts(), 500);
   }, [loadCounts]);
 
-  // Initial load and refresh whenever userId changes
   useEffect(() => {
     loadCounts();
   }, [loadCounts]);
 
-  // Realtime subscriptions — all gated on userId being available
   useRealtimeTable({
     channelName: "nav-msg-insert",
     table: "messages",
@@ -82,104 +79,98 @@ export default function Navbar() {
   });
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        {/* Logo — full wordmark on desktop, icon only on mobile */}
-        <Link href="/" className="shrink-0 flex items-center gap-2">
-          {/* Desktop: full wordmark */}
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#e8e6e3]/60">
+      <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <Link href="/" className="shrink-0 flex items-center gap-3">
           <Image
             src="/nextbazar-logo.svg"
             alt="NextBazar"
             width={180}
             height={55}
             priority
-            className="hidden md:block h-10.5 w-auto"
+            className="hidden md:block h-9 w-auto"
           />
-          {/* Mobile: icon only */}
           <Image
             src="/nextbazar-icon.svg"
             alt="NextBazar"
             width={40}
             height={40}
             priority
-            className="md:hidden h-10 w-10"
+            className="md:hidden h-9 w-9"
           />
-          <span className="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-[#999] border border-[#ddd] px-2 py-0.5">
             Beta
           </span>
         </Link>
 
-        {/* Global search — desktop only */}
+        {/* Global search */}
         <GlobalSearch />
 
         {/* Actions */}
-        <div className="flex items-center gap-1 shrink-0">
-          {/* Shops link */}
+        <div className="flex items-center gap-0.5 shrink-0">
           {FEATURE_FLAGS.DEALERS && (
             <Link
               href="/shops"
-              className="hidden md:flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+              className="hidden md:flex items-center gap-1.5 text-xs text-[#666] hover:text-[#1a1a1a] px-3 py-2 transition-colors font-medium tracking-wide"
             >
               <Store className="w-4 h-4" />
               <span>{t("shops")}</span>
             </Link>
           )}
 
-          {/* Mobile search icon */}
           <Link
             href="/search"
-            className="md:hidden p-2.5 rounded-xl text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+            className="md:hidden p-2.5 text-[#999] hover:text-[#1a1a1a] transition-colors"
           >
             <Search className="w-5 h-5" />
           </Link>
 
-          {/* Messages — logged-in only, with hover preview */}
           {userId && (
             <NavPreviewWrapper
               href="/dashboard/messages"
               badge={unreadCount}
-              badgeColor="bg-red-500"
+              badgeColor="bg-[#8E7A6B]"
               icon={<MessageCircle className="w-4 h-4" />}
             >
               {() => <MessagesPreview />}
             </NavPreviewWrapper>
           )}
 
-          {/* Saved — logged-in only, with hover preview */}
           {userId && (
             <NavPreviewWrapper
               href="/dashboard/saved"
               badge={savedCount}
-              badgeColor="bg-rose-500"
+              badgeColor="bg-[#8E7A6B]"
               icon={<Heart className="w-4 h-4" />}
             >
               {() => <SavedPreview />}
             </NavPreviewWrapper>
           )}
 
-          {/* Notifications — logged-in only, with hover preview */}
           {userId && (
             <NavPreviewWrapper
               href="/dashboard/notifications"
               badge={notifCount}
-              badgeColor="bg-indigo-600"
+              badgeColor="bg-[#8E7A6B]"
               icon={<Bell className="w-4 h-4" />}
             >
               {() => <NotificationsPreview />}
             </NavPreviewWrapper>
           )}
 
-          {/* Post Ad — primary CTA */}
+          {/* Post Ad CTA */}
           <Link
             href="/post"
-            className="bg-linear-to-r from-indigo-600 to-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:from-indigo-700 hover:to-indigo-700 transition-all flex items-center gap-1.5 shadow-md shadow-indigo-200 hover:shadow-sm hover:shadow-indigo-300"
+            className="bg-[#8E7A6B] text-white px-5 py-2.5 text-[10px] font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center gap-2 ml-2"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t("postAd")}</span>
           </Link>
 
-          {/* User menu — contains Saved, Alerts, language switcher, Dashboard, Settings, Sign out */}
-          <UserMenu />
+          <div className="ml-3">
+            <UserMenu />
+          </div>
         </div>
       </div>
     </nav>

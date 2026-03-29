@@ -129,16 +129,16 @@ export default function PriceHistory({
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-5">
+    <div className="bg-white border border-[#e8e6e3] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900 text-sm">Price History</h3>
+        <h3 className="font-semibold text-[#1a1a1a] text-sm">Price History</h3>
         <div
           className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${
             isDown
               ? "bg-green-50 text-green-700"
               : isUp
                 ? "bg-red-50 text-red-600"
-                : "bg-gray-100 text-gray-500"
+                : "bg-[#f0eeeb] text-[#999]"
           }`}
         >
           {isDown ? (
@@ -194,7 +194,7 @@ export default function PriceHistory({
               key={h.id}
               className="flex items-center justify-between text-xs"
             >
-              <span className="text-gray-400">
+              <span className="text-[#bbb]">
                 {new Date(h.changed_at).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",
@@ -203,7 +203,7 @@ export default function PriceHistory({
               </span>
               <div className="flex items-center gap-2">
                 {h.old_price != null && (
-                  <span className="text-gray-400 line-through">
+                  <span className="text-[#bbb] line-through">
                     {sym}
                     {h.old_price.toLocaleString()}
                   </span>
@@ -214,7 +214,7 @@ export default function PriceHistory({
                       ? "text-green-600"
                       : isRaised
                         ? "text-red-500"
-                        : "text-gray-700"
+                        : "text-[#666]"
                   }`}
                 >
                   {sym}

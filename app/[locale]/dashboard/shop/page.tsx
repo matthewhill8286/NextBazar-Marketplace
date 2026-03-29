@@ -28,7 +28,7 @@ type DealerShop = Tables<"dealer_shops">;
 /* ── Skeleton ────────────────────────────────────────────────────────────── */
 function Bone({ className = "" }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />
+    <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />
   );
 }
 
@@ -37,29 +37,29 @@ function ShopSkeleton() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Bone className="w-10 h-10 rounded-xl" />
+          <Bone className="w-10 h-10 " />
           <div className="space-y-2">
             <Bone className="h-5 w-32" />
             <Bone className="h-3 w-48" />
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Bone className="h-9 w-24 rounded-xl" />
-          <Bone className="h-9 w-20 rounded-xl" />
+          <Bone className="h-9 w-24 " />
+          <Bone className="h-9 w-20 " />
         </div>
       </div>
-      <Bone className="h-16 w-full rounded-xl" />
-      <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
+      <Bone className="h-16 w-full " />
+      <div className="bg-white border border-[#e8e6e3] p-6 space-y-4">
         <Bone className="h-5 w-40" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Bone className="h-10 w-full rounded-lg" />
-          <Bone className="h-10 w-full rounded-lg" />
+          <Bone className="h-10 w-full " />
+          <Bone className="h-10 w-full " />
         </div>
-        <Bone className="h-24 w-full rounded-lg" />
+        <Bone className="h-24 w-full " />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Bone className="h-10 w-full rounded-lg" />
-          <Bone className="h-10 w-full rounded-lg" />
-          <Bone className="h-10 w-full rounded-lg" />
+          <Bone className="h-10 w-full " />
+          <Bone className="h-10 w-full " />
+          <Bone className="h-10 w-full " />
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@ export default function ShopPage() {
     shopName: "",
     slug: "",
     description: "",
-    accentColor: "#4f46e5",
+    accentColor: "#8E7A6B",
     bannerUrl: "",
     website: "",
     facebook: "",
@@ -120,7 +120,7 @@ export default function ShopPage() {
           shopName: data.shop_name ?? "",
           slug: data.slug ?? "",
           description: data.description ?? "",
-          accentColor: data.accent_color ?? "#4f46e5",
+          accentColor: data.accent_color ?? "#8E7A6B",
           bannerUrl: data.banner_url ?? "",
           website: data.website ?? "",
           facebook: data.facebook ?? "",
@@ -385,16 +385,16 @@ export default function ShopPage() {
   if (isClosed) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Shop</h1>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">My Shop</h1>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center shadow-sm">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <StoreIcon className="w-8 h-8 text-gray-400" />
+        <div className="bg-white border border-[#e8e6e3] p-8 text-center shadow-sm">
+          <div className="w-16 h-16 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-5">
+            <StoreIcon className="w-8 h-8 text-[#bbb]" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-bold text-[#1a1a1a] mb-2">
             Your shop is closed
           </h2>
-          <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
+          <p className="text-sm text-[#999] max-w-md mx-auto mb-6">
             Your shop and listings are no longer visible to buyers. You can
             reopen your shop at any time to pick up where you left off.
           </p>
@@ -403,7 +403,7 @@ export default function ShopPage() {
             <button
               onClick={handleReopenShop}
               disabled={reopening}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-sm shadow-indigo-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-50 shadow-sm shadow-[#8E7A6B]/15"
             >
               {reopening ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -415,7 +415,7 @@ export default function ShopPage() {
           </div>
 
           {shop?.stripe_subscription_id && (
-            <p className="text-xs text-gray-400 mt-4">
+            <p className="text-xs text-[#bbb] mt-4">
               Your Stripe subscription was cancelled. Reopening will require a
               new subscription.
             </p>
@@ -428,7 +428,7 @@ export default function ShopPage() {
   if (!isActive) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Shop</h1>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">My Shop</h1>
         <ProSellerCTA
           dealerPrice={dealerPrice}
           dealerInterval={dealerInterval}
@@ -446,7 +446,7 @@ export default function ShopPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            className="w-10 h-10 flex items-center justify-center shrink-0"
             style={{
               background: `linear-gradient(135deg, ${branding.accentColor}15, ${branding.accentColor}25)`,
             }}
@@ -457,10 +457,10 @@ export default function ShopPage() {
             />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-lg font-bold text-[#1a1a1a]">
               {branding.shopName || "Your Shop"}
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#999]">
               Configure your shop branding and settings
             </p>
           </div>
@@ -468,14 +468,14 @@ export default function ShopPage() {
         <div className="flex items-center gap-2">
           <Link
             href={`/shop/${branding.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 rounded-xl hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 hover:bg-indigo-50 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
           </Link>
           <button
             onClick={handleManageBilling}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors"
           >
             <CreditCard className="w-3.5 h-3.5" />
             Billing
@@ -499,7 +499,7 @@ export default function ShopPage() {
       />
 
       {/* ── Close Shop — danger zone ────────────────────────────────── */}
-      <div className="border border-red-100 rounded-2xl overflow-hidden">
+      <div className="border border-red-100 overflow-hidden">
         <div className="px-6 py-4 bg-red-50/50 border-b border-red-100">
           <h3 className="text-sm font-semibold text-red-800 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4" />
@@ -510,17 +510,17 @@ export default function ShopPage() {
           {!showCloseConfirm ? (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-[#1a1a1a]">
                   Close your shop
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-[#999] mt-0.5">
                   Your shop page and all active listings will be hidden from
                   buyers. You can reopen at any time.
                 </p>
               </div>
               <button
                 onClick={() => setShowCloseConfirm(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-colors shrink-0"
+                className="inline-flex items-center gap-1.5 px-4 py-2 border border-red-200 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors shrink-0"
               >
                 <XCircle className="w-3.5 h-3.5" />
                 Close Shop
@@ -528,7 +528,7 @@ export default function ShopPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+              <div className="bg-red-50 border border-red-100 p-4">
                 <p className="text-sm font-semibold text-red-800 mb-1">
                   Are you sure you want to close your shop?
                 </p>
@@ -548,7 +548,7 @@ export default function ShopPage() {
                 <button
                   onClick={handleCloseShop}
                   disabled={closing}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   {closing ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -559,7 +559,7 @@ export default function ShopPage() {
                 </button>
                 <button
                   onClick={() => setShowCloseConfirm(false)}
-                  className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
+                  className="text-sm text-[#999] hover:text-[#666] font-medium transition-colors"
                 >
                   Cancel
                 </button>

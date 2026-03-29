@@ -27,7 +27,7 @@ function CounterOfferToast({
   onNavigate: () => void;
 }) {
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-indigo-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className="w-1 bg-linear-to-b from-indigo-500 to-violet-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -48,24 +48,24 @@ function CounterOfferToast({
               <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
                 Counter offer received
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {sellerName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+        <p className="text-[11px] text-[#bbb] truncate mb-1.5">
           {listingTitle}
         </p>
 
-        <div className="flex items-center justify-center bg-indigo-50 border border-indigo-100 rounded-xl py-2 mb-3">
+        <div className="flex items-center justify-center bg-indigo-50 border border-indigo-100 py-2 mb-3">
           <span className="text-xl font-extrabold text-indigo-600">
             {counterAmount}
           </span>
@@ -73,7 +73,7 @@ function CounterOfferToast({
 
         <button
           onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
+          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-1.5 transition-colors"
         >
           Review counter →
         </button>
@@ -100,7 +100,7 @@ function OfferStatusToast({
   const isAccepted = status === "accepted";
   return (
     <div
-      className={`w-85 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}
+      className={`w-85 bg-white shadow-2xl border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}
     >
       <div
         className={`w-1 shrink-0 ${isAccepted ? "bg-linear-to-b from-emerald-500 to-teal-600" : "bg-linear-to-b from-rose-500 to-red-600"}`}
@@ -129,26 +129,26 @@ function OfferStatusToast({
               >
                 Offer {isAccepted ? "accepted" : "declined"}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {personName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-3">
+        <p className="text-[11px] text-[#bbb] truncate mb-3">
           {listingTitle}
         </p>
 
         <button
           onClick={onNavigate}
-          className={`w-full text-center text-xs font-semibold rounded-xl py-1.5 transition-colors ${isAccepted ? "text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100" : "text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100"}`}
+          className={`w-full text-center text-xs font-semibold py-1.5 transition-colors ${isAccepted ? "text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100" : "text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100"}`}
         >
           View offer →
         </button>
@@ -175,7 +175,7 @@ function MessageToast({
   onNavigate: () => void;
 }) {
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-indigo-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className="w-1 bg-linear-to-b from-indigo-500 to-indigo-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -195,32 +195,32 @@ function MessageToast({
               <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
                 {isOffer ? "In-chat offer" : "New message"}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {senderName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+        <p className="text-[11px] text-[#bbb] truncate mb-1.5">
           Re: {listingTitle}
         </p>
 
         {preview && (
-          <p className="text-xs text-gray-600 line-clamp-2 mb-3 bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-100">
+          <p className="text-xs text-[#666] line-clamp-2 mb-3 bg-[#faf9f7] px-2.5 py-1.5 border border-[#e8e6e3]">
             &ldquo;{preview}&rdquo;
           </p>
         )}
 
         <button
           onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
+          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-1.5 transition-colors"
         >
           View conversation →
         </button>
@@ -245,7 +245,7 @@ function OfferToast({
   onNavigate: () => void;
 }) {
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-emerald-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-emerald-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className="w-1 bg-linear-to-b from-emerald-500 to-teal-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -265,24 +265,24 @@ function OfferToast({
               <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
                 New offer received
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {buyerName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+        <p className="text-[11px] text-[#bbb] truncate mb-1.5">
           {listingTitle}
         </p>
 
-        <div className="flex items-center justify-center bg-emerald-50 border border-emerald-100 rounded-xl py-2 mb-3">
+        <div className="flex items-center justify-center bg-emerald-50 border border-emerald-100 py-2 mb-3">
           <span className="text-xl font-extrabold text-emerald-600">
             {amount}
           </span>
@@ -290,7 +290,7 @@ function OfferToast({
 
         <button
           onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl py-1.5 transition-colors"
+          className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-1.5 transition-colors"
         >
           Review offer →
         </button>
@@ -348,7 +348,7 @@ function NotificationToast({
   const cfg = NOTIF_CONFIG[type] ?? NOTIF_DEFAULT;
 
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-indigo-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className={`w-1 bg-linear-to-b ${cfg.accent} shrink-0`} />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -359,31 +359,31 @@ function NotificationToast({
               {cfg.icon}
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-[#bbb] uppercase tracking-widest">
                 {cfg.label}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {title}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {body && (
-          <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed">
+          <p className="text-xs text-[#999] line-clamp-2 mb-3 leading-relaxed">
             {body}
           </p>
         )}
 
         <button
           onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
+          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-1.5 transition-colors"
         >
           View →
         </button>

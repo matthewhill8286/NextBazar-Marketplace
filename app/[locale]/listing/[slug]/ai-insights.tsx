@@ -92,7 +92,7 @@ export default function AiInsights({
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-2xl p-6 border border-indigo-100">
+      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 p-6 border border-indigo-100">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-5 h-5 text-indigo-600 animate-pulse" />
           <span className="font-semibold text-indigo-900">
@@ -103,7 +103,7 @@ export default function AiInsights({
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white/60 rounded-xl p-4 h-28 animate-pulse"
+              className="bg-white/60 p-4 h-28 animate-pulse"
             />
           ))}
         </div>
@@ -143,10 +143,10 @@ export default function AiInsights({
       ? "text-green-600 bg-green-50"
       : insights.demand_level === "medium"
         ? "text-amber-600 bg-amber-50"
-        : "text-gray-600 bg-gray-100";
+        : "text-[#666] bg-[#f0eeeb]";
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 rounded-2xl p-6 border border-indigo-100">
+    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 p-6 border border-indigo-100">
       <div className="flex items-center gap-2 mb-4">
         <Sparkles className="w-5 h-5 text-indigo-600" />
         <h2 className="text-lg font-semibold text-indigo-900">AI Insights</h2>
@@ -163,14 +163,14 @@ export default function AiInsights({
       {/* Main cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         {/* Price Analysis */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4">
+        <div className="bg-white/80 backdrop-blur-sm p-4">
           <div className="flex items-center gap-1.5 mb-2">
-            <BarChart3 className="w-4 h-4 text-gray-400" />
-            <span className="text-[11px] text-gray-500 font-medium">
+            <BarChart3 className="w-4 h-4 text-[#bbb]" />
+            <span className="text-[11px] text-[#999] font-medium">
               Price Analysis
             </span>
           </div>
-          <div className="font-bold text-gray-900 text-lg mb-1">
+          <div className="font-bold text-[#1a1a1a] text-lg mb-1">
             €{insights.price_low?.toLocaleString()} — €
             {insights.price_high?.toLocaleString()}
           </div>
@@ -180,21 +180,21 @@ export default function AiInsights({
             <VerdictIcon className="w-3 h-3" />
             {verdictLabel}
           </div>
-          <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+          <p className="text-xs text-[#999] mt-1.5 leading-relaxed">
             {insights.price_explanation}
           </p>
         </div>
 
         {/* Quality Score */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4">
+        <div className="bg-white/80 backdrop-blur-sm p-4">
           <div className="flex items-center gap-1.5 mb-2">
-            <Target className="w-4 h-4 text-gray-400" />
-            <span className="text-[11px] text-gray-500 font-medium">
+            <Target className="w-4 h-4 text-[#bbb]" />
+            <span className="text-[11px] text-[#999] font-medium">
               Quality Score
             </span>
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
+            <div className="flex-1 h-2.5 bg-[#e8e6e3] rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${
                   insights.quality_score >= 70
@@ -206,22 +206,22 @@ export default function AiInsights({
                 style={{ width: `${insights.quality_score}%` }}
               />
             </div>
-            <span className="font-bold text-gray-900 text-sm">
+            <span className="font-bold text-[#1a1a1a] text-sm">
               {insights.quality_score}/100
             </span>
           </div>
           {insights.quality_tips?.slice(0, 2).map((tip) => (
-            <p key={tip} className="text-xs text-gray-500 leading-relaxed">
+            <p key={tip} className="text-xs text-[#999] leading-relaxed">
               • {tip}
             </p>
           ))}
         </div>
 
         {/* Demand & Timing */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4">
+        <div className="bg-white/80 backdrop-blur-sm p-4">
           <div className="flex items-center gap-1.5 mb-2">
-            <TrendingUp className="w-4 h-4 text-gray-400" />
-            <span className="text-[11px] text-gray-500 font-medium">
+            <TrendingUp className="w-4 h-4 text-[#bbb]" />
+            <span className="text-[11px] text-[#999] font-medium">
               Demand & Timing
             </span>
           </div>
@@ -234,10 +234,10 @@ export default function AiInsights({
               Demand
             </span>
           </div>
-          <p className="text-xs text-gray-500 leading-relaxed mb-1.5">
+          <p className="text-xs text-[#999] leading-relaxed mb-1.5">
             {insights.demand_explanation}
           </p>
-          <div className="flex items-center gap-1.5 text-xs text-gray-600 font-medium">
+          <div className="flex items-center gap-1.5 text-xs text-[#666] font-medium">
             <Clock className="w-3 h-3" />
             Est. sell time: {insights.sell_time_estimate}
           </div>
@@ -246,13 +246,13 @@ export default function AiInsights({
 
       {/* Top tip */}
       {insights.top_tip && (
-        <div className="bg-white/60 rounded-xl p-3.5 flex items-start gap-2.5">
+        <div className="bg-white/60 p-3.5 flex items-start gap-2.5">
           <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
           <div>
-            <span className="text-xs font-semibold text-gray-700">
+            <span className="text-xs font-semibold text-[#666]">
               Pro Tip:{" "}
             </span>
-            <span className="text-xs text-gray-600">{insights.top_tip}</span>
+            <span className="text-xs text-[#666]">{insights.top_tip}</span>
           </div>
         </div>
       )}

@@ -30,10 +30,10 @@ export function FavoriteAction({ listingId }: { listingId: string }) {
   return (
     <button
       onClick={handleToggle}
-      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+      className={`flex items-center gap-2 px-4 py-2.5 border text-sm font-medium transition-all ${
         saved
           ? "bg-red-50 border-red-200 text-red-600"
-          : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+          : "bg-white border-[#e8e6e3] text-[#666] hover:border-[#e8e6e3]"
       }`}
     >
       <Heart
@@ -67,7 +67,7 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
   return (
     <button
       onClick={handleShare}
-      className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:border-gray-300 transition-colors"
+      className="flex items-center gap-2 px-4 py-2.5 border border-[#e8e6e3] bg-white text-sm font-medium text-[#666] hover:border-[#e8e6e3] transition-colors"
     >
       {copied ? (
         <>
@@ -129,7 +129,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
+        className="flex items-center gap-1.5 text-xs text-[#bbb] hover:text-red-500 transition-colors"
       >
         <Flag className="w-3 h-3" />
         Report
@@ -142,13 +142,13 @@ export function ReportAction({ listingId }: { listingId: string }) {
             if (e.target === e.currentTarget) setOpen(false);
           }}
         >
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white shadow-xl w-full max-w-md">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="font-semibold text-gray-900">Report Listing</h2>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e6e3]">
+              <h2 className="font-semibold text-[#1a1a1a]">Report Listing</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400"
+                className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#bbb]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -156,17 +156,17 @@ export function ReportAction({ listingId }: { listingId: string }) {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[#666] mb-2">
                   What's the issue?
                 </label>
                 <div className="space-y-2">
                   {REPORT_REASONS.map((r) => (
                     <label
                       key={r.value}
-                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
+                      className={`flex items-center gap-3 p-3 border cursor-pointer transition-all ${
                         reason === r.value
                           ? "border-red-400 bg-red-50"
-                          : "border-gray-200 hover:border-gray-300"
+                          : "border-[#e8e6e3] hover:border-[#e8e6e3]"
                       }`}
                     >
                       <input
@@ -177,23 +177,23 @@ export function ReportAction({ listingId }: { listingId: string }) {
                         onChange={() => setReason(r.value)}
                         className="accent-red-500"
                       />
-                      <span className="text-sm text-gray-700">{r.label}</span>
+                      <span className="text-sm text-[#666]">{r.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-[#666] mb-1.5">
                   Additional details{" "}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                  <span className="text-[#bbb] font-normal">(optional)</span>
                 </label>
                 <textarea
                   rows={3}
                   placeholder="Describe the issue..."
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none text-sm resize-none"
+                  className="w-full px-4 py-2.5 border border-[#e8e6e3] bg-[#faf9f7] focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none text-sm resize-none"
                 />
               </div>
 
@@ -201,14 +201,14 @@ export function ReportAction({ listingId }: { listingId: string }) {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-2.5 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!reason || submitting}
-                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-2.5 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -307,7 +307,7 @@ export function ContactButtons({
   }
 
   // Use shop accent color for the primary CTA when available
-  const brandColor = accentColor || "#4f46e5";
+  const brandColor = accentColor || "#8E7A6B";
   // FIXME: add this to the code
   // const brandColorDark = accentColor
   //   ? `color-mix(in srgb, ${accentColor} 85%, black)`
@@ -324,7 +324,7 @@ export function ContactButtons({
             ? { backgroundColor: `${brandColor}60` }
             : { backgroundColor: brandColor }
         }
-        className={`w-full py-3.5 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm ${disabled ? "text-white/80 cursor-not-allowed shadow-none" : "text-white hover:brightness-90 disabled:opacity-50"}`}
+        className={`w-full py-3.5 font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm ${disabled ? "text-white/80 cursor-not-allowed shadow-none" : "text-white hover:brightness-90 disabled:opacity-50"}`}
       >
         {loading ? (
           <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -346,7 +346,7 @@ export function ContactButtons({
       {/* WhatsApp */}
       {(waLink || disabled) &&
         (disabled ? (
-          <span className="w-full bg-[#25D366]/50 text-white/80 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+          <span className="w-full bg-[#25D366]/50 text-white/80 py-3.5 font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
             <svg
               viewBox="0 0 24 24"
               className="w-5 h-5 fill-white/80"
@@ -361,7 +361,7 @@ export function ContactButtons({
             href={waLink!}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full bg-[#25D366] text-white py-3.5 rounded-xl font-semibold hover:bg-[#20b858] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-green-200"
+            className="w-full bg-[#25D366] text-white py-3.5 font-semibold hover:bg-[#20b858] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-green-200"
           >
             <svg
               viewBox="0 0 24 24"
@@ -377,7 +377,7 @@ export function ContactButtons({
       {/* Telegram */}
       {(tgLink || disabled) &&
         (disabled ? (
-          <span className="w-full bg-[#229ED9]/50 text-white/80 py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+          <span className="w-full bg-[#229ED9]/50 text-white/80 py-3.5 font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
             <svg
               viewBox="0 0 24 24"
               className="w-5 h-5 fill-white/80"
@@ -392,7 +392,7 @@ export function ContactButtons({
             href={tgLink!}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full bg-[#229ED9] text-white py-3.5 rounded-xl font-semibold hover:bg-[#1a8bbf] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-sky-200"
+            className="w-full bg-[#229ED9] text-white py-3.5 font-semibold hover:bg-[#1a8bbf] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-sky-200"
           >
             <svg
               viewBox="0 0 24 24"
@@ -410,7 +410,7 @@ export function ContactButtons({
         <button
           onClick={() => !disabled && setPhoneVisible(!phoneVisible)}
           disabled={disabled}
-          className={`w-full py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 text-sm ${disabled ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-100 text-gray-800 hover:bg-gray-200"}`}
+          className={`w-full py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm ${disabled ? "bg-[#f0eeeb] text-[#bbb] cursor-not-allowed" : "bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#f0eeeb]"}`}
         >
           <svg
             width="18"

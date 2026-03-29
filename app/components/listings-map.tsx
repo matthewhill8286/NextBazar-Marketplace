@@ -79,8 +79,8 @@ export default function ListingsMap({
 
       const marker = L.circleMarker([loc.lat, loc.lng], {
         radius: Math.max(14, Math.min(30, 12 + Math.sqrt(loc.count) * 2)),
-        fillColor: isSelected ? "#4F46E5" : "#6366F1",
-        color: isSelected ? "#3730A3" : "#4F46E5",
+        fillColor: isSelected ? "#7A6657" : "#8E7A6B",
+        color: isSelected ? "#5C4F43" : "#7A6657",
         weight: isSelected ? 3 : 1.5,
         fillOpacity: isSelected ? 0.95 : 0.75,
       }).addTo(map);
@@ -94,7 +94,7 @@ export default function ListingsMap({
           pointer-events:none;text-align:center;
         ">
           <span style="font-size:11px;font-weight:700;color:#fff;line-height:1.1;">${loc.count}</span>
-          <span style="font-size:9px;color:#e0e7ff;line-height:1;max-width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${loc.name}</span>
+          <span style="font-size:9px;color:#e8e6e3;line-height:1;max-width:70px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${loc.name}</span>
         </div>`,
         iconSize: [0, 0],
       });
@@ -124,7 +124,7 @@ export default function ListingsMap({
   return (
     <div
       ref={containerRef}
-      className="w-full rounded-2xl overflow-hidden border border-gray-200"
+      className="w-full overflow-hidden border border-[#e8e6e3]"
       style={{ height: 420 }}
     />
   );

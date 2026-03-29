@@ -76,7 +76,7 @@ export default function PhoneInput({
   value,
   onChange,
   placeholder = "99 123456",
-  focusClass = "focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-100",
+  focusClass = "focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-[#8E7A6B]/10",
 }: PhoneInputProps) {
   const [country, setCountry] = useState<Country>(() => detectCountry(value));
   const [localNumber, setLocalNumber] = useState(() =>
@@ -137,23 +137,23 @@ export default function PhoneInput({
   return (
     <div ref={containerRef} className="relative">
       <div
-        className={`flex items-center border border-gray-200 rounded-xl bg-white transition-all ${focusClass}`}
+        className={`flex items-center border border-[#e8e6e3] bg-white transition-all ${focusClass}`}
       >
         {/* Country selector button */}
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 pl-3.5 pr-2 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors shrink-0 rounded-l-xl"
+          className="flex items-center gap-1.5 pl-3.5 pr-2 py-3 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors shrink-0 rounded-l-xl"
         >
           <span className="text-base leading-none">{country.flag}</span>
-          <span className="font-medium text-gray-700">{country.dial}</span>
+          <span className="font-medium text-[#666]">{country.dial}</span>
           <ChevronDown
-            className={`w-3.5 h-3.5 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`}
+            className={`w-3.5 h-3.5 text-[#bbb] transition-transform ${open ? "rotate-180" : ""}`}
           />
         </button>
 
         {/* Divider */}
-        <div className="w-px h-6 bg-gray-200 shrink-0" />
+        <div className="w-px h-6 bg-[#e8e6e3] shrink-0" />
 
         {/* Phone number input */}
         <input
@@ -168,18 +168,18 @@ export default function PhoneInput({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute top-full left-0 mt-1.5 w-72 bg-white border border-[#e8e6e3] shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
           {/* Search input */}
-          <div className="p-2 border-b border-gray-100">
+          <div className="p-2 border-b border-[#e8e6e3]">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#bbb]" />
               <input
                 ref={searchRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search country..."
-                className="w-full pl-8 pr-3 py-2 text-sm rounded-lg border border-gray-200 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-100 bg-gray-50"
+                className="w-full pl-8 pr-3 py-2 text-sm border border-[#e8e6e3] outline-none focus:border-indigo-400 focus:ring-1 focus:ring-[#8E7A6B]/10 bg-[#faf9f7]"
               />
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function PhoneInput({
           {/* Country list */}
           <div className="max-h-56 overflow-y-auto overscroll-contain">
             {filtered.length === 0 && (
-              <p className="text-xs text-gray-400 text-center py-6">
+              <p className="text-xs text-[#bbb] text-center py-6">
                 No countries found
               </p>
             )}
@@ -201,14 +201,14 @@ export default function PhoneInput({
                   className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${
                     isSelected
                       ? "bg-indigo-50 text-indigo-700"
-                      : "text-gray-700 hover:bg-gray-50"
+                      : "text-[#666] hover:bg-[#faf9f7]"
                   }`}
                 >
                   <span className="text-lg leading-none">{c.flag}</span>
                   <span className="flex-1 text-left truncate font-medium">
                     {c.name}
                   </span>
-                  <span className="text-xs text-gray-400 font-mono tabular-nums">
+                  <span className="text-xs text-[#bbb] font-mono tabular-nums">
                     {c.dial}
                   </span>
                   {isSelected && (
