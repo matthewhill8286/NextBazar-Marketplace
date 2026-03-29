@@ -557,20 +557,7 @@ export default async function ListingDetailServer({
                       />
                     )}
                     {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                      <span
-                        className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase"
-                        style={
-                          accentColor
-                            ? {
-                                backgroundColor: `${accentColor}14`,
-                                color: accentColor,
-                              }
-                            : {
-                                backgroundColor: "#f0eeeb",
-                                color: "#666",
-                              }
-                        }
-                      >
+                      <span className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase bg-red-50 text-red-600 border border-red-100">
                         PRO
                       </span>
                     )}

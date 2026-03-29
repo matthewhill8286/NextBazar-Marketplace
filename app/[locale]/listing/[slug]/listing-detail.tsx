@@ -1015,20 +1015,7 @@ export default function ListingDetail({
                         />
                       )}
                       {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                        <span
-                          className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
-                          style={
-                            shopAccentColor
-                              ? {
-                                  backgroundColor: `${shopAccentColor}14`,
-                                  color: shopAccentColor,
-                                }
-                              : {
-                                  backgroundColor: "rgb(243 232 255)",
-                                  color: "rgb(126 34 206)",
-                                }
-                          }
-                        >
+                        <span className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase bg-red-50 text-red-600 border border-red-100">
                           PRO
                         </span>
                       )}
