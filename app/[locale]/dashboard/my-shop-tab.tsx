@@ -37,7 +37,7 @@ export default function MyShopTab({ userId }: Props) {
     shopName: "",
     slug: "",
     description: "",
-    accentColor: "#4f46e5",
+    accentColor: "#8E7A6B",
     bannerUrl: "",
     website: "",
     facebook: "",
@@ -66,7 +66,7 @@ export default function MyShopTab({ userId }: Props) {
           shopName: data.shop_name ?? "",
           slug: data.slug ?? "",
           description: data.description ?? "",
-          accentColor: data.accent_color ?? "#4f46e5",
+          accentColor: data.accent_color ?? "#8E7A6B",
           bannerUrl: data.banner_url ?? "",
           website: data.website ?? "",
           facebook: data.facebook ?? "",
@@ -226,7 +226,7 @@ export default function MyShopTab({ userId }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            className="w-10 h-10 flex items-center justify-center shrink-0"
             style={{
               background: `linear-gradient(135deg, ${branding.accentColor}15, ${branding.accentColor}25)`,
             }}
@@ -237,10 +237,10 @@ export default function MyShopTab({ userId }: Props) {
             />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-lg font-bold text-[#1a1a1a]">
               {branding.shopName || "Your Shop"}
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#999]">
               Configure your shop branding and settings
             </p>
           </div>
@@ -248,14 +248,14 @@ export default function MyShopTab({ userId }: Props) {
         <div className="flex items-center gap-2">
           <Link
             href={`/shop/${branding.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 rounded-xl hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 hover:bg-indigo-50 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
           </Link>
           <button
             onClick={handleManageBilling}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors"
           >
             <CreditCard className="w-3.5 h-3.5" />
             Billing

@@ -120,11 +120,11 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+      <h1 className="text-2xl font-bold text-[#1a1a1a]">Profile Settings</h1>
 
       <ErrorBanner message={error} />
 
-      <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
+      <div className="bg-white border border-[#e8e6e3] p-6 space-y-5">
         {/* Avatar upload */}
         <div className="flex items-center gap-5">
           <div
@@ -137,11 +137,11 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                 alt="Profile photo"
                 width={80}
                 height={80}
-                className="w-20 h-20 rounded-full object-cover border-2 border-gray-100"
+                className="w-20 h-20 rounded-full object-cover border-2 border-[#e8e6e3]"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center border-2 border-gray-100">
-                <User className="w-8 h-8 text-indigo-400" />
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#f0eeeb] to-[#e8e6e3] flex items-center justify-center border-2 border-[#e8e6e3]">
+                <User className="w-8 h-8 text-[#bbb]" />
               </div>
             )}
 
@@ -158,15 +158,15 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-gray-900">Profile Photo</p>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-sm font-medium text-[#1a1a1a]">Profile Photo</p>
+            <p className="text-xs text-[#bbb] mt-0.5">
               JPG, PNG or WebP. Max 2 MB.
             </p>
             <button
               type="button"
               onClick={() => avatarInputRef.current?.click()}
               disabled={avatarUploading}
-              className="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors disabled:opacity-50"
+              className="mt-2 text-xs font-medium text-[#666] hover:text-[#1a1a1a] transition-colors disabled:opacity-50"
             >
               {avatarUrl ? "Change photo" : "Upload photo"}
             </button>
@@ -185,10 +185,10 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           />
         </div>
 
-        <div className="border-t border-gray-100" />
+        <div className="border-t border-[#e8e6e3]" />
 
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
             <User className="w-3.5 h-3.5" /> Display Name
           </label>
           <FormInput
@@ -200,7 +200,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
         </div>
 
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
             <Mail className="w-3.5 h-3.5" /> Username
           </label>
           <FormInput
@@ -214,32 +214,32 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
               )
             }
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-[#bbb] mt-1">
             Only lowercase letters, numbers and underscores
           </p>
         </div>
 
         {/* Contact Methods */}
-        <div className="pt-2 border-t border-gray-100">
-          <p className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-1.5">
+        <div className="pt-2 border-t border-[#e8e6e3]">
+          <p className="text-sm font-semibold text-[#666] mb-4 flex items-center gap-1.5">
             <MessageCircle className="w-3.5 h-3.5" /> Contact Methods
           </p>
           <div className="space-y-4">
             <div>
-              <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+              <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
                 <Phone className="w-3.5 h-3.5" /> Phone Number
               </label>
               <PhoneInput
                 value={formData.phone}
                 onChange={(v) => update("phone", v)}
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-[#bbb] mt-1">
                 Your primary contact number for buyers.
               </p>
             </div>
 
             <div>
-              <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+              <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
                 {/* WhatsApp icon */}
                 <svg
                   viewBox="0 0 24 24"
@@ -255,13 +255,13 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                 onChange={(v) => update("whatsapp_number", v)}
                 focusClass="focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-100"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-[#bbb] mt-1">
                 Buyers will be able to message you directly on WhatsApp.
               </p>
             </div>
 
             <div>
-              <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+              <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
                 {/* Telegram icon */}
                 <svg
                   viewBox="0 0 24 24"
@@ -273,12 +273,12 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                 Telegram Username
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] text-sm font-medium">
                   @
                 </span>
                 <input
                   type="text"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none text-sm"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-sky-400 focus:ring-2 focus:ring-sky-100 outline-none text-sm"
                   placeholder="yourusername"
                   value={formData.telegram_username}
                   onChange={(e) =>
@@ -289,7 +289,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                   }
                 />
               </div>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-[#bbb] mt-1">
                 Your Telegram @username. Buyers will be able to open a chat with
                 you directly.
               </p>
@@ -298,7 +298,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
         </div>
 
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
             <FileText className="w-3.5 h-3.5" /> Bio
           </label>
           <FormTextarea
@@ -311,16 +311,16 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
 
         {/* Email (read-only) */}
         <div>
-          <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+          <label className="flex items-center gap-1.5 text-sm font-medium text-[#666] mb-1.5">
             <Mail className="w-3.5 h-3.5" /> Email
           </label>
           <input
             type="email"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-500 cursor-not-allowed"
+            className="w-full px-4 py-3 border border-[#e8e6e3] bg-[#faf9f7] text-sm text-[#999] cursor-not-allowed"
             value={profile.email}
             disabled
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-[#bbb] mt-1">
             Contact support to change your email
           </p>
         </div>
@@ -328,7 +328,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
+          className="bg-[#2C2826] text-white px-6 py-3 font-semibold hover:bg-[#3D3633] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-[#e8e6e3]"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

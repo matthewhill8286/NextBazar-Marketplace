@@ -12,31 +12,16 @@ export default function Icon() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)",
-        borderRadius: "7px",
+        background: "#8E7A6B",
+        borderRadius: "5px",
       }}
     >
-      {/* Shine overlay */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "40%",
-          background:
-            "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 100%)",
-          borderRadius: "7px 7px 0 0",
-          display: "flex",
-        }}
-      />
       <span
         style={{
           color: "white",
           fontSize: 20,
-          fontWeight: 900,
-          fontFamily: "sans-serif",
-          letterSpacing: "-1px",
+          fontWeight: 400,
+          fontFamily: "Georgia, serif",
           lineHeight: 1,
           marginTop: "-2px",
         }}

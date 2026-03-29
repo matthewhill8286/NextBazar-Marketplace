@@ -5,6 +5,7 @@ import {
   BarChart3,
   Clock,
   type LucideIcon,
+  MapPin,
   Plus,
   Search,
   TrendingUp,
@@ -12,7 +13,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { getCategoryConfig } from "@/app/components/category-icon";
 import ListingCard from "@/app/components/listing-card";
 import type {
   ListingCardRow,
@@ -32,19 +32,12 @@ export type TabConfig = {
   filterByDealer?: boolean;
 };
 
-type CategoryStats = {
-  total: number;
-  newThisWeek: number;
-  avgPrice: number;
-};
-
 type Props = {
   categorySlug: string;
   categoryName: string;
   headline: string;
   subheadline: string;
   tabs: TabConfig[];
-  stats: CategoryStats;
   subcategories: Subcategory[];
   featuredListings: ListingCardRow[];
   recentListings: ListingCardRow[];
@@ -100,7 +93,6 @@ export default function CategoryLanding({
   headline,
   subheadline,
   tabs,
-  stats,
   subcategories,
   featuredListings,
   recentListings,
@@ -109,7 +101,6 @@ export default function CategoryLanding({
   heroImage,
 }: Props) {
   const [activeTab, setActiveTab] = useState(tabs[0]?.key ?? "");
-  const { gradient, accent } = getCategoryConfig(categorySlug);
 
   const activeTabConfig = tabs.find((t) => t.key === activeTab);
 
@@ -130,11 +121,33 @@ export default function CategoryLanding({
     subcategories,
   );
 
+  // Derive stats dynamically from the filtered listings for the active tab
+  const allTabListings = [...displayFeatured, ...displayRecent];
+  // Deduplicate by id (a listing could appear in both featured and recent)
+  const uniqueMap = new Map(allTabListings.map((l) => [l.id, l]));
+  const uniqueListings = Array.from(uniqueMap.values());
+
+  const now = Date.now();
+  const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+
+  const tabStats = {
+    total: uniqueListings.length,
+    newThisWeek: uniqueListings.filter(
+      (l) => now - new Date(l.created_at).getTime() < oneWeekMs,
+    ).length,
+    avgPrice:
+      uniqueListings.length > 0
+        ? Math.round(
+            uniqueListings.reduce((sum, l) => sum + (l.price ?? 0), 0) /
+              uniqueListings.length,
+          )
+        : 0,
+  };
+
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden text-white">
-        {/* Background: image or gradient */}
         {heroImage ? (
           <>
             <Image
@@ -144,61 +157,39 @@ export default function CategoryLanding({
               className="object-cover"
               priority
             />
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-black/50" />
-            {/* Gradient tint overlay */}
-            <div
-              className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-40`}
-            />
+            <div className="absolute inset-0 bg-[#2C2826]/65" />
           </>
         ) : (
-          <div className={`absolute inset-0 bg-linear-to-br ${gradient}`} />
+          <div className="absolute inset-0 bg-[#2C2826]" />
         )}
 
-        {/* Dot mesh overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-        {/* Ambient glow */}
-        <div
-          className="absolute -top-40 -left-40 w-125 h-125 rounded-full blur-3xl opacity-15 pointer-events-none"
-          style={{ backgroundColor: accent }}
-        />
-        <div
-          className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none"
-          style={{ backgroundColor: accent }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-4 py-14 md:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-semibold px-4 py-1.5 rounded-full mb-5">
-              <TrendingUp className="w-3.5 h-3.5" />
-              {stats.total.toLocaleString()} listings available
-            </div>
+            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-4">
+              {tabStats.total.toLocaleString()} listings available
+            </p>
 
-            <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight leading-[1.1] drop-shadow-sm">
+            <h1
+              className="text-3xl md:text-5xl font-light mb-4 leading-[1.1]"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               {headline}
             </h1>
-            <p className="text-white/85 text-lg md:text-xl mb-8 max-w-2xl leading-relaxed drop-shadow-sm">
+            <p className="text-white/50 text-lg md:text-xl mb-10 max-w-2xl leading-relaxed">
               {subheadline}
             </p>
 
             <div className="flex flex-wrap gap-3">
               <Link
                 href={`/search?category=${categorySlug}`}
-                className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-white/90 transition-colors shadow-sm shadow-black/10"
+                className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/90 transition-colors"
               >
                 <Search className="w-4 h-4" />
                 Browse All {categoryName}
               </Link>
               <Link
                 href="/post"
-                className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/25 transition-colors"
+                className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/10 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 {postLabel}
@@ -209,33 +200,33 @@ export default function CategoryLanding({
       </section>
 
       {/* ── Stats Bar ─────────────────────────────────────────────────── */}
-      <section className="bg-white border-b border-gray-100">
+      <section className="bg-white border-b border-[#e8e6e3]">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm">
-            <div className="flex items-center gap-2 text-gray-600">
-              <BarChart3 className="w-4 h-4 text-gray-400" />
-              <span className="font-semibold text-gray-900">
-                {stats.total.toLocaleString()}
+            <div className="flex items-center gap-2 text-[#666]">
+              <BarChart3 className="w-4 h-4 text-[#bbb]" />
+              <span className="font-semibold text-[#1a1a1a]">
+                {tabStats.total.toLocaleString()}
               </span>{" "}
               listings available
             </div>
-            <div className="hidden sm:block w-px h-4 bg-gray-200" />
-            <div className="flex items-center gap-2 text-gray-600">
-              <Clock className="w-4 h-4 text-gray-400" />
-              <span className="font-semibold text-gray-900">
-                {stats.newThisWeek.toLocaleString()}
+            <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+            <div className="flex items-center gap-2 text-[#666]">
+              <Clock className="w-4 h-4 text-[#bbb]" />
+              <span className="font-semibold text-[#1a1a1a]">
+                {tabStats.newThisWeek.toLocaleString()}
               </span>{" "}
               new this week
             </div>
-            {stats.avgPrice > 0 && (
+            {tabStats.avgPrice > 0 && (
               <>
-                <div className="hidden sm:block w-px h-4 bg-gray-200" />
-                <div className="flex items-center gap-2 text-gray-600">
-                  <TrendingUp className="w-4 h-4 text-gray-400" />
+                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+                <div className="flex items-center gap-2 text-[#666]">
+                  <TrendingUp className="w-4 h-4 text-[#bbb]" />
                   avg price{" "}
-                  <span className="font-semibold text-gray-900">
+                  <span className="font-semibold text-[#1a1a1a]">
                     {currency}
-                    {stats.avgPrice.toLocaleString()}
+                    {tabStats.avgPrice.toLocaleString()}
                   </span>
                 </div>
               </>
@@ -254,10 +245,10 @@ export default function CategoryLanding({
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2.5 px-5 py-3 text-sm font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? "bg-gray-900 text-white shadow-sm shadow-gray-900/10"
-                    : "bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                    ? "bg-[#8E7A6B] text-white shadow-sm shadow-[#8E7A6B]/10"
+                    : "bg-[#faf9f7] text-[#666] hover:bg-[#f0eeeb] hover:text-[#1a1a1a]"
                 }`}
               >
                 <TabIcon className="w-4 h-4" />
@@ -270,7 +261,7 @@ export default function CategoryLanding({
         {/* ── Active Tab Description + Subcategory Pills ──────────────── */}
         {activeTabConfig && (
           <div className="mb-8">
-            <p className="text-gray-500 text-sm mb-4">
+            <p className="text-[#999] text-sm mb-4">
               {activeTabConfig.description}
             </p>
             {tabSubcategories.length > 0 && (
@@ -279,10 +270,10 @@ export default function CategoryLanding({
                   <Link
                     key={sc.id}
                     href={`/search?category=${categorySlug}&subcategory=${sc.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-gray-50 text-gray-700 border border-gray-150 hover:bg-gray-100 hover:border-gray-200 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-[#faf9f7] text-[#666] border border-[#e8e6e3] hover:bg-[#f0eeeb] hover:border-[#ccc] transition-colors"
                   >
                     {sc.name}
-                    <ArrowRight className="w-3 h-3 text-gray-400" />
+                    <ArrowRight className="w-3 h-3 text-[#bbb]" />
                   </Link>
                 ))}
               </div>
@@ -295,16 +286,19 @@ export default function CategoryLanding({
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2
+                  className="text-xl font-light text-[#1a1a1a]"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
                   Featured {categoryName}
                 </h2>
-                <p className="text-sm text-gray-400 mt-0.5">
+                <p className="text-sm text-[#bbb] mt-0.5">
                   Promoted listings from verified sellers
                 </p>
               </div>
               <Link
                 href={`/search?category=${categorySlug}&sort=promoted`}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
               >
                 View all <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -317,70 +311,103 @@ export default function CategoryLanding({
           </section>
         )}
 
-        {/* ── Recent Listings ──────────────────────────────────────────── */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Recently Added
-              </h2>
-              <p className="text-sm text-gray-400 mt-0.5">
-                The latest {categoryName.toLowerCase()} listings
-              </p>
-            </div>
-            <Link
-              href={`/search?category=${categorySlug}`}
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
-            >
-              View all <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {displayRecent.slice(0, 8).map((listing) => (
-              <ListingCard key={listing.id} listing={listing} />
-            ))}
-          </div>
+        {/* ── Listings by Location ─────────────────────────────────────── */}
+        {(() => {
+          // Group recent listings by location
+          const byLocation = new Map<
+            string,
+            { slug: string; listings: ListingCardRow[] }
+          >();
+          for (const listing of displayRecent) {
+            const locName = listing.locations?.name ?? "Other";
+            const locSlug = listing.locations?.slug ?? "";
+            if (!byLocation.has(locName)) {
+              byLocation.set(locName, { slug: locSlug, listings: [] });
+            }
+            byLocation.get(locName)!.listings.push(listing);
+          }
 
-          {displayRecent.length === 0 && (
-            <div className="text-center py-16 text-gray-400">
-              <p className="text-lg font-medium mb-1">
-                No {activeTabConfig?.label.toLowerCase() ?? ""} listings yet
-              </p>
-              <p className="text-sm">
-                Be the first to{" "}
-                <Link href="/post" className="text-indigo-600 hover:underline">
-                  post a listing
-                </Link>{" "}
-                in this category, or try a different tab above.
-              </p>
-            </div>
-          )}
-        </section>
+          const locationGroups = Array.from(byLocation.entries())
+            .sort((a, b) => b[1].listings.length - a[1].listings.length);
+
+          if (locationGroups.length === 0) {
+            return (
+              <section className="mb-12">
+                <div className="text-center py-16 text-[#bbb]">
+                  <p className="text-lg font-medium mb-1">
+                    No {activeTabConfig?.label.toLowerCase() ?? ""} listings yet
+                  </p>
+                  <p className="text-sm">
+                    Be the first to{" "}
+                    <Link
+                      href="/post"
+                      className="text-[#1a1a1a] font-medium hover:underline"
+                    >
+                      post a listing
+                    </Link>{" "}
+                    in this category, or try a different tab above.
+                  </p>
+                </div>
+              </section>
+            );
+          }
+
+          return locationGroups.map(([locName, { slug: locSlug, listings }]) => (
+            <section key={locName} className="mb-10">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
+                    <MapPin className="w-4 h-4 text-[#999]" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-light text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', serif" }}>
+                      {locName}
+                    </h2>
+                    <p className="text-xs text-[#bbb]">
+                      {listings.length} listing{listings.length !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
+                  className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
+                >
+                  View all <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {listings.slice(0, 4).map((listing) => (
+                  <ListingCard key={listing.id} listing={listing} />
+                ))}
+              </div>
+            </section>
+          ));
+        })()}
 
         {/* ── CTA Banner ──────────────────────────────────────────────── */}
-        <section className="relative rounded-2xl overflow-hidden p-8 md:p-12 text-white text-center">
+        <section className="relative overflow-hidden p-8 md:p-12 text-white text-center">
           {heroImage ? (
             <>
               <Image src={heroImage} alt="" fill className="object-cover" />
-              <div className="absolute inset-0 bg-black/55" />
-              <div
-                className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-30`}
-              />
+              <div className="absolute inset-0 bg-[#2C2826]/65" />
             </>
           ) : (
-            <div className={`absolute inset-0 bg-linear-to-br ${gradient}`} />
+            <div className="absolute inset-0 bg-[#2C2826]" />
           )}
           <div className="relative">
-            <h3 className="text-2xl md:text-3xl font-bold mb-3">
-              Ready to list your {categoryName.toLowerCase().replace(/s$/, "")}?
+            <h3
+              className="text-2xl md:text-3xl font-light mb-3"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              Ready to list your {categoryName.toLowerCase().replace(/ies$/, "y").replace(/s$/, "")}?
             </h3>
-            <p className="text-white/80 mb-6 max-w-lg mx-auto">
+            <p className="text-white/50 mb-8 max-w-lg mx-auto">
               Reach thousands of buyers across Cyprus. AI-powered pricing
               suggestions help you get the best deal.
             </p>
             <Link
               href="/post"
-              className="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-8 py-3.5 rounded-xl hover:bg-white/90 transition-colors shadow-sm shadow-black/10"
+              className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/90 transition-colors"
             >
               <Plus className="w-4 h-4" />
               {postLabel}

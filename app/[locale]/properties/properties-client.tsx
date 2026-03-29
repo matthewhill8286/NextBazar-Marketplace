@@ -41,7 +41,6 @@ type Props = {
   subcategories: Subcategory[];
   featuredListings: ListingCardRow[];
   recentListings: ListingCardRow[];
-  stats: { total: number; newThisWeek: number; avgPrice: number };
 };
 
 export default function PropertiesClient({
@@ -49,7 +48,6 @@ export default function PropertiesClient({
   subcategories,
   featuredListings,
   recentListings,
-  stats,
 }: Props) {
   return (
     <CategoryLanding
@@ -58,7 +56,6 @@ export default function PropertiesClient({
       headline="Find Your Perfect Property in Cyprus"
       subheadline="Whether you're buying your first home, looking for a rental, or investing in new developments — discover thousands of properties across the island."
       tabs={TABS}
-      stats={stats}
       subcategories={subcategories}
       featuredListings={featuredListings}
       recentListings={recentListings}

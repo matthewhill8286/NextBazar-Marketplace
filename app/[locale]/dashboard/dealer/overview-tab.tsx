@@ -60,15 +60,15 @@ export default function OverviewTab({ listings, slug }: Props) {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-sm transition-shadow"
+            className="bg-white border border-[#e8e6e3] p-5 hover:shadow-sm transition-shadow"
           >
             <div
-              className={`w-9 h-9 ${s.bg} rounded-lg flex items-center justify-center mb-3`}
+              className={`w-9 h-9 ${s.bg} flex items-center justify-center mb-3`}
             >
               <s.icon className={`w-[18px] h-[18px] ${s.color}`} />
             </div>
-            <div className="text-2xl font-bold text-gray-900">{s.value}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+            <div className="text-2xl font-bold text-[#1a1a1a]">{s.value}</div>
+            <div className="text-xs text-[#999] mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -77,9 +77,9 @@ export default function OverviewTab({ listings, slug }: Props) {
       <ShopUrlCard slug={slug} />
 
       {/* Top performing listings */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-gray-400" />
+      <div className="bg-white border border-[#e8e6e3] p-5">
+        <h3 className="text-sm font-semibold text-[#1a1a1a] mb-4 flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-[#bbb]" />
           Top Performing Listings
         </h3>
         <div className="space-y-2">
@@ -90,12 +90,12 @@ export default function OverviewTab({ listings, slug }: Props) {
               <Link
                 key={l.id}
                 href={`/listing/${l.slug}`}
-                className="flex items-center gap-3 p-2.5 -mx-2 rounded-xl hover:bg-gray-50 transition-colors group"
+                className="flex items-center gap-3 p-2.5 -mx-2 hover:bg-[#faf9f7] transition-colors group"
               >
-                <span className="text-xs font-semibold text-gray-300 w-5 text-center">
+                <span className="text-xs font-semibold text-[#ccc] w-5 text-center">
                   {i + 1}
                 </span>
-                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0">
                   {l.primary_image_url && (
                     <img
                       src={l.primary_image_url}
@@ -105,20 +105,20 @@ export default function OverviewTab({ listings, slug }: Props) {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate group-hover:text-indigo-600 transition-colors">
+                  <p className="text-sm font-medium text-[#1a1a1a] truncate group-hover:text-indigo-600 transition-colors">
                     {l.title}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-[#bbb]">
                     {l.view_count} views &middot; {l.favorite_count} saves
                   </p>
                 </div>
-                <div className="text-sm font-semibold text-gray-900">
+                <div className="text-sm font-semibold text-[#1a1a1a]">
                   &euro;{l.price?.toLocaleString() ?? "&mdash;"}
                 </div>
               </Link>
             ))}
           {activeListings.length === 0 && (
-            <p className="text-sm text-gray-400 text-center py-6">
+            <p className="text-sm text-[#bbb] text-center py-6">
               No listings yet
             </p>
           )}

@@ -320,7 +320,7 @@ export default function OnboardingWizard({
     <div className="min-h-[70vh]">
       {/* Step indicator + progress bar */}
       <div className="max-w-2xl mx-auto px-4 pt-8">
-        <p className="text-xs text-gray-400 font-medium text-right mb-2">
+        <p className="text-xs text-[#bbb] font-medium text-right mb-2">
           Step {step} of 4
         </p>
         <div className="flex gap-2">
@@ -328,7 +328,7 @@ export default function OnboardingWizard({
             <div
               key={s}
               className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                s <= step ? "bg-indigo-500" : "bg-gray-200"
+                s <= step ? "bg-indigo-500" : "bg-[#e8e6e3]"
               }`}
             />
           ))}
@@ -339,21 +339,21 @@ export default function OnboardingWizard({
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Step header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-1.5">
+          <h1 className="text-2xl font-bold text-[#1a1a1a] mb-1.5">
             {STEP_TITLES[step]}
           </h1>
-          <p className="text-gray-500 text-sm">{STEP_DESCRIPTIONS[step]}</p>
+          <p className="text-[#999] text-sm">{STEP_DESCRIPTIONS[step]}</p>
         </div>
 
         {/* ── Step 1: Profile ─────────────────────────────────────────────── */}
         {step === 1 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-6">
+          <div className="bg-white border border-[#e8e6e3] p-6 shadow-sm space-y-6">
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
               <button
                 type="button"
                 onClick={() => avatarInputRef.current?.click()}
-                className="relative w-24 h-24 rounded-full bg-gray-100 border-2 border-dashed border-gray-300 hover:border-indigo-400 transition-colors flex items-center justify-center overflow-hidden group"
+                className="relative w-24 h-24 rounded-full bg-[#f0eeeb] border-2 border-dashed border-[#e8e6e3] hover:border-indigo-400 transition-colors flex items-center justify-center overflow-hidden group"
               >
                 {avatarUrl ? (
                   <Image
@@ -363,7 +363,7 @@ export default function OnboardingWizard({
                     className="object-cover"
                   />
                 ) : (
-                  <User className="w-8 h-8 text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                  <User className="w-8 h-8 text-[#bbb] group-hover:text-indigo-500 transition-colors" />
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                   {avatarUploading ? (
@@ -383,14 +383,14 @@ export default function OnboardingWizard({
                   if (file) handleAvatarUpload(file);
                 }}
               />
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-[#bbb]">
                 {avatarUrl ? "Click to change photo" : "Upload a profile photo"}
               </p>
             </div>
 
             {/* Display name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Display name
               </label>
               <input
@@ -398,15 +398,15 @@ export default function OnboardingWizard({
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="How should people know you?"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
               />
             </div>
 
             {/* Bio */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Short bio{" "}
-                <span className="text-gray-400 font-normal">(optional)</span>
+                <span className="text-[#bbb] font-normal">(optional)</span>
               </label>
               <textarea
                 value={bio}
@@ -414,9 +414,9 @@ export default function OnboardingWizard({
                 placeholder="Tell buyers a bit about yourself..."
                 rows={3}
                 maxLength={300}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm resize-none"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
               />
-              <p className="text-xs text-gray-400 text-right mt-1">
+              <p className="text-xs text-[#bbb] text-right mt-1">
                 {bio.length}/300
               </p>
             </div>
@@ -425,20 +425,20 @@ export default function OnboardingWizard({
 
         {/* ── Step 2: Socials ─────────────────────────────────────────────── */}
         {step === 2 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-5">
-            <p className="text-sm text-gray-500 text-center">
+          <div className="bg-white border border-[#e8e6e3] p-6 shadow-sm space-y-5">
+            <p className="text-sm text-[#999] text-center">
               These are shown on your public profile so buyers can reach you.
               All fields are optional.
             </p>
 
             {/* Instagram */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
+              <label className="flex items-center gap-2 text-sm font-medium text-[#666] mb-1.5">
                 <Instagram className="w-4 h-4 text-pink-500" />
                 Instagram
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] text-sm">
                   @
                 </span>
                 <input
@@ -448,19 +448,19 @@ export default function OnboardingWizard({
                     setInstagram(e.target.value.replace(/^@/, ""))
                   }
                   placeholder="username"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
                 />
               </div>
             </div>
 
             {/* Telegram */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
+              <label className="flex items-center gap-2 text-sm font-medium text-[#666] mb-1.5">
                 <TelegramIcon className="w-4 h-4 text-sky-500" />
                 Telegram
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] text-sm">
                   @
                 </span>
                 <input
@@ -470,14 +470,14 @@ export default function OnboardingWizard({
                     setTelegram(e.target.value.replace(/^@/, ""))
                   }
                   placeholder="username"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
                 />
               </div>
             </div>
 
             {/* Facebook */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
+              <label className="flex items-center gap-2 text-sm font-medium text-[#666] mb-1.5">
                 <Facebook className="w-4 h-4 text-blue-600" />
                 Facebook
               </label>
@@ -486,7 +486,7 @@ export default function OnboardingWizard({
                 value={facebook}
                 onChange={(e) => setFacebook(e.target.value)}
                 placeholder="Profile URL or username"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
               />
             </div>
           </div>
@@ -494,18 +494,18 @@ export default function OnboardingWizard({
 
         {/* ── Step 3: Location ────────────────────────────────────────────── */}
         {step === 3 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-6">
+          <div className="bg-white border border-[#e8e6e3] p-6 shadow-sm space-y-6">
             {/* Geolocation request */}
             {!geoGranted ? (
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 bg-indigo-50 flex items-center justify-center mx-auto">
                   <Navigation className="w-7 h-7 text-indigo-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-semibold text-[#1a1a1a] mb-1">
                     Enable location access?
                   </h3>
-                  <p className="text-sm text-gray-500 max-w-sm mx-auto">
+                  <p className="text-sm text-[#999] max-w-sm mx-auto">
                     We&apos;ll use your location to show you nearby listings and
                     help buyers find your items. Your exact coordinates are
                     never shared publicly.
@@ -515,7 +515,7 @@ export default function OnboardingWizard({
                   type="button"
                   onClick={requestGeolocation}
                   disabled={geoLoading}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-60"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-60"
                 >
                   {geoLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -525,7 +525,7 @@ export default function OnboardingWizard({
                   Allow Location Access
                 </button>
                 {geoError && (
-                  <p className="text-sm text-amber-600 bg-amber-50 px-4 py-2 rounded-lg">
+                  <p className="text-sm text-amber-600 bg-amber-50 px-4 py-2 ">
                     {geoError}
                   </p>
                 )}
@@ -543,7 +543,7 @@ export default function OnboardingWizard({
 
             {/* Manual location selector (always visible) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 {geoGranted
                   ? "Confirm your city"
                   : "Or select your city manually"}
@@ -551,7 +551,7 @@ export default function OnboardingWizard({
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               >
                 <option value="">Select a city...</option>
                 {locations.map((loc) => (
@@ -566,12 +566,12 @@ export default function OnboardingWizard({
 
         {/* ── Step 4: Quick Listing ───────────────────────────────────────── */}
         {step === 4 && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-5">
+          <div className="bg-white border border-[#e8e6e3] p-6 shadow-sm space-y-5">
             <div className="text-center mb-2">
-              <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+              <div className="w-14 h-14 bg-indigo-50 flex items-center justify-center mx-auto mb-3">
                 <Sparkles className="w-6 h-6 text-indigo-500" />
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-[#999]">
                 Got something to sell? Create a quick listing now, or skip and
                 do it later.
               </p>
@@ -579,14 +579,14 @@ export default function OnboardingWizard({
 
             {/* Listing image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Photo{" "}
-                <span className="text-gray-400 font-normal">(optional)</span>
+                <span className="text-[#bbb] font-normal">(optional)</span>
               </label>
               <button
                 type="button"
                 onClick={() => listingImageRef.current?.click()}
-                className="w-full h-40 rounded-xl border-2 border-dashed border-gray-200 hover:border-indigo-400 transition-colors flex flex-col items-center justify-center gap-2 overflow-hidden relative group"
+                className="w-full h-40 border-2 border-dashed border-[#e8e6e3] hover:border-indigo-400 transition-colors flex flex-col items-center justify-center gap-2 overflow-hidden relative group"
               >
                 {listingImagePreview ? (
                   <>
@@ -602,8 +602,8 @@ export default function OnboardingWizard({
                   </>
                 ) : (
                   <>
-                    <Plus className="w-6 h-6 text-gray-400" />
-                    <span className="text-xs text-gray-400">Add a photo</span>
+                    <Plus className="w-6 h-6 text-[#bbb]" />
+                    <span className="text-xs text-[#bbb]">Add a photo</span>
                   </>
                 )}
               </button>
@@ -624,7 +624,7 @@ export default function OnboardingWizard({
 
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 What are you selling?
               </label>
               <input
@@ -632,19 +632,19 @@ export default function OnboardingWizard({
                 value={listingTitle}
                 onChange={(e) => setListingTitle(e.target.value)}
                 placeholder='e.g. "iPhone 15 Pro — Like New"'
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
               />
             </div>
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Category
               </label>
               <select
                 value={listingCategoryId}
                 onChange={(e) => setListingCategoryId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               >
                 <option value="">Choose a category...</option>
                 {categories.map((cat) => (
@@ -657,14 +657,14 @@ export default function OnboardingWizard({
 
             {/* Price */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Price{" "}
-                <span className="text-gray-400 font-normal">
+                <span className="text-[#bbb] font-normal">
                   (leave blank for &ldquo;Contact for price&rdquo;)
                 </span>
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] font-medium">
                   €
                 </span>
                 <input
@@ -674,7 +674,7 @@ export default function OnboardingWizard({
                   value={listingPrice}
                   onChange={(e) => setListingPrice(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
             </div>
@@ -688,7 +688,7 @@ export default function OnboardingWizard({
             <button
               type="button"
               onClick={back}
-              className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
+              className="text-sm text-[#999] hover:text-[#666] font-medium transition-colors"
             >
               Back
             </button>
@@ -703,7 +703,7 @@ export default function OnboardingWizard({
               <button
                 type="button"
                 onClick={next}
-                className="text-sm text-gray-400 hover:text-gray-600 font-medium transition-colors flex items-center gap-1"
+                className="text-sm text-[#bbb] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
               >
                 Skip <ChevronRight className="w-3 h-3" />
               </button>
@@ -714,7 +714,7 @@ export default function OnboardingWizard({
                 type="button"
                 onClick={next}
                 disabled={step === 1 && !displayName.trim()}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-indigo-200"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-[#8E7A6B]/15"
               >
                 Continue
                 <ArrowRight className="w-4 h-4" />
@@ -726,7 +726,7 @@ export default function OnboardingWizard({
                   type="button"
                   onClick={() => finishOnboarding(true)}
                   disabled={saving}
-                  className="text-sm text-gray-400 hover:text-gray-600 font-medium transition-colors flex items-center gap-1"
+                  className="text-sm text-[#bbb] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
                 >
                   <SkipForward className="w-3.5 h-3.5" />
                   Skip for now
@@ -739,7 +739,7 @@ export default function OnboardingWizard({
                   disabled={
                     saving || !listingTitle.trim() || !listingCategoryId
                   }
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-indigo-200"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-[#8E7A6B]/15"
                 >
                   {saving ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

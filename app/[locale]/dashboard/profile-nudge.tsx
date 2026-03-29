@@ -55,8 +55,8 @@ export default function ProfileNudge() {
   if (!show || dismissed) return null;
 
   return (
-    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 rounded-xl p-4 flex items-start gap-3">
-      <div className="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+    <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100 p-4 flex items-start gap-3">
+      <div className="w-9 h-9 bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
         <Camera className="w-4.5 h-4.5 text-amber-600" />
       </div>
       <div className="flex-1 min-w-0">
@@ -77,7 +77,7 @@ export default function ProfileNudge() {
       </div>
       <button
         onClick={dismiss}
-        className="w-6 h-6 rounded-lg hover:bg-amber-100 flex items-center justify-center text-amber-400 hover:text-amber-600 transition-colors shrink-0"
+        className="w-6 h-6 hover:bg-amber-100 flex items-center justify-center text-amber-400 hover:text-amber-600 transition-colors shrink-0"
       >
         <X className="w-3.5 h-3.5" />
       </button>

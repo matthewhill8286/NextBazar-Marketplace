@@ -69,22 +69,22 @@ export default function OwnerInsights({
     <>
       {/* Market value + Quality score card */}
       {price && (
-        <div className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-white p-6 border border-[#e8e6e3]">
+          <h2 className="text-lg font-semibold text-[#1a1a1a] mb-4">
             Owner Insights
           </h2>
           <div className="grid grid-cols-2 gap-4">
             {/* Market value range */}
-            <div className="bg-gray-50 rounded-xl p-3.5">
-              <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1.5">
+            <div className="bg-[#faf9f7] p-3.5">
+              <div className="flex items-center gap-1.5 text-xs text-[#999] mb-1.5">
                 <Shield className="w-3 h-3 text-indigo-500" />
                 {t("marketValue")}
               </div>
               {aiMarketLoading ? (
-                <div className="h-4 w-28 bg-gray-200 rounded animate-pulse" />
+                <div className="h-4 w-28 bg-[#e8e6e3] rounded animate-pulse" />
               ) : (
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-semibold text-sm text-gray-700">
+                  <span className="font-semibold text-sm text-[#666]">
                     {formatPrice(priceEstLow, currency)} –{" "}
                     {formatPrice(priceEstHigh, currency)}
                   </span>
@@ -106,14 +106,14 @@ export default function OwnerInsights({
                             : t("fairPrice")}
                       </span>
                     )}
-                  <span className="text-[10px] text-gray-400">· AI</span>
+                  <span className="text-[10px] text-[#bbb]">· AI</span>
                 </div>
               )}
             </div>
 
             {/* Quality score */}
-            <div className="bg-gray-50 rounded-xl p-3.5">
-              <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1.5">
+            <div className="bg-[#faf9f7] p-3.5">
+              <div className="flex items-center gap-1.5 text-xs text-[#999] mb-1.5">
                 <Activity
                   className={`w-3 h-3 ${
                     qualityScore >= 80
@@ -125,7 +125,7 @@ export default function OwnerInsights({
                 />
                 {t("listingQuality")}
               </div>
-              <span className="text-sm font-semibold text-gray-900">
+              <span className="text-sm font-semibold text-[#1a1a1a]">
                 {qualityScore}%
               </span>
             </div>

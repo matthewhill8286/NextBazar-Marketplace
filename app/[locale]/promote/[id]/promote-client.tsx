@@ -89,7 +89,7 @@ export default function PromoteClient({
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#999] animate-spin" />
       </div>
     );
   }
@@ -100,15 +100,15 @@ export default function PromoteClient({
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/dashboard/listings"
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
+          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#999]"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">
             Boost Your Listing
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-[#999]">
             Get more visibility and sell faster
           </p>
         </div>
@@ -116,9 +116,9 @@ export default function PromoteClient({
 
       {/* Listing preview */}
       {listing && (
-        <div className="bg-white rounded-xl border border-gray-100 p-4 mb-8 flex items-center gap-4">
+        <div className="bg-white border border-[#e8e6e3] p-4 mb-8 flex items-center gap-4">
           {listing.primary_image_url && (
-            <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
+            <div className="w-16 h-12 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
               <Image
                 src={listing.primary_image_url}
                 alt=""
@@ -129,10 +129,10 @@ export default function PromoteClient({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-gray-900 text-sm truncate">
+            <p className="font-medium text-[#1a1a1a] text-sm truncate">
               {listing.title}
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#999]">
               {listing.price
                 ? `${listing.currency === "EUR" ? "€" : listing.currency}${listing.price.toLocaleString()}`
                 : "Contact for price"}
@@ -154,14 +154,14 @@ export default function PromoteClient({
       )}
 
       {/* Stats callout */}
-      <div className="bg-linear-to-r from-indigo-50 to-indigo-50 rounded-xl p-5 border border-indigo-100 mb-8">
+      <div className="bg-[#faf9f7] p-5 border border-[#e8e6e3] mb-8">
         <div className="flex items-center gap-2 mb-2">
-          <TrendingUp className="w-5 h-5 text-indigo-600" />
-          <span className="font-semibold text-indigo-900">
+          <TrendingUp className="w-5 h-5 text-[#666]" />
+          <span className="font-semibold text-[#1a1a1a]">
             Promoted listings get up to 5x more views
           </span>
         </div>
-        <p className="text-sm text-indigo-700">
+        <p className="text-sm text-[#666]">
           Stand out from the crowd and reach more buyers. Promoted listings
           appear at the top of search results and on the homepage.
         </p>
@@ -181,12 +181,12 @@ export default function PromoteClient({
               type="button"
               onClick={() => !alreadyActive && setSelected(promo.key)}
               disabled={alreadyActive}
-              className={`w-full text-left rounded-xl border-2 p-5 transition-all relative ${
+              className={`w-full text-left border-2 p-5 transition-all relative ${
                 alreadyActive
-                  ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
+                  ? "border-[#e8e6e3] bg-[#faf9f7] opacity-60 cursor-not-allowed"
                   : isSelected
-                    ? "border-indigo-500 bg-indigo-50/50 ring-2 ring-indigo-200"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    ? "border-[#999] bg-[#faf9f7]/50 ring-2 ring-[#e8e6e3]"
+                    : "border-[#e8e6e3] bg-white hover:border-[#e8e6e3]"
               }`}
             >
               {promo.popular && !alreadyActive && (
@@ -203,17 +203,17 @@ export default function PromoteClient({
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-xl bg-gradient-to-br ${promo.color} flex items-center justify-center text-white`}
+                    className={`w-10 h-10 bg-gradient-to-br ${promo.color} flex items-center justify-center text-white`}
                   >
                     <promo.icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{promo.name}</p>
-                    <p className="text-xs text-gray-500">{promo.duration}</p>
+                    <p className="font-semibold text-[#1a1a1a]">{promo.name}</p>
+                    <p className="text-xs text-[#999]">{promo.duration}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-gray-900">
+                  <p className="text-xl font-bold text-[#1a1a1a]">
                     {promo.price}
                   </p>
                 </div>
@@ -223,7 +223,7 @@ export default function PromoteClient({
                 {promo.benefits.map((b) => (
                   <div
                     key={b}
-                    className="flex items-center gap-1.5 text-xs text-gray-600"
+                    className="flex items-center gap-1.5 text-xs text-[#666]"
                   >
                     <Check className="w-3 h-3 text-green-500 shrink-0" />
                     {b}
@@ -238,12 +238,12 @@ export default function PromoteClient({
       {/* Checkout button */}
       <button
         onClick={() => handleCheckout(selected)}
-        className="w-full bg-indigo-600 text-white py-4 rounded-xl font-semibold text-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-indigo-200"
+        className="w-full bg-[#2C2826] text-white py-4 font-semibold text-lg hover:bg-[#3D3633] transition-colors flex items-center justify-center gap-2 shadow-sm shadow-[#e8e6e3]"
       >
         Pay Now — {PROMOTIONS.find((p) => p.key === selected)?.price}
       </button>
 
-      <p className="text-center text-xs text-gray-400 mt-3">
+      <p className="text-center text-xs text-[#bbb] mt-3">
         Secure payment powered by Stripe. You won&apos;t be charged until you
         confirm.
       </p>

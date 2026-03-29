@@ -74,14 +74,14 @@ function CryptoTab({
     <div className="p-6">
       {/* Accepted coins */}
       <div className="mb-5">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+        <p className="text-xs font-semibold text-[#999] uppercase tracking-wide mb-3">
           Accepted cryptocurrencies
         </p>
         <div className="grid grid-cols-3 gap-2">
           {COINS.map((coin) => (
             <div
               key={coin.symbol}
-              className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2"
+              className="flex items-center gap-2 bg-[#faf9f7] border border-[#e8e6e3] px-3 py-2"
             >
               <span
                 className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-bold shrink-0"
@@ -90,10 +90,10 @@ function CryptoTab({
                 {coin.symbol.slice(0, 1)}
               </span>
               <div className="min-w-0">
-                <div className="text-xs font-semibold text-gray-800 leading-none">
+                <div className="text-xs font-semibold text-[#1a1a1a] leading-none">
                   {coin.symbol}
                 </div>
-                <div className="text-[10px] text-gray-400 truncate">
+                <div className="text-[10px] text-[#bbb] truncate">
                   {coin.name}
                 </div>
               </div>
@@ -103,7 +103,7 @@ function CryptoTab({
       </div>
 
       {/* Info */}
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-5 text-xs text-amber-800 leading-relaxed">
+      <div className="bg-amber-50 border border-amber-100 p-3 mb-5 text-xs text-amber-800 leading-relaxed">
         <span className="font-semibold">Note:</span> You&apos;ll be redirected
         to Coinbase Commerce to complete payment. Your promotion activates
         automatically once the transaction is confirmed on-chain (usually within
@@ -111,7 +111,7 @@ function CryptoTab({
       </div>
 
       {error && (
-        <p className="text-sm text-red-600 mb-4 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+        <p className="text-sm text-red-600 mb-4 bg-red-50 border border-red-100 px-3 py-2">
           {error}
         </p>
       )}
@@ -119,7 +119,7 @@ function CryptoTab({
       <button
         onClick={handleCryptoPay}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors"
+        className="w-full flex items-center justify-center gap-2 bg-[#2C2826] hover:bg-[#3D3633] disabled:opacity-60 text-white font-semibold py-3 transition-colors"
       >
         {loading ? (
           <>
@@ -135,7 +135,7 @@ function CryptoTab({
         )}
       </button>
 
-      <p className="text-center text-[11px] text-gray-400 mt-3">
+      <p className="text-center text-[11px] text-[#bbb] mt-3">
         Powered by Coinbase Commerce · 1% processing fee
       </p>
     </div>
@@ -172,22 +172,22 @@ export default function StripeCheckoutModal({
   return (
     /* Backdrop */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-lg bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e8e6e3]">
           <div>
-            <p className="font-semibold text-gray-900 text-sm">
+            <p className="font-semibold text-[#1a1a1a] text-sm">
               {promotionType === "featured"
-                ? `✨ Featured Listing — ${pricing?.featured.price ?? "€9.99"}`
-                : `⚡ Quick Boost — ${pricing?.urgent.price ?? "€4.99"}`}
+                ? `Featured Listing — ${pricing?.featured.price ?? "€9.99"}`
+                : `Quick Boost — ${pricing?.urgent.price ?? "€4.99"}`}
             </p>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-[#bbb] mt-0.5">
               Choose your payment method below
             </p>
           </div>
           <button
             onClick={onCloseAction}
-            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+            className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#bbb] hover:text-[#666]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -195,13 +195,13 @@ export default function StripeCheckoutModal({
 
         {/* Payment method tabs — only rendered when crypto flag is on */}
         {cryptoEnabled && (
-          <div className="flex border-b border-gray-100">
+          <div className="flex border-b border-[#e8e6e3]">
             <button
               onClick={() => setPaymentMethod("card")}
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
                 paymentMethod === "card"
-                  ? "text-indigo-600 border-b-2 border-indigo-600 -mb-px"
-                  : "text-gray-400 hover:text-gray-600"
+                  ? "text-[#1a1a1a] border-b-2 border-[#1a1a1a] -mb-px"
+                  : "text-[#bbb] hover:text-[#666]"
               }`}
             >
               <CreditCard className="w-4 h-4" />
@@ -212,7 +212,7 @@ export default function StripeCheckoutModal({
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
                 paymentMethod === "crypto"
                   ? "text-orange-500 border-b-2 border-orange-500 -mb-px"
-                  : "text-gray-400 hover:text-gray-600"
+                  : "text-[#bbb] hover:text-[#666]"
               }`}
             >
               <Bitcoin className="w-4 h-4" />

@@ -135,13 +135,13 @@ export default function BrandingForm({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-6">
+    <div className="bg-white border border-[#e8e6e3] p-6 space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1 flex items-center gap-2">
-          <Palette className="w-4 h-4 text-gray-400" />
+        <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1 flex items-center gap-2">
+          <Palette className="w-4 h-4 text-[#bbb]" />
           Shop Branding
         </h3>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[#999]">
           Customise how your shop appears to buyers.
         </p>
       </div>
@@ -158,7 +158,7 @@ export default function BrandingForm({
       {/* ── Live shop preview — mirrors /shop/[slug] ──────────────────── */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-[#666]">
             Shop Preview
           </label>
           {slug && (
@@ -172,7 +172,7 @@ export default function BrandingForm({
             </Link>
           )}
         </div>
-        <div className="rounded-2xl overflow-hidden border border-gray-200 bg-gray-50 shadow-sm">
+        <div className="overflow-hidden border border-[#e8e6e3] bg-[#faf9f7] shadow-sm">
           {/* Hero banner — doubles as upload drop zone */}
           <div
             className="relative group/banner cursor-pointer"
@@ -216,8 +216,8 @@ export default function BrandingForm({
                 <Loader2 className="w-6 h-6 text-white animate-spin" />
               </div>
             ) : (
-              <div className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-indigo-600/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}>
-                <span className={`flex items-center gap-2 bg-white/90 text-gray-700 text-xs font-semibold px-3.5 py-2 rounded-full shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}>
+              <div className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-[#8E7A6B]/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}>
+                <span className={`flex items-center gap-2 bg-white/90 text-[#666] text-xs font-semibold px-3.5 py-2 rounded-full shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}>
                   <Upload className="w-3.5 h-3.5" />
                   {bannerUrl ? "Change Banner" : "Upload Banner"}
                 </span>
@@ -241,11 +241,11 @@ export default function BrandingForm({
 
           {/* Shop info card */}
           <div className="mx-3 -mt-10 relative z-10">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white border border-[#e8e6e3] shadow-sm overflow-hidden">
               <div className="p-5">
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 mb-2">
-                      <h3 className="text-lg font-bold text-gray-900 truncate">
+                      <h3 className="text-lg font-bold text-[#1a1a1a] truncate">
                         {shopName || "Your Shop"}
                       </h3>
                       <span
@@ -260,30 +260,30 @@ export default function BrandingForm({
                     </div>
 
                     {description ? (
-                      <p className="text-sm text-gray-600 leading-relaxed mb-3 line-clamp-2">
+                      <p className="text-sm text-[#666] leading-relaxed mb-3 line-clamp-2">
                         {description}
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-300 italic mb-3">
+                      <p className="text-sm text-[#ccc] italic mb-3">
                         Add a description to tell buyers about your business...
                       </p>
                     )}
 
                     {/* Meta chips */}
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-[#999]">
                       {website && (
-                        <span className="p-1.5 rounded-lg bg-gray-50">
-                          <Globe className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="p-1.5 bg-[#faf9f7]">
+                          <Globe className="w-3.5 h-3.5 text-[#bbb]" />
                         </span>
                       )}
                       {facebook && (
-                        <span className="p-1.5 rounded-lg bg-gray-50">
-                          <Facebook className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="p-1.5 bg-[#faf9f7]">
+                          <Facebook className="w-3.5 h-3.5 text-[#bbb]" />
                         </span>
                       )}
                       {instagram && (
-                        <span className="p-1.5 rounded-lg bg-gray-50">
-                          <Instagram className="w-3.5 h-3.5 text-gray-400" />
+                        <span className="p-1.5 bg-[#faf9f7]">
+                          <Instagram className="w-3.5 h-3.5 text-[#bbb]" />
                         </span>
                       )}
                     </div>
@@ -291,29 +291,29 @@ export default function BrandingForm({
               </div>
 
               {/* Stats bar */}
-              <div className="border-t border-gray-100 bg-gray-50/50">
-                <div className="grid grid-cols-3 divide-x divide-gray-100">
+              <div className="border-t border-[#e8e6e3] bg-[#faf9f7]/50">
+                <div className="grid grid-cols-3 divide-x divide-[#e8e6e3]">
                   <div className="text-center py-3 px-3">
-                    <div className="text-lg font-bold text-gray-900">0</div>
-                    <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                    <div className="text-lg font-bold text-[#1a1a1a]">0</div>
+                    <div className="text-[10px] text-[#999] mt-0.5 font-medium">
                       Active Listings
                     </div>
                   </div>
                   <div className="text-center py-3 px-3">
-                    <div className="text-lg font-bold text-gray-900">0</div>
-                    <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                    <div className="text-lg font-bold text-[#1a1a1a]">0</div>
+                    <div className="text-[10px] text-[#999] mt-0.5 font-medium">
                       Total Views
                     </div>
                   </div>
                   <div className="text-center py-3 px-3">
-                    <div className="text-lg font-bold text-gray-900 flex items-center justify-center gap-1">
+                    <div className="text-lg font-bold text-[#1a1a1a] flex items-center justify-center gap-1">
                       <ShieldCheck
                         className="w-4 h-4"
                         style={{ color: accentColor }}
                       />
                       PRO
                     </div>
-                    <div className="text-[10px] text-gray-500 mt-0.5 font-medium">
+                    <div className="text-[10px] text-[#999] mt-0.5 font-medium">
                       Seller Status
                     </div>
                   </div>
@@ -324,12 +324,12 @@ export default function BrandingForm({
 
           {/* Empty listings area */}
           <div className="mx-3 mt-3 mb-3">
-            <div className="bg-white rounded-2xl border border-gray-100 py-8 text-center">
-              <Store className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm font-semibold text-gray-900 mb-1">
+            <div className="bg-white border border-[#e8e6e3] py-8 text-center">
+              <Store className="w-8 h-8 text-[#ccc] mx-auto mb-2" />
+              <p className="text-sm font-semibold text-[#1a1a1a] mb-1">
                 No listings yet
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#999]">
                 Listings will appear here once posted.
               </p>
             </div>
@@ -340,7 +340,7 @@ export default function BrandingForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Shop Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Shop Name
           </label>
           <input
@@ -354,13 +354,13 @@ export default function BrandingForm({
               }
             }}
             placeholder="Elite Motors"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
           />
         </div>
 
         {/* Accent Color */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Accent Colour
           </label>
           <div className="flex items-center gap-3">
@@ -368,29 +368,29 @@ export default function BrandingForm({
               type="color"
               value={accentColor}
               onChange={(e) => onChange("accentColor", e.target.value)}
-              className="w-12 h-12 rounded-xl border border-gray-200 cursor-pointer"
+              className="w-12 h-12 border border-[#e8e6e3] cursor-pointer"
             />
             <input
               type="text"
               value={accentColor}
               onChange={(e) => onChange("accentColor", e.target.value)}
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm font-mono"
+              className="flex-1 px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm font-mono"
             />
           </div>
         </div>
 
         {/* Website */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Website{" "}
-            <span className="text-gray-400 font-normal">(optional)</span>
+            <span className="text-[#bbb] font-normal">(optional)</span>
           </label>
           <input
             type="url"
             value={website}
             onChange={(e) => onChange("website", e.target.value)}
             placeholder="https://www.example.com"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
           />
         </div>
       </div>
@@ -398,14 +398,14 @@ export default function BrandingForm({
       {/* Description */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-[#666]">
             Shop Description
           </label>
           <button
             type="button"
             onClick={handleAiWrite}
             disabled={aiWriting || !shopName}
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {aiWriting ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -429,14 +429,14 @@ export default function BrandingForm({
           onChange={(e) => onChange("description", e.target.value)}
           rows={3}
           placeholder="Tell buyers about your business, specialities, opening hours..."
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm resize-none"
+          className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
         />
       </div>
 
       {/* Social Links */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Facebook
           </label>
           <input
@@ -444,11 +444,11 @@ export default function BrandingForm({
             value={facebook}
             onChange={(e) => onChange("facebook", e.target.value)}
             placeholder="https://facebook.com/yourpage"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Instagram
           </label>
           <input
@@ -456,7 +456,7 @@ export default function BrandingForm({
             value={instagram}
             onChange={(e) => onChange("instagram", e.target.value)}
             placeholder="https://instagram.com/yourpage"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
           />
         </div>
       </div>
@@ -464,7 +464,7 @@ export default function BrandingForm({
       <button
         onClick={onSave}
         disabled={saving || !shopName}
-        className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
+        className="bg-[#8E7A6B] text-white px-6 py-3 font-semibold hover:bg-[#7A6657] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-[#8E7A6B]/15"
       >
         {saving ? (
           <Loader2 className="w-4 h-4 animate-spin" />

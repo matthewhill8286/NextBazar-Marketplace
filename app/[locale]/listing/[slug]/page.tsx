@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { NotFoundIllustration } from "@/app/components/illustrations";
 import {
   getListingBySlugCached,
   getListingPageDataCached,
@@ -74,14 +75,14 @@ export default async function ListingPage(
     const t = await getTranslations("listing");
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
-        <div className="text-6xl mb-4">🔍</div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <NotFoundIllustration className="w-32 h-28 mb-6 text-[#ccc]" />
+        <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
           {t("notFound")}
         </h1>
-        <p className="text-gray-500 mb-6">{t("notFoundDesc")}</p>
+        <p className="text-[#999] mb-6">{t("notFoundDesc")}</p>
         <Link
           href="/"
-          className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
+          className="bg-[#2C2826] text-white px-6 py-3 font-semibold hover:bg-[#3D3633] transition-colors"
         >
           {t("browseListings")}
         </Link>

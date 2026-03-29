@@ -57,7 +57,7 @@ export default function PromoCodeInput() {
 
   if (promoSuccess) {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 inline-flex items-center gap-2.5 text-emerald-700 font-medium">
+      <div className="bg-emerald-50 border border-emerald-200 px-5 py-4 inline-flex items-center gap-2.5 text-emerald-700 font-medium text-sm">
         <Gift className="w-5 h-5" />
         Pro Seller activated — setting up your shop...
       </div>
@@ -65,9 +65,9 @@ export default function PromoCodeInput() {
   }
 
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-xl px-5 py-5 max-w-md mx-auto">
-      <p className="text-gray-500 text-xs font-medium mb-3 flex items-center justify-center gap-1.5">
-        <Ticket className="w-3.5 h-3.5 text-violet-500" />
+    <div className="bg-[#faf9f7] border border-[#e8e6e3] px-5 py-5 max-w-md mx-auto">
+      <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-3 flex items-center justify-center gap-1.5">
+        <Ticket className="w-3.5 h-3.5 text-[#8E7A6B]" />
         Have a promo code? Get started free
       </p>
       <div className="flex items-center gap-2">
@@ -80,13 +80,13 @@ export default function PromoCodeInput() {
           }}
           onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
           placeholder="Enter promo code"
-          className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 font-mono tracking-wider"
+          className="flex-1 bg-white border border-[#e8e6e3] px-3 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#ccc] focus:outline-none focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 font-mono tracking-wider transition-colors"
           disabled={promoLoading}
         />
         <button
           onClick={handleRedeem}
           disabled={promoLoading || !promoCode.trim()}
-          className="bg-violet-600 hover:bg-violet-700 text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
+          className="bg-[#8E7A6B] hover:bg-[#7A6657] text-white font-medium px-4 py-2.5 text-sm transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
         >
           {promoLoading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -99,7 +99,7 @@ export default function PromoCodeInput() {
       {promoError && (
         <p className="text-red-500 text-xs mt-2 text-left">{promoError}</p>
       )}
-      <p className="text-gray-400 text-[10px] mt-2">No credit card required</p>
+      <p className="text-[#bbb] text-[10px] mt-2">No credit card required</p>
     </div>
   );
 }

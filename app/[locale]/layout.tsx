@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    other: [{ rel: "mask-icon", url: "/nextbazar-icon.svg", color: "#3B82F6" }],
+    other: [{ rel: "mask-icon", url: "/nextbazar-icon.svg", color: "#8E7A6B" }],
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -61,7 +61,19 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-gray-50">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-[#faf9f7]">
         <Suspense>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AuthProvider>
@@ -80,12 +92,12 @@ export default async function LocaleLayout({
                       unstyled: true,
                       classNames: {
                         toast:
-                          "flex items-center gap-3 w-[360px] rounded-xl border px-4 py-3 shadow-sm text-sm font-medium",
-                        success: "bg-green-50 border-green-200 text-green-800",
+                          "flex items-center gap-3 w-[360px] border px-4 py-3 shadow-sm text-sm font-medium",
+                        success: "bg-emerald-50 border-emerald-200 text-emerald-800",
                         error: "bg-red-50 border-red-200 text-red-800",
-                        info: "bg-indigo-50 border-indigo-200 text-indigo-800",
+                        info: "bg-[#faf9f7] border-[#e8e6e3] text-[#1a1a1a]",
                         warning: "bg-amber-50 border-amber-200 text-amber-800",
-                        default: "bg-white border-gray-200 text-gray-900",
+                        default: "bg-white border-[#e8e6e3] text-[#1a1a1a]",
                       },
                     }}
                   />

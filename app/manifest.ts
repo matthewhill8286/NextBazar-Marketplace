@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "The smarter marketplace. AI-powered search, instant messaging, and trusted sellers.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f9fafb",
-    theme_color: "#4f46e5",
+    background_color: "#faf9f7",
+    theme_color: "#8E7A6B",
     orientation: "portrait-primary",
     categories: ["shopping", "marketplace", "classifieds"],
     icons: [

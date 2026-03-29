@@ -48,7 +48,7 @@ export default function ImageGallery({
 
   if (media.length === 0) {
     return (
-      <div className="relative aspect-video max-h-130 bg-gray-200 rounded-2xl overflow-hidden flex items-center justify-center">
+      <div className="relative aspect-video max-h-130 bg-[#e8e6e3] overflow-hidden flex items-center justify-center">
         <span className="text-6xl">📷</span>
       </div>
     );
@@ -59,7 +59,7 @@ export default function ImageGallery({
   return (
     <>
       {/* ── Main viewer ─────────────────────────────────────────────── */}
-      <div className="relative aspect-video max-h-130 bg-gray-900 rounded-2xl overflow-hidden group">
+      <div className="relative aspect-video max-h-130 bg-[#2C2826] overflow-hidden group">
         {active.kind === "video" ? (
           // biome-ignore lint/a11y/useMediaCaption: no captions relevant here
           <video
@@ -89,7 +89,7 @@ export default function ImageGallery({
             <div className="absolute inset-0 bg-black/40 pointer-events-none" />
             {/* Centered SOLD stamp */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="border-4 border-white/80 rounded-xl px-8 py-3 rotate-[-12deg] select-none">
+              <div className="border-4 border-white/80 px-8 py-3 rotate-[-12deg] select-none">
                 <span className="text-white font-black text-4xl uppercase tracking-[0.25em] drop-shadow-sm">
                   Sold
                 </span>
@@ -107,7 +107,7 @@ export default function ImageGallery({
               </span>
             )}
             {offerStatus === "countered" && (
-              <span className="flex items-center gap-1.5 bg-indigo-600/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+              <span className="flex items-center gap-1.5 bg-[#8E7A6B]/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
                 ↔ Counter Offer
               </span>
             )}
@@ -170,7 +170,7 @@ export default function ImageGallery({
             <button
               key={item.url}
               onClick={() => setActiveIndex(idx)}
-              className={`relative w-20 h-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
+              className={`relative w-20 h-16 overflow-hidden shrink-0 border-2 transition-all ${
                 idx === activeIndex
                   ? "border-indigo-500 ring-2 ring-indigo-200"
                   : "border-transparent opacity-70 hover:opacity-100"
@@ -178,7 +178,7 @@ export default function ImageGallery({
             >
               {item.kind === "video" ? (
                 /* Video thumbnail — dark bg with play icon */
-                <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <div className="w-full h-full bg-[#2C2826] flex items-center justify-center">
                   <Play className="w-5 h-5 text-white fill-white" />
                 </div>
               ) : (

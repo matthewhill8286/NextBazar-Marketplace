@@ -50,7 +50,6 @@ type Props = {
   subcategories: Subcategory[];
   featuredListings: ListingCardRow[];
   recentListings: ListingCardRow[];
-  stats: { total: number; newThisWeek: number; avgPrice: number };
 };
 
 export default function VehiclesClient({
@@ -58,7 +57,6 @@ export default function VehiclesClient({
   subcategories,
   featuredListings,
   recentListings,
-  stats,
 }: Props) {
   return (
     <CategoryLanding
@@ -67,13 +65,12 @@ export default function VehiclesClient({
       headline="Buy & Sell Cars in Cyprus"
       subheadline="From brand-new models to quality used cars and trusted dealer showrooms — find your next ride or reach thousands of buyers."
       tabs={TABS}
-      stats={stats}
       subcategories={subcategories}
       featuredListings={featuredListings}
       recentListings={recentListings}
       currency="€"
       postLabel="List a Vehicle"
-      heroImage={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/vehicles-hero.jpg`}
+      heroImage={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/vehicle-hero.jpg`}
     />
   );
 }

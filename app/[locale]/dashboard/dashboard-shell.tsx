@@ -10,7 +10,7 @@ import DashboardSidebar from "./sidebar";
 /* ── Skeleton pulse block ─────────────────────────────────────────────────── */
 function Bone({ className = "" }: { className?: string }) {
   return (
-    <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />
+    <div className={`animate-pulse bg-[#f0eeeb] ${className}`} />
   );
 }
 
@@ -18,9 +18,9 @@ function SidebarSkeleton() {
   return (
     <aside className="space-y-5">
       {/* Profile card */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-5">
+      <div className="bg-white border border-[#e8e6e3] p-5">
         <div className="flex flex-col items-center text-center gap-3">
-          <Bone className="w-16 h-16 rounded-full" />
+          <Bone className="w-16 h-16" />
           <div className="space-y-2 w-full">
             <Bone className="h-4 w-28 mx-auto" />
             <Bone className="h-3 w-40 mx-auto" />
@@ -28,16 +28,16 @@ function SidebarSkeleton() {
         </div>
         {/* Stats grid */}
         <div className="grid grid-cols-2 gap-3 mt-5">
-          <Bone className="h-14 rounded-xl" />
-          <Bone className="h-14 rounded-xl" />
-          <Bone className="h-14 rounded-xl" />
-          <Bone className="h-14 rounded-xl" />
+          <Bone className="h-14" />
+          <Bone className="h-14" />
+          <Bone className="h-14" />
+          <Bone className="h-14" />
         </div>
       </div>
       {/* Nav items */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-3 space-y-1">
+      <div className="bg-white border border-[#e8e6e3] p-3 space-y-1">
         {Array.from({ length: 7 }).map((_, i) => (
-          <Bone key={`nav-item-${i}`} className="h-10 rounded-xl" />
+          <Bone key={`nav-item-${i}`} className="h-10" />
         ))}
       </div>
     </aside>
@@ -50,17 +50,17 @@ function ContentSkeleton() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <Bone className="h-8 w-36" />
-        <Bone className="h-10 w-36 rounded-xl" />
+        <Bone className="h-10 w-36" />
       </div>
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={`content-stats-${i}`}
-            className="bg-white rounded-xl border border-gray-100 p-4 space-y-3"
+            className="bg-white border border-[#e8e6e3] p-4 space-y-3"
           >
             <div className="flex items-center gap-2">
-              <Bone className="w-9 h-9 rounded-lg" />
+              <Bone className="w-9 h-9" />
               <Bone className="h-3 w-12" />
             </div>
             <Bone className="h-7 w-16" />
@@ -68,15 +68,15 @@ function ContentSkeleton() {
         ))}
       </div>
       {/* Tabs */}
-      <Bone className="h-11 w-full max-w-md rounded-xl" />
+      <Bone className="h-11 w-full max-w-md" />
       {/* Listing rows */}
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={`content-row-${i}`}
-            className="flex items-center gap-4 bg-white rounded-xl border border-gray-100 p-4"
+            className="flex items-center gap-4 bg-white border border-[#e8e6e3] p-4"
           >
-            <Bone className="w-16 h-12 rounded-lg shrink-0" />
+            <Bone className="w-16 h-12 shrink-0" />
             <div className="flex-1 space-y-2">
               <Bone className="h-4 w-3/4" />
               <Bone className="h-3 w-1/2" />
@@ -164,8 +164,8 @@ export default function DashboardShell({
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
           <SidebarSkeleton />
           <ContentSkeleton />
         </div>
@@ -175,8 +175,8 @@ export default function DashboardShell({
 
   return (
     <DashboardProvider value={{ listings, isDealer, isProSeller }}>
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-8">
           {profile && <DashboardSidebar profile={profile} isAdmin={isAdmin} />}
           <div className="min-w-0">{children}</div>
         </div>

@@ -22,7 +22,7 @@ export default async function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-7xl mx-auto px-4 py-12 text-center text-gray-400">
+        <div className="max-w-7xl mx-auto px-4 py-12 text-center text-[#bbb]">
           Loading...
         </div>
       }

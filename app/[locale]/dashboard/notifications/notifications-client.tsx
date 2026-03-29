@@ -29,23 +29,23 @@ type Notification = {
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
   price_drop: <TrendingDown className="w-4 h-4 text-green-600" />,
-  offer_received: <Tag className="w-4 h-4 text-indigo-600" />,
+  offer_received: <Tag className="w-4 h-4 text-[#8E7A6B]" />,
   offer_accepted: <Check className="w-4 h-4 text-green-600" />,
   offer_declined: <Tag className="w-4 h-4 text-red-500" />,
   offer_countered: <Tag className="w-4 h-4 text-amber-600" />,
-  new_message: <MessageCircle className="w-4 h-4 text-indigo-600" />,
-  saved_search_match: <Bell className="w-4 h-4 text-violet-600" />,
+  new_message: <MessageCircle className="w-4 h-4 text-[#8E7A6B]" />,
+  saved_search_match: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
   listing_expired: <Bell className="w-4 h-4 text-red-500" />,
 };
 
 const TYPE_BG: Record<string, string> = {
   price_drop: "bg-green-50",
-  offer_received: "bg-indigo-50",
+  offer_received: "bg-[#f0eeeb]",
   offer_accepted: "bg-green-50",
   offer_declined: "bg-red-50",
   offer_countered: "bg-amber-50",
-  new_message: "bg-indigo-50",
-  saved_search_match: "bg-violet-50",
+  new_message: "bg-[#f0eeeb]",
+  saved_search_match: "bg-[#f0eeeb]",
   listing_expired: "bg-red-50",
 };
 
@@ -78,16 +78,23 @@ export default function NotificationsClient({
   }
 
   async function deleteNotif(id: string) {
-    await supabase.from("notifications").delete().eq("id", id);
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    // Use server API route to bypass RLS restrictions
+    const res = await fetch("/api/notifications/delete", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }
   }
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">Notifications</h1>
+          <p className="text-sm text-[#999] mt-0.5">
             {unread.length > 0
               ? `${unread.length} unread notification${unread.length !== 1 ? "s" : ""}`
               : "All caught up!"}
@@ -98,7 +105,7 @@ export default function NotificationsClient({
           <button
             onClick={markAllRead}
             disabled={markingAll}
-            className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 disabled:opacity-50"
+            className="flex items-center gap-2 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] disabled:opacity-50"
           >
             {markingAll ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -111,35 +118,35 @@ export default function NotificationsClient({
       </div>
 
       {notifications.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <div className="w-14 h-14 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-7 h-7 text-gray-300" />
+        <div className="bg-white border border-[#e8e6e3] p-16 text-center">
+          <div className="w-14 h-14 bg-[#faf9f7] rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bell className="w-7 h-7 text-[#ccc]" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">
+          <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             No notifications yet
           </h3>
-          <p className="text-gray-500 text-sm">
+          <p className="text-[#999] text-sm">
             You'll be notified here about price drops, offers, and messages.
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50 overflow-hidden">
+        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7] overflow-hidden">
           {notifications.map((n) => {
             const icon = TYPE_ICON[n.type] ?? (
-              <Bell className="w-4 h-4 text-gray-400" />
+              <Bell className="w-4 h-4 text-[#bbb]" />
             );
-            const bg = TYPE_BG[n.type] ?? "bg-gray-50";
+            const bg = TYPE_BG[n.type] ?? "bg-[#faf9f7]";
 
             const inner = (
               <div
                 key={n.id}
                 className={`flex items-start gap-4 p-4 transition-colors ${
-                  !n.read ? "bg-indigo-50/30" : "hover:bg-gray-50/50"
+                  !n.read ? "bg-[#f0eeeb]/30" : "hover:bg-[#faf9f7]/50"
                 }`}
               >
                 {/* Icon */}
                 <div
-                  className={`w-9 h-9 ${bg} rounded-xl flex items-center justify-center shrink-0 mt-0.5`}
+                  className={`w-9 h-9 ${bg} flex items-center justify-center shrink-0 mt-0.5`}
                 >
                   {icon}
                 </div>
@@ -148,16 +155,16 @@ export default function NotificationsClient({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <p
-                      className={`text-sm ${!n.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}
+                      className={`text-sm ${!n.read ? "font-semibold text-[#1a1a1a]" : "font-medium text-[#666]"}`}
                     >
                       {n.title}
                     </p>
-                    <span className="text-xs text-gray-400 shrink-0 mt-0.5">
+                    <span className="text-xs text-[#bbb] shrink-0 mt-0.5">
                       {timeAgo(n.created_at)}
                     </span>
                   </div>
                   {n.body && (
-                    <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">
+                    <p className="text-sm text-[#999] mt-0.5 leading-relaxed">
                       {n.body}
                     </p>
                   )}
@@ -172,7 +179,7 @@ export default function NotificationsClient({
                         e.stopPropagation();
                         markRead(n.id);
                       }}
-                      className="p-1.5 rounded-lg text-gray-300 hover:text-indigo-500 hover:bg-indigo-50 transition-colors"
+                      className="p-1.5 text-[#ccc] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
                       title="Mark as read"
                     >
                       <Check className="w-3.5 h-3.5" />
@@ -184,7 +191,7 @@ export default function NotificationsClient({
                       e.stopPropagation();
                       deleteNotif(n.id);
                     }}
-                    className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    className="p-1.5 text-[#ccc] hover:text-red-500 hover:bg-red-50 transition-colors"
                     title="Delete"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -193,7 +200,7 @@ export default function NotificationsClient({
 
                 {/* Unread dot */}
                 {!n.read && (
-                  <div className="w-2 h-2 bg-indigo-600 rounded-full shrink-0 mt-1.5" />
+                  <div className="w-2 h-2 bg-[#8E7A6B] rounded-full shrink-0 mt-1.5" />
                 )}
               </div>
             );
