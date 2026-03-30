@@ -22,6 +22,7 @@ type WrapperProps = {
   badge?: number;
   badgeColor?: string;
   icon: ReactNode;
+  label?: string;
   children: (opts: { load: () => void }) => ReactNode;
 };
 
@@ -35,6 +36,7 @@ export function NavPreviewWrapper({
   badge,
   badgeColor = "bg-red-500",
   icon,
+  label,
   children,
 }: WrapperProps) {
   const [open, setOpen] = useState(false);
@@ -72,6 +74,7 @@ export function NavPreviewWrapper({
     >
       <Link
         href={href}
+        aria-label={label}
         className="flex items-center gap-1.5 text-sm text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors relative"
       >
         {icon}
@@ -84,9 +87,12 @@ export function NavPreviewWrapper({
         )}
       </Link>
 
-      {/* Dropdown */}
+      {/* Dropdown — close on any click inside (e.g. navigating to an item) */}
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-80 bg-white border border-[#e8e6e3] shadow-sm shadow-[#e8e6e3]/40 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-1 duration-150">
+        <div
+          onClick={() => setOpen(false)}
+          className="absolute right-0 top-full mt-1.5 w-80 bg-white border border-[#e8e6e3] shadow-sm shadow-[#e8e6e3]/40 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-1 duration-150"
+        >
           {loaded && children({ load: () => {} })}
         </div>
       )}

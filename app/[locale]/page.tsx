@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -36,23 +37,24 @@ export default async function Home() {
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826]">
-        {/* Background video with poster fallback */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-poster.jpg`}
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-video.mp4`} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-[#2C2826]/60" />
+      <section
+        className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826]"
+        aria-label="Homepage hero"
+      >
+        {/* Background image — uses Next.js Image with priority for fast LCP */}
+        <Image
+          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-poster.jpg`}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-[#2C2826]/75" />
 
         {/* Content */}
         <div className="relative w-full max-w-7xl mx-auto px-6 py-24">
-          <p className="text-[11px] font-medium tracking-[0.35em] uppercase text-white/50 mb-8">
+          <p className="text-[11px] font-medium tracking-[0.35em] uppercase text-white/80 mb-8">
             Cyprus&rsquo;s premier marketplace
           </p>
 
@@ -61,12 +63,12 @@ export default async function Home() {
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Discover{" "}
-            <em className="font-normal italic">anything</em>
+            <span className="italic">anything</span>
             <br />
             in Cyprus
           </h1>
 
-          <p className="text-white/50 text-lg md:text-xl max-w-xl leading-relaxed mb-12">
+          <p className="text-white/90 text-lg md:text-xl max-w-xl leading-relaxed mb-12">
             Smart search, instant messaging, verified sellers. A marketplace
             designed for the way you actually want to buy and sell.
           </p>
@@ -77,47 +79,21 @@ export default async function Home() {
               className="group inline-flex items-center gap-3 bg-white text-[#1a1a1a] px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] transition-colors"
             >
               Post a free ad
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
             <Link
               href="/search"
-              className="group inline-flex items-center gap-3 border border-white/30 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"
+              className="group inline-flex items-center gap-3 border border-white/60 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"
             >
               Browse listings
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stats bar ─────────────────────────────────────────────────── */}
-      <section className="bg-[#2C2826] border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {[
-              { value: totalCount.toLocaleString() + "+", label: "ACTIVE LISTINGS" },
-              { value: String(categories.length), label: "CATEGORIES" },
-              { value: "AI", label: "POWERED SEARCH" },
-              { value: "24/7", label: "INSTANT CHAT" },
-            ].map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <div
-                  className="text-3xl md:text-4xl font-light text-white mb-2"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  {value}
-                </div>
-                <div className="text-[10px] font-medium tracking-[0.25em] text-white/40 uppercase">
-                  {label}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* ── Categories ──────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 pt-24 pb-20">
+      <section className="max-w-7xl mx-auto px-6 pt-24 pb-20" aria-label="Browse by category">
         <div className="text-center mb-14">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
             Explore
@@ -129,15 +105,19 @@ export default async function Home() {
             Browse by Category
           </h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/** biome-ignore lint/a11y/useSemanticElements: we want the div because of the link child */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4" role="list">
           {categories.map((cat) => {
             const href =
               LANDING_PAGES[cat.slug] ?? `/search?category=${cat.slug}`;
             const cfg = getCategoryConfig(cat.slug);
             return (
-              <Link
+              // biome-ignore lint/a11y/useSemanticElements: we need to keep the Link here
+<Link
                 key={cat.id}
                 href={href}
+                role="listitem"
+                aria-label={`${cat.name} — ${cat.listing_count} listings`}
                 className="group relative bg-white border border-[#e8e6e3] p-6 text-center transition-all duration-500 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 hover:border-[#ccc]"
               >
                 <div
@@ -149,7 +129,7 @@ export default async function Home() {
                   {cat.name}
                 </div>
                 {cat.listing_count > 0 && (
-                  <div className="text-[10px] text-[#999] mt-1 tracking-wider">
+                  <div className="text-[10px] text-[#888] mt-1 tracking-wider">
                     {cat.listing_count.toLocaleString()} listings
                   </div>
                 )}
@@ -162,7 +142,7 @@ export default async function Home() {
 
       {/* ── Featured Listings ────────────────────────────────────────── */}
       {featured.length > 0 && (
-        <section className="bg-white">
+        <section className="bg-white" aria-label="Featured listings">
           <div className="max-w-7xl mx-auto px-6 py-20">
             <div className="flex items-end justify-between mb-12">
               <div>
@@ -178,10 +158,10 @@ export default async function Home() {
               </div>
               <Link
                 href="/search"
-                className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#999] hover:text-[#1a1a1a] transition-colors"
+                className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#888] hover:text-[#1a1a1a] transition-colors"
               >
                 View all
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -208,7 +188,7 @@ export default async function Home() {
       </div>
 
       {/* ── Recently Added ───────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      <section className="max-w-7xl mx-auto px-6 py-20" aria-label="Recently added listings">
         <div className="flex items-end justify-between mb-12">
           <div>
             <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
@@ -224,10 +204,10 @@ export default async function Home() {
           {recent.length > 0 && (
             <Link
               href="/search"
-              className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#999] hover:text-[#1a1a1a] transition-colors"
+              className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#888] hover:text-[#1a1a1a] transition-colors"
             >
               View all
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
           )}
         </div>
@@ -246,7 +226,7 @@ export default async function Home() {
             >
               Be the first to post
             </h3>
-            <p className="text-[#999] mb-8 max-w-sm mx-auto text-sm">
+            <p className="text-[#888] mb-8 max-w-sm mx-auto text-sm">
               The marketplace is brand new. Get ahead of the crowd and list
               something today.
             </p>
@@ -255,14 +235,14 @@ export default async function Home() {
               className="inline-flex items-center gap-3 bg-[#8E7A6B] text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#7A6657] transition-colors"
             >
               Post your first ad
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </Link>
           </div>
         )}
       </section>
 
       {/* ── Why NextBazar ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#2C2826] text-white">
+      <section className="relative overflow-hidden bg-[#2C2826] text-white" aria-label="Why choose NextBazar">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -274,14 +254,14 @@ export default async function Home() {
 
         <div className="relative max-w-7xl mx-auto px-6 py-24">
           <div className="text-center mb-16">
-            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-4">
+            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/70 mb-4">
               Why NextBazar
             </p>
             <h2
               className="text-3xl md:text-5xl font-light"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Built <em className="italic font-normal">different</em>,
+              Built <span className="italic">different</span>,
               on purpose
             </h2>
           </div>
@@ -305,7 +285,7 @@ export default async function Home() {
               },
             ].map(({ num, title, desc }) => (
               <div key={num}>
-                <div className="text-[11px] font-medium tracking-[0.3em] text-white/30 mb-6">
+                <div className="text-[11px] font-medium tracking-[0.3em] text-white/40 mb-6">
                   {num}
                 </div>
                 <h3
@@ -314,7 +294,7 @@ export default async function Home() {
                 >
                   {title}
                 </h3>
-                <p className="text-sm text-white/40 leading-relaxed">
+                <p className="text-sm text-white/70 leading-relaxed">
                   {desc}
                 </p>
               </div>
@@ -327,14 +307,14 @@ export default async function Home() {
               className="group inline-flex items-center gap-3 bg-white text-[#1a1a1a] px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] transition-colors"
             >
               Start selling
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
             <Link
               href="/search"
-              className="group inline-flex items-center gap-3 border border-white/30 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"
+              className="group inline-flex items-center gap-3 border border-white/60 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"
             >
               Browse listings
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
             </Link>
           </div>
         </div>

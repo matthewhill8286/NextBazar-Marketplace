@@ -9,7 +9,7 @@ export default function Footer() {
   const t = useTranslations("footer");
 
   return (
-    <footer className="bg-[#2C2826] text-[#666] mt-24">
+    <footer aria-label="Site footer" className="bg-[#2C2826] text-[#666] mt-24">
       {/* Newsletter strip */}
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">

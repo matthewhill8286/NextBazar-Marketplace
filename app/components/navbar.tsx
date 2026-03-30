@@ -79,7 +79,7 @@ export default function Navbar() {
   });
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#e8e6e3]/60">
+    <nav aria-label="Main navigation" className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#e8e6e3]/60">
       <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-3">
@@ -121,9 +121,10 @@ export default function Navbar() {
 
           <Link
             href="/search"
+            aria-label="Search listings"
             className="md:hidden p-2.5 text-[#999] hover:text-[#1a1a1a] transition-colors"
           >
-            <Search className="w-5 h-5" />
+            <Search className="w-5 h-5" aria-hidden="true" />
           </Link>
 
           {userId && (
@@ -131,7 +132,8 @@ export default function Navbar() {
               href="/dashboard/messages"
               badge={unreadCount}
               badgeColor="bg-[#8E7A6B]"
-              icon={<MessageCircle className="w-4 h-4" />}
+              label="Messages"
+              icon={<MessageCircle className="w-4 h-4" aria-hidden="true" />}
             >
               {() => <MessagesPreview />}
             </NavPreviewWrapper>
@@ -142,7 +144,8 @@ export default function Navbar() {
               href="/dashboard/saved"
               badge={savedCount}
               badgeColor="bg-[#8E7A6B]"
-              icon={<Heart className="w-4 h-4" />}
+              label="Saved listings"
+              icon={<Heart className="w-4 h-4" aria-hidden="true" />}
             >
               {() => <SavedPreview />}
             </NavPreviewWrapper>
@@ -153,7 +156,8 @@ export default function Navbar() {
               href="/dashboard/notifications"
               badge={notifCount}
               badgeColor="bg-[#8E7A6B]"
-              icon={<Bell className="w-4 h-4" />}
+              label="Notifications"
+              icon={<Bell className="w-4 h-4" aria-hidden="true" />}
             >
               {() => <NotificationsPreview />}
             </NavPreviewWrapper>
