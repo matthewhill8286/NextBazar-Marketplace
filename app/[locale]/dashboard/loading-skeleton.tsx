@@ -1,8 +1,6 @@
 /** Shared skeleton primitives for dashboard loading states. */
 export function Bone({ className = "" }: { className?: string }) {
-  return (
-    <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />
-  );
+  return <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />;
 }
 
 /** Header with title and optional subtitle. */
@@ -24,9 +22,7 @@ export function CardSkeleton({
   className?: string;
 }) {
   return (
-    <div
-      className={`bg-white border border-[#e8e6e3] p-5 ${className}`}
-    >
+    <div className={`bg-white border border-[#e8e6e3] p-5 ${className}`}>
       {children}
     </div>
   );

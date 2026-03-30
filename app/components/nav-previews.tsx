@@ -167,9 +167,7 @@ export function MessagesPreview() {
     return (
       <div className="px-4 py-6 text-center">
         <MessageCircle className="w-8 h-8 text-[#ccc] mx-auto mb-2" />
-        <p className="text-sm text-[#bbb]">
-          {t("noMessages")}
-        </p>
+        <p className="text-sm text-[#bbb]">{t("noMessages")}</p>
       </div>
     );
   }
@@ -403,7 +401,11 @@ export function NotificationsPreview() {
     if (!n.read) {
       // Mark as read in the database
       const supabase = createClient();
-      supabase.from("notifications").update({ read: true }).eq("id", n.id).then();
+      supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("id", n.id)
+        .then();
       // Update local state immediately
       setNotifs((prev) =>
         prev.map((item) => (item.id === n.id ? { ...item, read: true } : item)),
@@ -453,7 +455,11 @@ export function NotificationsPreview() {
             onClick={() => {
               const supabase = createClient();
               const unreadIds = notifs.filter((n) => !n.read).map((n) => n.id);
-              supabase.from("notifications").update({ read: true }).in("id", unreadIds).then();
+              supabase
+                .from("notifications")
+                .update({ read: true })
+                .in("id", unreadIds)
+                .then();
               setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
             }}
             className="flex-1 text-center text-xs font-semibold text-green-600 hover:text-green-700 py-2.5 hover:bg-green-50/50 transition-colors flex items-center justify-center gap-1"

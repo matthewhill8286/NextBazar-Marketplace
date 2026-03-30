@@ -97,7 +97,10 @@ export default function InventoryTab({ listings }: Props) {
           </thead>
           <tbody className="divide-y divide-[#faf9f7]">
             {listings.map((l) => (
-              <tr key={l.id} className="hover:bg-[#faf9f7]/50 transition-colors">
+              <tr
+                key={l.id}
+                className="hover:bg-[#faf9f7]/50 transition-colors"
+              >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0">

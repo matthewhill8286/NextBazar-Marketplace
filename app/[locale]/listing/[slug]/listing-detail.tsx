@@ -58,9 +58,7 @@ const LISTING_SELECT = `
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 
 function Bone({ className = "" }: { className?: string }) {
-  return (
-    <div className={`bg-[#e8e6e3] animate-pulse ${className}`} />
-  );
+  return <div className={`bg-[#e8e6e3] animate-pulse ${className}`} />;
 }
 
 function ListingDetailSkeleton() {

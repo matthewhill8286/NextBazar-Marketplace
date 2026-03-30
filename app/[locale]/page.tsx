@@ -62,8 +62,7 @@ export default async function Home() {
             className="text-5xl md:text-7xl lg:text-8xl font-light text-white leading-[1.05] mb-8 max-w-4xl"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Discover{" "}
-            <span className="italic">anything</span>
+            Discover <span className="italic">anything</span>
             <br />
             in Cyprus
           </h1>
@@ -79,21 +78,30 @@ export default async function Home() {
               className="group inline-flex items-center gap-3 bg-white text-[#1a1a1a] px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] transition-colors"
             >
               Post a free ad
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              <ArrowRight
+                className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
+              />
             </Link>
             <Link
               href="/search"
               className="group inline-flex items-center gap-3 border border-white/60 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"
             >
               Browse listings
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              <ArrowRight
+                className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
+              />
             </Link>
           </div>
         </div>
       </section>
 
       {/* ── Categories ──────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 pt-24 pb-20" aria-label="Browse by category">
+      <section
+        className="max-w-7xl mx-auto px-6 pt-24 pb-20"
+        aria-label="Browse by category"
+      >
         <div className="text-center mb-14">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
             Explore
@@ -113,7 +121,7 @@ export default async function Home() {
             const cfg = getCategoryConfig(cat.slug);
             return (
               // biome-ignore lint/a11y/useSemanticElements: we need to keep the Link here
-<Link
+              <Link
                 key={cat.id}
                 href={href}
                 role="listitem"
@@ -161,7 +169,10 @@ export default async function Home() {
                 className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#888] hover:text-[#1a1a1a] transition-colors"
               >
                 View all
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                <ArrowRight
+                  className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                  aria-hidden="true"
+                />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -188,7 +199,10 @@ export default async function Home() {
       </div>
 
       {/* ── Recently Added ───────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 py-20" aria-label="Recently added listings">
+      <section
+        className="max-w-7xl mx-auto px-6 py-20"
+        aria-label="Recently added listings"
+      >
         <div className="flex items-end justify-between mb-12">
           <div>
             <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
@@ -207,7 +221,10 @@ export default async function Home() {
               className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#888] hover:text-[#1a1a1a] transition-colors"
             >
               View all
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              <ArrowRight
+                className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
+              />
             </Link>
           )}
         </div>
@@ -242,7 +259,10 @@ export default async function Home() {
       </section>
 
       {/* ── Why NextBazar ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#2C2826] text-white" aria-label="Why choose NextBazar">
+      <section
+        className="relative overflow-hidden bg-[#2C2826] text-white"
+        aria-label="Why choose NextBazar"
+      >
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -261,8 +281,7 @@ export default async function Home() {
               className="text-3xl md:text-5xl font-light"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Built <span className="italic">different</span>,
-              on purpose
+              Built <span className="italic">different</span>, on purpose
             </h2>
           </div>
 
@@ -294,9 +313,7 @@ export default async function Home() {
                 >
                   {title}
                 </h3>
-                <p className="text-sm text-white/70 leading-relaxed">
-                  {desc}
-                </p>
+                <p className="text-sm text-white/70 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -307,14 +324,20 @@ export default async function Home() {
               className="group inline-flex items-center gap-3 bg-white text-[#1a1a1a] px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] transition-colors"
             >
               Start selling
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              <ArrowRight
+                className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
+              />
             </Link>
             <Link
               href="/search"
               className="group inline-flex items-center gap-3 border border-white/60 text-white px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 transition-colors"
             >
               Browse listings
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+              <ArrowRight
+                className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform"
+                aria-hidden="true"
+              />
             </Link>
           </div>
         </div>

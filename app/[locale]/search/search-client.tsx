@@ -903,7 +903,10 @@ export default function SearchClient({
           /* ── No-results empty state ──────────────────────────────────────── */
           <div className="max-w-md mx-auto py-20 text-center">
             <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-xl font-light text-[#1a1a1a] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <h3
+              className="text-xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               No listings found
             </h3>
             <p className="text-[#999] text-sm mb-8">

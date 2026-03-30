@@ -1,6 +1,14 @@
 "use client";
 
-import { ArrowRight, Crown, Eye, Heart, MessageCircle, Package, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Crown,
+  Eye,
+  Heart,
+  MessageCircle,
+  Package,
+  Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";

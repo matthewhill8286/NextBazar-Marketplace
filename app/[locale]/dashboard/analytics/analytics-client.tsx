@@ -258,7 +258,12 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', serif" }}>Analytics</h1>
+          <h1
+            className="text-2xl font-bold text-[#1a1a1a]"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Analytics
+          </h1>
           <p className="text-sm text-[#999] mt-0.5">
             Track performance across all your listings.
           </p>

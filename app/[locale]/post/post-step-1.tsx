@@ -143,9 +143,7 @@ export default function PostStep1({
               >
                 <CategoryIcon slug={cat.slug} size={20} />
               </div>
-              <div className="text-xs font-medium text-[#666]">
-                {cat.name}
-              </div>
+              <div className="text-xs font-medium text-[#666]">{cat.name}</div>
             </button>
           ))}
         </div>

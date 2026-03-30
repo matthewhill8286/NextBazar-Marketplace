@@ -92,9 +92,8 @@ export default async function ShopPage(props: PageProps) {
             This shop is currently closed
           </h1>
           <p className="text-[#999] text-sm mb-6">
-            <span className="font-medium text-[#666]">{shop.shop_name}</span>{" "}
-            is not accepting orders right now. The seller may reopen in the
-            future.
+            <span className="font-medium text-[#666]">{shop.shop_name}</span> is
+            not accepting orders right now. The seller may reopen in the future.
           </p>
           <Link
             href="/"

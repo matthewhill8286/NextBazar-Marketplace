@@ -879,7 +879,9 @@ export default function ChatThread({
           />
           <div className="relative bg-white p-6 w-full max-w-sm shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[#1a1a1a]">Make an offer</h3>
+              <h3 className="text-lg font-bold text-[#1a1a1a]">
+                Make an offer
+              </h3>
               <button
                 onClick={() => setOfferOpen(false)}
                 className="p-1 hover:bg-[#f0eeeb] transition-colors"

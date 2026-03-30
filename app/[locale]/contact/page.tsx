@@ -154,9 +154,7 @@ export default function ContactPage() {
                 </h2>
                 <p className="text-[#999] text-sm max-w-xs mx-auto">
                   Thanks for reaching out. We'll get back to you at{" "}
-                  <span className="font-medium text-[#666]">
-                    {form.email}
-                  </span>{" "}
+                  <span className="font-medium text-[#666]">{form.email}</span>{" "}
                   within 24 hours.
                 </p>
               </div>

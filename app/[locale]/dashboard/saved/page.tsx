@@ -34,7 +34,13 @@ function timeAgo(dateStr: string): string {
 export default function SavedPage() {
   const router = useRouter();
   const supabase = createClient();
-  const { savedIds, count, toggle, isSaved, loading: savedLoading } = useSaved();
+  const {
+    savedIds,
+    count,
+    toggle,
+    isSaved,
+    loading: savedLoading,
+  } = useSaved();
 
   // Map of listingId → full listing data
   const [listingMap, setListingMap] = useState<Record<string, any>>({});
@@ -189,10 +195,8 @@ export default function SavedPage() {
           /* ── List View (default) ───────────────────────────────────── */
           <div className="space-y-px bg-[#e8e6e3] border border-[#e8e6e3]">
             {listings.map((listing) => {
-              const cat =
-                listing.categories || listing.category;
-              const loc =
-                listing.locations || listing.location;
+              const cat = listing.categories || listing.category;
+              const loc = listing.locations || listing.location;
               const imageSrc =
                 listing.primary_image_url || FALLBACK_LISTING_IMAGE;
               const isSold = listing.status === "sold";
@@ -283,9 +287,7 @@ export default function SavedPage() {
                     >
                       <Heart
                         className={`w-5 h-5 ${
-                          isSaved(listing.id)
-                            ? "text-red-500 fill-red-500"
-                            : ""
+                          isSaved(listing.id) ? "text-red-500 fill-red-500" : ""
                         }`}
                       />
                     </button>

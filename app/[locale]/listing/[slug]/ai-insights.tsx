@@ -101,10 +101,7 @@ export default function AiInsights({
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="bg-white/60 p-4 h-28 animate-pulse"
-            />
+            <div key={i} className="bg-white/60 p-4 h-28 animate-pulse" />
           ))}
         </div>
       </div>
@@ -249,9 +246,7 @@ export default function AiInsights({
         <div className="bg-white/60 p-3.5 flex items-start gap-2.5">
           <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
           <div>
-            <span className="text-xs font-semibold text-[#666]">
-              Pro Tip:{" "}
-            </span>
+            <span className="text-xs font-semibold text-[#666]">Pro Tip: </span>
             <span className="text-xs text-[#666]">{insights.top_tip}</span>
           </div>
         </div>

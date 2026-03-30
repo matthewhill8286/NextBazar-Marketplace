@@ -93,10 +93,7 @@ export default function AboutPage() {
       <section className="max-w-5xl mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#e8e6e3]">
           {STATS.map((s) => (
-            <div
-              key={s.label}
-              className="bg-white p-8 text-center"
-            >
+            <div key={s.label} className="bg-white p-8 text-center">
               <div
                 className="text-3xl font-light text-[#1a1a1a] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}
@@ -125,8 +122,8 @@ export default function AboutPage() {
           </h2>
           <p className="text-white/60 leading-relaxed text-lg max-w-2xl">
             To make every transaction in Cyprus — from a second-hand sofa to a
-            pre-owned BMW — as seamless, transparent, and trustworthy as
-            buying from a friend. No hidden fees, no dark patterns, no noise.
+            pre-owned BMW — as seamless, transparent, and trustworthy as buying
+            from a friend. No hidden fees, no dark patterns, no noise.
           </p>
         </div>
       </section>
@@ -144,10 +141,7 @@ export default function AboutPage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#e8e6e3]">
           {VALUES.map((v) => (
-            <div
-              key={v.title}
-              className="bg-white p-8 flex gap-5"
-            >
+            <div key={v.title} className="bg-white p-8 flex gap-5">
               <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
                 <v.icon className="w-5 h-5 text-[#8E7A6B]" />
               </div>
@@ -158,9 +152,7 @@ export default function AboutPage() {
                 >
                   {v.title}
                 </h3>
-                <p className="text-sm text-[#999] leading-relaxed">
-                  {v.desc}
-                </p>
+                <p className="text-sm text-[#999] leading-relaxed">{v.desc}</p>
               </div>
             </div>
           ))}

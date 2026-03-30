@@ -217,7 +217,11 @@ export default function PostStep3({
               <div className="flex items-center justify-between">
                 <span
                   className="text-lg font-light text-[#1a1a1a]"
-                  style={formData.price ? { fontFamily: "'Playfair Display', serif" } : undefined}
+                  style={
+                    formData.price
+                      ? { fontFamily: "'Playfair Display', serif" }
+                      : undefined
+                  }
                 >
                   {formData.price
                     ? `\u20AC${Number(formData.price).toLocaleString()}`
@@ -326,7 +330,8 @@ export default function PostStep3({
                     Featured Listing
                   </div>
                   <div className="text-xs text-[#999]">
-                    Top placement + highlighted badge for 7 days — up to 5x more views
+                    Top placement + highlighted badge for 7 days — up to 5x more
+                    views
                   </div>
                 </div>
               </div>
@@ -367,7 +372,8 @@ export default function PostStep3({
                     Quick Boost
                   </div>
                   <div className="text-xs text-[#999]">
-                    Boosted visibility + priority in search for 3 days — up to 3x more views
+                    Boosted visibility + priority in search for 3 days — up to
+                    3x more views
                   </div>
                 </div>
               </div>

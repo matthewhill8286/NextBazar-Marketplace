@@ -496,7 +496,9 @@ export default function GlobalSearch() {
                       }}
                       onMouseEnter={() => setHighlighted(i)}
                       className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
-                        highlighted === i ? "bg-[#faf9f7]" : "hover:bg-[#faf9f7]"
+                        highlighted === i
+                          ? "bg-[#faf9f7]"
+                          : "hover:bg-[#faf9f7]"
                       }`}
                     >
                       {/* Thumbnail */}

@@ -362,7 +362,8 @@ export default function PostStep2({
           </div>
 
           <p className="text-[10px] text-[#bbb] text-center tracking-wide">
-            These details help buyers find your vehicle and improve your listing quality
+            These details help buyers find your vehicle and improve your listing
+            quality
           </p>
         </div>
       )}
@@ -602,7 +603,9 @@ export default function PostStep2({
       <div>
         <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
           Phone Number{" "}
-          <span className="text-[#ccc] font-normal normal-case tracking-normal text-xs">(optional)</span>
+          <span className="text-[#ccc] font-normal normal-case tracking-normal text-xs">
+            (optional)
+          </span>
         </label>
         <input
           type="tel"

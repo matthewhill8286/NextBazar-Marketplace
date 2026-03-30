@@ -132,10 +132,7 @@ export default function SafetyPage() {
         </h2>
         <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3]">
           {BUYER_TIPS.map((tip) => (
-            <div
-              key={tip.title}
-              className="bg-white p-7 flex gap-5"
-            >
+            <div key={tip.title} className="bg-white p-7 flex gap-5">
               <div className="w-10 h-10 bg-[#faf9f7] flex items-center justify-center shrink-0">
                 <tip.icon className="w-4 h-4 text-[#8E7A6B]" />
               </div>
@@ -168,10 +165,7 @@ export default function SafetyPage() {
         </h2>
         <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3]">
           {SELLER_TIPS.map((tip) => (
-            <div
-              key={tip.title}
-              className="bg-white p-7 flex gap-5"
-            >
+            <div key={tip.title} className="bg-white p-7 flex gap-5">
               <div className="w-10 h-10 bg-[#faf9f7] flex items-center justify-center shrink-0">
                 <tip.icon className="w-4 h-4 text-[#8E7A6B]" />
               </div>
@@ -205,7 +199,10 @@ export default function SafetyPage() {
           </h2>
           <div className="grid sm:grid-cols-2 gap-x-8 gap-y-4">
             {RED_FLAGS.map((flag) => (
-              <div key={flag} className="flex items-start gap-3 text-sm text-[#666]">
+              <div
+                key={flag}
+                className="flex items-start gap-3 text-sm text-[#666]"
+              >
                 <X className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                 {flag}
               </div>

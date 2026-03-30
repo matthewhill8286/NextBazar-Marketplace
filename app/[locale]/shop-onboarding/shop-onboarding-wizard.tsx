@@ -540,7 +540,9 @@ export default function ShopOnboardingWizard({
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
                 Shop Description{" "}
-                <span className="normal-case tracking-normal text-[#bbb]">(optional)</span>
+                <span className="normal-case tracking-normal text-[#bbb]">
+                  (optional)
+                </span>
               </label>
               <textarea
                 value={shopDescription}
@@ -624,8 +626,12 @@ export default function ShopOnboardingWizard({
                   <Loader2 className="w-6 h-6 text-white animate-spin" />
                 </div>
               ) : (
-                <div className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-[#8E7A6B]/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}>
-                  <span className={`flex items-center gap-2 bg-white/90 text-[#666] text-xs font-medium px-3.5 py-2 shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}>
+                <div
+                  className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-[#8E7A6B]/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}
+                >
+                  <span
+                    className={`flex items-center gap-2 bg-white/90 text-[#666] text-xs font-medium px-3.5 py-2 shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}
+                  >
                     <Sparkles className="w-3.5 h-3.5" />
                     {bannerUrl ? "Change Banner" : "Upload Banner"}
                   </span>
@@ -748,7 +754,9 @@ export default function ShopOnboardingWizard({
                           className="w-4 h-4"
                           style={{ color: accentColor }}
                         />
-                        <span style={{ fontFamily: "'Playfair Display', serif" }}>
+                        <span
+                          style={{ fontFamily: "'Playfair Display', serif" }}
+                        >
                           PRO
                         </span>
                       </div>

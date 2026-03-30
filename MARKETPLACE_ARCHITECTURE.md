@@ -343,8 +343,6 @@ npx create-next-app@latest nextbazar --typescript --tailwind --app --src-dir
 # Install dependencies
 npm install @supabase/supabase-js @supabase/ssr
 npm install stripe @stripe/stripe-js
-npm install lucide-react recharts
-npx shadcn@latest init
 
 # Set up Supabase
 npx supabase init

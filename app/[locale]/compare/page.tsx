@@ -187,7 +187,9 @@ export default function ComparePage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">Compare listings</h1>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">
+            Compare listings
+          </h1>
           <p className="text-sm text-[#999] mt-0.5">
             Side-by-side comparison of up to 3 listings
           </p>

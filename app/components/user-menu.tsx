@@ -132,7 +132,9 @@ export default function UserMenu() {
             initials
           )}
         </div>
-        <ChevronDown className={`w-3.5 h-3.5 text-[#999] transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`w-3.5 h-3.5 text-[#999] transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (

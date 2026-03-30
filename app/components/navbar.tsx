@@ -79,7 +79,10 @@ export default function Navbar() {
   });
 
   return (
-    <nav aria-label="Main navigation" className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#e8e6e3]/60">
+    <nav
+      aria-label="Main navigation"
+      className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#e8e6e3]/60"
+    >
       <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-3">

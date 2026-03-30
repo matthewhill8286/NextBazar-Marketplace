@@ -11,9 +11,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import {
-  EmptyListingsIllustration,
-} from "@/app/components/illustrations";
+import { EmptyListingsIllustration } from "@/app/components/illustrations";
 
 // ─── Form primitives ──────────────────────────────────────────────────────────
 
@@ -109,9 +107,7 @@ const SPINNER_SIZES: Record<SpinnerSize, string> = {
 export function LoadingSpinner({ size = "md" }: { size?: SpinnerSize }) {
   return (
     <div className="flex items-center justify-center py-20">
-      <Loader2
-        className={`${SPINNER_SIZES[size]} text-[#999] animate-spin`}
-      />
+      <Loader2 className={`${SPINNER_SIZES[size]} text-[#999] animate-spin`} />
     </div>
   );
 }

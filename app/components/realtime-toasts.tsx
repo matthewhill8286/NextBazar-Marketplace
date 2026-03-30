@@ -142,9 +142,7 @@ function OfferStatusToast({
           </button>
         </div>
 
-        <p className="text-[11px] text-[#bbb] truncate mb-3">
-          {listingTitle}
-        </p>
+        <p className="text-[11px] text-[#bbb] truncate mb-3">{listingTitle}</p>
 
         <button
           onClick={onNavigate}

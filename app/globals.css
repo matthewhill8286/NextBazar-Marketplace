@@ -3,9 +3,9 @@
 :root {
   --background: #faf9f7;
   --foreground: #1a1a1a;
-  --primary: #8E7A6B;
-  --primary-hover: #7A6657;
-  --accent: #8E7A6B;
+  --primary: #8e7a6b;
+  --primary-hover: #7a6657;
+  --accent: #8e7a6b;
 }
 
 @theme inline {

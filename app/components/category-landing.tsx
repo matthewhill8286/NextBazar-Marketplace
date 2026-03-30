@@ -327,8 +327,9 @@ export default function CategoryLanding({
             byLocation.get(locName)!.listings.push(listing);
           }
 
-          const locationGroups = Array.from(byLocation.entries())
-            .sort((a, b) => b[1].listings.length - a[1].listings.length);
+          const locationGroups = Array.from(byLocation.entries()).sort(
+            (a, b) => b[1].listings.length - a[1].listings.length,
+          );
 
           if (locationGroups.length === 0) {
             return (
@@ -352,36 +353,42 @@ export default function CategoryLanding({
             );
           }
 
-          return locationGroups.map(([locName, { slug: locSlug, listings }]) => (
-            <section key={locName} className="mb-10">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-                    <MapPin className="w-4 h-4 text-[#999]" />
+          return locationGroups.map(
+            ([locName, { slug: locSlug, listings }]) => (
+              <section key={locName} className="mb-10">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
+                      <MapPin className="w-4 h-4 text-[#999]" />
+                    </div>
+                    <div>
+                      <h2
+                        className="text-lg font-light text-[#1a1a1a]"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        {locName}
+                      </h2>
+                      <p className="text-xs text-[#bbb]">
+                        {listings.length} listing
+                        {listings.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-lg font-light text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', serif" }}>
-                      {locName}
-                    </h2>
-                    <p className="text-xs text-[#bbb]">
-                      {listings.length} listing{listings.length !== 1 ? "s" : ""}
-                    </p>
-                  </div>
+                  <Link
+                    href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
+                    className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
+                  >
+                    View all <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </div>
-                <Link
-                  href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
-                  className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
-                >
-                  View all <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {listings.slice(0, 4).map((listing) => (
-                  <ListingCard key={listing.id} listing={listing} />
-                ))}
-              </div>
-            </section>
-          ));
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {listings.slice(0, 4).map((listing) => (
+                    <ListingCard key={listing.id} listing={listing} />
+                  ))}
+                </div>
+              </section>
+            ),
+          );
         })()}
 
         {/* ── CTA Banner ──────────────────────────────────────────────── */}
@@ -399,7 +406,12 @@ export default function CategoryLanding({
               className="text-2xl md:text-3xl font-light mb-3"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Ready to list your {categoryName.toLowerCase().replace(/ies$/, "y").replace(/s$/, "")}?
+              Ready to list your{" "}
+              {categoryName
+                .toLowerCase()
+                .replace(/ies$/, "y")
+                .replace(/s$/, "")}
+              ?
             </h3>
             <p className="text-white/50 mb-8 max-w-lg mx-auto">
               Reach thousands of buyers across Cyprus. AI-powered pricing

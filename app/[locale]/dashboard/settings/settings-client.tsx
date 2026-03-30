@@ -14,11 +14,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-  ErrorBanner,
-  FormInput,
-  FormTextarea,
-} from "@/app/components/ui";
+import { ErrorBanner, FormInput, FormTextarea } from "@/app/components/ui";
 import PhoneInput from "@/app/components/phone-input";
 import { createClient } from "@/lib/supabase/client";
 

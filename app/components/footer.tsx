@@ -62,22 +62,34 @@ export default function Footer() {
             </p>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/search" className="hover:text-white transition-colors">
+                <Link
+                  href="/search"
+                  className="hover:text-white transition-colors"
+                >
                   {t("browseListings")}
                 </Link>
               </li>
               <li>
-                <Link href="/post" className="hover:text-white transition-colors">
+                <Link
+                  href="/post"
+                  className="hover:text-white transition-colors"
+                >
                   {t("postAd")}
                 </Link>
               </li>
               <li>
-                <Link href="/search?sort=newest" className="hover:text-white transition-colors">
+                <Link
+                  href="/search?sort=newest"
+                  className="hover:text-white transition-colors"
+                >
                   {t("recentlyAdded")}
                 </Link>
               </li>
               <li>
-                <Link href="/search?promoted=true" className="hover:text-white transition-colors">
+                <Link
+                  href="/search?promoted=true"
+                  className="hover:text-white transition-colors"
+                >
                   {t("featuredListings")}
                 </Link>
               </li>
@@ -91,22 +103,34 @@ export default function Footer() {
             </p>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/dashboard" className="hover:text-white transition-colors">
+                <Link
+                  href="/dashboard"
+                  className="hover:text-white transition-colors"
+                >
                   {t("myListings")}
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/messages" className="hover:text-white transition-colors">
+                <Link
+                  href="/dashboard/messages"
+                  className="hover:text-white transition-colors"
+                >
                   {t("messages")}
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/saved" className="hover:text-white transition-colors">
+                <Link
+                  href="/dashboard/saved"
+                  className="hover:text-white transition-colors"
+                >
                   {t("savedItems")}
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/settings" className="hover:text-white transition-colors">
+                <Link
+                  href="/dashboard/settings"
+                  className="hover:text-white transition-colors"
+                >
                   {t("settings")}
                 </Link>
               </li>
@@ -120,24 +144,36 @@ export default function Footer() {
             </p>
             <ul className="space-y-3 text-sm">
               <li>
-                <Link href="/about" className="hover:text-white transition-colors">
+                <Link
+                  href="/about"
+                  className="hover:text-white transition-colors"
+                >
                   {t("aboutUs")}
                 </Link>
               </li>
               <li>
-                <Link href="/safety" className="hover:text-white transition-colors">
+                <Link
+                  href="/safety"
+                  className="hover:text-white transition-colors"
+                >
                   {t("safetyTips")}
                 </Link>
               </li>
               {FEATURE_FLAGS.DEALERS_PAGE && (
                 <li>
-                  <Link href="/pro-sellers" className="hover:text-white transition-colors">
+                  <Link
+                    href="/pro-sellers"
+                    className="hover:text-white transition-colors"
+                  >
                     {t("forDealers")}
                   </Link>
                 </li>
               )}
               <li>
-                <Link href="/contact" className="hover:text-white transition-colors">
+                <Link
+                  href="/contact"
+                  className="hover:text-white transition-colors"
+                >
                   {t("contact")}
                 </Link>
               </li>
@@ -147,11 +183,19 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-white/10 pt-6 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-[10px] text-[#444] tracking-wider">{t("rights")}</p>
+          <p className="text-[10px] text-[#444] tracking-wider">
+            {t("rights")}
+          </p>
           <div className="flex gap-6 text-[10px] text-[#444] tracking-wider">
-            <Link href="/" className="hover:text-[#888] transition-colors">{t("privacy")}</Link>
-            <Link href="/" className="hover:text-[#888] transition-colors">{t("terms")}</Link>
-            <Link href="/" className="hover:text-[#888] transition-colors">{t("cookies")}</Link>
+            <Link href="/" className="hover:text-[#888] transition-colors">
+              {t("privacy")}
+            </Link>
+            <Link href="/" className="hover:text-[#888] transition-colors">
+              {t("terms")}
+            </Link>
+            <Link href="/" className="hover:text-[#888] transition-colors">
+              {t("cookies")}
+            </Link>
           </div>
         </div>
       </div>

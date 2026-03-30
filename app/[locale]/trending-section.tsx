@@ -71,7 +71,8 @@ export default function TrendingSection({ fallbackTrending }: Props) {
           >
             {locationName ? (
               <>
-                Trending in <em className="italic font-normal">{locationName}</em>
+                Trending in{" "}
+                <em className="italic font-normal">{locationName}</em>
               </>
             ) : (
               "Trending Now"

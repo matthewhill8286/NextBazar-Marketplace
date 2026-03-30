@@ -320,14 +320,16 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
         ))}
       </div>
       <div className="flex justify-between mb-8">
-        {["Photos & Title", "Details & Pricing", "Review & Publish"].map((label, i) => (
-          <span
-            key={label}
-            className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a]" : "text-[#ccc]"}`}
-          >
-            {label}
-          </span>
-        ))}
+        {["Photos & Title", "Details & Pricing", "Review & Publish"].map(
+          (label, i) => (
+            <span
+              key={label}
+              className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a]" : "text-[#ccc]"}`}
+            >
+              {label}
+            </span>
+          ),
+        )}
       </div>
 
       <ErrorBanner message={error} />

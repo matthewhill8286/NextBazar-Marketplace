@@ -9,9 +9,7 @@ import DashboardSidebar from "./sidebar";
 
 /* ── Skeleton pulse block ─────────────────────────────────────────────────── */
 function Bone({ className = "" }: { className?: string }) {
-  return (
-    <div className={`animate-pulse bg-[#f0eeeb] ${className}`} />
-  );
+  return <div className={`animate-pulse bg-[#f0eeeb] ${className}`} />;
 }
 
 function SidebarSkeleton() {

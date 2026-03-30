@@ -93,7 +93,8 @@ export default async function LocaleLayout({
                       classNames: {
                         toast:
                           "flex items-center gap-3 w-[360px] border px-4 py-3 shadow-sm text-sm font-medium",
-                        success: "bg-emerald-50 border-emerald-200 text-emerald-800",
+                        success:
+                          "bg-emerald-50 border-emerald-200 text-emerald-800",
                         error: "bg-red-50 border-red-200 text-red-800",
                         info: "bg-[#faf9f7] border-[#e8e6e3] text-[#1a1a1a]",
                         warning: "bg-amber-50 border-amber-200 text-amber-800",

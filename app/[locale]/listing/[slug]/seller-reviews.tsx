@@ -128,7 +128,9 @@ export function LeaveReviewPrompt({
 
   return (
     <div className="bg-white border border-[#e8e6e3] p-5">
-      <h3 className="font-semibold text-[#1a1a1a] mb-1">Rate your experience</h3>
+      <h3 className="font-semibold text-[#1a1a1a] mb-1">
+        Rate your experience
+      </h3>
       <p className="text-sm text-[#999] mb-4">
         How was your transaction with{" "}
         <span className="font-medium text-[#666]">{sellerName}</span>?

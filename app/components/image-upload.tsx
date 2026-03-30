@@ -241,7 +241,11 @@ export default function ImageUpload({
                 }
               }}
               onDragEnd={() => {
-                if (dragIdx !== null && overIdx !== null && dragIdx !== overIdx) {
+                if (
+                  dragIdx !== null &&
+                  overIdx !== null &&
+                  dragIdx !== overIdx
+                ) {
                   const reordered = [...images];
                   const [moved] = reordered.splice(dragIdx, 1);
                   reordered.splice(overIdx, 0, moved);

@@ -427,9 +427,7 @@ function OfferCard({
                   {offer.counter_amount.toLocaleString()}
                 </p>
                 {offer.counter_message && (
-                  <p className="text-sm text-[#666]">
-                    {offer.counter_message}
-                  </p>
+                  <p className="text-sm text-[#666]">{offer.counter_message}</p>
                 )}
               </div>
             )}
@@ -794,7 +792,11 @@ export function SellerOfferCard(props: OfferCardPublicProps) {
   return <OfferCard {...props} isSeller={true} />;
 }
 
-export default function OffersClient({ userId, focusOfferId, initialTab }: Props) {
+export default function OffersClient({
+  userId,
+  focusOfferId,
+  initialTab,
+}: Props) {
   const supabase = createClient();
 
   const [tab, setTab] = useState<"received" | "sent">(initialTab ?? "received");

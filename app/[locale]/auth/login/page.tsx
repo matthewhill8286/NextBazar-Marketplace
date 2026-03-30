@@ -26,7 +26,9 @@ export default function LoginPage() {
         </div>
 
         <Suspense
-          fallback={<div className="h-80 bg-white border border-[#e8e6e3] animate-pulse" />}
+          fallback={
+            <div className="h-80 bg-white border border-[#e8e6e3] animate-pulse" />
+          }
         >
           <LoginForm />
         </Suspense>

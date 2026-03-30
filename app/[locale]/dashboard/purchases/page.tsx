@@ -53,10 +53,7 @@ export default function PurchasesPage() {
         {/* Tabs skeleton */}
         <div className="flex gap-1 bg-[#f0eeeb] p-1 mb-6">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-9 flex-1 bg-[#e8e6e3] animate-pulse"
-            />
+            <div key={i} className="h-9 flex-1 bg-[#e8e6e3] animate-pulse" />
           ))}
         </div>
         {/* List rows skeleton */}

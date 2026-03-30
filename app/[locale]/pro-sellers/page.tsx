@@ -131,7 +131,9 @@ export default async function DealersPage() {
           {/* Promo code section */}
           <div className="flex items-center gap-3 my-8 max-w-md mx-auto">
             <div className="flex-1 border-t border-[#e8e6e3]" />
-            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#bbb]">or</span>
+            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#bbb]">
+              or
+            </span>
             <div className="flex-1 border-t border-[#e8e6e3]" />
           </div>
           <PromoCodeInput />
@@ -151,10 +153,7 @@ export default async function DealersPage() {
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e8e6e3]">
           {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="bg-white p-7"
-            >
+            <div key={f.title} className="bg-white p-7">
               <div className="w-10 h-10 bg-[#faf9f7] flex items-center justify-center mb-4">
                 <f.icon className="w-5 h-5 text-[#8E7A6B]" />
               </div>
@@ -183,10 +182,7 @@ export default async function DealersPage() {
         </h2>
         <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3]">
           {PRO_SELLER_FEATURE_GROUPS.map((group) => (
-            <div
-              key={group.heading}
-              className="bg-white p-8"
-            >
+            <div key={group.heading} className="bg-white p-8">
               <h3
                 className="text-lg font-light text-[#1a1a1a] mb-5"
                 style={{ fontFamily: "'Playfair Display', serif" }}
@@ -243,10 +239,7 @@ export default async function DealersPage() {
         </h2>
         <div className="grid md:grid-cols-2 gap-px bg-[#e8e6e3]">
           {TESTIMONIALS.map((t) => (
-            <div
-              key={t.name}
-              className="bg-white p-8"
-            >
+            <div key={t.name} className="bg-white p-8">
               <p
                 className="text-[#666] text-lg leading-relaxed mb-8 font-light italic"
                 style={{ fontFamily: "'Playfair Display', serif" }}

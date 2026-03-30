@@ -10,9 +10,7 @@ import AnalyticsClient from "./analytics-client";
 /* ── Skeleton helpers ─────────────────────────────────────────────────────── */
 
 function Bone({ className = "" }: { className?: string }) {
-  return (
-    <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />
-  );
+  return <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />;
 }
 
 function AnalyticsSkeleton() {

@@ -216,8 +216,12 @@ export default function BrandingForm({
                 <Loader2 className="w-6 h-6 text-white animate-spin" />
               </div>
             ) : (
-              <div className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-[#8E7A6B]/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}>
-                <span className={`flex items-center gap-2 bg-white/90 text-[#666] text-xs font-semibold px-3.5 py-2 rounded-full shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}>
+              <div
+                className={`absolute inset-0 flex items-center justify-center transition-colors z-10 ${dragOver ? "bg-[#8E7A6B]/30" : "bg-black/0 group-hover/banner:bg-black/30"}`}
+              >
+                <span
+                  className={`flex items-center gap-2 bg-white/90 text-[#666] text-xs font-semibold px-3.5 py-2 rounded-full shadow-sm transition-opacity ${dragOver ? "opacity-100" : "opacity-0 group-hover/banner:opacity-100"}`}
+                >
                   <Upload className="w-3.5 h-3.5" />
                   {bannerUrl ? "Change Banner" : "Upload Banner"}
                 </span>
@@ -244,49 +248,49 @@ export default function BrandingForm({
             <div className="bg-white border border-[#e8e6e3] shadow-sm overflow-hidden">
               <div className="p-5">
                 <div>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 mb-2">
-                      <h3 className="text-lg font-bold text-[#1a1a1a] truncate">
-                        {shopName || "Your Shop"}
-                      </h3>
-                      <span
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-white text-[10px] font-semibold w-fit"
-                        style={{
-                          background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
-                        }}
-                      >
-                        <ShieldCheck className="w-3 h-3" />
-                        Verified Pro Seller
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2.5 mb-2">
+                    <h3 className="text-lg font-bold text-[#1a1a1a] truncate">
+                      {shopName || "Your Shop"}
+                    </h3>
+                    <span
+                      className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-white text-[10px] font-semibold w-fit"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
+                      }}
+                    >
+                      <ShieldCheck className="w-3 h-3" />
+                      Verified Pro Seller
+                    </span>
+                  </div>
+
+                  {description ? (
+                    <p className="text-sm text-[#666] leading-relaxed mb-3 line-clamp-2">
+                      {description}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-[#ccc] italic mb-3">
+                      Add a description to tell buyers about your business...
+                    </p>
+                  )}
+
+                  {/* Meta chips */}
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-[#999]">
+                    {website && (
+                      <span className="p-1.5 bg-[#faf9f7]">
+                        <Globe className="w-3.5 h-3.5 text-[#bbb]" />
                       </span>
-                    </div>
-
-                    {description ? (
-                      <p className="text-sm text-[#666] leading-relaxed mb-3 line-clamp-2">
-                        {description}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-[#ccc] italic mb-3">
-                        Add a description to tell buyers about your business...
-                      </p>
                     )}
-
-                    {/* Meta chips */}
-                    <div className="flex flex-wrap items-center gap-2 text-xs text-[#999]">
-                      {website && (
-                        <span className="p-1.5 bg-[#faf9f7]">
-                          <Globe className="w-3.5 h-3.5 text-[#bbb]" />
-                        </span>
-                      )}
-                      {facebook && (
-                        <span className="p-1.5 bg-[#faf9f7]">
-                          <Facebook className="w-3.5 h-3.5 text-[#bbb]" />
-                        </span>
-                      )}
-                      {instagram && (
-                        <span className="p-1.5 bg-[#faf9f7]">
-                          <Instagram className="w-3.5 h-3.5 text-[#bbb]" />
-                        </span>
-                      )}
-                    </div>
+                    {facebook && (
+                      <span className="p-1.5 bg-[#faf9f7]">
+                        <Facebook className="w-3.5 h-3.5 text-[#bbb]" />
+                      </span>
+                    )}
+                    {instagram && (
+                      <span className="p-1.5 bg-[#faf9f7]">
+                        <Instagram className="w-3.5 h-3.5 text-[#bbb]" />
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -382,8 +386,7 @@ export default function BrandingForm({
         {/* Website */}
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
-            Website{" "}
-            <span className="text-[#bbb] font-normal">(optional)</span>
+            Website <span className="text-[#bbb] font-normal">(optional)</span>
           </label>
           <input
             type="url"
