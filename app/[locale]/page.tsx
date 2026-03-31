@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
+import HeroVideo from "@/app/components/hero-video";
 import { EmptyListingsIllustration } from "@/app/components/illustrations";
 import ListingCard from "@/app/components/listing-card";
 import {
@@ -39,16 +40,24 @@ export default async function Home() {
         className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826]"
         aria-label="Homepage hero"
       >
-        {/* Background image — uses Next.js Image with priority for fast LCP */}
+        {/* Poster image — always loads first for fast LCP */}
         <Image
           src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-poster.jpg`}
-          alt="Showing the Cypris beachside"
+          alt="Cyprus beachside"
           fill
           priority
           sizes="100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-[#2C2826]/75" />
+
+        {/* Background video — fades in over the poster once loaded */}
+        <HeroVideo
+          src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-video.mp4`}
+          poster={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-poster.jpg`}
+        />
+
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-[#2C2826]/65" />
 
         {/* Content */}
         <div className="relative w-full max-w-7xl mx-auto px-6 py-24">
