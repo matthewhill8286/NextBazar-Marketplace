@@ -85,20 +85,19 @@ export default async function ShopPage(props: PageProps) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <Store className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-5">
+            <Store className="w-8 h-8 text-[#8a8280]" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
             This shop is currently closed
           </h1>
-          <p className="text-gray-500 text-sm mb-6">
-            <span className="font-medium text-gray-700">{shop.shop_name}</span>{" "}
-            is not accepting orders right now. The seller may reopen in the
-            future.
+          <p className="text-[#6b6560] text-sm mb-6">
+            <span className="font-medium text-[#666]">{shop.shop_name}</span> is
+            not accepting orders right now. The seller may reopen in the future.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold text-sm hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors"
           >
             Browse Marketplace
           </Link>

@@ -104,7 +104,7 @@ export default function VideoUpload({
   // ── State: has a video ───────────────────────────────────────────────────
   if (video) {
     return (
-      <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video">
+      <div className="relative overflow-hidden bg-[#2C2826] aspect-video">
         {video.uploading ? (
           /* Upload in progress */
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -156,25 +156,25 @@ export default function VideoUpload({
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
-      className={`relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
+      className={`relative border-2 border-dashed p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
         dragOver
-          ? "border-violet-400 bg-violet-50"
-          : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50"
+          ? "border-[#8E7A6B] bg-[#f0eeeb]"
+          : "border-[#e8e6e3] bg-white hover:border-[#bbb] hover:bg-[#faf9f7]"
       }`}
     >
-      <div className="p-3 bg-violet-100 rounded-full">
-        <Video className="w-6 h-6 text-violet-600" />
+      <div className="p-3 bg-[#f0eeeb] rounded-full">
+        <Video className="w-6 h-6 text-[#8E7A6B]" />
       </div>
       <div className="text-center">
-        <p className="text-sm font-semibold text-gray-700">
-          <span className="text-violet-600">Click to upload</span> or drag &amp;
+        <p className="text-sm font-semibold text-[#666]">
+          <span className="text-[#8E7A6B]">Click to upload</span> or drag &amp;
           drop
         </p>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-[#8a8280] mt-0.5">
           MP4, MOV or WebM · max {MAX_SIZE_MB}MB
         </p>
       </div>
-      <div className="flex items-center gap-1.5 text-xs text-violet-600 font-medium">
+      <div className="flex items-center gap-1.5 text-xs text-[#8E7A6B] font-medium">
         <Play className="w-3 h-3" />
         Show buyers what makes your item special
       </div>

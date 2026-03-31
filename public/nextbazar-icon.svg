@@ -1,45 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" role="img" aria-label="NextBazar icon">
-  <defs>
-    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#6366F1"/>
-    </linearGradient>
-    <linearGradient id="g-shine" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="s1" x="-15%" y="-15%" width="130%" height="140%">
-      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#4F46E5" flood-opacity="0.4"/>
-    </filter>
-    <clipPath id="c1">
-      <rect width="80" height="80" rx="20"/>
-    </clipPath>
-  </defs>
+  <!-- Background — warm taupe, square with subtle radius -->
+  <rect width="80" height="80" rx="12" fill="#8E7A6B"/>
 
-  <!-- Background badge -->
-  <rect width="80" height="80" rx="20" fill="url(#g1)" filter="url(#s1)"/>
-  <rect width="80" height="80" rx="20" fill="url(#g-shine)" clip-path="url(#c1)"/>
-
-  <!-- Subtle top stripe (awning feel) -->
-  <rect x="0" y="0" width="80" height="14" rx="0" fill="#ffffff" fill-opacity="0.07" clip-path="url(#c1)"/>
-
-  <!-- Bold "N" -->
+  <!-- Serif "N" — elegant, light weight -->
   <text
     x="40"
-    y="56"
-    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
-    font-size="48"
-    font-weight="800"
+    y="55"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
+    font-size="44"
+    font-weight="400"
     fill="#ffffff"
     text-anchor="middle"
-    letter-spacing="-2"
+    letter-spacing="0"
   >N</text>
 
-  <!-- Bazaar arch -->
-  <path d="M16 68 Q40 58 64 68" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"/>
-
-  <!-- Three stall dots -->
-  <circle cx="24" cy="64" r="2.5" fill="#ffffff" opacity="0.5"/>
-  <circle cx="40" cy="60" r="2.5" fill="#ffffff" opacity="0.5"/>
-  <circle cx="56" cy="64" r="2.5" fill="#ffffff" opacity="0.5"/>
+  <!-- Subtle bottom accent line -->
+  <line x1="22" y1="65" x2="58" y2="65" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
 </svg>

@@ -34,19 +34,19 @@ export default function SavedSearchesPage() {
   if (loading) {
     return (
       <div>
-        <div className="h-7 w-40 bg-gray-200 rounded-lg animate-pulse mb-6" />
+        <div className="h-7 w-40 bg-[#e8e6e3] animate-pulse mb-6" />
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3"
+              className="bg-white border border-[#e8e6e3] p-4 flex items-center gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-gray-200 animate-pulse shrink-0" />
+              <div className="w-10 h-10 bg-[#e8e6e3] animate-pulse shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-48 bg-gray-200 rounded-lg animate-pulse" />
-                <div className="h-3 w-32 bg-gray-200 rounded-lg animate-pulse" />
+                <div className="h-4 w-48 bg-[#e8e6e3] animate-pulse" />
+                <div className="h-3 w-32 bg-[#e8e6e3] animate-pulse" />
               </div>
-              <div className="w-8 h-8 rounded-lg bg-gray-200 animate-pulse shrink-0" />
+              <div className="w-8 h-8 bg-[#e8e6e3] animate-pulse shrink-0" />
             </div>
           ))}
         </div>

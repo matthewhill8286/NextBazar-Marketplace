@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import {
   getCategoryBySlugCached,
   getCategoryListingsCached,
-  getCategoryStatsCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import PropertiesClient from "./properties-client";
@@ -17,14 +16,13 @@ export default async function PropertiesPage() {
   const category = await getCategoryBySlugCached("property");
   if (!category)
     return (
-      <div className="p-20 text-center text-gray-400">Category not found.</div>
+      <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
     );
 
-  const [subcategories, featured, recent, stats] = await Promise.all([
+  const [subcategories, featured, recent] = await Promise.all([
     getSubcategoriesCached(),
     getCategoryListingsCached(category.id, { promoted: true, limit: 12 }),
     getCategoryListingsCached(category.id, { limit: 12 }),
-    getCategoryStatsCached(category.id),
   ]);
 
   // Only subcategories belonging to this category
@@ -38,7 +36,6 @@ export default async function PropertiesPage() {
       subcategories={propertySubcategories}
       featuredListings={featured}
       recentListings={recent}
-      stats={stats}
     />
   );
 }

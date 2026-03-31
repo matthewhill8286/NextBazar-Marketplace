@@ -17,15 +17,15 @@ export default function SettingsLoading() {
           <div className="space-y-4">
             <div className="space-y-2">
               <Bone className="h-3 w-24" />
-              <Bone className="h-10 w-full rounded-xl" />
+              <Bone className="h-10 w-full " />
             </div>
             <div className="space-y-2">
               <Bone className="h-3 w-20" />
-              <Bone className="h-10 w-full rounded-xl" />
+              <Bone className="h-10 w-full " />
             </div>
             <div className="space-y-2">
               <Bone className="h-3 w-16" />
-              <Bone className="h-24 w-full rounded-xl" />
+              <Bone className="h-24 w-full " />
             </div>
           </div>
         </CardSkeleton>
@@ -34,14 +34,14 @@ export default function SettingsLoading() {
         <CardSkeleton>
           <Bone className="h-5 w-28 mb-4" />
           <div className="space-y-4">
-            <Bone className="h-10 w-full rounded-xl" />
-            <Bone className="h-10 w-full rounded-xl" />
-            <Bone className="h-10 w-full rounded-xl" />
+            <Bone className="h-10 w-full " />
+            <Bone className="h-10 w-full " />
+            <Bone className="h-10 w-full " />
           </div>
         </CardSkeleton>
 
         {/* Save button */}
-        <Bone className="h-11 w-full rounded-xl" />
+        <Bone className="h-11 w-full " />
       </div>
     </div>
   );

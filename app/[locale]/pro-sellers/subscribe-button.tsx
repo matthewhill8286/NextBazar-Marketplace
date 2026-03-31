@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 
 type Props = {
   label: string;
-  /** "primary" = indigo bg, "white" = white bg (for use on coloured sections) */
+  /** "primary" = taupe bg, "white" = white bg (for use on dark sections) */
   variant?: "primary" | "white";
 };
 
@@ -46,11 +46,11 @@ export default function DealersSubscribeButton({
   }
 
   const base =
-    "inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold transition-colors disabled:opacity-50";
+    "inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 transition-colors disabled:opacity-50";
   const styles =
     variant === "white"
-      ? `${base} bg-white text-indigo-600 hover:bg-indigo-50`
-      : `${base} bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm shadow-indigo-200`;
+      ? `${base} bg-white text-[#2C2826] hover:bg-[#f0eeeb]`
+      : `${base} bg-[#8E7A6B] text-white hover:bg-[#7A6657]`;
 
   return (
     <button onClick={handleClick} disabled={subscribing} className={styles}>

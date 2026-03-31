@@ -67,18 +67,15 @@ export async function POST(request: NextRequest) {
 
       if (error) {
         console.error("Failed to activate promotion via crypto:", error);
-      } else {
-        console.log(
-          `[Coinbase] Activated ${promotion_type} for listing ${listing_id} (event: ${eventType})`,
-        );
       }
     }
   }
 
   // charge:failed — payment failed or expired, nothing to do
   if (eventType === "charge:failed") {
-    console.log(
-      `[Coinbase] Charge failed for listing: ${event.event?.data?.metadata?.listing_id}`,
+    console.error(
+      "[Coinbase] Charge failed for listing:",
+      event.event?.data?.metadata?.listing_id,
     );
   }
 

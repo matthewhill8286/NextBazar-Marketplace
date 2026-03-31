@@ -20,11 +20,11 @@ type Props = {
   visibleSubcategories: Subcategory[];
   aiLoading: boolean;
   aiFilled: boolean;
-  onImagesChange: (imgs: UploadedImage[]) => void;
-  onAiAutofill: () => void;
-  onUpdate: (key: string, value: string) => void;
-  onSelectCategory: (id: string) => void;
-  onNext: () => void;
+  onImagesChangeAction: (imgs: UploadedImage[]) => void;
+  onAiAutofillAction: () => void;
+  onUpdateAction: (key: string, value: string) => void;
+  onSelectCategoryAction: (id: string) => void;
+  onNextAction: () => void;
 };
 
 export default function PostStep1({
@@ -35,31 +35,39 @@ export default function PostStep1({
   visibleSubcategories,
   aiLoading,
   aiFilled,
-  onImagesChange,
-  onAiAutofill,
-  onUpdate,
-  onSelectCategory,
-  onNext,
+  onImagesChangeAction,
+  onAiAutofillAction,
+  onUpdateAction,
+  onSelectCategoryAction,
+  onNextAction,
 }: Props) {
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">
-        What are you selling?
-      </h2>
+    <div className="space-y-8">
+      <div>
+        <h2
+          className="text-3xl font-light text-[#1a1a1a] mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          What are you selling?
+        </h2>
+        <p className="text-sm text-[#6b6560]">
+          Start with photos — we can suggest the rest
+        </p>
+      </div>
 
       {/* Image Upload */}
       {userId ? (
         <ImageUpload
           userId={userId}
           images={images}
-          onChangeAction={onImagesChange}
+          onChangeAction={onImagesChangeAction}
         />
       ) : (
-        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center bg-white">
-          <p className="text-gray-500 text-sm">
+        <div className="border-2 border-dashed border-[#e8e6e3] p-8 text-center bg-white">
+          <p className="text-[#6b6560] text-sm">
             <a
               href="/auth/login?redirect=/post"
-              className="text-indigo-600 font-medium hover:underline"
+              className="text-[#1a1a1a] font-medium hover:underline"
             >
               Sign in
             </a>{" "}
@@ -72,9 +80,9 @@ export default function PostStep1({
       {images.some((img) => img.url && !img.uploading) && !aiFilled && (
         <button
           type="button"
-          onClick={onAiAutofill}
+          onClick={onAiAutofillAction}
           disabled={aiLoading}
-          className="w-full bg-linear-to-r from-indigo-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all flex items-center justify-center gap-2 disabled:opacity-60 shadow-md shadow-indigo-200"
+          className="w-full bg-[#8E7A6B] text-white py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-all flex items-center justify-center gap-2.5 disabled:opacity-60"
         >
           {aiLoading ? (
             <>
@@ -85,7 +93,7 @@ export default function PostStep1({
             <>
               <Wand2 className="w-4 h-4" />
               Suggest title &amp; category with AI
-              <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+              <span className="text-[9px] bg-white/20 px-2 py-0.5 font-medium uppercase tracking-[0.15em]">
                 Beta
               </span>
             </>
@@ -93,7 +101,7 @@ export default function PostStep1({
         </button>
       )}
       {aiFilled && (
-        <div className="flex items-center gap-2 bg-green-50 text-green-700 text-sm px-4 py-2.5 rounded-xl border border-green-100">
+        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 text-sm px-4 py-2.5 border border-emerald-100">
           <Sparkles className="w-4 h-4" />
           AI suggested a title and category — review and adjust below
         </div>
@@ -101,21 +109,21 @@ export default function PostStep1({
 
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
           Title
         </label>
         <input
           type="text"
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+          className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm"
           placeholder="e.g. iPhone 15 Pro Max 256GB Blue"
           value={formData.title}
-          onChange={(e) => onUpdate("title", e.target.value)}
+          onChange={(e) => onUpdateAction("title", e.target.value)}
         />
       </div>
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+        <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-3">
           Category
         </label>
         <div className="grid grid-cols-4 gap-2">
@@ -123,29 +131,27 @@ export default function PostStep1({
             <button
               key={cat.id}
               type="button"
-              onClick={() => onSelectCategory(cat.id)}
-              className={`p-3 rounded-xl border text-center transition-all ${
+              onClick={() => onSelectCategoryAction(cat.id)}
+              className={`group p-3 border text-center transition-all ${
                 formData.category_id === cat.id
-                  ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-100"
-                  : "border-gray-200 hover:border-gray-300 bg-white"
+                  ? "border-[#8E7A6B] bg-[#faf9f7] ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] hover:border-[#ccc] bg-white"
               }`}
             >
               <div
-                className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} rounded-xl flex items-center justify-center mb-1 mx-auto`}
+                className={`w-10 h-10 ${getCategoryConfig(cat.slug).bg} flex items-center justify-center mb-1 mx-auto group-hover:scale-110 transition-transform duration-300`}
               >
                 <CategoryIcon slug={cat.slug} size={20} />
               </div>
-              <div className="text-xs font-medium text-gray-700">
-                {cat.name}
-              </div>
+              <div className="text-xs font-medium text-[#666]">{cat.name}</div>
             </button>
           ))}
         </div>
 
         {/* Subcategory drill-down */}
         {visibleSubcategories.length > 0 && (
-          <div className="mt-3 animate-in fade-in slide-in-from-top-1 duration-200">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="mt-4 animate-in fade-in slide-in-from-top-1 duration-200">
+            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
               Subcategory
             </label>
             <div className="flex flex-wrap gap-2">
@@ -153,11 +159,11 @@ export default function PostStep1({
                 <button
                   key={sub.id}
                   type="button"
-                  onClick={() => onUpdate("subcategory_id", sub.id)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                  onClick={() => onUpdateAction("subcategory_id", sub.id)}
+                  className={`px-4 py-2 text-sm font-medium border transition-all ${
                     formData.subcategory_id === sub.id
-                      ? "border-indigo-400 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                      ? "border-[#8E7A6B] bg-[#8E7A6B] text-white"
+                      : "border-[#e8e6e3] bg-white text-[#666] hover:border-[#ccc]"
                   }`}
                 >
                   {sub.name}
@@ -170,15 +176,15 @@ export default function PostStep1({
 
       <button
         type="button"
-        onClick={onNext}
+        onClick={onNextAction}
         disabled={
           !formData.title ||
           !formData.category_id ||
           (visibleSubcategories.length > 0 && !formData.subcategory_id)
         }
-        className="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        className="w-full bg-[#8E7A6B] text-white py-4 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center justify-center gap-2.5 disabled:opacity-40"
       >
-        Continue <ArrowRight className="w-4 h-4" />
+        Continue <ArrowRight className="w-3.5 h-3.5" />
       </button>
     </div>
   );

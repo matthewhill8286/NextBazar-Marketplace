@@ -21,7 +21,7 @@ const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
   ssr: false,
   loading: () => (
     <div
-      className="w-full rounded-2xl bg-gray-100 animate-pulse"
+      className="w-full bg-[#f0eeeb] animate-pulse"
       style={{ height: 420 }}
     />
   ),
@@ -460,41 +460,34 @@ export default function SearchClient({
   return (
     <>
       {/* ── Hero search header ───────────────────────────────────────────── */}
-      <section className="relative overflow-clip bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-700 text-white py-8 px-4">
-        {/* Dot mesh */}
-        <div
-          className="absolute inset-0 opacity-[0.10] pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-            backgroundSize: "28px 28px",
-          }}
-        />
-        {/* Ambient blobs */}
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-400 rounded-full blur-3xl opacity-20 pointer-events-none" />
-        <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-violet-500 rounded-full blur-3xl opacity-20 pointer-events-none" />
-
+      <section className="relative bg-[#2C2826] text-white py-10 px-4">
         <div className="relative max-w-3xl mx-auto">
           {/* Dynamic title + count */}
-          <div className="text-center mb-5">
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+          <div className="text-center mb-6">
+            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-3">
+              Search &amp; Discover
+            </p>
+            <h1
+              className="text-2xl md:text-3xl font-light"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               {submittedQuery ? (
                 <>
                   Results for{" "}
-                  <span className="text-amber-300">
+                  <span className="text-white/70">
                     &ldquo;{submittedQuery}&rdquo;
                   </span>
                 </>
               ) : activeCategory ? (
                 <>
-                  <span className="text-indigo-200">Browse</span>{" "}
+                  <span className="text-white/60">Browse</span>{" "}
                   {activeCategory.name}
                 </>
               ) : (
                 "Browse Listings"
               )}
             </h1>
-            <p className="text-indigo-200 text-sm mt-1.5">
+            <p className="text-white/40 text-sm mt-2">
               {loading ? (
                 "Finding listings…"
               ) : totalHits > 0 ? (
@@ -514,10 +507,10 @@ export default function SearchClient({
 
           {/* Search input */}
           <div className="relative flex items-center">
-            <Search className="absolute left-4 text-white/50 w-5 h-5 pointer-events-none" />
+            <Search className="absolute left-4 text-white/30 w-5 h-5 pointer-events-none" />
             <input
               type="text"
-              className="w-full pl-12 pr-28 py-4 rounded-2xl border border-white/25 bg-white/15 backdrop-blur-sm text-white placeholder-white/50 focus:bg-white/20 focus:outline-none focus:border-white/50 text-sm"
+              className="w-full pl-12 pr-28 py-4 border border-white/10 bg-white/5 text-white placeholder-white/30 focus:bg-white/10 focus:outline-none focus:border-white/20 text-sm"
               placeholder="Search listings… or press Enter to search"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
@@ -531,7 +524,7 @@ export default function SearchClient({
                     setInputValue("");
                     executeSearch("");
                   }}
-                  className="p-2 rounded-xl text-white/60 hover:text-white transition-colors"
+                  className="p-2 text-white/60 hover:text-white transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -540,7 +533,7 @@ export default function SearchClient({
                 type="button"
                 onClick={() => handleAiSearch()}
                 disabled={aiSearching || !inputValue.trim()}
-                className="p-2 rounded-xl bg-white/20 hover:bg-white/30 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="p-2 bg-white/10 hover:bg-white/15 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 title="AI Smart Search (Beta)"
               >
                 {aiSearching ? (
@@ -552,7 +545,7 @@ export default function SearchClient({
               <button
                 type="button"
                 onClick={() => setShowFilters(!showFilters)}
-                className={`p-2 rounded-xl transition-colors ${showFilters ? "bg-white/30 text-white" : "bg-white/20 hover:bg-white/30 text-white"}`}
+                className={`p-2 transition-colors ${showFilters ? "bg-white/15 text-white" : "bg-white/10 hover:bg-white/15 text-white"}`}
               >
                 <SlidersHorizontal className="w-4 h-4" />
               </button>
@@ -560,14 +553,14 @@ export default function SearchClient({
           </div>
 
           {/* Hint row */}
-          <p className="text-center text-xs text-white/45 mt-2.5">
+          <p className="text-center text-xs text-white/30 mt-3">
             Press{" "}
-            <kbd className="bg-white/15 border border-white/20 px-1.5 py-0.5 rounded text-white/60 font-mono text-[11px]">
+            <kbd className="bg-white/10 border border-white/15 px-1.5 py-0.5 text-white/40 font-mono text-[11px]">
               Enter
             </kbd>{" "}
-            to search · <Sparkles className="w-3 h-3 inline text-indigo-300" />{" "}
+            to search · <Sparkles className="w-3 h-3 inline text-white/40" />{" "}
             for AI smart search{" "}
-            <span className="text-[9px] bg-white/15 text-white/60 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+            <span className="text-[9px] bg-white/10 text-white/40 px-1.5 py-0.5 font-medium uppercase tracking-[0.15em]">
               Beta
             </span>
           </p>
@@ -577,14 +570,14 @@ export default function SearchClient({
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* ── Filters Panel ───────────────────────────────────────────────── */}
         {showFilters && (
-          <div className="bg-white rounded-xl border border-gray-100 p-4 mb-6 space-y-4">
+          <div className="bg-white border border-[#e8e6e3] p-4 mb-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                   Category
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={categorySlug}
                   onChange={(e) => {
                     setCategorySlug(e.target.value);
@@ -600,11 +593,11 @@ export default function SearchClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                   Location
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={locationSlug}
                   onChange={(e) => setLocationSlug(e.target.value)}
                 >
@@ -617,11 +610,11 @@ export default function SearchClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                   Sort By
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -634,12 +627,12 @@ export default function SearchClient({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                 Price Range (€)
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
                     €
                   </span>
                   <input
@@ -648,12 +641,12 @@ export default function SearchClient({
                     placeholder="Min"
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <span className="text-gray-400 text-sm shrink-0">–</span>
+                <span className="text-[#8a8280] text-sm shrink-0">–</span>
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
                     €
                   </span>
                   <input
@@ -662,7 +655,7 @@ export default function SearchClient({
                     placeholder="Max"
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white outline-none focus:border-indigo-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -670,7 +663,7 @@ export default function SearchClient({
 
             {visibleSubcategories.length > 0 && (
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-2">
+                <label className="block text-xs font-medium text-[#6b6560] mb-2">
                   Subcategory
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -682,10 +675,10 @@ export default function SearchClient({
                           subcategorySlug === sub.slug ? "" : sub.slug,
                         )
                       }
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                      className={`px-3 py-1.5 text-sm font-medium border transition-all ${
                         subcategorySlug === sub.slug
-                          ? "border-indigo-400 bg-indigo-50 text-indigo-700 ring-2 ring-indigo-100"
-                          : "border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600"
+                          ? "border-[#8E7A6B] bg-[#8E7A6B] text-white"
+                          : "border-[#e8e6e3] bg-white text-[#666] hover:border-[#999]"
                       }`}
                     >
                       {sub.name}
@@ -706,7 +699,7 @@ export default function SearchClient({
                   setCategorySlug("");
                   setSubcategorySlug("");
                 }}
-                className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
               >
                 <span
                   className={`w-4 h-4 ${getCategoryConfig(activeCategory.slug).bg} rounded flex items-center justify-center`}
@@ -720,7 +713,7 @@ export default function SearchClient({
             {activeSubcategory && (
               <button
                 onClick={() => setSubcategorySlug("")}
-                className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
               >
                 {activeSubcategory.name}
                 <X className="w-3 h-3" />
@@ -729,7 +722,7 @@ export default function SearchClient({
             {activeLocation && (
               <button
                 onClick={() => setLocationSlug("")}
-                className="flex items-center gap-1.5 bg-sky-50 text-sky-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-sky-100 transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
               >
                 <MapPin className="w-3 h-3" />
                 {activeLocation.name}
@@ -742,7 +735,7 @@ export default function SearchClient({
                   setInputValue("");
                   executeSearch("");
                 }}
-                className="flex items-center gap-1.5 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#666] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
               >
                 &ldquo;{submittedQuery}&rdquo;
                 <X className="w-3 h-3" />
@@ -754,7 +747,7 @@ export default function SearchClient({
                   setPriceMin("");
                   setPriceMax("");
                 }}
-                className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-green-100 transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
               >
                 {priceMin && priceMax
                   ? `€${priceMin}–€${priceMax}`
@@ -780,7 +773,7 @@ export default function SearchClient({
                 lastInternalQuery.current = "";
                 router.replace("/search", { scroll: false });
               }}
-              className="text-sm text-gray-400 hover:text-gray-600 ml-1"
+              className="text-sm text-[#8a8280] hover:text-[#666] ml-1"
             >
               Clear all
             </button>
@@ -789,8 +782,8 @@ export default function SearchClient({
 
         {/* ── AI interpretation banner ─────────────────────────────────────── */}
         {aiInterpretation && (
-          <div className="flex items-center gap-2 bg-indigo-50 text-indigo-800 text-sm px-4 py-2.5 rounded-xl border border-indigo-100 mb-4">
-            <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+          <div className="flex items-center gap-2 bg-[#faf9f7] text-[#1a1a1a] text-sm px-4 py-2.5 border border-[#e8e6e3] mb-4">
+            <Sparkles className="w-4 h-4 text-[#6b6560] shrink-0" />
             <span>{aiInterpretation}</span>
           </div>
         )}
@@ -800,13 +793,13 @@ export default function SearchClient({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               {!loading && (
-                <p className="text-sm text-gray-500">
-                  <span className="font-semibold text-gray-900">
+                <p className="text-sm text-[#6b6560]">
+                  <span className="font-semibold text-[#1a1a1a]">
                     {totalHits}
                   </span>{" "}
                   {totalHits === 1 ? "listing" : "listings"} found
                   {listings.length < totalHits && (
-                    <span className="text-gray-400">
+                    <span className="text-[#8a8280]">
                       {" "}
                       · showing {listings.length}
                     </span>
@@ -825,11 +818,11 @@ export default function SearchClient({
             </div>
             <div className="flex items-center gap-2">
               {/* View mode toggle */}
-              <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+              <div className="flex items-center bg-[#f0eeeb] p-0.5">
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 rounded-md transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`p-1.5 transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
                   title="Grid view"
                 >
                   <LayoutGrid className="w-4 h-4" />
@@ -837,7 +830,7 @@ export default function SearchClient({
                 <button
                   type="button"
                   onClick={() => setViewMode("map")}
-                  className={`p-1.5 rounded-md transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
+                  className={`p-1.5 transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
                   title="Map view"
                 >
                   <MapIcon className="w-4 h-4" />
@@ -845,7 +838,7 @@ export default function SearchClient({
               </div>
               {!showFilters && (
                 <select
-                  className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 outline-none focus:border-indigo-400 bg-white"
+                  className="text-sm border border-[#e8e6e3] px-3 py-1.5 outline-none focus-visible:border-[#1a1a1a] bg-white"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -864,23 +857,23 @@ export default function SearchClient({
           <div className="mb-6">
             {mapLoading ? (
               <div
-                className="w-full rounded-2xl bg-gray-100 animate-pulse flex items-center justify-center"
+                className="w-full bg-[#f0eeeb] animate-pulse flex items-center justify-center"
                 style={{ height: 420 }}
               >
-                <p className="text-sm text-gray-400">Updating map…</p>
+                <p className="text-sm text-[#8a8280]">Updating map…</p>
               </div>
             ) : (
               <>
                 <ListingsMap
                   locations={mapLocations}
                   selectedSlug={locationSlug}
-                  onSelectLocation={(slug) => {
+                  onSelectLocationAction={(slug) => {
                     setLocationSlug(slug === locationSlug ? "" : slug);
                     setViewMode("grid");
                   }}
                 />
                 {mapLocations.length === 0 && (
-                  <p className="text-center text-sm text-gray-400 mt-3">
+                  <p className="text-center text-sm text-[#8a8280] mt-3">
                     No listings match your search in any mapped location.
                   </p>
                 )}
@@ -895,13 +888,13 @@ export default function SearchClient({
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                className="bg-white border border-[#e8e6e3] overflow-hidden"
               >
-                <div className="aspect-4/3 bg-gray-100 animate-pulse" />
+                <div className="aspect-4/3 bg-[#f0eeeb] animate-pulse" />
                 <div className="p-3.5 space-y-2">
-                  <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                  <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
-                  <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
+                  <div className="h-4 bg-[#f0eeeb] rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-[#f0eeeb] rounded animate-pulse w-1/2" />
+                  <div className="h-5 bg-[#f0eeeb] rounded animate-pulse w-1/3" />
                 </div>
               </div>
             ))}
@@ -910,10 +903,13 @@ export default function SearchClient({
           /* ── No-results empty state ──────────────────────────────────────── */
           <div className="max-w-md mx-auto py-20 text-center">
             <div className="text-5xl mb-4">🔍</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h3
+              className="text-xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               No listings found
             </h3>
-            <p className="text-gray-500 text-sm mb-8">
+            <p className="text-[#6b6560] text-sm mb-8">
               We couldn't find anything matching
               {submittedQuery ? ` "${submittedQuery}"` : " your filters"}.
               {!wasAiSearch &&
@@ -922,14 +918,14 @@ export default function SearchClient({
 
             {/* AI search nudge — only show if they haven't tried it yet */}
             {!wasAiSearch && submittedQuery && (
-              <div className="bg-linear-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-2xl p-6 mb-6">
-                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <div className="bg-[#faf9f7] border border-[#e8e6e3] p-6 mb-6">
+                <div className="w-12 h-12 bg-[#8E7A6B] flex items-center justify-center mx-auto mb-3">
                   <Wand2 className="w-6 h-6 text-white" />
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-1">
+                <h4 className="font-semibold text-[#1a1a1a] mb-1">
                   Try AI Search
                 </h4>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-[#6b6560] mb-4">
                   AI search understands phrases like{" "}
                   <em>"cheap car under 5k in Limassol"</em> or{" "}
                   <em>"second-hand iPhone good condition"</em>.
@@ -937,7 +933,7 @@ export default function SearchClient({
                 <button
                   onClick={() => handleAiSearch(submittedQuery)}
                   disabled={aiSearching}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-linear-to-r from-indigo-500 to-purple-600 text-white text-sm font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md shadow-indigo-200 disabled:opacity-60"
+                  className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#8E7A6B] text-white text-sm font-medium tracking-[0.1em] uppercase hover:bg-[#7A6657] transition-colors disabled:opacity-60"
                 >
                   {aiSearching ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -965,7 +961,7 @@ export default function SearchClient({
                 lastInternalQuery.current = "";
                 router.replace("/search", { scroll: false });
               }}
-              className="text-indigo-600 font-medium hover:underline text-sm"
+              className="text-[#8E7A6B] font-medium hover:underline text-sm"
             >
               Clear all filters
             </button>
@@ -979,13 +975,13 @@ export default function SearchClient({
             </div>
             {listings.length < totalHits && (
               <div className="mt-8 flex flex-col items-center gap-2">
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-[#8a8280]">
                   Showing {listings.length} of {totalHits} listings
                 </p>
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
-                  className="px-8 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-8 py-2.5 border border-[#e8e6e3] bg-white text-sm font-medium text-[#666] hover:bg-[#faf9f7] hover:border-[#e8e6e3] transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {loadingMore ? (
                     <>
@@ -1003,7 +999,7 @@ export default function SearchClient({
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <h2 className="text-sm font-semibold text-gray-700">
+              <h2 className="text-sm font-medium text-[#666]">
                 Featured &amp; Promoted Listings
               </h2>
             </div>
@@ -1012,13 +1008,13 @@ export default function SearchClient({
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={`${Math.random() + i}`}
-                    className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                    className="bg-white border border-[#e8e6e3] overflow-hidden"
                   >
-                    <div className="aspect-4/3 bg-gray-100 animate-pulse" />
+                    <div className="aspect-4/3 bg-[#f0eeeb] animate-pulse" />
                     <div className="p-3.5 space-y-2">
-                      <div className="h-4 bg-gray-100 rounded animate-pulse w-3/4" />
-                      <div className="h-3 bg-gray-100 rounded animate-pulse w-1/2" />
-                      <div className="h-5 bg-gray-100 rounded animate-pulse w-1/3" />
+                      <div className="h-4 bg-[#f0eeeb] rounded animate-pulse w-3/4" />
+                      <div className="h-3 bg-[#f0eeeb] rounded animate-pulse w-1/2" />
+                      <div className="h-5 bg-[#f0eeeb] rounded animate-pulse w-1/3" />
                     </div>
                   </div>
                 ))}
@@ -1030,7 +1026,7 @@ export default function SearchClient({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 text-gray-400">
+              <div className="text-center py-20 text-[#8a8280]">
                 <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
                 <p className="text-sm">
                   Type something and press Enter to search

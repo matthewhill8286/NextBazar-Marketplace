@@ -60,12 +60,12 @@ export default function SignupForm() {
 
   if (success) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm text-center">
-        <div className="text-4xl mb-4">📧</div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm text-center">
+        <Mail className="w-12 h-12 mx-auto mb-4 text-[#666]" />
+        <h2 className="text-lg font-semibold text-[#1a1a1a] mb-2">
           Check your email
         </h2>
-        <p className="text-gray-500 text-sm">
+        <p className="text-[#6b6560] text-sm">
           We&apos;ve sent a confirmation link to <strong>{email}</strong>. Click
           it to activate your account.
         </p>
@@ -82,12 +82,12 @@ export default function SignupForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+    <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm">
       {/* Google Sign Up */}
       <button
         type="button"
         onClick={handleGoogleSignup}
-        className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 py-3 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-6"
+        className="w-full flex items-center justify-center gap-3 bg-white border border-[#e8e6e3] py-3 font-medium text-[#666] hover:bg-[#faf9f7] transition-colors mb-6"
       >
         <GoogleIcon />
         Continue with Google
@@ -95,10 +95,10 @@ export default function SignupForm() {
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200" />
+          <div className="w-full border-t border-[#e8e6e3]" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white px-3 text-gray-400">
+          <span className="bg-white px-3 text-[#8a8280]">
             or sign up with email
           </span>
         </div>
@@ -108,15 +108,15 @@ export default function SignupForm() {
         <ErrorBanner message={error} />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Full name
           </label>
           <div className="relative">
-            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
             <input
               type="text"
               required
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
               placeholder="John Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -125,15 +125,15 @@ export default function SignupForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
             <input
               type="email"
               required
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -142,16 +142,16 @@ export default function SignupForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
             <input
               type="password"
               required
               minLength={6}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
               placeholder="At least 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -162,7 +162,7 @@ export default function SignupForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
+          className="w-full bg-[#2C2826] text-white py-3 font-semibold hover:bg-[#3D3633] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm shadow-[#e8e6e3]"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

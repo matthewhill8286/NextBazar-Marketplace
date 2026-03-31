@@ -70,10 +70,6 @@ export async function POST(request: NextRequest) {
 
       if (error) {
         console.error("Failed to activate promotion:", error);
-      } else {
-        console.log(
-          `Activated ${promotionType} for listing ${listingId} until ${promotedUntil.toISOString()}`,
-        );
       }
     }
 
@@ -116,7 +112,6 @@ export async function POST(request: NextRequest) {
           console.error("Failed to upsert dealer shop:", shopError);
         if (profileError)
           console.error("Failed to update dealer profile:", profileError);
-        else console.log(`Activated dealer subscription for user ${userId}`);
       }
     }
   }
@@ -151,10 +146,6 @@ export async function POST(request: NextRequest) {
         .from("profiles")
         .update({ is_pro_seller: isActive })
         .eq("id", userId);
-
-      console.log(
-        `Dealer subscription ${event.type} for user ${userId}: ${subscription.status}`,
-      );
     }
   }
 

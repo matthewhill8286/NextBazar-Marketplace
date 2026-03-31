@@ -308,14 +308,28 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
       className={`mx-auto px-4 py-8 transition-all ${step === 3 ? "max-w-5xl" : "max-w-2xl"}`}
     >
       {/* Progress bar */}
-      <div className="flex items-center gap-2 mb-8">
+      <div className="flex items-center gap-3 mb-10">
         {[1, 2, 3].map((s) => (
-          <div key={s} className="flex-1">
-            <div
-              className={`h-2 rounded-full transition-colors ${s <= step ? "bg-indigo-500" : "bg-gray-200"}`}
-            />
+          <div key={s} className="flex-1 flex items-center gap-3">
+            <div className="flex-1">
+              <div
+                className={`h-[2px] transition-colors ${s <= step ? "bg-[#2C2826]" : "bg-[#e8e6e3]"}`}
+              />
+            </div>
           </div>
         ))}
+      </div>
+      <div className="flex justify-between mb-8">
+        {["Photos & Title", "Details & Pricing", "Review & Publish"].map(
+          (label, i) => (
+            <span
+              key={label}
+              className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a]" : "text-[#8a8280]"}`}
+            >
+              {label}
+            </span>
+          ),
+        )}
       </div>
 
       <ErrorBanner message={error} />
@@ -329,11 +343,11 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           visibleSubcategories={visibleSubcategories}
           aiLoading={aiLoading}
           aiFilled={aiFilled}
-          onImagesChange={handleImagesChange}
-          onAiAutofill={handleAiAutofill}
-          onUpdate={update}
-          onSelectCategory={selectCategory}
-          onNext={() => goToStep(2)}
+          onImagesChangeAction={handleImagesChange}
+          onAiAutofillAction={handleAiAutofill}
+          onUpdateAction={update}
+          onSelectCategoryAction={selectCategory}
+          onNextAction={() => goToStep(2)}
         />
       )}
 
@@ -347,13 +361,13 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           descLoading={descLoading}
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
-          onUpdate={update}
-          onSelectPriceKey={setSelectedPriceKey}
-          onAiDescription={handleAiDescription}
-          onAiPricing={handleAiPricing}
-          onVehicleAttrUpdate={updateVehicleAttr}
-          onBack={() => goToStep(1)}
-          onNext={() => goToStep(3)}
+          onUpdateAction={update}
+          onSelectPriceKeyAction={setSelectedPriceKey}
+          onAiDescriptionAction={handleAiDescription}
+          onAiPricingAction={handleAiPricing}
+          onVehicleAttrUpdateAction={updateVehicleAttr}
+          onBackAction={() => goToStep(1)}
+          onNextAction={() => goToStep(3)}
         />
       )}
 
@@ -370,10 +384,10 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
           pricing={pricing}
-          onSetPackage={setSelectedPackage}
-          onSetVideo={setVideo}
-          onBack={() => goToStep(2)}
-          onPublish={handlePublish}
+          onSetPackageAction={setSelectedPackage}
+          onSetVideoAction={setVideo}
+          onBackAction={() => goToStep(2)}
+          onPublishAction={handlePublish}
         />
       )}
 

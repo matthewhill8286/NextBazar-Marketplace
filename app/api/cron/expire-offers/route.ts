@@ -112,8 +112,5 @@ export async function GET(request: NextRequest) {
     console.error("Failed to insert expiry notifications:", notifError);
   }
 
-  console.log(
-    `Expired ${ids.length} offers, inserted ${notifications.length} notifications`,
-  );
   return NextResponse.json({ expired: ids.length });
 }

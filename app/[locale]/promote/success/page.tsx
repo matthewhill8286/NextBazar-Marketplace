@@ -74,13 +74,15 @@ function SuccessContent() {
     return (
       <div className="min-h-[70vh] flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
-          <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+          <div className="w-16 h-16 bg-[#f0eeeb] rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-8 h-8 text-[#8E7A6B] animate-spin" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">
+          <h1 className="text-xl font-bold text-[#1a1a1a] mb-2">
             Activating your promotion…
           </h1>
-          <p className="text-gray-400 text-sm">Verifying payment with Stripe</p>
+          <p className="text-[#8a8280] text-sm">
+            Verifying payment with Stripe
+          </p>
         </div>
       </div>
     );
@@ -94,14 +96,14 @@ function SuccessContent() {
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
             Something went wrong
           </h1>
-          <p className="text-gray-500 mb-2">
+          <p className="text-[#6b6560] mb-2">
             {result?.error ||
               "We couldn't activate your promotion automatically."}
           </p>
-          <p className="text-sm text-gray-400 mb-8">
+          <p className="text-sm text-[#8a8280] mb-8">
             Don't worry — if your payment was successful, your listing will be
             upgraded within a few minutes. Check your dashboard or contact
             support.
@@ -109,13 +111,13 @@ function SuccessContent() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/dashboard/listings"
-              className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+              className="bg-[#8E7A6B] text-white px-6 py-3 font-semibold hover:bg-[#7A6657] transition-colors flex items-center justify-center gap-2"
             >
               My Listings <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/"
-              className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+              className="bg-[#f0eeeb] text-[#666] px-6 py-3 font-semibold hover:bg-[#f0eeeb] transition-colors"
             >
               Back to Home
             </Link>
@@ -137,16 +139,16 @@ function SuccessContent() {
           <CheckCircle className="w-10 h-10 text-green-600" />
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
           Payment confirmed!
         </h1>
-        <p className="text-gray-500 mb-6">
+        <p className="text-[#6b6560] mb-6">
           Your listing is now live with its new boost.
         </p>
 
         {/* Promotion badge */}
         <div
-          className={`rounded-2xl p-5 border mb-8 ${
+          className={`p-5 border mb-8 ${
             isFeatured
               ? "bg-linear-to-r from-amber-50 to-orange-50 border-amber-200"
               : "bg-linear-to-r from-red-50 to-rose-50 border-red-200"
@@ -173,7 +175,7 @@ function SuccessContent() {
 
         {/* Listing title preview */}
         {listing?.title && (
-          <p className="text-sm text-gray-400 mb-6 truncate">
+          <p className="text-sm text-[#8a8280] mb-6 truncate">
             &ldquo;{listing.title}&rdquo;
           </p>
         )}
@@ -183,7 +185,7 @@ function SuccessContent() {
           {listing?.slug && (
             <Link
               href={`/listing/${listing.slug}`}
-              className={`px-6 py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 ${
+              className={`px-6 py-3 font-semibold transition-colors flex items-center justify-center gap-2 ${
                 isFeatured
                   ? "bg-amber-500 text-white hover:bg-amber-600 shadow-sm shadow-amber-200"
                   : "bg-red-500 text-white hover:bg-red-600 shadow-sm shadow-red-200"
@@ -194,7 +196,7 @@ function SuccessContent() {
           )}
           <Link
             href="/dashboard/listings"
-            className="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+            className="bg-[#f0eeeb] text-[#666] px-6 py-3 font-semibold hover:bg-[#f0eeeb] transition-colors"
           >
             My Dashboard
           </Link>
@@ -209,7 +211,7 @@ export default function PromoteSuccessPage() {
     <Suspense
       fallback={
         <div className="min-h-[70vh] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#8E7A6B] animate-spin" />
         </div>
       }
     >

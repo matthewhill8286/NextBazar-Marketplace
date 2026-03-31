@@ -1,43 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" fill="none" role="img" aria-label="NextBazar">
-  <defs>
-    <!-- Primary gradient: blue → indigo -->
-    <linearGradient id="grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#6366F1"/>
-    </linearGradient>
-  </defs>
-
   <!-- ─── Wordmark ─── -->
-  <!-- "Next" — dark, heavy weight -->
+  <!-- "Next" — dark, serif -->
   <text
     x="0"
-    y="52"
-    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    y="50"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
     font-size="34"
-    font-weight="800"
-    fill="#0F172A"
-    letter-spacing="-1.5"
+    font-weight="400"
+    fill="#1a1a1a"
+    letter-spacing="0.5"
   >Next</text>
 
-  <!-- "Bazar" — gradient fill -->
+  <!-- "Bazar" — warm taupe accent -->
   <text
     x="72"
-    y="52"
-    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
+    y="50"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
     font-size="34"
-    font-weight="800"
-    fill="url(#grad-main)"
-    letter-spacing="-1.5"
+    font-weight="600"
+    fill="#8E7A6B"
+    letter-spacing="0.5"
   >Bazar</text>
 
-  <!-- Tagline -->
+  <!-- Tagline — wide tracking, uppercase -->
   <text
-    x="0"
-    y="67"
-    font-family="'SF Pro Text', 'Inter', 'Helvetica Neue', Arial, sans-serif"
-    font-size="10.5"
+    x="1"
+    y="66"
+    font-family="'Helvetica Neue', 'Arial', sans-serif"
+    font-size="8.5"
     font-weight="500"
-    fill="#64748B"
-    letter-spacing="2.5"
+    fill="#999999"
+    letter-spacing="3.5"
   >MARKETPLACE</text>
 </svg>

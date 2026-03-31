@@ -19,12 +19,13 @@ export default function FavoriteButton({ listingId }: { listingId: string }) {
 
   return (
     <button
-      className="absolute top-2.5 right-2.5 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors z-10"
+      aria-label={saved ? "Remove from saved" : "Save listing"}
+      className="absolute top-2.5 right-2.5 p-2 bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors z-10"
       onClick={handleClick}
     >
       <Heart
         className={`w-4 h-4 transition-transform ${animating ? "scale-125" : ""} ${
-          saved ? "text-red-500 fill-red-500" : "text-gray-600"
+          saved ? "text-red-500 fill-red-500" : "text-[#666]"
         }`}
       />
     </button>
