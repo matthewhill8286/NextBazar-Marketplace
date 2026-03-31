@@ -16,7 +16,7 @@ import { EmptyListingsIllustration } from "@/app/components/illustrations";
 // ─── Form primitives ──────────────────────────────────────────────────────────
 
 const INPUT_BASE =
-  "w-full px-4 py-3 border border-[#e8e6e3] focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 outline-none text-sm bg-white transition-colors";
+  "w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white transition-colors";
 
 type FormInputProps = InputHTMLAttributes<HTMLInputElement> & {
   /** Optional prefix symbol rendered inside the left of the input (e.g. "\u20AC") */
@@ -32,7 +32,7 @@ export function FormInput({
   if (prefix) {
     return (
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#999] font-medium pointer-events-none">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b6560] font-medium pointer-events-none">
           {prefix}
         </span>
         <input className={`${INPUT_BASE} pl-8 ${className}`} {...props} />
@@ -107,7 +107,9 @@ const SPINNER_SIZES: Record<SpinnerSize, string> = {
 export function LoadingSpinner({ size = "md" }: { size?: SpinnerSize }) {
   return (
     <div className="flex items-center justify-center py-20">
-      <Loader2 className={`${SPINNER_SIZES[size]} text-[#999] animate-spin`} />
+      <Loader2
+        className={`${SPINNER_SIZES[size]} text-[#6b6560] animate-spin`}
+      />
     </div>
   );
 }
@@ -146,7 +148,7 @@ export function EmptyState({
       {emoji ? (
         <div className="text-4xl mb-4">{emoji}</div>
       ) : (
-        <EmptyListingsIllustration className="w-16 h-16 mx-auto mb-4 text-[#ccc]" />
+        <EmptyListingsIllustration className="w-16 h-16 mx-auto mb-4 text-[#8a8280]" />
       )}
       <p
         className="font-light text-xl text-[#1a1a1a] mb-2"
@@ -155,7 +157,7 @@ export function EmptyState({
         {title}
       </p>
       {description && (
-        <p className="text-[#999] text-sm max-w-sm mx-auto">{description}</p>
+        <p className="text-[#6b6560] text-sm max-w-sm mx-auto">{description}</p>
       )}
       {action && <div className="mt-6">{action}</div>}
     </div>
@@ -208,7 +210,7 @@ export function ConfirmDialog({
           {title}
         </h3>
         {description && (
-          <p className="text-sm text-[#999] mb-6">{description}</p>
+          <p className="text-sm text-[#6b6560] mb-6">{description}</p>
         )}
         <div className="flex gap-3">
           <button

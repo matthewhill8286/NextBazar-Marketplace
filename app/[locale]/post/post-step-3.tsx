@@ -12,6 +12,7 @@ import {
   Video,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -38,10 +39,10 @@ type Props = {
   isVehicle: boolean;
   vehicleAttrs: VehicleAttributes;
   pricing: ClientPricing;
-  onSetPackage: (pkg: "free" | "featured" | "urgent") => void;
-  onSetVideo: (v: UploadedVideo | null) => void;
-  onBack: () => void;
-  onPublish: () => void;
+  onSetPackageAction: (pkg: "free" | "featured" | "urgent") => void;
+  onSetVideoAction: (v: UploadedVideo | null) => void;
+  onBackAction: () => void;
+  onPublishAction: () => void;
 };
 
 function capitalize(s: string) {
@@ -60,10 +61,10 @@ export default function PostStep3({
   isVehicle,
   vehicleAttrs,
   pricing,
-  onSetPackage,
-  onSetVideo,
-  onBack,
-  onPublish,
+  onSetPackageAction,
+  onSetVideoAction,
+  onBackAction,
+  onPublishAction,
 }: Props) {
   const category = categories.find((c) => c.id === formData.category_id);
   const location = locations.find((l) => l.id === formData.location_id);
@@ -92,7 +93,7 @@ export default function PostStep3({
         >
           Review &amp; Publish
         </h2>
-        <p className="text-sm text-[#999]">
+        <p className="text-sm text-[#6b6560]">
           Choose how you want your listing to appear
         </p>
       </div>
@@ -101,7 +102,7 @@ export default function PostStep3({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* LEFT COLUMN — Live Preview */}
         <div className="lg:sticky lg:top-8 space-y-3">
-          <div className="flex items-center gap-2 text-[10px] font-medium tracking-[0.15em] uppercase text-[#bbb]">
+          <div className="flex items-center gap-2 text-[10px] font-medium tracking-[0.15em] uppercase text-[#8a8280]">
             <Eye className="w-3.5 h-3.5" />
             Live Preview
           </div>
@@ -118,14 +119,16 @@ export default function PostStep3({
             {/* Image area */}
             <div className="relative aspect-4/3 overflow-hidden bg-[#f0eeeb]">
               {firstImage ? (
-                <img
+                <Image
                   src={firstImage.preview}
                   alt=""
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Camera className="w-10 h-10 text-[#ccc]" />
+                  <Camera className="w-10 h-10 text-[#8a8280]" />
                 </div>
               )}
 
@@ -193,7 +196,7 @@ export default function PostStep3({
               )}
 
               {/* Meta row */}
-              <div className="flex items-center gap-1.5 text-[#bbb] text-xs mb-3">
+              <div className="flex items-center gap-1.5 text-[#8a8280] text-xs mb-3">
                 <MapPin className="w-3 h-3 shrink-0" />
                 <span className="truncate">{location?.name || "Cyprus"}</span>
                 {formData.condition && (
@@ -208,7 +211,7 @@ export default function PostStep3({
 
               {/* Description preview */}
               {formData.description && (
-                <p className="text-xs text-[#999] line-clamp-2 mb-3 leading-relaxed">
+                <p className="text-xs text-[#6b6560] line-clamp-2 mb-3 leading-relaxed">
                   {formData.description}
                 </p>
               )}
@@ -227,7 +230,7 @@ export default function PostStep3({
                     ? `\u20AC${Number(formData.price).toLocaleString()}`
                     : "Contact for price"}
                 </span>
-                <span className="flex items-center gap-1 text-[11px] text-[#bbb]">
+                <span className="flex items-center gap-1 text-[11px] text-[#8a8280]">
                   <Clock className="w-3 h-3" />
                   Just now
                 </span>
@@ -247,7 +250,7 @@ export default function PostStep3({
           </div>
 
           {/* Package visual hint */}
-          <p className="text-center text-[11px] text-[#bbb] mt-1 min-h-[1rem]">
+          <p className="text-center text-[11px] text-[#8a8280] mt-1 min-h-[1rem]">
             {selectedPackage === "featured"
               ? "Your listing will appear at the top of search results with a golden highlight"
               : selectedPackage === "urgent"
@@ -261,7 +264,7 @@ export default function PostStep3({
           {/* Free tier */}
           <button
             type="button"
-            onClick={() => onSetPackage("free")}
+            onClick={() => onSetPackageAction("free")}
             className={`w-full text-left border p-5 transition-all ${
               selectedPackage === "free"
                 ? "border-[#8E7A6B] bg-[#faf9f7] ring-1 ring-[#8E7A6B]"
@@ -285,7 +288,7 @@ export default function PostStep3({
                   <div className="font-medium text-[#1a1a1a] text-sm">
                     Free Listing
                   </div>
-                  <div className="text-xs text-[#999]">
+                  <div className="text-xs text-[#6b6560]">
                     Standard visibility for 30 days
                   </div>
                 </div>
@@ -302,7 +305,7 @@ export default function PostStep3({
           {/* Featured tier */}
           <button
             type="button"
-            onClick={() => onSetPackage("featured")}
+            onClick={() => onSetPackageAction("featured")}
             className={`w-full text-left border p-5 transition-all relative ${
               selectedPackage === "featured"
                 ? "border-amber-400 bg-amber-50/40 ring-1 ring-amber-400"
@@ -329,7 +332,7 @@ export default function PostStep3({
                   <div className="font-medium text-[#1a1a1a] text-sm">
                     Featured Listing
                   </div>
-                  <div className="text-xs text-[#999]">
+                  <div className="text-xs text-[#6b6560]">
                     Top placement + highlighted badge for 7 days — up to 5x more
                     views
                   </div>
@@ -347,7 +350,7 @@ export default function PostStep3({
           {/* Urgent tier */}
           <button
             type="button"
-            onClick={() => onSetPackage("urgent")}
+            onClick={() => onSetPackageAction("urgent")}
             className={`w-full text-left border p-5 transition-all ${
               selectedPackage === "urgent"
                 ? "border-red-300 bg-red-50/40 ring-1 ring-red-300"
@@ -371,7 +374,7 @@ export default function PostStep3({
                   <div className="font-medium text-[#1a1a1a] text-sm">
                     Quick Boost
                   </div>
-                  <div className="text-xs text-[#999]">
+                  <div className="text-xs text-[#6b6560]">
                     Boosted visibility + priority in search for 3 days — up to
                     3x more views
                   </div>
@@ -394,7 +397,7 @@ export default function PostStep3({
                   <p className="font-medium text-[#1a1a1a] text-sm">
                     Video Tour
                   </p>
-                  <p className="text-xs text-[#999] mt-0.5">
+                  <p className="text-xs text-[#6b6560] mt-0.5">
                     Add a short video — included with your paid listing
                   </p>
                 </div>
@@ -405,7 +408,7 @@ export default function PostStep3({
               <VideoUpload
                 userId={userId}
                 video={video}
-                onChangeAction={onSetVideo}
+                onChangeAction={onSetVideoAction}
               />
             </div>
           )}
@@ -414,14 +417,14 @@ export default function PostStep3({
           <div className="flex gap-3 pt-2">
             <button
               type="button"
-              onClick={onBack}
+              onClick={onBackAction}
               className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
             <button
               type="button"
-              onClick={onPublish}
+              onClick={onPublishAction}
               disabled={loading}
               className={`flex-[2] py-3.5 text-xs font-medium tracking-[0.15em] uppercase transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${
                 selectedPackage === "free"
@@ -444,7 +447,7 @@ export default function PostStep3({
           </div>
 
           {selectedPackage !== "free" && (
-            <p className="text-center text-xs text-[#bbb]">
+            <p className="text-center text-xs text-[#8a8280]">
               Your listing will be published, then pay to activate your
               promotion.
             </p>

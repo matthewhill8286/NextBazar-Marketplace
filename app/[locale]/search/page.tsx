@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import {
   getCategoriesCached,
   getLocationsCached,
@@ -20,18 +19,10 @@ export default async function SearchPage() {
   ]);
 
   return (
-    <Suspense
-      fallback={
-        <div className="max-w-7xl mx-auto px-4 py-12 text-center text-[#bbb]">
-          Loading...
-        </div>
-      }
-    >
       <SearchClient
         initialCategories={categories}
         initialSubcategories={subcategories}
         initialLocations={locations}
       />
-    </Suspense>
   );
 }

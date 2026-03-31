@@ -64,7 +64,7 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="bg-white border-b border-[#e8e6e3]">
         <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-6">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
             Our Story
           </p>
           <h1
@@ -75,7 +75,7 @@ export default function AboutPage() {
             <br className="hidden md:block" />
             for real people
           </h1>
-          <p className="text-lg text-[#999] max-w-2xl mx-auto mb-12 leading-relaxed">
+          <p className="text-lg text-[#6b6560] max-w-2xl mx-auto mb-12 leading-relaxed">
             NextBazar started with a simple belief: buying and selling locally
             should be fast, safe, and actually enjoyable. We built the platform
             we always wished existed.
@@ -100,7 +100,7 @@ export default function AboutPage() {
               >
                 {s.value}
               </div>
-              <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#999]">
+              <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560]">
                 {s.label}
               </div>
             </div>
@@ -130,7 +130,7 @@ export default function AboutPage() {
 
       {/* Values */}
       <section className="max-w-5xl mx-auto px-6 pb-16">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
           What We Stand For
         </p>
         <h2
@@ -152,7 +152,9 @@ export default function AboutPage() {
                 >
                   {v.title}
                 </h3>
-                <p className="text-sm text-[#999] leading-relaxed">{v.desc}</p>
+                <p className="text-sm text-[#6b6560] leading-relaxed">
+                  {v.desc}
+                </p>
               </div>
             </div>
           ))}
@@ -161,7 +163,7 @@ export default function AboutPage() {
 
       {/* Team */}
       <section className="max-w-5xl mx-auto px-6 pb-24">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
           The People Behind NextBazar
         </p>
         <h2
@@ -185,7 +187,7 @@ export default function AboutPage() {
               >
                 {m.name}
               </div>
-              <div className="text-xs text-[#999] mt-1">{m.role}</div>
+              <div className="text-xs text-[#6b6560] mt-1">{m.role}</div>
             </div>
           ))}
         </div>
@@ -203,7 +205,7 @@ export default function AboutPage() {
           >
             Ready to start selling?
           </h2>
-          <p className="text-[#999] mb-10">
+          <p className="text-[#6b6560] mb-10">
             Post your first ad for free and reach thousands of buyers today.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">

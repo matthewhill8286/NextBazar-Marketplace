@@ -80,8 +80,8 @@ const STATUS_CONFIG: Record<
     bg: "bg-[#faf9f7]",
     text: "text-[#666]",
   },
-  withdrawn: { label: "Withdrawn", bg: "bg-[#f0eeeb]", text: "text-[#999]" },
-  expired: { label: "Expired", bg: "bg-[#f0eeeb]", text: "text-[#999]" },
+  withdrawn: { label: "Withdrawn", bg: "bg-[#f0eeeb]", text: "text-[#6b6560]" },
+  expired: { label: "Expired", bg: "bg-[#f0eeeb]", text: "text-[#6b6560]" },
 };
 
 function Avatar({
@@ -100,9 +100,11 @@ function Avatar({
   return (
     <div className="w-8 h-8 rounded-full bg-linear-to-br from-[#bbb] to-[#faf9f7]0 flex items-center justify-center text-white text-xs font-bold shrink-0 overflow-hidden">
       {avatarUrl ? (
-        <img
+        <Image
           src={avatarUrl}
           alt={name}
+          width={32}
+          height={32}
           className="w-full h-full object-cover"
         />
       ) : (
@@ -127,7 +129,7 @@ function StarRating({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={`w-3.5 h-3.5 ${n <= rating ? "text-amber-400 fill-amber-400" : "text-[#ccc] fill-[#e8e6e3]"}`}
+          className={`w-3.5 h-3.5 ${n <= rating ? "text-amber-400 fill-amber-400" : "text-[#8a8280] fill-[#e8e6e3]"}`}
         />
       ))}
     </div>
@@ -137,25 +139,25 @@ function StarRating({ rating }: { rating: number }) {
 function Pagination({
   page,
   total,
-  onPage,
+  onPageAction,
 }: {
   page: number;
   total: number;
-  onPage: (p: number) => void;
+  onPageAction: (p: number) => void;
 }) {
   const totalPages = Math.ceil(total / PAGE_SIZE);
   if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between pt-2">
-      <span className="text-xs text-[#bbb]">
+      <span className="text-xs text-[#8a8280]">
         Page {page + 1} of {totalPages} · {total} offer{total !== 1 ? "s" : ""}
       </span>
       <div className="flex items-center gap-1">
         <button
           type="button"
-          onClick={() => onPage(page - 1)}
+          onClick={() => onPageAction(page - 1)}
           disabled={page === 0}
-          className="p-1.5 border border-[#e8e6e3] text-[#999] hover:bg-[#faf9f7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 border border-[#e8e6e3] text-[#6b6560] hover:bg-[#faf9f7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -163,7 +165,7 @@ function Pagination({
           <button
             key={`pagination-${i}`}
             type="button"
-            onClick={() => onPage(i)}
+            onClick={() => onPageAction(i)}
             className={`w-7 h-7 text-xs font-medium transition-colors ${
               i === page
                 ? "bg-[#2C2826] text-white"
@@ -175,9 +177,9 @@ function Pagination({
         ))}
         <button
           type="button"
-          onClick={() => onPage(page + 1)}
+          onClick={() => onPageAction(page + 1)}
           disabled={page >= totalPages - 1}
-          className="p-1.5 border border-[#e8e6e3] text-[#999] hover:bg-[#faf9f7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="p-1.5 border border-[#e8e6e3] text-[#6b6560] hover:bg-[#faf9f7] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -190,15 +192,15 @@ function OfferCard({
   offer,
   isSeller,
   userId,
-  onUpdate,
-  onDelete,
+  onUpdateAction,
+  onDeleteAction,
   focused = false,
 }: {
   offer: Offer;
   isSeller: boolean;
   userId: string;
-  onUpdate: (id: string, patch: Partial<Offer>) => void;
-  onDelete: (id: string) => void;
+  onUpdateAction: (id: string, patch: Partial<Offer>) => void;
+  onDeleteAction: (id: string) => void;
   focused?: boolean;
 }) {
   const supabase = createClient();
@@ -267,7 +269,7 @@ function OfferCard({
         toast.error("Failed to update offer");
         return;
       }
-      onUpdate(offer.id, {
+      onUpdateAction(offer.id, {
         status,
         responded_at: new Date().toISOString(),
         ...extras,
@@ -311,7 +313,7 @@ function OfferCard({
         setDeleteConfirm(false);
         return;
       }
-      onDelete(offer.id);
+      onDeleteAction(offer.id);
       toast.success("Offer removed");
     } catch {
       setActionError("Couldn't delete offer. Please try again.");
@@ -361,7 +363,7 @@ function OfferCard({
             >
               {listing?.title || "Listing"}
             </Link>
-            <div className="flex items-center gap-2 mt-0.5 text-xs text-[#999] flex-wrap">
+            <div className="flex items-center gap-2 mt-0.5 text-xs text-[#6b6560] flex-wrap">
               {person && (
                 <span className="flex items-center gap-1">
                   <Avatar
@@ -377,7 +379,7 @@ function OfferCard({
                 {offer.amount.toLocaleString()}
               </span>
               {listing?.price && (
-                <span className="text-[#bbb]">
+                <span className="text-[#8a8280]">
                   (asking {sym}
                   {listing.price.toLocaleString()})
                 </span>
@@ -392,7 +394,7 @@ function OfferCard({
               {cfg.label}
             </span>
             {offer.status === "pending" && (
-              <span className="flex items-center gap-1 text-xs text-[#bbb]">
+              <span className="flex items-center gap-1 text-xs text-[#8a8280]">
                 <Clock className="w-3 h-3" />
                 {timeLeft(offer.expires_at)}
               </span>
@@ -401,9 +403,9 @@ function OfferCard({
               <StarRating rating={existingRating} />
             )}
             {expanded ? (
-              <ChevronUp className="w-4 h-4 text-[#bbb]" />
+              <ChevronUp className="w-4 h-4 text-[#8a8280]" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-[#bbb]" />
+              <ChevronDown className="w-4 h-4 text-[#8a8280]" />
             )}
           </div>
         </div>
@@ -412,7 +414,7 @@ function OfferCard({
           <div className="px-4 pb-4 border-t border-[#faf9f7] pt-4 space-y-3">
             {offer.message && (
               <div className="bg-[#faf9f7] p-3">
-                <p className="text-xs text-[#999] mb-1 font-medium">
+                <p className="text-xs text-[#6b6560] mb-1 font-medium">
                   <MessageCircle className="w-3 h-3 inline mr-1" />
                   Buyer&apos;s message
                 </p>
@@ -525,7 +527,7 @@ function OfferCard({
                       Your counter offer amount
                     </span>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#bbb]">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280]">
                         {sym}
                       </span>
                       <input
@@ -533,7 +535,7 @@ function OfferCard({
                         min="1"
                         value={counterAmount}
                         onChange={(e) => setCounterAmount(e.target.value)}
-                        className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm outline-none focus:border-[#1a1a1a] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm outline-none focus-visible:border-[#1a1a1a] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         placeholder="Amount"
                       />
                     </div>
@@ -542,7 +544,7 @@ function OfferCard({
                       value={counterMessage}
                       onChange={(e) => setCounterMessage(e.target.value)}
                       placeholder="Optional message"
-                      className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm outline-none focus:border-[#1a1a1a] resize-none"
+                      className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm outline-none focus-visible:border-[#1a1a1a] resize-none"
                     />
                     <div className="flex gap-2">
                       <button
@@ -585,7 +587,7 @@ function OfferCard({
                   type="button"
                   onClick={() => setConfirmAction({ type: "withdrawn" })}
                   disabled={!!loading}
-                  className="flex items-center gap-1.5 text-sm text-[#999] hover:text-red-600 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 text-sm text-[#6b6560] hover:text-red-600 transition-colors disabled:opacity-50"
                 >
                   {loading === "withdrawn" ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -635,7 +637,7 @@ function OfferCard({
               <div className="pt-1 border-t border-[#faf9f7]">
                 {deleteConfirm ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#999] flex-1">
+                    <span className="text-xs text-[#6b6560] flex-1">
                       Remove this offer permanently?
                     </span>
                     <button
@@ -661,7 +663,7 @@ function OfferCard({
                   <button
                     type="button"
                     onClick={() => setDeleteConfirm(true)}
-                    className="flex items-center gap-1.5 text-xs text-[#bbb] hover:text-red-500 transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-[#8a8280] hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     Remove from history
@@ -757,7 +759,7 @@ function OfferCard({
         description={`Your offer of ${sym}${offer.amount.toLocaleString()} will be withdrawn and the seller will be notified.`}
         icon={
           <div className="w-12 h-12 rounded-full bg-[#f0eeeb] flex items-center justify-center">
-            <X className="w-6 h-6 text-[#999]" />
+            <X className="w-6 h-6 text-[#6b6560]" />
           </div>
         }
         confirmLabel="Withdraw"
@@ -777,8 +779,8 @@ function OfferCard({
 type OfferCardPublicProps = {
   offer: Offer;
   userId: string;
-  onUpdate: (id: string, patch: Partial<Offer>) => void;
-  onDelete: (id: string) => void;
+  onUpdateAction: (id: string, patch: Partial<Offer>) => void;
+  onDeleteAction: (id: string) => void;
   focused?: boolean;
 };
 
@@ -942,7 +944,7 @@ export default function OffersClient({
     {
       key: "countered",
       label: "Countered",
-      icon: <RotateCcw className="w-4 h-4 text-[#999]" />,
+      icon: <RotateCcw className="w-4 h-4 text-[#6b6560]" />,
       statuses: ["countered"],
       emptyLabel: "No countered offers",
     },
@@ -956,7 +958,7 @@ export default function OffersClient({
     {
       key: "closed",
       label: "Declined & Expired",
-      icon: <X className="w-4 h-4 text-[#bbb]" />,
+      icon: <X className="w-4 h-4 text-[#8a8280]" />,
       statuses: ["declined", "withdrawn", "expired"],
       emptyLabel: "No declined or expired offers",
     },
@@ -979,7 +981,7 @@ export default function OffersClient({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#1a1a1a]">Offers</h1>
-        <p className="text-sm text-[#999] mt-0.5">
+        <p className="text-sm text-[#6b6560] mt-0.5">
           Manage offers you've received and sent.
         </p>
       </div>
@@ -993,7 +995,7 @@ export default function OffersClient({
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
             tab === "received"
               ? "bg-white text-[#1a1a1a] shadow-sm"
-              : "text-[#999] hover:text-[#666]"
+              : "text-[#6b6560] hover:text-[#666]"
           }`}
         >
           Received
@@ -1010,7 +1012,7 @@ export default function OffersClient({
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
             tab === "sent"
               ? "bg-white text-[#1a1a1a] shadow-sm"
-              : "text-[#999] hover:text-[#666]"
+              : "text-[#6b6560] hover:text-[#666]"
           }`}
         >
           Sent
@@ -1024,7 +1026,7 @@ export default function OffersClient({
 
       {pageLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-5 h-5 text-[#999] animate-spin" />
+          <Loader2 className="w-5 h-5 text-[#6b6560] animate-spin" />
         </div>
       ) : offers.length === 0 ? (
         <div className="bg-white border border-[#e8e6e3] p-16 text-center">
@@ -1032,13 +1034,13 @@ export default function OffersClient({
             className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${isSeller ? "bg-[#faf9f7]" : "bg-[#faf9f7]"}`}
           >
             <Tag
-              className={`w-7 h-7 ${isSeller ? "text-[#bbb]" : "text-[#bbb]"}`}
+              className={`w-7 h-7 ${isSeller ? "text-[#8a8280]" : "text-[#8a8280]"}`}
             />
           </div>
           <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             {isSeller ? "No offers yet" : "No offers sent"}
           </h3>
-          <p className="text-[#999] text-sm mb-6">
+          <p className="text-[#6b6560] text-sm mb-6">
             {isSeller
               ? "When buyers make offers on your listings, they'll appear here."
               : "Browse listings and make an offer when you find something you like."}
@@ -1064,7 +1066,7 @@ export default function OffersClient({
                     <h2 className="text-sm font-semibold text-[#666]">
                       {section.label}
                     </h2>
-                    <span className="text-xs text-[#bbb] bg-[#f0eeeb] px-2 py-0.5 rounded-full">
+                    <span className="text-xs text-[#8a8280] bg-[#f0eeeb] px-2 py-0.5 rounded-full">
                       {section.offers.length}
                     </span>
                   </div>
@@ -1078,14 +1080,14 @@ export default function OffersClient({
                         isSeller={isSeller}
                         userId={userId}
                         focused={offer.id === focusOfferId}
-                        onUpdate={(id, patch) =>
+                        onUpdateAction={(id, patch) =>
                           isSeller
                             ? setReceived((prev) =>
                                 updateOffer(prev, id, patch),
                               )
                             : setSent((prev) => updateOffer(prev, id, patch))
                         }
-                        onDelete={handleDelete}
+                        onDeleteAction={handleDelete}
                       />
                     ))}
                   </div>
@@ -1093,7 +1095,7 @@ export default function OffersClient({
               ),
           )}
 
-          <Pagination page={page} total={total} onPage={setPage} />
+          <Pagination page={page} total={total} onPageAction={setPage} />
         </div>
       )}
     </div>

@@ -159,7 +159,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
         dealerPrice={dealerPrice}
         dealerInterval={dealerInterval}
         subscribing={subscribing}
-        onSubscribe={handleSubscribe}
+        onSubscribeAction={handleSubscribe}
       />
     );
   }
@@ -185,7 +185,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
             <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
               {branding.shopName || "Your Shop"}
             </h1>
-            <p className="text-sm text-[#999]">
+            <p className="text-sm text-[#6b6560]">
               Sellers Pro &mdash; manage your brand, listings, and analytics
             </p>
           </div>
@@ -193,7 +193,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
         <div className="flex items-center gap-2">
           <Link
             href={`/shop/${branding.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] px-3 py-2 hover:bg-[#f0eeeb] transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
@@ -223,7 +223,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
             className={`flex items-center justify-center gap-2 py-2.5 px-5 text-sm font-semibold transition-all ${
               tab === t.key
                 ? "bg-white text-[#1a1a1a] shadow-sm"
-                : "text-[#999] hover:text-[#666]"
+                : "text-[#6b6560] hover:text-[#666]"
             }`}
           >
             <t.icon className="w-4 h-4" />
@@ -243,9 +243,9 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
           saving={saving}
           bannerUploading={false}
           onChange={handleBrandingChange}
-          onBannerUpload={() => {}}
-          onBannerRemove={() => {}}
-          onSave={handleSaveBranding}
+          onBannerUploadAction={() => {}}
+          onBannerRemoveAction={() => {}}
+          onSaveAction={handleSaveBranding}
         />
       )}
 

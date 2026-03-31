@@ -74,7 +74,7 @@ function StarRow({ rating }: { rating: number }) {
           className={`w-3.5 h-3.5 ${
             n <= rating
               ? "text-amber-400 fill-amber-400"
-              : "text-[#ccc] fill-[#e8e6e3]"
+              : "text-[#8a8280] fill-[#e8e6e3]"
           }`}
         />
       ))}
@@ -157,11 +157,11 @@ function PurchaseCard({
               <div className="min-w-0">
                 <Link
                   href={listing ? `/listing/${listing.slug}` : "#"}
-                  className="font-semibold text-[#1a1a1a] text-sm hover:text-indigo-600 transition-colors block truncate"
+                  className="font-semibold text-[#1a1a1a] text-sm hover:text-[#8E7A6B] transition-colors block truncate"
                 >
                   {listing?.title || "Listing"}
                 </Link>
-                <div className="flex items-center gap-2 mt-0.5 text-xs text-[#999] flex-wrap">
+                <div className="flex items-center gap-2 mt-0.5 text-xs text-[#6b6560] flex-wrap">
                   {cat && (
                     <span className="flex items-center gap-1">
                       <CategoryIcon slug={cat.slug} size={11} />
@@ -183,7 +183,7 @@ function PurchaseCard({
                   {formatPrice(finalAmount, purchase.currency)}
                 </div>
                 {listing?.price && listing.price !== finalAmount && (
-                  <div className="text-xs text-[#bbb] line-through">
+                  <div className="text-xs text-[#8a8280] line-through">
                     {formatPrice(listing.price, purchase.currency)}
                   </div>
                 )}
@@ -196,28 +196,30 @@ function PurchaseCard({
                 href={`/profile/${seller.id}`}
                 className="flex items-center gap-1.5 mt-2 w-fit group"
               >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-[9px] font-bold shrink-0 overflow-hidden">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#8E7A6B] to-[#7A6657] flex items-center justify-center text-white text-[9px] font-bold shrink-0 overflow-hidden">
                   {seller.avatar_url ? (
-                    <img
+                    <Image
                       src={seller.avatar_url}
                       alt=""
+                      width={20}
+                      height={20}
                       className="w-full h-full object-cover"
                     />
                   ) : (
                     seller.display_name[0].toUpperCase()
                   )}
                 </div>
-                <span className="text-xs text-[#999] group-hover:text-indigo-600 transition-colors">
+                <span className="text-xs text-[#6b6560] group-hover:text-[#8E7A6B] transition-colors">
                   {seller.display_name}
                 </span>
                 {seller.verified && (
-                  <Shield className="w-3 h-3 text-indigo-500" />
+                  <Shield className="w-3 h-3 text-[#8E7A6B]" />
                 )}
               </Link>
             )}
 
             {/* Meta row */}
-            <div className="flex items-center gap-3 mt-2 text-xs text-[#bbb]">
+            <div className="flex items-center gap-3 mt-2 text-xs text-[#8a8280]">
               <span className="flex items-center gap-1">
                 <CheckCircle className="w-3 h-3 text-green-500" />
                 Purchased {formatDate(purchase.responded_at)}
@@ -237,7 +239,7 @@ function PurchaseCard({
             hasReviewed ? (
               <div className="flex items-center gap-2">
                 <StarRow rating={existingRating ?? 0} />
-                <span className="text-xs text-[#bbb]">Your review</span>
+                <span className="text-xs text-[#8a8280]">Your review</span>
               </div>
             ) : (
               <button
@@ -254,7 +256,7 @@ function PurchaseCard({
 
           <Link
             href={listing ? `/listing/${listing.slug}` : "#"}
-            className="flex items-center gap-1.5 text-xs font-medium text-[#999] hover:text-indigo-600 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-[#6b6560] hover:text-[#8E7A6B] transition-colors"
           >
             <ExternalLink className="w-3 h-3" />
             View listing
@@ -299,7 +301,7 @@ export default function PurchasesClient({
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1a1a1a]">Purchases</h1>
-          <p className="text-sm text-[#999] mt-0.5">
+          <p className="text-sm text-[#6b6560] mt-0.5">
             All listings you've successfully bought.
           </p>
         </div>
@@ -309,7 +311,7 @@ export default function PurchasesClient({
               {currencySymbol}
               {totalSpent.toLocaleString()}
             </div>
-            <div className="text-xs text-[#bbb]">total spent</div>
+            <div className="text-xs text-[#8a8280]">total spent</div>
           </div>
         )}
       </div>
@@ -321,7 +323,7 @@ export default function PurchasesClient({
             <div className="text-2xl font-bold text-[#1a1a1a]">
               {purchases.length}
             </div>
-            <div className="text-xs text-[#999] mt-0.5">
+            <div className="text-xs text-[#6b6560] mt-0.5">
               Item{purchases.length !== 1 ? "s" : ""} bought
             </div>
           </div>
@@ -335,7 +337,7 @@ export default function PurchasesClient({
                 }).length
               }
             </div>
-            <div className="text-xs text-[#999] mt-0.5">Transactions</div>
+            <div className="text-xs text-[#6b6560] mt-0.5">Transactions</div>
           </div>
           <div className="bg-white border border-[#e8e6e3] p-4 text-center">
             <div className="text-2xl font-bold text-green-600">
@@ -353,7 +355,7 @@ export default function PurchasesClient({
                     .toLocaleString()}`
                 : "—"}
             </div>
-            <div className="text-xs text-[#999] mt-0.5">Saved vs asking</div>
+            <div className="text-xs text-[#6b6560] mt-0.5">Saved vs asking</div>
           </div>
         </div>
       )}
@@ -362,12 +364,12 @@ export default function PurchasesClient({
       {purchases.length === 0 ? (
         <div className="bg-white border border-[#e8e6e3] p-16 text-center">
           <div className="w-14 h-14 bg-[#faf9f7] rounded-full flex items-center justify-center mx-auto mb-4">
-            <ShoppingBag className="w-7 h-7 text-[#ccc]" />
+            <ShoppingBag className="w-7 h-7 text-[#8a8280]" />
           </div>
           <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             No purchases yet
           </h3>
-          <p className="text-[#999] text-sm mb-6">
+          <p className="text-[#6b6560] text-sm mb-6">
             When a seller accepts one of your offers, it will appear here.
           </p>
           <Link

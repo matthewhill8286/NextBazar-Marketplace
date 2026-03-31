@@ -75,11 +75,11 @@ export default async function ListingPage(
     const t = await getTranslations("listing");
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
-        <NotFoundIllustration className="w-32 h-28 mb-6 text-[#ccc]" />
+        <NotFoundIllustration className="w-32 h-28 mb-6 text-[#8a8280]" />
         <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
           {t("notFound")}
         </h1>
-        <p className="text-[#999] mb-6">{t("notFoundDesc")}</p>
+        <p className="text-[#6b6560] mb-6">{t("notFoundDesc")}</p>
         <Link
           href="/"
           className="bg-[#2C2826] text-white px-6 py-3 font-semibold hover:bg-[#3D3633] transition-colors"

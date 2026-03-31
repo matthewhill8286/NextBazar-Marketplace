@@ -129,7 +129,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-xs text-[#bbb] hover:text-red-500 transition-colors"
+        className="flex items-center gap-1.5 text-xs text-[#8a8280] hover:text-red-500 transition-colors"
       >
         <Flag className="w-3 h-3" />
         Report
@@ -148,7 +148,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
               <h2 className="font-semibold text-[#1a1a1a]">Report Listing</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#bbb]"
+                className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#8a8280]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -186,7 +186,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
               <div>
                 <label className="block text-sm font-medium text-[#666] mb-1.5">
                   Additional details{" "}
-                  <span className="text-[#bbb] font-normal">(optional)</span>
+                  <span className="text-[#8a8280] font-normal">(optional)</span>
                 </label>
                 <textarea
                   rows={3}
@@ -410,7 +410,7 @@ export function ContactButtons({
         <button
           onClick={() => !disabled && setPhoneVisible(!phoneVisible)}
           disabled={disabled}
-          className={`w-full py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm ${disabled ? "bg-[#f0eeeb] text-[#bbb] cursor-not-allowed" : "bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#f0eeeb]"}`}
+          className={`w-full py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm ${disabled ? "bg-[#f0eeeb] text-[#8a8280] cursor-not-allowed" : "bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#f0eeeb]"}`}
         >
           <svg
             width="18"

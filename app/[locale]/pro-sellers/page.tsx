@@ -99,7 +99,7 @@ export default async function DealersPage() {
           <div className="w-14 h-14 bg-[#faf9f7] flex items-center justify-center mx-auto mb-6">
             <Crown className="w-6 h-6 text-[#8E7A6B]" />
           </div>
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-6">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
             Professional Sellers
           </p>
           <h1
@@ -110,7 +110,7 @@ export default async function DealersPage() {
             <br className="hidden md:block" />
             with NextBazar Pro
           </h1>
-          <p className="text-lg text-[#999] max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg text-[#6b6560] max-w-2xl mx-auto mb-10 leading-relaxed">
             Everything a professional seller needs — unlimited listings,
             powerful analytics, a branded shop page, and a verified badge that
             builds instant buyer trust. All for just{" "}
@@ -131,7 +131,7 @@ export default async function DealersPage() {
           {/* Promo code section */}
           <div className="flex items-center gap-3 my-8 max-w-md mx-auto">
             <div className="flex-1 border-t border-[#e8e6e3]" />
-            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#bbb]">
+            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#8a8280]">
               or
             </span>
             <div className="flex-1 border-t border-[#e8e6e3]" />
@@ -142,7 +142,7 @@ export default async function DealersPage() {
 
       {/* Features grid */}
       <section className="max-w-5xl mx-auto px-6 py-20">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
           What You Get
         </p>
         <h2
@@ -163,7 +163,7 @@ export default async function DealersPage() {
               >
                 {f.title}
               </h3>
-              <p className="text-xs text-[#999] leading-relaxed">{f.desc}</p>
+              <p className="text-xs text-[#6b6560] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -171,7 +171,7 @@ export default async function DealersPage() {
 
       {/* Feature groups — detailed breakdown */}
       <section className="max-w-5xl mx-auto px-6 pb-20">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
           Full Breakdown
         </p>
         <h2
@@ -228,7 +228,7 @@ export default async function DealersPage() {
 
       {/* Testimonials */}
       <section className="max-w-5xl mx-auto px-6 pb-24">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
           What Sellers Say
         </p>
         <h2
@@ -254,7 +254,7 @@ export default async function DealersPage() {
                   <div className="text-sm font-medium text-[#1a1a1a]">
                     {t.name}
                   </div>
-                  <div className="text-xs text-[#999]">{t.role}</div>
+                  <div className="text-xs text-[#6b6560]">{t.role}</div>
                 </div>
               </div>
             </div>

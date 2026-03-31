@@ -16,7 +16,7 @@ export default async function PropertiesPage() {
   const category = await getCategoryBySlugCached("property");
   if (!category)
     return (
-      <div className="p-20 text-center text-[#bbb]">Category not found.</div>
+      <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
     );
 
   const [subcategories, featured, recent] = await Promise.all([

@@ -84,7 +84,7 @@ export default function SavedPage() {
       });
   }, [savedIds, savedLoading]);
 
-  // Derive ordered list — only IDs currently in savedIds, preserving insertion order
+  // Derive an ordered list — only IDs currently in savedIds, preserving insertion order
   const listings = [...savedIds].map((id) => listingMap[id]).filter(Boolean);
 
   async function handleClearAll() {
@@ -140,7 +140,7 @@ export default function SavedPage() {
           >
             Saved Listings
           </h1>
-          <p className="text-sm text-[#999] mt-0.5">
+          <p className="text-sm text-[#6b6560] mt-0.5">
             {count} {count === 1 ? "item" : "items"} saved
           </p>
         </div>
@@ -153,7 +153,7 @@ export default function SavedPage() {
                 className={`p-2 transition-colors ${
                   viewMode === "list"
                     ? "bg-[#8E7A6B] text-white"
-                    : "text-[#999] hover:text-[#666] hover:bg-[#faf9f7]"
+                    : "text-[#6b6560] hover:text-[#666] hover:bg-[#faf9f7]"
                 }`}
                 title="List view"
               >
@@ -164,7 +164,7 @@ export default function SavedPage() {
                 className={`p-2 transition-colors ${
                   viewMode === "grid"
                     ? "bg-[#8E7A6B] text-white"
-                    : "text-[#999] hover:text-[#666] hover:bg-[#faf9f7]"
+                    : "text-[#6b6560] hover:text-[#666] hover:bg-[#faf9f7]"
                 }`}
                 title="Grid view"
               >
@@ -241,10 +241,10 @@ export default function SavedPage() {
                       {listing.title}
                     </h3>
 
-                    <div className="flex items-center gap-3 mt-1.5 text-xs text-[#999]">
+                    <div className="flex items-center gap-3 mt-1.5 text-xs text-[#6b6560]">
                       {loc?.name && (
                         <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-[#ccc]" />
+                          <MapPin className="w-3 h-3 text-[#8a8280]" />
                           {loc.name}
                         </span>
                       )}
@@ -254,7 +254,7 @@ export default function SavedPage() {
                         </span>
                       )}
                       {cat?.name && (
-                        <span className="hidden sm:inline text-[#ccc]">
+                        <span className="hidden sm:inline text-[#8a8280]">
                           {cat.name}
                         </span>
                       )}
@@ -267,7 +267,7 @@ export default function SavedPage() {
                       >
                         {fmtPrice(listing.price, listing.currency)}
                       </span>
-                      <span className="text-[11px] text-[#bbb]">
+                      <span className="text-[11px] text-[#8a8280]">
                         {timeAgo(listing.created_at)}
                       </span>
                     </div>
@@ -283,7 +283,7 @@ export default function SavedPage() {
                         e.stopPropagation();
                         await toggle(listing.id);
                       }}
-                      className="p-2.5 text-[#999] hover:text-red-500 transition-colors"
+                      className="p-2.5 text-[#6b6560] hover:text-red-500 transition-colors"
                     >
                       <Heart
                         className={`w-5 h-5 ${
@@ -299,14 +299,14 @@ export default function SavedPage() {
         )
       ) : (
         <div className="text-center py-20 bg-white border border-[#e8e6e3]">
-          <Heart className="w-12 h-12 text-[#ccc] mx-auto mb-3" />
+          <Heart className="w-12 h-12 text-[#8a8280] mx-auto mb-3" />
           <h2
             className="text-lg font-light text-[#1a1a1a] mb-1"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             No saved listings
           </h2>
-          <p className="text-sm text-[#999] mb-6">
+          <p className="text-sm text-[#6b6560] mb-6">
             Tap the heart icon on any listing to save it here
           </p>
           <Link

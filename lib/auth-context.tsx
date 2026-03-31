@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    // React to login / logout / token refresh
+    // React to log in / logout / token refresh
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {

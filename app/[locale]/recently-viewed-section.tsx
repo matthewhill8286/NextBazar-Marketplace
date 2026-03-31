@@ -46,7 +46,7 @@ export default function RecentlyViewedSection() {
     <section className="py-20 border-t border-[#e8e6e3]">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4 flex items-center gap-1.5">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4 flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
             Your history
           </p>
@@ -65,7 +65,7 @@ export default function RecentlyViewedSection() {
             } catch {}
             setRecentlyViewed([]);
           }}
-          className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] hover:text-[#1a1a1a] transition-colors"
+          className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
         >
           Clear history
         </button>

@@ -74,7 +74,7 @@ function CryptoTab({
     <div className="p-6">
       {/* Accepted coins */}
       <div className="mb-5">
-        <p className="text-xs font-semibold text-[#999] uppercase tracking-wide mb-3">
+        <p className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide mb-3">
           Accepted cryptocurrencies
         </p>
         <div className="grid grid-cols-3 gap-2">
@@ -93,7 +93,7 @@ function CryptoTab({
                 <div className="text-xs font-semibold text-[#1a1a1a] leading-none">
                   {coin.symbol}
                 </div>
-                <div className="text-[10px] text-[#bbb] truncate">
+                <div className="text-[10px] text-[#8a8280] truncate">
                   {coin.name}
                 </div>
               </div>
@@ -135,7 +135,7 @@ function CryptoTab({
         )}
       </button>
 
-      <p className="text-center text-[11px] text-[#bbb] mt-3">
+      <p className="text-center text-[11px] text-[#8a8280] mt-3">
         Powered by Coinbase Commerce · 1% processing fee
       </p>
     </div>
@@ -172,7 +172,12 @@ export default function StripeCheckoutModal({
   return (
     /* Backdrop */
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div
+        className="relative w-full max-w-lg bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Checkout"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#e8e6e3]">
           <div>
@@ -181,13 +186,13 @@ export default function StripeCheckoutModal({
                 ? `Featured Listing — ${pricing?.featured.price ?? "€9.99"}`
                 : `Quick Boost — ${pricing?.urgent.price ?? "€4.99"}`}
             </p>
-            <p className="text-xs text-[#bbb] mt-0.5">
+            <p className="text-xs text-[#8a8280] mt-0.5">
               Choose your payment method below
             </p>
           </div>
           <button
             onClick={onCloseAction}
-            className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#bbb] hover:text-[#666]"
+            className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#8a8280] hover:text-[#666]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -201,7 +206,7 @@ export default function StripeCheckoutModal({
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
                 paymentMethod === "card"
                   ? "text-[#1a1a1a] border-b-2 border-[#1a1a1a] -mb-px"
-                  : "text-[#bbb] hover:text-[#666]"
+                  : "text-[#8a8280] hover:text-[#666]"
               }`}
             >
               <CreditCard className="w-4 h-4" />
@@ -212,7 +217,7 @@ export default function StripeCheckoutModal({
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors ${
                 paymentMethod === "crypto"
                   ? "text-orange-500 border-b-2 border-orange-500 -mb-px"
-                  : "text-[#bbb] hover:text-[#666]"
+                  : "text-[#8a8280] hover:text-[#666]"
               }`}
             >
               <Bitcoin className="w-4 h-4" />

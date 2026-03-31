@@ -66,7 +66,7 @@ export default function PromoCodeInput() {
 
   return (
     <div className="bg-[#faf9f7] border border-[#e8e6e3] px-5 py-5 max-w-md mx-auto">
-      <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-3 flex items-center justify-center gap-1.5">
+      <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-3 flex items-center justify-center gap-1.5">
         <Ticket className="w-3.5 h-3.5 text-[#8E7A6B]" />
         Have a promo code? Get started free
       </p>
@@ -80,7 +80,7 @@ export default function PromoCodeInput() {
           }}
           onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
           placeholder="Enter promo code"
-          className="flex-1 bg-white border border-[#e8e6e3] px-3 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#ccc] focus:outline-none focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 font-mono tracking-wider transition-colors"
+          className="flex-1 bg-white border border-[#e8e6e3] px-3 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#8a8280] focus:outline-none focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 font-mono tracking-wider transition-colors"
           disabled={promoLoading}
         />
         <button
@@ -99,7 +99,7 @@ export default function PromoCodeInput() {
       {promoError && (
         <p className="text-red-500 text-xs mt-2 text-left">{promoError}</p>
       )}
-      <p className="text-[#bbb] text-[10px] mt-2">No credit card required</p>
+      <p className="text-[#8a8280] text-[10px] mt-2">No credit card required</p>
     </div>
   );
 }

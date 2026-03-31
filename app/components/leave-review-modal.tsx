@@ -71,18 +71,23 @@ export default function LeaveReviewModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white shadow-2xl w-full max-w-md overflow-hidden">
+      <div
+        className="bg-white shadow-2xl w-full max-w-md overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Leave a review"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#e8e6e3]">
           <div>
             <h2 className="text-lg font-bold text-[#1a1a1a]">Leave a Review</h2>
-            <p className="text-sm text-[#999] mt-0.5">
+            <p className="text-sm text-[#6b6560] mt-0.5">
               How was your experience with {revieweeName}?
             </p>
           </div>
           <button
             onClick={onCloseAction}
-            className="p-2 rounded-full hover:bg-[#f0eeeb] transition-colors text-[#bbb]"
+            className="p-2 rounded-full hover:bg-[#f0eeeb] transition-colors text-[#8a8280]"
           >
             <X className="w-5 h-5" />
           </button>
@@ -93,7 +98,9 @@ export default function LeaveReviewModal({
             <div className="flex flex-col items-center gap-3 py-6 text-center">
               <CheckCircle className="w-12 h-12 text-green-500" />
               <p className="font-semibold text-[#1a1a1a]">Review submitted!</p>
-              <p className="text-sm text-[#999]">Thanks for your feedback.</p>
+              <p className="text-sm text-[#6b6560]">
+                Thanks for your feedback.
+              </p>
             </div>
           ) : (
             <div className="space-y-5">
@@ -112,7 +119,7 @@ export default function LeaveReviewModal({
                         className={`w-9 h-9 transition-colors ${
                           n <= (hovered || rating)
                             ? "text-amber-400 fill-amber-400"
-                            : "text-[#ccc] fill-[#e8e6e3]"
+                            : "text-[#8a8280] fill-[#e8e6e3]"
                         }`}
                       />
                     </button>
@@ -120,7 +127,7 @@ export default function LeaveReviewModal({
                 </div>
                 <span
                   className={`text-sm font-medium transition-colors ${
-                    rating ? "text-amber-600" : "text-[#bbb]"
+                    rating ? "text-amber-600" : "text-[#8a8280]"
                   }`}
                 >
                   {LABELS[hovered || rating] || "Tap to rate"}
@@ -131,7 +138,7 @@ export default function LeaveReviewModal({
               <div>
                 <label className="block text-sm font-medium text-[#666] mb-1.5">
                   Comment{" "}
-                  <span className="text-[#bbb] font-normal">(optional)</span>
+                  <span className="text-[#8a8280] font-normal">(optional)</span>
                 </label>
                 <textarea
                   rows={3}
@@ -139,9 +146,9 @@ export default function LeaveReviewModal({
                   onChange={(e) => setComment(e.target.value)}
                   maxLength={500}
                   placeholder={`Share details about your experience with ${revieweeName}…`}
-                  className="w-full px-3.5 py-2.5 border border-[#e8e6e3] text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-50 resize-none"
+                  className="w-full px-3.5 py-2.5 border border-[#e8e6e3] text-sm outline-none focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 resize-none"
                 />
-                <div className="text-right text-xs text-[#bbb] mt-1">
+                <div className="text-right text-xs text-[#8a8280] mt-1">
                   {comment.length}/500
                 </div>
               </div>

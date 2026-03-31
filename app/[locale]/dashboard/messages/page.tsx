@@ -197,11 +197,11 @@ export default function MessagesPage() {
 
       {conversations.length > 0 && (
         <div className="relative mb-4">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#bbb]" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
           <input
             type="text"
             placeholder="Search conversations..."
-            className="w-full pl-10 pr-4 py-2.5 border border-[#e8e6e3] bg-white text-sm outline-none focus:border-[#1a1a1a] focus:ring-2 focus:ring-[#1a1a1a]/5"
+            className="w-full pl-10 pr-4 py-2.5 border border-[#e8e6e3] bg-white text-sm outline-none focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -239,9 +239,11 @@ export default function MessagesPage() {
                   {/* Avatar */}
                   <div className="w-12 h-12 bg-gradient-to-br from-[#bbb] to-[#faf9f7]0 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0">
                     {otherUser?.avatar_url ? (
-                      <img
+                      <Image
                         src={otherUser.avatar_url}
                         alt=""
+                        width={48}
+                        height={48}
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
@@ -260,7 +262,7 @@ export default function MessagesPage() {
                           <Pin className="w-3 h-3 text-amber-500 shrink-0" />
                         )}
                       </div>
-                      <span className="text-xs text-[#bbb] shrink-0 ml-2">
+                      <span className="text-xs text-[#8a8280] shrink-0 ml-2">
                         {timeAgoCompact(conv.last_message_at)}
                       </span>
                     </div>
@@ -269,7 +271,7 @@ export default function MessagesPage() {
                         Re: {conv.listings.title}
                       </p>
                     )}
-                    <p className="text-sm text-[#999] truncate">
+                    <p className="text-sm text-[#6b6560] truncate">
                       {conv.last_message_preview || "No messages yet"}
                     </p>
                   </div>
@@ -292,7 +294,7 @@ export default function MessagesPage() {
                 <div className="pr-3 shrink-0 relative">
                   <button
                     onClick={() => setActiveMenu(menuOpen ? null : conv.id)}
-                    className="p-1.5 bg-white border border-[#e8e6e3] shadow-sm hover:bg-[#faf9f7] text-[#999] transition-colors"
+                    className="p-1.5 bg-white border border-[#e8e6e3] shadow-sm hover:bg-[#faf9f7] text-[#6b6560] transition-colors"
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
@@ -337,11 +339,11 @@ export default function MessagesPage() {
         </div>
       ) : (
         <div className="text-center py-20 bg-white border border-[#e8e6e3]">
-          <MessageCircle className="w-12 h-12 text-[#ccc] mx-auto mb-3" />
+          <MessageCircle className="w-12 h-12 text-[#8a8280] mx-auto mb-3" />
           <h2 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             No messages yet
           </h2>
-          <p className="text-sm text-[#999] mb-4">
+          <p className="text-sm text-[#6b6560] mb-4">
             When you contact a seller or someone messages you, it&apos;ll appear
             here
           </p>
@@ -370,7 +372,7 @@ export default function MessagesPage() {
             <h2 className="text-lg font-semibold text-[#1a1a1a] mb-1">
               Delete conversation?
             </h2>
-            <p className="text-sm text-[#999] mb-6">
+            <p className="text-sm text-[#6b6560] mb-6">
               This will permanently remove the conversation with{" "}
               <span className="font-medium text-[#666]">
                 {(deleteTarget.buyer_id === userId

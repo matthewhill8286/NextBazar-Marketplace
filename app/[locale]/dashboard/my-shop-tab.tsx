@@ -201,7 +201,7 @@ export default function MyShopTab({ userId }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-[#8E7A6B] animate-spin" />
       </div>
     );
   }
@@ -214,7 +214,7 @@ export default function MyShopTab({ userId }: Props) {
         dealerPrice={dealerPrice}
         dealerInterval={dealerInterval}
         subscribing={subscribing}
-        onSubscribe={handleSubscribe}
+        onSubscribeAction={handleSubscribe}
       />
     );
   }
@@ -240,7 +240,7 @@ export default function MyShopTab({ userId }: Props) {
             <h2 className="text-lg font-bold text-[#1a1a1a]">
               {branding.shopName || "Your Shop"}
             </h2>
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-[#6b6560]">
               Configure your shop branding and settings
             </p>
           </div>
@@ -248,7 +248,7 @@ export default function MyShopTab({ userId }: Props) {
         <div className="flex items-center gap-2">
           <Link
             href={`/shop/${branding.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] px-3 py-2 hover:bg-[#f0eeeb] transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
@@ -272,9 +272,9 @@ export default function MyShopTab({ userId }: Props) {
         saving={saving}
         bannerUploading={false}
         onChange={handleBrandingChange}
-        onBannerUpload={() => {}}
-        onBannerRemove={() => {}}
-        onSave={handleSaveBranding}
+        onBannerUploadAction={() => {}}
+        onBannerRemoveAction={() => {}}
+        onSaveAction={handleSaveBranding}
       />
     </div>
   );

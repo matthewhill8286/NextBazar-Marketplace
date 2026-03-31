@@ -25,13 +25,13 @@ export type MapLocation = {
 type Props = {
   locations: MapLocation[];
   selectedSlug?: string;
-  onSelectLocation: (slug: string) => void;
+  onSelectLocationAction: (slug: string) => void;
 };
 
 export default function ListingsMap({
   locations,
   selectedSlug,
-  onSelectLocation,
+  onSelectLocationAction,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -103,7 +103,7 @@ export default function ListingsMap({
         map,
       );
 
-      marker.on("click", () => onSelectLocation(loc.slug));
+      marker.on("click", () => onSelectLocationAction(loc.slug));
       marker.bindTooltip(
         `<b>${loc.name}</b><br>${loc.count} listing${loc.count !== 1 ? "s" : ""}`,
         { direction: "top", offset: [0, -6] },
@@ -119,7 +119,7 @@ export default function ListingsMap({
         map.flyTo([target.lat, target.lng], 10, { duration: 0.8 });
       }
     }
-  }, [locations, selectedSlug, onSelectLocation]);
+  }, [locations, selectedSlug, onSelectLocationAction]);
 
   return (
     <div

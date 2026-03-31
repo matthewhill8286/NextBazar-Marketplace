@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 
 /**
  * A gentle nudge banner for pro-sellers who haven't completed their profile.
- * Shows on the dashboard and shop pages until they add a photo + bio,
+ * Shows on the dashboard and shop pages until they add a photo and bio,
  * or until they dismiss it (stored in localStorage).
  */
 export default function ProfileNudge() {
@@ -19,7 +19,7 @@ export default function ProfileNudge() {
   useEffect(() => {
     if (!userId) return;
 
-    // Check if user already dismissed this nudge
+    // Check if the user already dismissed this nudge
     try {
       if (window.sessionStorage.getItem("profile-nudge-dismissed")) {
         return;

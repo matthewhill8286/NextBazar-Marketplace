@@ -233,7 +233,7 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
                 </div>
                 <div className="bg-[#faf9f7] group-hover:bg-[#f0eeeb] transition-colors px-4 py-3 flex items-center justify-between gap-3">
                   <div className="text-xs text-[#666]">
-                    <span className="block text-[11px] text-[#999] mb-0.5">
+                    <span className="block text-[11px] text-[#6b6560] mb-0.5">
                       Your offer
                     </span>
                     <span className="font-semibold">
@@ -242,7 +242,7 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
                   </div>
                   <div className="w-px h-6 bg-[#e8e6e3]" />
                   <div className="text-xs text-[#666]">
-                    <span className="block text-[11px] text-[#999] mb-0.5">
+                    <span className="block text-[11px] text-[#6b6560] mb-0.5">
                       Counter
                     </span>
                     <span className="font-semibold text-[#1a1a1a]">
@@ -284,7 +284,7 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
               </Link>
             )
           ) : offerCount >= 2 ? (
-            <div className="w-full py-3 border-2 border-[#e8e6e3] bg-[#faf9f7] text-[#bbb] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
+            <div className="w-full py-3 border-2 border-[#e8e6e3] bg-[#faf9f7] text-[#8a8280] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed">
               <Tag className="w-4 h-4" />
               {t("offerLimitReached")}
             </div>
@@ -302,7 +302,7 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
 
       {/* Sold state — shown instead of CTA when listing is no longer active */}
       {!isOwner && currentStatus === "sold" && (
-        <div className="mt-3 w-full py-3 px-4 bg-[#f0eeeb] border-2 border-[#e8e6e3] text-[#999] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
+        <div className="mt-3 w-full py-3 px-4 bg-[#f0eeeb] border-2 border-[#e8e6e3] text-[#6b6560] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
           <span className="text-base">🏷️</span>
           This item has been sold
         </div>

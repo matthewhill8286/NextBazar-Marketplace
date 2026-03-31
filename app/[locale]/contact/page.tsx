@@ -69,7 +69,7 @@ export default function ContactPage() {
   }
 
   const INPUT_CLS =
-    "w-full border border-[#e8e6e3] px-4 py-3 text-sm focus:outline-none focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 placeholder-[#ccc] bg-white transition-colors";
+    "w-full border border-[#e8e6e3] px-4 py-3 text-sm focus:outline-none focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 placeholder-[#9a9290] bg-white transition-colors";
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">
@@ -85,7 +85,7 @@ export default function ContactPage() {
           >
             Get in touch
           </h1>
-          <p className="text-[#999] max-w-md mx-auto leading-relaxed">
+          <p className="text-[#6b6560] max-w-md mx-auto leading-relaxed">
             A question, a problem, or just want to say hello — we'd love to hear
             from you. Our team usually responds within one business day.
           </p>
@@ -106,13 +106,13 @@ export default function ContactPage() {
                   <c.icon className="w-4 h-4 text-[#8E7A6B]" />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#999] mb-1">
+                  <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560] mb-1">
                     {c.title}
                   </div>
                   <div className="text-sm text-[#1a1a1a] font-medium truncate group-hover:text-[#8E7A6B] transition-colors">
                     {c.detail}
                   </div>
-                  <div className="text-xs text-[#bbb] mt-0.5">{c.sub}</div>
+                  <div className="text-xs text-[#8a8280] mt-0.5">{c.sub}</div>
                 </div>
               </div>
             </a>
@@ -125,7 +125,7 @@ export default function ContactPage() {
                 <MapPin className="w-4 h-4 text-[#8E7A6B]" />
               </div>
               <div>
-                <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#999] mb-1">
+                <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560] mb-1">
                   Office
                 </div>
                 <div className="text-sm text-[#666] leading-relaxed">
@@ -152,7 +152,7 @@ export default function ContactPage() {
                 >
                   Message sent
                 </h2>
-                <p className="text-[#999] text-sm max-w-xs mx-auto">
+                <p className="text-[#6b6560] text-sm max-w-xs mx-auto">
                   Thanks for reaching out. We'll get back to you at{" "}
                   <span className="font-medium text-[#666]">{form.email}</span>{" "}
                   within 24 hours.
@@ -161,7 +161,7 @@ export default function ContactPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-2">
+                  <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-2">
                     Contact Form
                   </p>
                   <h2
@@ -174,7 +174,7 @@ export default function ContactPage() {
 
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+                    <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                       Your name
                     </label>
                     <input
@@ -187,7 +187,7 @@ export default function ContactPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+                    <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                       Email address
                     </label>
                     <input
@@ -202,7 +202,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+                  <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                     Topic
                   </label>
                   <select
@@ -221,7 +221,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+                  <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                     Message
                   </label>
                   <textarea

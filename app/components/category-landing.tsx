@@ -204,7 +204,7 @@ export default function CategoryLanding({
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm">
             <div className="flex items-center gap-2 text-[#666]">
-              <BarChart3 className="w-4 h-4 text-[#bbb]" />
+              <BarChart3 className="w-4 h-4 text-[#8a8280]" />
               <span className="font-semibold text-[#1a1a1a]">
                 {tabStats.total.toLocaleString()}
               </span>{" "}
@@ -212,7 +212,7 @@ export default function CategoryLanding({
             </div>
             <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
             <div className="flex items-center gap-2 text-[#666]">
-              <Clock className="w-4 h-4 text-[#bbb]" />
+              <Clock className="w-4 h-4 text-[#8a8280]" />
               <span className="font-semibold text-[#1a1a1a]">
                 {tabStats.newThisWeek.toLocaleString()}
               </span>{" "}
@@ -222,7 +222,7 @@ export default function CategoryLanding({
               <>
                 <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
                 <div className="flex items-center gap-2 text-[#666]">
-                  <TrendingUp className="w-4 h-4 text-[#bbb]" />
+                  <TrendingUp className="w-4 h-4 text-[#8a8280]" />
                   avg price{" "}
                   <span className="font-semibold text-[#1a1a1a]">
                     {currency}
@@ -261,7 +261,7 @@ export default function CategoryLanding({
         {/* ── Active Tab Description + Subcategory Pills ──────────────── */}
         {activeTabConfig && (
           <div className="mb-8">
-            <p className="text-[#999] text-sm mb-4">
+            <p className="text-[#6b6560] text-sm mb-4">
               {activeTabConfig.description}
             </p>
             {tabSubcategories.length > 0 && (
@@ -273,7 +273,7 @@ export default function CategoryLanding({
                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-[#faf9f7] text-[#666] border border-[#e8e6e3] hover:bg-[#f0eeeb] hover:border-[#ccc] transition-colors"
                   >
                     {sc.name}
-                    <ArrowRight className="w-3 h-3 text-[#bbb]" />
+                    <ArrowRight className="w-3 h-3 text-[#8a8280]" />
                   </Link>
                 ))}
               </div>
@@ -292,7 +292,7 @@ export default function CategoryLanding({
                 >
                   Featured {categoryName}
                 </h2>
-                <p className="text-sm text-[#bbb] mt-0.5">
+                <p className="text-sm text-[#8a8280] mt-0.5">
                   Promoted listings from verified sellers
                 </p>
               </div>
@@ -334,7 +334,7 @@ export default function CategoryLanding({
           if (locationGroups.length === 0) {
             return (
               <section className="mb-12">
-                <div className="text-center py-16 text-[#bbb]">
+                <div className="text-center py-16 text-[#8a8280]">
                   <p className="text-lg font-medium mb-1">
                     No {activeTabConfig?.label.toLowerCase() ?? ""} listings yet
                   </p>
@@ -359,7 +359,7 @@ export default function CategoryLanding({
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2.5">
                     <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-                      <MapPin className="w-4 h-4 text-[#999]" />
+                      <MapPin className="w-4 h-4 text-[#6b6560]" />
                     </div>
                     <div>
                       <h2
@@ -368,7 +368,7 @@ export default function CategoryLanding({
                       >
                         {locName}
                       </h2>
-                      <p className="text-xs text-[#bbb]">
+                      <p className="text-xs text-[#8a8280]">
                         {listings.length} listing
                         {listings.length !== 1 ? "s" : ""}
                       </p>

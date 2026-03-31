@@ -91,6 +91,7 @@ export default function Navbar() {
             alt="NextBazar"
             width={180}
             height={55}
+            style={{ width: "auto", height: "auto" }}
             priority
             className="hidden md:block h-9 w-auto"
           />
@@ -99,10 +100,11 @@ export default function Navbar() {
             alt="NextBazar"
             width={40}
             height={40}
+            style={{ width: "auto", height: "auto" }}
             priority
             className="md:hidden h-9 w-9"
           />
-          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-[#999] border border-[#ddd] px-2 py-0.5">
+          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-[#6b6560] border border-[#ddd] px-2 py-0.5">
             Beta
           </span>
         </Link>
@@ -125,7 +127,7 @@ export default function Navbar() {
           <Link
             href="/search"
             aria-label="Search listings"
-            className="md:hidden p-2.5 text-[#999] hover:text-[#1a1a1a] transition-colors"
+            className="md:hidden p-2.5 text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
           >
             <Search className="w-5 h-5" aria-hidden="true" />
           </Link>

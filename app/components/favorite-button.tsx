@@ -19,6 +19,7 @@ export default function FavoriteButton({ listingId }: { listingId: string }) {
 
   return (
     <button
+      aria-label={saved ? "Remove from saved" : "Save listing"}
       className="absolute top-2.5 right-2.5 p-2 bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors z-10"
       onClick={handleClick}
     >

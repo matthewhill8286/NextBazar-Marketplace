@@ -45,7 +45,7 @@ type ListingCardProps = {
   accentColor?: string;
   userId?: string | null;
   isSaved?: boolean;
-  onUnsave?: () => void;
+  onUnsaveAction?: () => void;
 };
 
 function ListingCard({ listing, accentColor }: ListingCardProps) {
@@ -169,7 +169,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
               compared
                 ? "bg-[#2C2826] text-white"
                 : isFull
-                  ? "bg-white/70 text-[#ccc] cursor-not-allowed"
+                  ? "bg-white/70 text-[#8a8280] cursor-not-allowed"
                   : "bg-white/70 text-[#666] hover:bg-white hover:text-[#1a1a1a]"
             }`}
           >
@@ -215,7 +215,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
           </span>
         )}
 
-        <div className="flex items-center gap-1.5 text-[#999] text-[11px] mb-3 tracking-wide">
+        <div className="flex items-center gap-1.5 text-[#6b6560] text-[11px] mb-3 tracking-wide">
           <MapPin className="w-3 h-3 shrink-0" />
           <span className="truncate">{loc?.name || "Cyprus"}</span>
           {listing.condition && (
@@ -230,7 +230,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
 
         <div className="flex items-center justify-between">
           <span
-            className={`font-semibold ${listing.price === null ? "text-[#999] text-sm" : "text-[#1a1a1a] text-lg tracking-tight"}`}
+            className={`font-semibold ${listing.price === null ? "text-[#6b6560] text-sm" : "text-[#1a1a1a] text-lg tracking-tight"}`}
             style={
               listing.price !== null
                 ? { fontFamily: "'Playfair Display', serif" }
@@ -239,7 +239,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
           >
             {formatPrice(listing.price, listing.currency)}
           </span>
-          <span className="flex items-center gap-1 text-[10px] text-[#bbb] tracking-wider">
+          <span className="flex items-center gap-1 text-[10px] text-[#8a8280] tracking-wider">
             <Clock className="w-3 h-3" />
             {timeAgoLabel}
           </span>

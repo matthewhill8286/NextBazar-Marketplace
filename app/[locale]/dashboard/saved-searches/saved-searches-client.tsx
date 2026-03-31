@@ -64,7 +64,7 @@ export default function SavedSearchesClient({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1a1a1a]">Saved Searches</h1>
-          <p className="text-sm text-[#999] mt-0.5">
+          <p className="text-sm text-[#6b6560] mt-0.5">
             You'll be alerted when new listings match your saved searches.
           </p>
         </div>
@@ -79,13 +79,13 @@ export default function SavedSearchesClient({
 
       {searches.length === 0 ? (
         <div className="bg-white border border-[#e8e6e3] p-16 text-center">
-          <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-7 h-7 text-indigo-400" />
+          <div className="w-14 h-14 bg-[#f0eeeb] rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bell className="w-7 h-7 text-[#8E7A6B]" />
           </div>
           <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             No saved searches yet
           </h3>
-          <p className="text-[#999] text-sm mb-6">
+          <p className="text-[#6b6560] text-sm mb-6">
             Save a search on the search page and we'll alert you when new
             matching listings appear.
           </p>
@@ -106,14 +106,14 @@ export default function SavedSearchesClient({
                 key={s.id}
                 className="flex items-center gap-4 p-4 hover:bg-[#faf9f7]/50 transition-colors"
               >
-                <div className="w-10 h-10 bg-indigo-50 flex items-center justify-center shrink-0">
-                  <Bell className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 bg-[#f0eeeb] flex items-center justify-center shrink-0">
+                  <Bell className="w-5 h-5 text-[#8E7A6B]" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <Link
                     href={buildSearchUrl(s)}
-                    className="font-medium text-[#1a1a1a] hover:text-indigo-600 transition-colors"
+                    className="font-medium text-[#1a1a1a] hover:text-[#8E7A6B] transition-colors"
                   >
                     {s.name}
                   </Link>
@@ -129,7 +129,7 @@ export default function SavedSearchesClient({
                       ))}
                     </div>
                   )}
-                  <p className="text-xs text-[#bbb] mt-1">
+                  <p className="text-xs text-[#8a8280] mt-1">
                     Saved{" "}
                     {new Date(s.created_at).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -152,7 +152,7 @@ export default function SavedSearchesClient({
                 <div className="flex items-center gap-2 shrink-0">
                   <Link
                     href={buildSearchUrl(s)}
-                    className="p-2 text-[#bbb] hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                    className="p-2 text-[#8a8280] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
                     title="Run search"
                   >
                     <ExternalLink className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function SavedSearchesClient({
                   <button
                     onClick={() => handleDelete(s.id)}
                     disabled={deleting === s.id}
-                    className="p-2 text-[#bbb] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    className="p-2 text-[#8a8280] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
                     title="Delete"
                   >
                     {deleting === s.id ? (

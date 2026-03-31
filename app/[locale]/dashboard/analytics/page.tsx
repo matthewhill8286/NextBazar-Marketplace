@@ -108,12 +108,12 @@ function AnalyticsLocked({
   dealerPrice,
   dealerInterval,
   subscribing,
-  onSubscribe,
+  onSubscribeAction,
 }: {
   dealerPrice: string;
   dealerInterval: string;
   subscribing: boolean;
-  onSubscribe: () => void;
+  onSubscribeAction: () => void;
 }) {
   const [showModal, setShowModal] = useState(false);
 
@@ -123,7 +123,7 @@ function AnalyticsLocked({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[#1a1a1a]">Analytics</h1>
-          <p className="text-sm text-[#999] mt-0.5">
+          <p className="text-sm text-[#6b6560] mt-0.5">
             Track performance across all your listings.
           </p>
         </div>
@@ -138,14 +138,14 @@ function AnalyticsLocked({
               {
                 label: "Active Listings",
                 icon: BarChart2,
-                bg: "bg-indigo-50",
-                color: "text-indigo-600",
+                bg: "bg-[#f0eeeb]",
+                color: "text-[#8E7A6B]",
               },
               {
                 label: "Total Views",
                 icon: Eye,
-                bg: "bg-indigo-50",
-                color: "text-indigo-600",
+                bg: "bg-[#f0eeeb]",
+                color: "text-[#8E7A6B]",
               },
               {
                 label: "Total Saves",
@@ -165,7 +165,7 @@ function AnalyticsLocked({
                 </div>
                 <div>
                   <div className="text-xl font-bold text-[#1a1a1a]">—</div>
-                  <div className="text-xs text-[#999]">{s.label}</div>
+                  <div className="text-xs text-[#6b6560]">{s.label}</div>
                 </div>
               </div>
             ))}
@@ -190,13 +190,13 @@ function AnalyticsLocked({
         {/* Lock overlay */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-white/90 backdrop-blur-sm border border-[#e8e6e3] shadow-sm p-8 text-center max-w-md mx-4">
-            <div className="w-14 h-14 bg-indigo-50 flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-7 h-7 text-indigo-600" />
+            <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-7 h-7 text-[#8E7A6B]" />
             </div>
             <h2 className="text-xl font-bold text-[#1a1a1a] mb-2">
               Pro Seller Feature
             </h2>
-            <p className="text-sm text-[#999] mb-5">
+            <p className="text-sm text-[#6b6560] mb-5">
               Analytics is available exclusively for Pro Sellers. Upgrade to
               unlock detailed performance insights for all your listings.
             </p>
@@ -217,8 +217,8 @@ function AnalyticsLocked({
           dealerPrice={dealerPrice}
           dealerInterval={dealerInterval}
           subscribing={subscribing}
-          onSubscribe={onSubscribe}
-          onClose={() => setShowModal(false)}
+          onSubscribeAction={onSubscribeAction}
+          onCloseAction={() => setShowModal(false)}
           heading="Unlock Analytics"
           subheading="Upgrade to Pro Seller to access detailed performance insights, and everything else you need to grow on NextBazar."
         />
@@ -339,7 +339,7 @@ export default function AnalyticsPage() {
         dealerPrice={dealerPrice}
         dealerInterval={dealerInterval}
         subscribing={subscribing}
-        onSubscribe={handleSubscribe}
+        onSubscribeAction={handleSubscribe}
       />
     );
   }

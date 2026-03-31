@@ -46,9 +46,9 @@ const REASON_LABELS: Record<string, string> = {
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-amber-50 text-amber-700 border-amber-200",
-  reviewing: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  reviewing: "bg-[#f0eeeb] text-[#7A6657] border-[#e8e6e3]",
   resolved: "bg-green-50 text-green-700 border-green-200",
-  dismissed: "bg-[#faf9f7] text-[#999] border-[#e8e6e3]",
+  dismissed: "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3]",
 };
 
 export default function AdminReportsPage() {
@@ -183,7 +183,7 @@ export default function AdminReportsPage() {
             className={`px-4 py-2 text-sm font-medium capitalize transition-colors ${
               filter === t
                 ? "bg-white text-[#1a1a1a] shadow-sm"
-                : "text-[#999] hover:text-[#666]"
+                : "text-[#6b6560] hover:text-[#666]"
             }`}
           >
             {t}
@@ -193,12 +193,12 @@ export default function AdminReportsPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#8E7A6B] animate-spin" />
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20 bg-white border border-[#e8e6e3]">
           <CheckCircle className="w-10 h-10 text-green-400 mx-auto mb-3" />
-          <p className="text-[#999]">No {filter} reports</p>
+          <p className="text-[#6b6560]">No {filter} reports</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -223,7 +223,7 @@ export default function AdminReportsPage() {
                       sizes="80px"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-[#bbb] text-xl">
+                    <div className="w-full h-full flex items-center justify-center text-[#8a8280] text-xl">
                       📦
                     </div>
                   )}
@@ -246,12 +246,12 @@ export default function AdminReportsPage() {
                       <Link
                         href={`/listing/${report.listing?.slug || "#"}`}
                         target="_blank"
-                        className="font-medium text-[#1a1a1a] hover:text-indigo-600 flex items-center gap-1 text-sm"
+                        className="font-medium text-[#1a1a1a] hover:text-[#8E7A6B] flex items-center gap-1 text-sm"
                       >
                         {report.listing?.title || "Deleted listing"}
                         <ExternalLink className="w-3 h-3 shrink-0" />
                       </Link>
-                      <p className="text-xs text-[#bbb] mt-0.5">
+                      <p className="text-xs text-[#8a8280] mt-0.5">
                         Reported by{" "}
                         {report.reporter?.display_name || "Anonymous"} ·{" "}
                         {timeAgo(report.created_at)}
@@ -271,7 +271,7 @@ export default function AdminReportsPage() {
                       <button
                         onClick={() => updateStatus(report.id, "reviewing")}
                         disabled={updating === report.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-medium hover:bg-indigo-100 transition-colors disabled:opacity-40"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f0eeeb] text-[#7A6657] text-xs font-medium hover:bg-[#e8e6e3] transition-colors disabled:opacity-40"
                       >
                         <Eye className="w-3.5 h-3.5" /> Mark Reviewing
                       </button>
@@ -326,7 +326,7 @@ export default function AdminReportsPage() {
                     </div>
                   )}
                   {updating === report.id && (
-                    <Loader2 className="w-4 h-4 animate-spin text-indigo-500 mt-2" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#8E7A6B] mt-2" />
                   )}
                 </div>
               </div>

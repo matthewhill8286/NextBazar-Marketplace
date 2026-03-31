@@ -9,7 +9,7 @@ export default function Footer() {
   const t = useTranslations("footer");
 
   return (
-    <footer aria-label="Site footer" className="bg-[#2C2826] text-[#666] mt-24">
+    <footer className="bg-[#2C2826] text-[#666] mt-24">
       {/* Newsletter strip */}
       <div className="border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -47,6 +47,7 @@ export default function Footer() {
                 alt="NextBazar"
                 width={120}
                 height={32}
+                style={{ width: "auto", height: "auto" }}
                 priority
               />
             </Link>
@@ -187,13 +188,19 @@ export default function Footer() {
             {t("rights")}
           </p>
           <div className="flex gap-6 text-[10px] text-[#444] tracking-wider">
-            <Link href="/" className="hover:text-[#888] transition-colors">
+            <Link
+              href="/privacy"
+              className="hover:text-[#888] transition-colors"
+            >
               {t("privacy")}
             </Link>
-            <Link href="/" className="hover:text-[#888] transition-colors">
+            <Link href="/terms" className="hover:text-[#888] transition-colors">
               {t("terms")}
             </Link>
-            <Link href="/" className="hover:text-[#888] transition-colors">
+            <Link
+              href="/cookies"
+              className="hover:text-[#888] transition-colors"
+            >
               {t("cookies")}
             </Link>
           </div>

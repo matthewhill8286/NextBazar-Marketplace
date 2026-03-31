@@ -86,12 +86,12 @@ export default async function ShopPage(props: PageProps) {
       <div className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-5">
-            <Store className="w-8 h-8 text-[#bbb]" />
+            <Store className="w-8 h-8 text-[#8a8280]" />
           </div>
           <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
             This shop is currently closed
           </h1>
-          <p className="text-[#999] text-sm mb-6">
+          <p className="text-[#6b6560] text-sm mb-6">
             <span className="font-medium text-[#666]">{shop.shop_name}</span> is
             not accepting orders right now. The seller may reopen in the future.
           </p>

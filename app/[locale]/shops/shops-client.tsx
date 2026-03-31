@@ -83,20 +83,20 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
             >
               Browse Shops
             </h1>
-            <p className="text-[#999] text-base md:text-lg max-w-xl mx-auto mb-10">
+            <p className="text-[#6b6560] text-base md:text-lg max-w-xl mx-auto mb-10">
               Discover trusted Pro Seller shops from across Cyprus. Each shop is
               run by a verified, premium seller.
             </p>
 
             {/* Search bar */}
             <div className="max-w-lg mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#bbb] pointer-events-none" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8280] pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search shops by name or description..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#bbb] focus:outline-none focus:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 transition-all"
+                className="w-full pl-12 pr-4 py-3.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#8a8280] focus:outline-none focus-visible:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 transition-all"
               />
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-[#999]">
+          <p className="text-sm text-[#6b6560]">
             <span className="font-semibold text-[#1a1a1a]">
               {filtered.length}
             </span>{" "}
@@ -116,7 +116,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
-            className="px-3 py-2 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus:border-[#8E7A6B] cursor-pointer"
+            className="px-3 py-2 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus-visible:border-[#8E7A6B] cursor-pointer"
           >
             <option value="listings">Most Listings</option>
             <option value="newest">Newest</option>
@@ -142,7 +142,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
             >
               {search.trim() ? "No shops found" : "No shops yet"}
             </h2>
-            <p className="text-[#999] max-w-sm mx-auto text-sm">
+            <p className="text-[#6b6560] max-w-sm mx-auto text-sm">
               {search.trim()
                 ? "Try a different search term."
                 : "Be the first to open a dealer shop on NextBazar!"}
@@ -169,18 +169,27 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
       href={`/shop/${shop.slug}`}
       className="group block bg-white border border-[#e8e6e3] overflow-hidden hover:shadow-sm hover:shadow-[#e8e6e3]/60 hover:-translate-y-0.5 transition-all duration-300"
     >
-      {/* Banner */}
-      <div
-        className="relative h-36 w-full overflow-hidden"
-        style={{
-          backgroundImage: shop.banner_url
-            ? `url(${shop.banner_url})`
-            : `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {shop.banner_url && <div className="absolute inset-0 bg-black/10" />}
+      {/* Banner container */}
+      <div className="relative">
+        {/* Banner */}
+        {shop.banner_url ? (
+          <div className="relative h-36 w-full overflow-hidden">
+            <Image
+              src={shop.banner_url}
+              alt={shop.shop_name}
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
+        ) : (
+          <div
+            className="relative h-36 w-full overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`,
+            }}
+          />
+        )}
 
         {/* Listing count badge on banner */}
         <div className="absolute top-3 right-3">
@@ -237,7 +246,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 
         {/* Description */}
         {shop.description ? (
-          <p className="text-sm text-[#999] line-clamp-2 mb-4 leading-relaxed">
+          <p className="text-sm text-[#6b6560] line-clamp-2 mb-4 leading-relaxed">
             {shop.description}
           </p>
         ) : (
@@ -246,7 +255,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 
         {/* Footer */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs text-[#bbb]">
+          <div className="flex items-center gap-3 text-xs text-[#8a8280]">
             <span className="font-medium">
               {shop.listing_count}{" "}
               {shop.listing_count === 1 ? "listing" : "listings"}
@@ -260,7 +269,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
               })}
             </span>
           </div>
-          <ArrowRight className="w-4 h-4 text-[#ccc] group-hover:text-[#8E7A6B] group-hover:translate-x-0.5 transition-all" />
+          <ArrowRight className="w-4 h-4 text-[#8a8280] group-hover:text-[#8E7A6B] group-hover:translate-x-0.5 transition-all" />
         </div>
       </div>
     </Link>
@@ -283,18 +292,24 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
       className="group block bg-white border border-[#e8e6e3] overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* Mini banner */}
-      <div
-        className="relative h-20 w-full"
-        style={{
-          backgroundImage: shop.banner_url
-            ? `url(${shop.banner_url})`
-            : `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {shop.banner_url && <div className="absolute inset-0 bg-black/10" />}
-      </div>
+      {shop.banner_url ? (
+        <div className="relative h-20 w-full overflow-hidden">
+          <Image
+            src={shop.banner_url}
+            alt={shop.shop_name}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/10" />
+        </div>
+      ) : (
+        <div
+          className="relative h-20 w-full"
+          style={{
+            background: `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%)`,
+          }}
+        />
+      )}
 
       {/* Content */}
       <div className="relative px-4 pb-4 pt-7">
@@ -338,7 +353,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 text-[11px] text-[#bbb] font-medium">
+        <div className="flex items-center gap-1.5 text-[11px] text-[#8a8280] font-medium">
           <Package className="w-3 h-3" />
           {shop.listing_count}{" "}
           {shop.listing_count === 1 ? "listing" : "listings"}

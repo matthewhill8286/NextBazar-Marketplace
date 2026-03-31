@@ -13,14 +13,14 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <AuthIllustration className="w-24 h-24 mx-auto mb-6 text-[#ccc]" />
+          <AuthIllustration className="w-24 h-24 mx-auto mb-6 text-[#8a8280]" />
           <h1
             className="text-3xl font-light text-[#1a1a1a]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Welcome back
           </h1>
-          <p className="text-[#999] mt-2 text-sm">
+          <p className="text-[#6b6560] mt-2 text-sm">
             Sign in to your NextBazar account
           </p>
         </div>
@@ -33,7 +33,7 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
 
-        <p className="text-center text-sm text-[#999] mt-6">
+        <p className="text-center text-sm text-[#6b6560] mt-6">
           Don&apos;t have an account?{" "}
           <Link
             href="/auth/signup"

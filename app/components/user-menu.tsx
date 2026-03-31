@@ -117,6 +117,7 @@ export default function UserMenu() {
       {/* Avatar button with chevron indicator */}
       <button
         onClick={() => setOpen(!open)}
+        aria-label="User menu"
         className="pointer-events-auto flex items-center gap-1.5 group"
       >
         <div className="relative w-9 h-9 bg-[#8E7A6B] rounded-full flex items-center justify-center text-white font-semibold text-xs group-hover:shadow-md transition-shadow">
@@ -133,7 +134,7 @@ export default function UserMenu() {
           )}
         </div>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-[#999] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-3.5 h-3.5 text-[#6b6560] transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -144,7 +145,7 @@ export default function UserMenu() {
             <p className="text-sm font-semibold text-[#1a1a1a] truncate">
               {user.display_name || "User"}
             </p>
-            <p className="text-xs text-[#999] truncate">{user.email}</p>
+            <p className="text-xs text-[#6b6560] truncate">{user.email}</p>
           </div>
 
           {/* Navigation */}
@@ -154,7 +155,7 @@ export default function UserMenu() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
             >
-              <LayoutDashboard className="w-4 h-4 text-[#bbb]" />
+              <LayoutDashboard className="w-4 h-4 text-[#8a8280]" />
               {tDash("overview")}
             </Link>
             <Link
@@ -162,7 +163,7 @@ export default function UserMenu() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
             >
-              <Settings className="w-4 h-4 text-[#bbb]" />
+              <Settings className="w-4 h-4 text-[#8a8280]" />
               {tDash("settings")}
             </Link>
           </div>
@@ -170,7 +171,7 @@ export default function UserMenu() {
           {/* Language switcher — feature flagged until i18n is ready for release */}
           {FEATURE_FLAGS.LANGUAGE_SWITCHER && (
             <div className="px-4 py-2.5 border-b border-[#e8e6e3]">
-              <p className="text-xs font-medium text-[#bbb] mb-2 uppercase tracking-wide">
+              <p className="text-xs font-medium text-[#8a8280] mb-2 uppercase tracking-wide">
                 Language
               </p>
               <div className="flex gap-1.5">
@@ -179,7 +180,7 @@ export default function UserMenu() {
                   className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
                     currentLocale === "en"
                       ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
-                      : "bg-[#faf9f7] text-[#999] border-[#e8e6e3] hover:border-[#e8e6e3]"
+                      : "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3] hover:border-[#e8e6e3]"
                   }`}
                 >
                   🇬🇧 English
@@ -189,7 +190,7 @@ export default function UserMenu() {
                   className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
                     currentLocale === "el"
                       ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
-                      : "bg-[#faf9f7] text-[#999] border-[#e8e6e3] hover:border-[#e8e6e3]"
+                      : "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3] hover:border-[#e8e6e3]"
                   }`}
                 >
                   🇨🇾 Ελληνικά

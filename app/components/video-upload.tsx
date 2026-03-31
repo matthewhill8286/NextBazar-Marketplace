@@ -158,23 +158,23 @@ export default function VideoUpload({
       onClick={() => fileInputRef.current?.click()}
       className={`relative border-2 border-dashed p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
         dragOver
-          ? "border-violet-400 bg-violet-50"
+          ? "border-[#8E7A6B] bg-[#f0eeeb]"
           : "border-[#e8e6e3] bg-white hover:border-[#bbb] hover:bg-[#faf9f7]"
       }`}
     >
-      <div className="p-3 bg-violet-100 rounded-full">
-        <Video className="w-6 h-6 text-violet-600" />
+      <div className="p-3 bg-[#f0eeeb] rounded-full">
+        <Video className="w-6 h-6 text-[#8E7A6B]" />
       </div>
       <div className="text-center">
         <p className="text-sm font-semibold text-[#666]">
-          <span className="text-violet-600">Click to upload</span> or drag &amp;
+          <span className="text-[#8E7A6B]">Click to upload</span> or drag &amp;
           drop
         </p>
-        <p className="text-xs text-[#bbb] mt-0.5">
+        <p className="text-xs text-[#8a8280] mt-0.5">
           MP4, MOV or WebM · max {MAX_SIZE_MB}MB
         </p>
       </div>
-      <div className="flex items-center gap-1.5 text-xs text-violet-600 font-medium">
+      <div className="flex items-center gap-1.5 text-xs text-[#8E7A6B] font-medium">
         <Play className="w-3 h-3" />
         Show buyers what makes your item special
       </div>

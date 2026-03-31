@@ -12,21 +12,21 @@ export default function SignupPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <AuthIllustration className="w-24 h-24 mx-auto mb-6 text-[#ccc]" />
+          <AuthIllustration className="w-24 h-24 mx-auto mb-6 text-[#8a8280]" />
           <h1
             className="text-3xl font-light text-[#1a1a1a]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Create your account
           </h1>
-          <p className="text-[#999] mt-2 text-sm">
+          <p className="text-[#6b6560] mt-2 text-sm">
             Join NextBazar and start buying &amp; selling
           </p>
         </div>
 
         <SignupForm />
 
-        <p className="text-center text-sm text-[#999] mt-6">
+        <p className="text-center text-sm text-[#6b6560] mt-6">
           Already have an account?{" "}
           <Link
             href="/auth/login"

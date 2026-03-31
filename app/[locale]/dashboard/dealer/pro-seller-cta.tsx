@@ -7,14 +7,14 @@ type Props = {
   dealerPrice: string;
   dealerInterval: string;
   subscribing: boolean;
-  onSubscribe: () => void;
+  onSubscribeAction: () => void;
 };
 
 export default function ProSellerCTA({
   dealerPrice,
   dealerInterval,
   subscribing,
-  onSubscribe,
+  onSubscribeAction,
 }: Props) {
   return (
     <div className="max-w-2xl mx-auto py-4">
@@ -59,7 +59,7 @@ export default function ProSellerCTA({
           </div>
 
           <button
-            onClick={onSubscribe}
+            onClick={onSubscribeAction}
             disabled={subscribing}
             className="bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/90 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
           >

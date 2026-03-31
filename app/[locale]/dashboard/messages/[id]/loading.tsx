@@ -18,7 +18,7 @@ export default function ChatLoading() {
       </div>
 
       {/* Listing bar */}
-      <div className="bg-indigo-50/50 border-b border-indigo-100 px-4 py-2.5 flex items-center gap-3 shrink-0">
+      <div className="bg-[#f0eeeb]/50 border-b border-[#e8e6e3] px-4 py-2.5 flex items-center gap-3 shrink-0">
         <div className="flex-1 space-y-1.5">
           <Bone className="h-3 w-3/4" />
           <Bone className="h-3 w-1/4" />

@@ -320,7 +320,7 @@ export default function OnboardingWizard({
     <div className="min-h-[70vh]">
       {/* Step indicator + progress bar */}
       <div className="max-w-2xl mx-auto px-4 pt-8">
-        <p className="text-xs text-[#bbb] font-medium text-right mb-2">
+        <p className="text-xs text-[#8a8280] font-medium text-right mb-2">
           Step {step} of 4
         </p>
         <div className="flex gap-2">
@@ -328,7 +328,7 @@ export default function OnboardingWizard({
             <div
               key={s}
               className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                s <= step ? "bg-indigo-500" : "bg-[#e8e6e3]"
+                s <= step ? "bg-[#f0eeeb]0" : "bg-[#e8e6e3]"
               }`}
             />
           ))}
@@ -342,7 +342,7 @@ export default function OnboardingWizard({
           <h1 className="text-2xl font-bold text-[#1a1a1a] mb-1.5">
             {STEP_TITLES[step]}
           </h1>
-          <p className="text-[#999] text-sm">{STEP_DESCRIPTIONS[step]}</p>
+          <p className="text-[#6b6560] text-sm">{STEP_DESCRIPTIONS[step]}</p>
         </div>
 
         {/* ── Step 1: Profile ─────────────────────────────────────────────── */}
@@ -353,7 +353,7 @@ export default function OnboardingWizard({
               <button
                 type="button"
                 onClick={() => avatarInputRef.current?.click()}
-                className="relative w-24 h-24 rounded-full bg-[#f0eeeb] border-2 border-dashed border-[#e8e6e3] hover:border-indigo-400 transition-colors flex items-center justify-center overflow-hidden group"
+                className="relative w-24 h-24 rounded-full bg-[#f0eeeb] border-2 border-dashed border-[#e8e6e3] hover:border-[#8E7A6B] transition-colors flex items-center justify-center overflow-hidden group"
               >
                 {avatarUrl ? (
                   <Image
@@ -363,7 +363,7 @@ export default function OnboardingWizard({
                     className="object-cover"
                   />
                 ) : (
-                  <User className="w-8 h-8 text-[#bbb] group-hover:text-indigo-500 transition-colors" />
+                  <User className="w-8 h-8 text-[#8a8280] group-hover:text-[#8E7A6B] transition-colors" />
                 )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                   {avatarUploading ? (
@@ -383,7 +383,7 @@ export default function OnboardingWizard({
                   if (file) handleAvatarUpload(file);
                 }}
               />
-              <p className="text-xs text-[#bbb]">
+              <p className="text-xs text-[#8a8280]">
                 {avatarUrl ? "Click to change photo" : "Upload a profile photo"}
               </p>
             </div>
@@ -398,7 +398,7 @@ export default function OnboardingWizard({
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="How should people know you?"
-                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
               />
             </div>
 
@@ -406,7 +406,7 @@ export default function OnboardingWizard({
             <div>
               <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Short bio{" "}
-                <span className="text-[#bbb] font-normal">(optional)</span>
+                <span className="text-[#8a8280] font-normal">(optional)</span>
               </label>
               <textarea
                 value={bio}
@@ -414,9 +414,9 @@ export default function OnboardingWizard({
                 placeholder="Tell buyers a bit about yourself..."
                 rows={3}
                 maxLength={300}
-                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
               />
-              <p className="text-xs text-[#bbb] text-right mt-1">
+              <p className="text-xs text-[#8a8280] text-right mt-1">
                 {bio.length}/300
               </p>
             </div>
@@ -426,7 +426,7 @@ export default function OnboardingWizard({
         {/* ── Step 2: Socials ─────────────────────────────────────────────── */}
         {step === 2 && (
           <div className="bg-white border border-[#e8e6e3] p-6 shadow-sm space-y-5">
-            <p className="text-sm text-[#999] text-center">
+            <p className="text-sm text-[#6b6560] text-center">
               These are shown on your public profile so buyers can reach you.
               All fields are optional.
             </p>
@@ -438,7 +438,7 @@ export default function OnboardingWizard({
                 Instagram
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] text-sm">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
                   @
                 </span>
                 <input
@@ -448,7 +448,7 @@ export default function OnboardingWizard({
                     setInstagram(e.target.value.replace(/^@/, ""))
                   }
                   placeholder="username"
-                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
                 />
               </div>
             </div>
@@ -460,7 +460,7 @@ export default function OnboardingWizard({
                 Telegram
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] text-sm">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
                   @
                 </span>
                 <input
@@ -470,7 +470,7 @@ export default function OnboardingWizard({
                     setTelegram(e.target.value.replace(/^@/, ""))
                   }
                   placeholder="username"
-                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
                 />
               </div>
             </div>
@@ -486,7 +486,7 @@ export default function OnboardingWizard({
                 value={facebook}
                 onChange={(e) => setFacebook(e.target.value)}
                 placeholder="Profile URL or username"
-                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
               />
             </div>
           </div>
@@ -498,14 +498,14 @@ export default function OnboardingWizard({
             {/* Geolocation request */}
             {!geoGranted ? (
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-indigo-50 flex items-center justify-center mx-auto">
-                  <Navigation className="w-7 h-7 text-indigo-500" />
+                <div className="w-16 h-16 bg-[#f0eeeb] flex items-center justify-center mx-auto">
+                  <Navigation className="w-7 h-7 text-[#8E7A6B]" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-[#1a1a1a] mb-1">
                     Enable location access?
                   </h3>
-                  <p className="text-sm text-[#999] max-w-sm mx-auto">
+                  <p className="text-sm text-[#6b6560] max-w-sm mx-auto">
                     We&apos;ll use your location to show you nearby listings and
                     help buyers find your items. Your exact coordinates are
                     never shared publicly.
@@ -551,7 +551,7 @@ export default function OnboardingWizard({
               <select
                 value={locationId}
                 onChange={(e) => setLocationId(e.target.value)}
-                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               >
                 <option value="">Select a city...</option>
                 {locations.map((loc) => (
@@ -568,10 +568,10 @@ export default function OnboardingWizard({
         {step === 4 && (
           <div className="bg-white border border-[#e8e6e3] p-6 shadow-sm space-y-5">
             <div className="text-center mb-2">
-              <div className="w-14 h-14 bg-indigo-50 flex items-center justify-center mx-auto mb-3">
-                <Sparkles className="w-6 h-6 text-indigo-500" />
+              <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-3">
+                <Sparkles className="w-6 h-6 text-[#8E7A6B]" />
               </div>
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-[#6b6560]">
                 Got something to sell? Create a quick listing now, or skip and
                 do it later.
               </p>
@@ -581,12 +581,12 @@ export default function OnboardingWizard({
             <div>
               <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Photo{" "}
-                <span className="text-[#bbb] font-normal">(optional)</span>
+                <span className="text-[#8a8280] font-normal">(optional)</span>
               </label>
               <button
                 type="button"
                 onClick={() => listingImageRef.current?.click()}
-                className="w-full h-40 border-2 border-dashed border-[#e8e6e3] hover:border-indigo-400 transition-colors flex flex-col items-center justify-center gap-2 overflow-hidden relative group"
+                className="w-full h-40 border-2 border-dashed border-[#e8e6e3] hover:border-[#8E7A6B] transition-colors flex flex-col items-center justify-center gap-2 overflow-hidden relative group"
               >
                 {listingImagePreview ? (
                   <>
@@ -602,8 +602,8 @@ export default function OnboardingWizard({
                   </>
                 ) : (
                   <>
-                    <Plus className="w-6 h-6 text-[#bbb]" />
-                    <span className="text-xs text-[#bbb]">Add a photo</span>
+                    <Plus className="w-6 h-6 text-[#8a8280]" />
+                    <span className="text-xs text-[#8a8280]">Add a photo</span>
                   </>
                 )}
               </button>
@@ -632,7 +632,7 @@ export default function OnboardingWizard({
                 value={listingTitle}
                 onChange={(e) => setListingTitle(e.target.value)}
                 placeholder='e.g. "iPhone 15 Pro — Like New"'
-                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
               />
             </div>
 
@@ -644,7 +644,7 @@ export default function OnboardingWizard({
               <select
                 value={listingCategoryId}
                 onChange={(e) => setListingCategoryId(e.target.value)}
-                className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               >
                 <option value="">Choose a category...</option>
                 {categories.map((cat) => (
@@ -659,12 +659,12 @@ export default function OnboardingWizard({
             <div>
               <label className="block text-sm font-medium text-[#666] mb-1.5">
                 Price{" "}
-                <span className="text-[#bbb] font-normal">
+                <span className="text-[#8a8280] font-normal">
                   (leave blank for &ldquo;Contact for price&rdquo;)
                 </span>
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280] font-medium">
                   €
                 </span>
                 <input
@@ -674,7 +674,7 @@ export default function OnboardingWizard({
                   value={listingPrice}
                   onChange={(e) => setListingPrice(e.target.value)}
                   placeholder="0.00"
-                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
             </div>
@@ -688,7 +688,7 @@ export default function OnboardingWizard({
             <button
               type="button"
               onClick={back}
-              className="text-sm text-[#999] hover:text-[#666] font-medium transition-colors"
+              className="text-sm text-[#6b6560] hover:text-[#666] font-medium transition-colors"
             >
               Back
             </button>
@@ -703,7 +703,7 @@ export default function OnboardingWizard({
               <button
                 type="button"
                 onClick={next}
-                className="text-sm text-[#bbb] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
+                className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
               >
                 Skip <ChevronRight className="w-3 h-3" />
               </button>
@@ -726,7 +726,7 @@ export default function OnboardingWizard({
                   type="button"
                   onClick={() => finishOnboarding(true)}
                   disabled={saving}
-                  className="text-sm text-[#bbb] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
+                  className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
                 >
                   <SkipForward className="w-3.5 h-3.5" />
                   Skip for now

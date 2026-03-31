@@ -4,13 +4,13 @@ import { ArrowLeft, Loader2, PenLine, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
 
 type ListingData = {
   id: string;
@@ -178,7 +178,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard/listings"
-          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#999]"
+          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -195,18 +195,18 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
         {/* Video Tour — promoted listings only */}
         {listing.is_promoted && (
-          <div className="border-2 border-violet-200 bg-violet-50/50 p-5 space-y-3">
+          <div className="border-2 border-[#e8e6e3] bg-[#f0eeeb]/50 p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-[#1a1a1a] text-sm">
                   🎬 Video Tour
                 </p>
-                <p className="text-xs text-[#999] mt-0.5">
+                <p className="text-xs text-[#6b6560] mt-0.5">
                   Add or replace a short video — included with your Featured
                   listing
                 </p>
               </div>
-              <span className="text-[10px] font-bold bg-violet-600 text-white px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold bg-[#8E7A6B] text-white px-2 py-0.5 rounded-full">
                 PAID FEATURE
               </span>
             </div>
@@ -225,7 +225,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           </label>
           <input
             type="text"
-            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
             value={formData.title}
             onChange={(e) => update("title", e.target.value)}
           />
@@ -241,7 +241,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               type="button"
               onClick={handleAiDescription}
               disabled={descLoading || !formData.title}
-              className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:text-[#bbb] disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
             >
               {descLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -250,14 +250,14 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               )}
               {descLoading ? "Writing..." : "Write with AI"}
               {!descLoading && (
-                <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+                <span className="text-[9px] bg-[#e8e6e3] text-[#7A6657] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
                   Beta
                 </span>
               )}
             </button>
           </div>
           <textarea
-            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm h-32 resize-none"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm h-32 resize-none"
             placeholder="Describe your item — or click 'Write with AI' to generate a description..."
             value={formData.description}
             onChange={(e) => update("description", e.target.value)}
@@ -271,12 +271,12 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Price (€)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb]">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280]">
                 €
               </span>
               <input
                 type="number"
-                className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+                className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
                 value={formData.price}
                 onChange={(e) => update("price", e.target.value)}
               />
@@ -287,7 +287,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Price Type
             </label>
             <select
-              className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.price_type}
               onChange={(e) => update("price_type", e.target.value)}
             >
@@ -306,7 +306,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Category
             </label>
             <select
-              className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.category_id}
               onChange={(e) => update("category_id", e.target.value)}
             >
@@ -322,7 +322,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Location
             </label>
             <select
-              className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.location_id}
               onChange={(e) => update("location_id", e.target.value)}
             >
@@ -339,7 +339,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               Condition
             </label>
             <select
-              className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.condition}
               onChange={(e) => update("condition", e.target.value)}
             >
@@ -356,16 +356,16 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
             Phone Number{" "}
-            <span className="text-[#bbb] font-normal">(optional)</span>
+            <span className="text-[#8a8280] font-normal">(optional)</span>
           </label>
           <input
             type="tel"
-            className="w-full px-4 py-3 border border-[#e8e6e3] focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
             placeholder="+357 99 123456"
             value={formData.contact_phone}
             onChange={(e) => update("contact_phone", e.target.value)}
           />
-          <p className="text-xs text-[#bbb] mt-1">
+          <p className="text-xs text-[#8a8280] mt-1">
             Leave blank to hide the phone button on your listing.
           </p>
         </div>

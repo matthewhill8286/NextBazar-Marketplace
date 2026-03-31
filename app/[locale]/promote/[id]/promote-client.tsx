@@ -89,7 +89,7 @@ export default function PromoteClient({
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#999] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#6b6560] animate-spin" />
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function PromoteClient({
       <div className="flex items-center gap-3 mb-8">
         <Link
           href="/dashboard/listings"
-          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#999]"
+          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -108,7 +108,7 @@ export default function PromoteClient({
           <h1 className="text-2xl font-bold text-[#1a1a1a]">
             Boost Your Listing
           </h1>
-          <p className="text-sm text-[#999]">
+          <p className="text-sm text-[#6b6560]">
             Get more visibility and sell faster
           </p>
         </div>
@@ -132,7 +132,7 @@ export default function PromoteClient({
             <p className="font-medium text-[#1a1a1a] text-sm truncate">
               {listing.title}
             </p>
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-[#6b6560]">
               {listing.price
                 ? `${listing.currency === "EUR" ? "€" : listing.currency}${listing.price.toLocaleString()}`
                 : "Contact for price"}
@@ -209,7 +209,7 @@ export default function PromoteClient({
                   </div>
                   <div>
                     <p className="font-semibold text-[#1a1a1a]">{promo.name}</p>
-                    <p className="text-xs text-[#999]">{promo.duration}</p>
+                    <p className="text-xs text-[#6b6560]">{promo.duration}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -243,7 +243,7 @@ export default function PromoteClient({
         Pay Now — {PROMOTIONS.find((p) => p.key === selected)?.price}
       </button>
 
-      <p className="text-center text-xs text-[#bbb] mt-3">
+      <p className="text-center text-xs text-[#8a8280] mt-3">
         Secure payment powered by Stripe. You won&apos;t be charged until you
         confirm.
       </p>

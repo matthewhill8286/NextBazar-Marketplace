@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle, Loader2, Star } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { timeAgo } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
@@ -15,10 +16,10 @@ type Review = {
 
 function StarPicker({
   value,
-  onChange,
+  onChangeAction,
 }: {
   value: number;
-  onChange: (v: number) => void;
+  onChangeAction: (v: number) => void;
 }) {
   const [hovered, setHovered] = useState(0);
   return (
@@ -27,7 +28,7 @@ function StarPicker({
         <button
           key={i}
           type="button"
-          onClick={() => onChange(i)}
+          onClick={() => onChangeAction(i)}
           onMouseEnter={() => setHovered(i)}
           onMouseLeave={() => setHovered(0)}
           className="p-0.5 transition-transform hover:scale-110"
@@ -131,14 +132,14 @@ export function LeaveReviewPrompt({
       <h3 className="font-semibold text-[#1a1a1a] mb-1">
         Rate your experience
       </h3>
-      <p className="text-sm text-[#999] mb-4">
+      <p className="text-sm text-[#6b6560] mb-4">
         How was your transaction with{" "}
         <span className="font-medium text-[#666]">{sellerName}</span>?
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col items-start gap-1.5">
-          <StarPicker value={rating} onChange={setRating} />
+          <StarPicker value={rating} onChangeAction={setRating} />
           {rating > 0 && (
             <span className="text-sm font-medium text-amber-600">
               {RATING_LABELS[rating]}
@@ -151,7 +152,7 @@ export function LeaveReviewPrompt({
           placeholder="Share your experience (optional)"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className="w-full px-4 py-2.5 border border-[#e8e6e3] bg-[#faf9f7] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
+          className="w-full px-4 py-2.5 border border-[#e8e6e3] bg-[#faf9f7] focus:bg-white focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
         />
 
         <button
@@ -219,7 +220,7 @@ export function SellerReviews({
           <span className="font-bold text-[#1a1a1a]">
             {avgRating.toFixed(1)}
           </span>
-          <span className="text-sm text-[#bbb]">({totalReviews})</span>
+          <span className="text-sm text-[#8a8280]">({totalReviews})</span>
         </div>
       </div>
 
@@ -230,7 +231,7 @@ export function SellerReviews({
           const pct = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
           return (
             <div key={star} className="flex items-center gap-2 text-xs">
-              <span className="w-2 text-[#999]">{star}</span>
+              <span className="w-2 text-[#6b6560]">{star}</span>
               <Star className="w-3 h-3 fill-amber-400 stroke-amber-400 shrink-0" />
               <div className="flex-1 h-2 bg-[#f0eeeb] rounded-full overflow-hidden">
                 <div
@@ -238,7 +239,7 @@ export function SellerReviews({
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="w-5 text-right text-[#bbb]">{count}</span>
+              <span className="w-5 text-right text-[#8a8280]">{count}</span>
             </div>
           );
         })}
@@ -257,11 +258,13 @@ export function SellerReviews({
 
           return (
             <div key={review.id} className="flex gap-3">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8E7A6B] to-[#7A6657] flex items-center justify-center text-white text-xs font-semibold shrink-0 overflow-hidden">
                 {review.reviewer?.avatar_url ? (
-                  <img
+                  <Image
                     src={review.reviewer.avatar_url}
                     alt=""
+                    width={36}
+                    height={36}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -273,7 +276,7 @@ export function SellerReviews({
                   <span className="text-sm font-medium text-[#1a1a1a] truncate">
                     {review.reviewer?.display_name || "Anonymous"}
                   </span>
-                  <span className="text-xs text-[#bbb] shrink-0">
+                  <span className="text-xs text-[#8a8280] shrink-0">
                     {timeAgo(review.created_at)}
                   </span>
                 </div>
@@ -301,7 +304,7 @@ export function SellerReviews({
       {reviews.length > 3 && (
         <button
           onClick={() => setShowAll((v) => !v)}
-          className="mt-4 text-sm text-indigo-600 font-medium hover:underline w-full text-center"
+          className="mt-4 text-sm text-[#8E7A6B] font-medium hover:underline w-full text-center"
         >
           {showAll ? "Show less" : `Show all ${reviews.length} reviews`}
         </button>

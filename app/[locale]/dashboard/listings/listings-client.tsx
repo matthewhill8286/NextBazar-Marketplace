@@ -55,11 +55,11 @@ function expiresSoon(expiresAt: string | null, status: string): boolean {
 export default function ListingsClient({
   initialListings,
   isProSeller = false,
-  onListingsChange,
+  onListingsChangeAction,
 }: {
   initialListings: DashboardListing[];
   isProSeller?: boolean;
-  onListingsChange?: (listings: DashboardListing[]) => void;
+  onListingsChangeAction?: (listings: DashboardListing[]) => void;
 }) {
   const supabase = createClient();
   const searchParams = useSearchParams();
@@ -75,8 +75,8 @@ export default function ListingsClient({
   // Notify parent whenever listings change — done in an effect to avoid
   // calling setState in a parent component during this component's render.
   useEffect(() => {
-    onListingsChange?.(listings);
-  }, [listings, onListingsChange]);
+    onListingsChangeAction?.(listings);
+  }, [listings, onListingsChangeAction]);
   const [tab, setTab] = useState(tabFromParams);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -458,7 +458,7 @@ export default function ListingsClient({
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 tab === t.key
                   ? "bg-white text-[#1a1a1a] shadow-sm"
-                  : "text-[#999] hover:text-[#666]"
+                  : "text-[#6b6560] hover:text-[#666]"
               }`}
             >
               {t.label}
@@ -545,7 +545,7 @@ export default function ListingsClient({
             </button>
             <button
               onClick={clearSelection}
-              className="text-xs text-[#999] hover:text-[#666] transition-colors px-2"
+              className="text-xs text-[#6b6560] hover:text-[#666] transition-colors px-2"
             >
               Cancel
             </button>
@@ -561,7 +561,7 @@ export default function ListingsClient({
             <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#e8e6e3] bg-[#faf9f7]/60 rounded-t-xl">
               <button
                 onClick={toggleSelectAll}
-                className="flex items-center gap-2 text-xs text-[#999] hover:text-[#1a1a1a] transition-colors"
+                className="flex items-center gap-2 text-xs text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
               >
                 <SelectIcon className="w-4 h-4" />
                 {allSelected ? "Deselect all" : "Select all"}
@@ -587,7 +587,7 @@ export default function ListingsClient({
                 {isProSeller && (
                   <button
                     onClick={() => toggleSelect(listing.id)}
-                    className="shrink-0 text-[#bbb] hover:text-[#666] transition-colors"
+                    className="shrink-0 text-[#8a8280] hover:text-[#666] transition-colors"
                   >
                     {isSelected ? (
                       <CheckSquare className="w-5 h-5 text-[#666]" />
@@ -646,7 +646,7 @@ export default function ListingsClient({
                   >
                     {listing.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-[#999] flex-wrap">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-[#6b6560] flex-wrap">
                     <span className="font-semibold text-[#1a1a1a]">
                       {formatPrice(listing.price, listing.currency)}
                     </span>
@@ -718,7 +718,7 @@ export default function ListingsClient({
                 </div>
 
                 {/* Stats */}
-                <div className="hidden md:flex items-center gap-5 text-xs text-[#999] shrink-0">
+                <div className="hidden md:flex items-center gap-5 text-xs text-[#6b6560] shrink-0">
                   <div className="flex items-center gap-1">
                     <Eye className="w-3.5 h-3.5" />
                     <span>{(listing.view_count || 0).toLocaleString()}</span>
@@ -789,13 +789,13 @@ export default function ListingsClient({
                 {/* Actions Menu */}
                 <div className="relative shrink-0">
                   {loadingAction === listing.id ? (
-                    <Loader2 className="w-4 h-4 text-[#bbb] animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#8a8280] animate-spin" />
                   ) : (
                     <button
                       onClick={() =>
                         setOpenMenu(openMenu === listing.id ? null : listing.id)
                       }
-                      className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#bbb] hover:text-[#666]"
+                      className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#8a8280] hover:text-[#666]"
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>

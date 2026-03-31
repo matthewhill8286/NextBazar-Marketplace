@@ -80,9 +80,9 @@ export default function DashboardPage() {
           >
             <div className="flex items-center gap-2.5 mb-3">
               <div className="p-2 bg-[#faf9f7]">
-                <Icon className="w-4 h-4 text-[#999]" />
+                <Icon className="w-4 h-4 text-[#6b6560]" />
               </div>
-              <span className="text-[10px] font-medium text-[#999] uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em]">
                 {label}
               </span>
             </div>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
       <ListingsClient
         initialListings={initialListings}
         isProSeller={isProSeller}
-        onListingsChange={handleListingsChange}
+        onListingsChangeAction={handleListingsChange}
       />
 
       {/* Pro Seller modal */}
@@ -140,7 +140,7 @@ export default function DashboardPage() {
           dealerPrice={dealerPrice}
           dealerInterval={dealerInterval}
           subscribing={subscribing}
-          onSubscribe={async () => {
+          onSubscribeAction={async () => {
             setSubscribing(true);
             try {
               const res = await fetch("/api/dealer/subscribe", {
@@ -154,7 +154,7 @@ export default function DashboardPage() {
               setSubscribing(false);
             }
           }}
-          onClose={() => setShowProModal(false)}
+          onCloseAction={() => setShowProModal(false)}
         />
       )}
     </div>

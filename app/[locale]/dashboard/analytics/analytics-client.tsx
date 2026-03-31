@@ -264,7 +264,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
           >
             Analytics
           </h1>
-          <p className="text-sm text-[#999] mt-0.5">
+          <p className="text-sm text-[#6b6560] mt-0.5">
             Track performance across all your listings.
           </p>
         </div>
@@ -278,11 +278,11 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
 
       {listings.length === 0 ? (
         <div className="bg-white border border-[#e8e6e3] p-16 text-center">
-          <BarChart2 className="w-12 h-12 text-[#ccc] mx-auto mb-4" />
+          <BarChart2 className="w-12 h-12 text-[#8a8280] mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
             No listings yet
           </h3>
-          <p className="text-[#999] text-sm mb-6">
+          <p className="text-[#6b6560] text-sm mb-6">
             Post your first listing to start tracking performance.
           </p>
           <Link
@@ -332,7 +332,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                   <div className="text-xl font-bold text-[#1a1a1a]">
                     {s.value.toLocaleString()}
                   </div>
-                  <div className="text-xs text-[#999]">{s.label}</div>
+                  <div className="text-xs text-[#6b6560]">{s.label}</div>
                 </div>
               </div>
             ))}
@@ -341,7 +341,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-5 items-start">
             {/* Left — listing list (scrollable) */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-[#999] uppercase tracking-wide px-1">
+              <p className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide px-1">
                 Your Listings
               </p>
               <div className="space-y-1.5">
@@ -369,7 +369,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                             sizes="44px"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#ccc] text-lg">
+                          <div className="w-full h-full flex items-center justify-center text-[#8a8280] text-lg">
                             📦
                           </div>
                         )}
@@ -379,11 +379,11 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                           {l.title}
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="flex items-center gap-0.5 text-xs text-[#999]">
+                          <span className="flex items-center gap-0.5 text-xs text-[#6b6560]">
                             <Eye className="w-3 h-3" />
                             {(l.view_count || 0).toLocaleString()}
                           </span>
-                          <span className="flex items-center gap-0.5 text-xs text-[#999]">
+                          <span className="flex items-center gap-0.5 text-xs text-[#6b6560]">
                             <Heart className="w-3 h-3" />
                             {l.favorite_count || 0}
                           </span>
@@ -436,7 +436,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                   <Link
                     href={`/listing/${selectedListing.slug}`}
                     target="_blank"
-                    className="p-2 text-[#bbb] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
+                    className="p-2 text-[#8a8280] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Link>
@@ -467,10 +467,10 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                         <div className="text-2xl font-bold text-[#1a1a1a]">
                           {total.toLocaleString()}
                         </div>
-                        <div className="text-xs text-[#999] mt-0.5">
+                        <div className="text-xs text-[#6b6560] mt-0.5">
                           {m.label} ({rangeDays}d)
                         </div>
-                        <div className="text-xs text-[#bbb] mt-0.5">
+                        <div className="text-xs text-[#8a8280] mt-0.5">
                           {allTime.toLocaleString()} all-time
                         </div>
                       </button>
@@ -515,7 +515,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                           <button
                             key={r.days}
                             onClick={() => setRangeDays(r.days)}
-                            className={`px-2.5 py-1 text-xs font-medium transition-colors ${rangeDays === r.days ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#999] hover:text-[#666]"}`}
+                            className={`px-2.5 py-1 text-xs font-medium transition-colors ${rangeDays === r.days ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#6b6560] hover:text-[#666]"}`}
                           >
                             {r.label}
                           </button>
@@ -530,7 +530,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     color={activeMetric.color}
                   />
 
-                  <div className="flex justify-between mt-2 text-xs text-[#bbb]">
+                  <div className="flex justify-between mt-2 text-xs text-[#8a8280]">
                     <span>
                       {new Date(dates[0]).toLocaleDateString("en-GB", {
                         day: "numeric",

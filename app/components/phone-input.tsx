@@ -67,16 +67,16 @@ function stripDial(phone: string, dial: string): string {
 
 type PhoneInputProps = {
   value: string;
-  onChange: (value: string) => void;
+  onChangeAction: (value: string) => void;
   placeholder?: string;
   focusClass?: string;
 };
 
 export default function PhoneInput({
   value,
-  onChange,
+  onChangeAction,
   placeholder = "99 123456",
-  focusClass = "focus-within:border-indigo-400 focus-within:ring-2 focus-within:ring-[#8E7A6B]/10",
+  focusClass = "focus-within:border-[#8E7A6B] focus-within:ring-2 focus-within:ring-[#8E7A6B]/10",
 }: PhoneInputProps) {
   const [country, setCountry] = useState<Country>(() => detectCountry(value));
   const [localNumber, setLocalNumber] = useState(() =>
@@ -110,7 +110,7 @@ export default function PhoneInput({
   }, [open]);
 
   function emitChange(dial: string, num: string) {
-    onChange(num ? `${dial} ${num}` : "");
+    onChangeAction(num ? `${dial} ${num}` : "");
   }
 
   function handleCountrySelect(c: Country) {
@@ -151,7 +151,7 @@ export default function PhoneInput({
           <span className="text-base leading-none">{country.flag}</span>
           <span className="font-medium text-[#666]">{country.dial}</span>
           <ChevronDown
-            className={`w-3.5 h-3.5 text-[#bbb] transition-transform ${open ? "rotate-180" : ""}`}
+            className={`w-3.5 h-3.5 text-[#8a8280] transition-transform ${open ? "rotate-180" : ""}`}
           />
         </button>
 
@@ -175,14 +175,14 @@ export default function PhoneInput({
           {/* Search input */}
           <div className="p-2 border-b border-[#e8e6e3]">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#bbb]" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8a8280]" />
               <input
                 ref={searchRef}
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search country..."
-                className="w-full pl-8 pr-3 py-2 text-sm border border-[#e8e6e3] outline-none focus:border-indigo-400 focus:ring-1 focus:ring-[#8E7A6B]/10 bg-[#faf9f7]"
+                className="w-full pl-8 pr-3 py-2 text-sm border border-[#e8e6e3] outline-none focus-visible:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 bg-[#faf9f7]"
               />
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function PhoneInput({
           {/* Country list */}
           <div className="max-h-56 overflow-y-auto overscroll-contain">
             {filtered.length === 0 && (
-              <p className="text-xs text-[#bbb] text-center py-6">
+              <p className="text-xs text-[#8a8280] text-center py-6">
                 No countries found
               </p>
             )}
@@ -203,7 +203,7 @@ export default function PhoneInput({
                   onClick={() => handleCountrySelect(c)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors ${
                     isSelected
-                      ? "bg-indigo-50 text-indigo-700"
+                      ? "bg-[#f0eeeb] text-[#7A6657]"
                       : "text-[#666] hover:bg-[#faf9f7]"
                   }`}
                 >
@@ -211,11 +211,11 @@ export default function PhoneInput({
                   <span className="flex-1 text-left truncate font-medium">
                     {c.name}
                   </span>
-                  <span className="text-xs text-[#bbb] font-mono tabular-nums">
+                  <span className="text-xs text-[#8a8280] font-mono tabular-nums">
                     {c.dial}
                   </span>
                   {isSelected && (
-                    <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-[#8E7A6B] shrink-0" />
                   )}
                 </button>
               );

@@ -114,7 +114,7 @@ export default function SaveSearchButton({
         onClick={handleRemove}
         disabled={saving}
         title="Remove saved search"
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-sm font-medium hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors disabled:opacity-50"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f0eeeb] border border-[#e8e6e3] text-[#7A6657] text-sm font-medium hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors disabled:opacity-50"
       >
         {saving ? (
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -131,7 +131,7 @@ export default function SaveSearchButton({
       onClick={handleSave}
       disabled={saving}
       title="Save this search & get alerts"
-      className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#e8e6e3] text-[#666] text-sm font-medium hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-colors disabled:opacity-50"
+      className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#e8e6e3] text-[#666] text-sm font-medium hover:bg-[#f0eeeb] hover:border-[#e8e6e3] hover:text-[#7A6657] transition-colors disabled:opacity-50"
     >
       {saving ? (
         <Loader2 className="w-3.5 h-3.5 animate-spin" />

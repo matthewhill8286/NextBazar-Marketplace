@@ -166,8 +166,8 @@ export function MessagesPreview() {
   if (convos.length === 0) {
     return (
       <div className="px-4 py-6 text-center">
-        <MessageCircle className="w-8 h-8 text-[#ccc] mx-auto mb-2" />
-        <p className="text-sm text-[#bbb]">{t("noMessages")}</p>
+        <MessageCircle className="w-8 h-8 text-[#8a8280] mx-auto mb-2" />
+        <p className="text-sm text-[#8a8280]">{t("noMessages")}</p>
       </div>
     );
   }
@@ -200,12 +200,12 @@ export function MessagesPreview() {
                 <p className="text-sm font-medium text-[#1a1a1a] truncate">
                   {other?.display_name || "User"}
                 </p>
-                <p className="text-xs text-[#999] truncate">
+                <p className="text-xs text-[#6b6560] truncate">
                   {c.last_message_preview || c.listings?.title || "…"}
                 </p>
               </div>
               {c.last_message_at && (
-                <span className="text-[10px] text-[#bbb] shrink-0">
+                <span className="text-[10px] text-[#8a8280] shrink-0">
                   {shortTimeAgo(c.last_message_at)}
                 </span>
               )}
@@ -279,8 +279,8 @@ export function SavedPreview() {
   if (items.length === 0) {
     return (
       <div className="px-4 py-6 text-center">
-        <Heart className="w-8 h-8 text-[#ccc] mx-auto mb-2" />
-        <p className="text-sm text-[#bbb]">No saved listings yet</p>
+        <Heart className="w-8 h-8 text-[#8a8280] mx-auto mb-2" />
+        <p className="text-sm text-[#8a8280]">No saved listings yet</p>
       </div>
     );
   }
@@ -392,7 +392,7 @@ export function NotificationsPreview() {
     return (
       <div className="px-4 py-6 text-center">
         <span className="text-2xl block mb-2">🔔</span>
-        <p className="text-sm text-[#bbb]">No notifications yet</p>
+        <p className="text-sm text-[#8a8280]">No notifications yet</p>
       </div>
     );
   }
@@ -436,9 +436,9 @@ export function NotificationsPreview() {
                   {n.title}
                 </p>
                 {n.body && (
-                  <p className="text-xs text-[#999] truncate">{n.body}</p>
+                  <p className="text-xs text-[#6b6560] truncate">{n.body}</p>
                 )}
-                <p className="text-[10px] text-[#bbb] mt-0.5">
+                <p className="text-[10px] text-[#8a8280] mt-0.5">
                   {shortTimeAgo(n.created_at)}
                 </p>
               </div>

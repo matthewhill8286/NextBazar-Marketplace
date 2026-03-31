@@ -16,8 +16,8 @@ import {
   Store,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-/* Image import removed — banner now uses CSS background-image */
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -252,7 +252,7 @@ export default function ShopOnboardingWizard({
   const firstName = userName.split(" ")[0] || "there";
 
   const INPUT_CLS =
-    "w-full px-4 py-3 border border-[#e8e6e3] focus:border-[#8E7A6B] focus:ring-2 focus:ring-[#8E7A6B]/5 outline-none text-sm transition-colors";
+    "w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm transition-colors";
 
   // ─── Phase: Welcome ─────────────────────────────────────────────────────
 
@@ -273,7 +273,7 @@ export default function ShopOnboardingWizard({
               </div>
             </div>
 
-            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
               Pro Seller Activated
             </p>
             <h1
@@ -282,7 +282,7 @@ export default function ShopOnboardingWizard({
             >
               Welcome{firstName !== "there" ? `, ${firstName}` : ""}
             </h1>
-            <p className="text-lg text-[#999] mb-10 max-w-md mx-auto leading-relaxed">
+            <p className="text-lg text-[#6b6560] mb-10 max-w-md mx-auto leading-relaxed">
               You now have access to unlimited listings, analytics, a verified
               badge, and your own branded shop page.
             </p>
@@ -296,7 +296,7 @@ export default function ShopOnboardingWizard({
               Set Up My Shop
             </button>
 
-            <p className="text-xs text-[#bbb] mt-5 animate-pulse">
+            <p className="text-xs text-[#8a8280] mt-5 animate-pulse">
               Starting automatically...
             </p>
           </div>
@@ -329,7 +329,7 @@ export default function ShopOnboardingWizard({
             </div>
           </div>
 
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
             All Set
           </p>
           <h1
@@ -338,7 +338,7 @@ export default function ShopOnboardingWizard({
           >
             Your shop is live
           </h1>
-          <p className="text-[#999] mb-2">
+          <p className="text-[#6b6560] mb-2">
             <span className="font-medium text-[#666]">
               {shopNameValue || "Your Shop"}
             </span>{" "}
@@ -369,7 +369,7 @@ export default function ShopOnboardingWizard({
           <div className="mt-8">
             <Link
               href={`/shop/${finalSlug}`}
-              className="inline-flex items-center gap-1.5 text-sm text-[#999] hover:text-[#8E7A6B] transition-colors font-medium"
+              className="inline-flex items-center gap-1.5 text-sm text-[#6b6560] hover:text-[#8E7A6B] transition-colors font-medium"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               View your public shop page
@@ -390,7 +390,7 @@ export default function ShopOnboardingWizard({
                   >
                     Complete your profile
                   </p>
-                  <p className="text-xs text-[#999] leading-relaxed mb-3">
+                  <p className="text-xs text-[#6b6560] leading-relaxed mb-3">
                     Add a photo, bio, and social links so buyers know who
                     they&apos;re dealing with. Profiles with photos get 3× more
                     enquiries.
@@ -444,7 +444,7 @@ export default function ShopOnboardingWizard({
       <div className="max-w-2xl mx-auto px-6 py-4">
         {/* Step header */}
         <div className="text-center mb-10">
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-3">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-3">
             Shop Details
           </p>
           <h1
@@ -453,7 +453,7 @@ export default function ShopOnboardingWizard({
           >
             Name your shop &amp; pick your look
           </h1>
-          <p className="text-[#999] text-sm">
+          <p className="text-[#6b6560] text-sm">
             This is what buyers see when they visit your shop. You can always
             change this later.
           </p>
@@ -464,7 +464,7 @@ export default function ShopOnboardingWizard({
           <div className="bg-white border border-[#e8e6e3] p-7 space-y-6">
             {/* Shop Name */}
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                 Shop Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -482,11 +482,11 @@ export default function ShopOnboardingWizard({
 
             {/* Shop URL */}
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                 Shop URL
               </label>
               <div className="flex items-center border border-[#e8e6e3] overflow-hidden focus-within:border-[#8E7A6B] focus-within:ring-2 focus-within:ring-[#8E7A6B]/5">
-                <span className="px-4 py-3 text-sm text-[#bbb] bg-[#faf9f7] border-r border-[#e8e6e3] whitespace-nowrap">
+                <span className="px-4 py-3 text-sm text-[#8a8280] bg-[#faf9f7] border-r border-[#e8e6e3] whitespace-nowrap">
                   next-bazar.com/shop/
                 </span>
                 <input
@@ -501,7 +501,7 @@ export default function ShopOnboardingWizard({
 
             {/* Accent Color */}
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                 Brand Colour
               </label>
               <div className="flex items-center gap-3">
@@ -538,9 +538,9 @@ export default function ShopOnboardingWizard({
 
             {/* Description */}
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#999] mb-2">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
                 Shop Description{" "}
-                <span className="normal-case tracking-normal text-[#bbb]">
+                <span className="normal-case tracking-normal text-[#8a8280]">
                   (optional)
                 </span>
               </label>
@@ -570,10 +570,10 @@ export default function ShopOnboardingWizard({
           {/* ── Live shop preview ──────────────────────────────────────────── */}
           <div className="border border-[#e8e6e3] overflow-hidden bg-[#faf9f7]">
             <div className="px-5 py-3 border-b border-[#e8e6e3] bg-white flex items-center justify-between">
-              <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#999]">
+              <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
                 Live Preview
               </p>
-              <span className="text-[10px] text-[#bbb] font-medium">
+              <span className="text-[10px] text-[#8a8280] font-medium">
                 Updates as you type
               </span>
             </div>
@@ -594,20 +594,25 @@ export default function ShopOnboardingWizard({
               }}
               onClick={() => bannerInputRef.current?.click()}
             >
-              <div
-                className={`h-36 sm:h-44 w-full overflow-hidden transition-all ${dragOver ? "ring-2 ring-inset ring-[#8E7A6B]" : ""}`}
-                style={{
-                  backgroundImage: bannerUrl
-                    ? `url(${bannerUrl})`
-                    : `linear-gradient(135deg, ${accentColor} 0%, ${darkenHex(accentColor)} 50%, ${darkenHex(darkenHex(accentColor))} 100%)`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              >
-                {bannerUrl && (
+              {bannerUrl ? (
+                <div
+                  className={`relative h-36 sm:h-44 w-full overflow-hidden transition-all ${dragOver ? "ring-2 ring-inset ring-[#8E7A6B]" : ""}`}
+                >
+                  <Image
+                    src={bannerUrl}
+                    alt="Shop banner preview"
+                    fill
+                    className="object-cover"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
-                )}
-                {!bannerUrl && (
+                </div>
+              ) : (
+                <div
+                  className={`h-36 sm:h-44 w-full overflow-hidden transition-all relative ${dragOver ? "ring-2 ring-inset ring-[#8E7A6B]" : ""}`}
+                  style={{
+                    background: `linear-gradient(135deg, ${accentColor} 0%, ${darkenHex(accentColor)} 50%, ${darkenHex(darkenHex(accentColor))} 100%)`,
+                  }}
+                >
                   <div className="absolute inset-0 opacity-10">
                     <div
                       className="absolute inset-0"
@@ -617,8 +622,8 @@ export default function ShopOnboardingWizard({
                       }}
                     />
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Upload / change overlay */}
               {bannerUploading ? (
@@ -709,13 +714,13 @@ export default function ShopOnboardingWizard({
                       )}
 
                       {/* Meta chips */}
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-[#999]">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-[#6b6560]">
                         <span className="inline-flex items-center gap-1.5 bg-[#faf9f7] px-2.5 py-1">
-                          <Calendar className="w-3.5 h-3.5 text-[#bbb]" />
+                          <Calendar className="w-3.5 h-3.5 text-[#8a8280]" />
                           Member since March 2026
                         </span>
                         <span className="inline-flex items-center gap-1.5 bg-[#faf9f7] px-2.5 py-1">
-                          <Package className="w-3.5 h-3.5 text-[#bbb]" />0
+                          <Package className="w-3.5 h-3.5 text-[#8a8280]" />0
                           listings
                         </span>
                       </div>
@@ -733,7 +738,7 @@ export default function ShopOnboardingWizard({
                       >
                         0
                       </div>
-                      <div className="text-[10px] text-[#999] mt-0.5 font-medium tracking-[0.1em] uppercase">
+                      <div className="text-[10px] text-[#6b6560] mt-0.5 font-medium tracking-[0.1em] uppercase">
                         Active
                       </div>
                     </div>
@@ -744,7 +749,7 @@ export default function ShopOnboardingWizard({
                       >
                         0
                       </div>
-                      <div className="text-[10px] text-[#999] mt-0.5 font-medium tracking-[0.1em] uppercase">
+                      <div className="text-[10px] text-[#6b6560] mt-0.5 font-medium tracking-[0.1em] uppercase">
                         Views
                       </div>
                     </div>
@@ -760,7 +765,7 @@ export default function ShopOnboardingWizard({
                           PRO
                         </span>
                       </div>
-                      <div className="text-[10px] text-[#999] mt-0.5 font-medium tracking-[0.1em] uppercase">
+                      <div className="text-[10px] text-[#6b6560] mt-0.5 font-medium tracking-[0.1em] uppercase">
                         Status
                       </div>
                     </div>
@@ -786,7 +791,7 @@ export default function ShopOnboardingWizard({
                 >
                   No listings yet
                 </h3>
-                <p className="text-xs text-[#999] max-w-xs mx-auto">
+                <p className="text-xs text-[#6b6560] max-w-xs mx-auto">
                   Your listings will appear here once you start posting.
                 </p>
               </div>
@@ -802,7 +807,7 @@ export default function ShopOnboardingWizard({
               router.push("/dashboard/shop");
               router.refresh();
             }}
-            className="text-sm text-[#bbb] hover:text-[#666] font-medium transition-colors"
+            className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors"
           >
             Skip for now
           </button>

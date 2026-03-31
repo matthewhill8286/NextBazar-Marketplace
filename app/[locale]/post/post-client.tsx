@@ -324,7 +324,7 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           (label, i) => (
             <span
               key={label}
-              className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a]" : "text-[#ccc]"}`}
+              className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a]" : "text-[#8a8280]"}`}
             >
               {label}
             </span>
@@ -343,11 +343,11 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           visibleSubcategories={visibleSubcategories}
           aiLoading={aiLoading}
           aiFilled={aiFilled}
-          onImagesChange={handleImagesChange}
-          onAiAutofill={handleAiAutofill}
-          onUpdate={update}
-          onSelectCategory={selectCategory}
-          onNext={() => goToStep(2)}
+          onImagesChangeAction={handleImagesChange}
+          onAiAutofillAction={handleAiAutofill}
+          onUpdateAction={update}
+          onSelectCategoryAction={selectCategory}
+          onNextAction={() => goToStep(2)}
         />
       )}
 
@@ -361,13 +361,13 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           descLoading={descLoading}
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
-          onUpdate={update}
-          onSelectPriceKey={setSelectedPriceKey}
-          onAiDescription={handleAiDescription}
-          onAiPricing={handleAiPricing}
-          onVehicleAttrUpdate={updateVehicleAttr}
-          onBack={() => goToStep(1)}
-          onNext={() => goToStep(3)}
+          onUpdateAction={update}
+          onSelectPriceKeyAction={setSelectedPriceKey}
+          onAiDescriptionAction={handleAiDescription}
+          onAiPricingAction={handleAiPricing}
+          onVehicleAttrUpdateAction={updateVehicleAttr}
+          onBackAction={() => goToStep(1)}
+          onNextAction={() => goToStep(3)}
         />
       )}
 
@@ -384,10 +384,10 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
           pricing={pricing}
-          onSetPackage={setSelectedPackage}
-          onSetVideo={setVideo}
-          onBack={() => goToStep(2)}
-          onPublish={handlePublish}
+          onSetPackageAction={setSelectedPackage}
+          onSetVideoAction={setVideo}
+          onBackAction={() => goToStep(2)}
+          onPublishAction={handlePublish}
         />
       )}
 

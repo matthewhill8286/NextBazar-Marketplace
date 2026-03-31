@@ -275,7 +275,7 @@ export default function GlobalSearch() {
     >
       {/* Search input */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999] pointer-events-none" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b6560] pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -288,7 +288,7 @@ export default function GlobalSearch() {
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           placeholder={t("searchPlaceholder")}
-          className="w-full pl-10 pr-20 py-2.5 bg-[#faf9f7] border border-[#e8e6e3] text-sm text-[#1a1a1a] placeholder:text-[#bbb] outline-none focus:border-[#8E7A6B] focus:bg-white focus:ring-2 focus:ring-[#8E7A6B]/5 transition-all"
+          className="w-full pl-10 pr-20 py-2.5 bg-[#faf9f7] border border-[#e8e6e3] text-sm text-[#1a1a1a] placeholder:text-[#8a8280] outline-none focus-visible:border-[#8E7A6B] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 transition-all"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           {query ? (
@@ -300,12 +300,12 @@ export default function GlobalSearch() {
                 setActiveCategory(null);
                 inputRef.current?.focus();
               }}
-              className="p-0.5 text-[#999] hover:text-[#1a1a1a] transition-colors"
+              className="p-0.5 text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           ) : (
-            <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 bg-[#f0eeeb] border border-[#e8e6e3] text-[10px] font-medium text-[#999]">
+            <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 bg-[#f0eeeb] border border-[#e8e6e3] text-[10px] font-medium text-[#6b6560]">
               {"Ctrl+"}K
             </kbd>
           )}
@@ -318,7 +318,7 @@ export default function GlobalSearch() {
           {/* Recent searches */}
           {recentSearches.length > 0 && (
             <div className="px-3.5 pt-3 pb-1">
-              <p className="text-[10px] font-medium text-[#999] uppercase tracking-[0.2em] mb-2">
+              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2">
                 {t("recentSearches")}
               </p>
               <div className="space-y-0.5">
@@ -332,13 +332,13 @@ export default function GlobalSearch() {
                       }}
                       className="flex-1 flex items-center gap-2.5 px-2 py-1.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors text-left"
                     >
-                      <Clock className="w-3.5 h-3.5 text-[#bbb] shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-[#8a8280] shrink-0" />
                       <span className="truncate">{term}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => removeRecent(term)}
-                      className="p-1 text-[#ccc] hover:text-[#666] opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                      className="p-1 text-[#8a8280] hover:text-[#666] opacity-0 group-hover:opacity-100 transition-all shrink-0"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -351,7 +351,7 @@ export default function GlobalSearch() {
           {/* Categories */}
           {categories.length > 0 && (
             <div className="px-3.5 pt-3 pb-2">
-              <p className="text-[10px] font-medium text-[#999] uppercase tracking-[0.2em] mb-2">
+              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2">
                 {t("categories")}
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -376,7 +376,7 @@ export default function GlobalSearch() {
           {/* Trending */}
           {trending.length > 0 && (
             <div className="px-3.5 pt-3 pb-3">
-              <p className="text-[10px] font-medium text-[#999] uppercase tracking-[0.2em] mb-2 flex items-center gap-1">
+              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 {t("trending")}
               </p>
@@ -398,7 +398,7 @@ export default function GlobalSearch() {
                           sizes="36px"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[#ccc] text-sm">
+                        <div className="w-full h-full flex items-center justify-center text-[#8a8280] text-sm">
                           <Tag className="w-3.5 h-3.5" />
                         </div>
                       )}
@@ -407,11 +407,11 @@ export default function GlobalSearch() {
                       <p className="text-sm text-[#1a1a1a] truncate">
                         {item.title}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-[#999]">
+                      <div className="flex items-center gap-2 text-xs text-[#6b6560]">
                         <span className="font-medium text-[#1a1a1a]">
                           {formatPrice(item.price, item.currency)}
                         </span>
-                        <span className="flex items-center gap-0.5 text-[#bbb]">
+                        <span className="flex items-center gap-0.5 text-[#8a8280]">
                           <Flame className="w-3 h-3" />
                           {item.view_count.toLocaleString()}
                         </span>
@@ -468,11 +468,11 @@ export default function GlobalSearch() {
 
           {loading && results.length === 0 ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-5 h-5 text-[#999] animate-spin" />
+              <Loader2 className="w-5 h-5 text-[#6b6560] animate-spin" />
             </div>
           ) : results.length === 0 ? (
             <div className="px-4 py-6 text-center">
-              <p className="text-sm text-[#999]">
+              <p className="text-sm text-[#6b6560]">
                 {t("noResults", { query: trimmedQuery })}
               </p>
               <button
@@ -512,7 +512,7 @@ export default function GlobalSearch() {
                             sizes="48px"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#ccc] text-lg">
+                          <div className="w-full h-full flex items-center justify-center text-[#8a8280] text-lg">
                             <Tag className="w-4 h-4" />
                           </div>
                         )}
@@ -528,7 +528,7 @@ export default function GlobalSearch() {
                         <p className="text-sm font-medium text-[#1a1a1a] truncate">
                           {r.title}
                         </p>
-                        <div className="flex items-center gap-2 mt-0.5 text-xs text-[#999]">
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-[#6b6560]">
                           <span className="font-medium text-[#1a1a1a]">
                             {formatPrice(r.price, r.currency)}
                           </span>

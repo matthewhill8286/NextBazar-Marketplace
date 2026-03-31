@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Playfair_Display } from "next/font/google";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
@@ -13,6 +14,14 @@ import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
 
 type Messages = Record<string, unknown>;
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-playfair",
+});
 
 export const metadata: Metadata = {
   title: "NextBazar — Buy & Sell Anything in Cyprus",
@@ -60,19 +69,7 @@ export default async function LocaleLayout({
     .default;
 
   return (
-    <html lang={locale} className="h-full antialiased">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang={locale} className={`h-full antialiased ${playfair.variable}`}>
       <body className="min-h-full flex flex-col bg-[#faf9f7]">
         <Suspense>
           <NextIntlClientProvider locale={locale} messages={messages}>

@@ -16,6 +16,7 @@ import {
   Store,
   Tag,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
@@ -67,9 +68,11 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-lg shrink-0">
             {profile.avatar_url ? (
-              <img
+              <Image
                 src={profile.avatar_url}
                 alt=""
+                width={48}
+                height={48}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -82,10 +85,10 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
                 {profile.display_name}
               </p>
               {profile.verified && (
-                <Shield className="w-4 h-4 text-[#999] shrink-0" />
+                <Shield className="w-4 h-4 text-[#6b6560] shrink-0" />
               )}
             </div>
-            <p className="text-xs text-[#999] truncate">{profile.email}</p>
+            <p className="text-xs text-[#6b6560] truncate">{profile.email}</p>
             {profile.is_pro_seller && (
               <span className="inline-block mt-1 text-[9px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5 tracking-[0.15em] uppercase">
                 Pro Seller
@@ -114,7 +117,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
                 "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
                   ? "bg-[#f0eeeb] text-[#1a1a1a]"
-                  : "text-[#999] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
+                  : "text-[#6b6560] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <item.icon className="w-4 h-4" />
@@ -132,7 +135,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
                 "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
                 pathname === "/dashboard/shop"
                   ? "bg-[#f0eeeb] text-[#1a1a1a]"
-                  : "text-[#999] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
+                  : "text-[#6b6560] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <Store className="w-4 h-4" />
@@ -143,7 +146,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               href="/pro-sellers"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors mt-1 border border-dashed",
-                "text-[#999] border-[#e8e6e3] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
+                "text-[#6b6560] border-[#e8e6e3] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <Crown className="w-4 h-4" />

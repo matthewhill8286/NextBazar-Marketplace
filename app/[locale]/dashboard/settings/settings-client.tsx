@@ -14,8 +14,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { ErrorBanner, FormInput, FormTextarea } from "@/app/components/ui";
 import PhoneInput from "@/app/components/phone-input";
+import { ErrorBanner, FormInput, FormTextarea } from "@/app/components/ui";
 import { createClient } from "@/lib/supabase/client";
 
 type ProfileData = {
@@ -137,7 +137,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
               />
             ) : (
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#f0eeeb] to-[#e8e6e3] flex items-center justify-center border-2 border-[#e8e6e3]">
-                <User className="w-8 h-8 text-[#bbb]" />
+                <User className="w-8 h-8 text-[#8a8280]" />
               </div>
             )}
 
@@ -155,7 +155,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
 
           <div>
             <p className="text-sm font-medium text-[#1a1a1a]">Profile Photo</p>
-            <p className="text-xs text-[#bbb] mt-0.5">
+            <p className="text-xs text-[#8a8280] mt-0.5">
               JPG, PNG or WebP. Max 2 MB.
             </p>
             <button
@@ -210,7 +210,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
               )
             }
           />
-          <p className="text-xs text-[#bbb] mt-1">
+          <p className="text-xs text-[#8a8280] mt-1">
             Only lowercase letters, numbers and underscores
           </p>
         </div>
@@ -227,9 +227,9 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
               </label>
               <PhoneInput
                 value={formData.phone}
-                onChange={(v) => update("phone", v)}
+                onChangeAction={(v) => update("phone", v)}
               />
-              <p className="text-xs text-[#bbb] mt-1">
+              <p className="text-xs text-[#8a8280] mt-1">
                 Your primary contact number for buyers.
               </p>
             </div>
@@ -248,10 +248,10 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
               </label>
               <PhoneInput
                 value={formData.whatsapp_number}
-                onChange={(v) => update("whatsapp_number", v)}
+                onChangeAction={(v) => update("whatsapp_number", v)}
                 focusClass="focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-100"
               />
-              <p className="text-xs text-[#bbb] mt-1">
+              <p className="text-xs text-[#8a8280] mt-1">
                 Buyers will be able to message you directly on WhatsApp.
               </p>
             </div>
@@ -269,7 +269,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                 Telegram Username
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#bbb] text-sm font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm font-medium">
                   @
                 </span>
                 <input
@@ -285,7 +285,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
                   }
                 />
               </div>
-              <p className="text-xs text-[#bbb] mt-1">
+              <p className="text-xs text-[#8a8280] mt-1">
                 Your Telegram @username. Buyers will be able to open a chat with
                 you directly.
               </p>
@@ -312,11 +312,11 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </label>
           <input
             type="email"
-            className="w-full px-4 py-3 border border-[#e8e6e3] bg-[#faf9f7] text-sm text-[#999] cursor-not-allowed"
+            className="w-full px-4 py-3 border border-[#e8e6e3] bg-[#faf9f7] text-sm text-[#6b6560] cursor-not-allowed"
             value={profile.email}
             disabled
           />
-          <p className="text-xs text-[#bbb] mt-1">
+          <p className="text-xs text-[#8a8280] mt-1">
             Contact support to change your email
           </p>
         </div>

@@ -16,7 +16,7 @@ export default function CompareBar() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#e8e6e3] shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
-        <span className="text-xs font-semibold text-[#999] uppercase tracking-wide shrink-0 hidden sm:block">
+        <span className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide shrink-0 hidden sm:block">
           Compare
         </span>
 
@@ -38,7 +38,7 @@ export default function CompareBar() {
                       sizes="36px"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-sm text-[#bbb]">
+                    <div className="w-full h-full flex items-center justify-center text-sm text-[#8a8280]">
                       ◻
                     </div>
                   )}
@@ -49,7 +49,7 @@ export default function CompareBar() {
                 <button
                   type="button"
                   onClick={() => remove(listing.id)}
-                  className="shrink-0 p-0.5 hover:bg-[#f0eeeb] text-[#bbb] hover:text-[#666] transition-colors"
+                  className="shrink-0 p-0.5 hover:bg-[#f0eeeb] text-[#8a8280] hover:text-[#666] transition-colors"
                   aria-label="Remove from comparison"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -60,7 +60,7 @@ export default function CompareBar() {
                 key={`${listing}-${m}`}
                 className="flex-1 max-w-50 h-13 border-2 border-dashed border-[#e8e6e3] flex items-center justify-center hidden sm:flex"
               >
-                <span className="text-xs text-[#bbb]">
+                <span className="text-xs text-[#8a8280]">
                   {3 - items.length} slot{3 - items.length !== 1 ? "s" : ""}{" "}
                   left
                 </span>
@@ -74,7 +74,7 @@ export default function CompareBar() {
           <button
             type="button"
             onClick={clear}
-            className="text-xs text-[#bbb] hover:text-[#666] transition-colors px-2 py-1 hover:bg-[#f0eeeb]"
+            className="text-xs text-[#8a8280] hover:text-[#666] transition-colors px-2 py-1 hover:bg-[#f0eeeb]"
           >
             Clear
           </button>

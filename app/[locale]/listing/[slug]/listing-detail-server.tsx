@@ -16,6 +16,7 @@ import {
   Star,
   Tag,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import CategoryIcon, {
@@ -133,7 +134,7 @@ export default async function ListingDetailServer({
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 py-4">
-        <nav className="flex items-center gap-1.5 text-sm text-[#999] overflow-x-auto hide-scrollbar">
+        <nav className="flex items-center gap-1.5 text-sm text-[#6b6560] overflow-x-auto hide-scrollbar">
           <Link
             href="/"
             className="hover:text-[#1a1a1a] flex items-center gap-1 shrink-0 transition-colors"
@@ -247,23 +248,23 @@ export default async function ListingDetailServer({
                   {listing.title}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[#999] mb-5">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[#6b6560] mb-5">
                   <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-[#bbb]" />
+                    <MapPin className="w-4 h-4 text-[#8a8280]" />
                     {listing.locations?.name || "Cyprus"}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-[#bbb]" />
+                    <Clock className="w-4 h-4 text-[#8a8280]" />
                     {timeAgo(listing.created_at, locale, timeLabels)}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-[#bbb]" />
+                    <Eye className="w-4 h-4 text-[#8a8280]" />
                     {t("views", {
                       count: (listing.view_count || 0).toLocaleString(),
                     })}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Heart className="w-4 h-4 text-[#bbb]" />
+                    <Heart className="w-4 h-4 text-[#8a8280]" />
                     {t("savedCount", {
                       count: (listing.favorite_count || 0).toLocaleString(),
                     })}
@@ -308,10 +309,10 @@ export default async function ListingDetailServer({
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
                   <div className="p-2 bg-white shadow-sm">
-                    <Tag className="w-4 h-4 text-[#999]" />
+                    <Tag className="w-4 h-4 text-[#6b6560]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#999] font-medium uppercase tracking-[0.15em]">
+                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                       {t("category")}
                     </div>
                     <div className="text-sm font-medium text-[#1a1a1a]">
@@ -322,10 +323,10 @@ export default async function ListingDetailServer({
                 {listing.condition && (
                   <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
                     <div className="p-2 bg-white shadow-sm">
-                      <Box className="w-4 h-4 text-[#999]" />
+                      <Box className="w-4 h-4 text-[#6b6560]" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#999] font-medium uppercase tracking-[0.15em]">
+                      <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                         {t("condition")}
                       </div>
                       <div className="text-sm font-medium text-[#1a1a1a]">
@@ -336,10 +337,10 @@ export default async function ListingDetailServer({
                 )}
                 <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
                   <div className="p-2 bg-white shadow-sm">
-                    <MapPin className="w-4 h-4 text-[#999]" />
+                    <MapPin className="w-4 h-4 text-[#6b6560]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#999] font-medium uppercase tracking-[0.15em]">
+                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                       {t("location")}
                     </div>
                     <div className="text-sm font-medium text-[#1a1a1a]">
@@ -349,10 +350,10 @@ export default async function ListingDetailServer({
                 </div>
                 <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
                   <div className="p-2 bg-white shadow-sm">
-                    <Calendar className="w-4 h-4 text-[#999]" />
+                    <Calendar className="w-4 h-4 text-[#6b6560]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#999] font-medium uppercase tracking-[0.15em]">
+                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                       {t("posted")}
                     </div>
                     <div className="text-sm font-medium text-[#1a1a1a]">
@@ -436,7 +437,7 @@ export default async function ListingDetailServer({
                 return (
                   <div className="bg-white p-6 border border-[#e8e6e3]">
                     <div className="flex items-center gap-2 mb-4">
-                      <Car className="w-5 h-5 text-[#999]" />
+                      <Car className="w-5 h-5 text-[#6b6560]" />
                       <h2
                         className="text-lg font-light text-[#1a1a1a]"
                         style={{ fontFamily: "'Playfair Display', serif" }}
@@ -455,10 +456,10 @@ export default async function ListingDetailServer({
                             className="flex items-center gap-3 bg-[#faf9f7] p-3.5"
                           >
                             <div className="p-2 bg-white shadow-sm">
-                              <Icon className="w-4 h-4 text-[#999]" />
+                              <Icon className="w-4 h-4 text-[#6b6560]" />
                             </div>
                             <div>
-                              <div className="text-[10px] text-[#999] font-medium uppercase tracking-[0.15em]">
+                              <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                                 {field.label}
                               </div>
                               <div className="text-sm font-medium text-[#1a1a1a]">
@@ -517,10 +518,12 @@ export default async function ListingDetailServer({
               <div className="flex items-center gap-3.5 mb-5">
                 <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
                   {profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={profile.avatar_url}
                       alt={profile?.display_name || "Seller"}
-                      loading="eager"
+                      width={56}
+                      height={56}
+                      priority
                       className="w-full h-full object-cover"
                     />
                   ) : (
@@ -573,11 +576,11 @@ export default async function ListingDetailServer({
                         stroke="#f59e0b"
                       />
                     ))}
-                    <span className="text-xs text-[#999] ml-1">
+                    <span className="text-xs text-[#6b6560] ml-1">
                       {sellerRating} ({sellerReviews})
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#bbb] mt-0.5">
+                  <p className="text-[11px] text-[#8a8280] mt-0.5">
                     {t("memberSince")} {sellerYear}
                   </p>
                 </div>
@@ -608,12 +611,12 @@ export default async function ListingDetailServer({
             {/* Safety tips */}
             <div className="bg-[#faf9f7] p-5 border border-[#e8e6e3]">
               <div className="flex items-center gap-2 mb-3">
-                <Shield className="w-4 h-4 text-[#999]" />
+                <Shield className="w-4 h-4 text-[#6b6560]" />
                 <p className="text-sm text-[#1a1a1a] font-medium">
                   {t("safetyTips")}
                 </p>
               </div>
-              <ul className="space-y-2 text-xs text-[#999] leading-relaxed">
+              <ul className="space-y-2 text-xs text-[#6b6560] leading-relaxed">
                 <li className="flex gap-2">
                   <span className="shrink-0 text-[#ddd]">&ndash;</span>
                   {t("safetyTip1")}
@@ -658,7 +661,7 @@ export default async function ListingDetailServer({
           <section className="mt-20">
             <div className="flex items-end justify-between mb-12">
               <div>
-                <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+                <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
                   More to explore
                 </p>
                 <h2
@@ -670,7 +673,7 @@ export default async function ListingDetailServer({
               </div>
               <Link
                 href={`/search?category=${listing.categories?.slug || ""}`}
-                className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#999] hover:text-[#1a1a1a] transition-colors"
+                className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
               >
                 {t("viewMore")}
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

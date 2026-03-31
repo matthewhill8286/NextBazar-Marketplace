@@ -111,7 +111,7 @@ export default function SafetyPage() {
           >
             Stay safe on NextBazar
           </h1>
-          <p className="text-lg text-[#999] max-w-xl mx-auto leading-relaxed">
+          <p className="text-lg text-[#6b6560] max-w-xl mx-auto leading-relaxed">
             The vast majority of transactions on our platform go smoothly. These
             tips will help you spot the rare bad actor and keep every deal
             secure.
@@ -121,7 +121,7 @@ export default function SafetyPage() {
 
       {/* Buyer tips */}
       <section className="max-w-4xl mx-auto px-6 py-16">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
           Buying Safely
         </p>
         <h2
@@ -143,7 +143,7 @@ export default function SafetyPage() {
                 >
                   {tip.title}
                 </h3>
-                <p className="text-sm text-[#999] leading-relaxed">
+                <p className="text-sm text-[#6b6560] leading-relaxed">
                   {tip.desc}
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default function SafetyPage() {
 
       {/* Seller tips */}
       <section className="max-w-4xl mx-auto px-6 pb-16">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
           Selling Safely
         </p>
         <h2
@@ -176,7 +176,7 @@ export default function SafetyPage() {
                 >
                   {tip.title}
                 </h3>
-                <p className="text-sm text-[#999] leading-relaxed">
+                <p className="text-sm text-[#6b6560] leading-relaxed">
                   {tip.desc}
                 </p>
               </div>
@@ -219,7 +219,7 @@ export default function SafetyPage() {
               <Flag className="w-4 h-4 text-[#8E7A6B]" />
             </div>
             <div>
-              <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999]">
+              <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560]">
                 Reporting
               </p>
               <h2
@@ -244,7 +244,7 @@ export default function SafetyPage() {
             ))}
           </div>
           <div className="border-t border-[#e8e6e3] mt-8 pt-6">
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-[#6b6560]">
               You can also email us at{" "}
               <a
                 href="mailto:trust@nextbazar.com"
@@ -267,7 +267,7 @@ export default function SafetyPage() {
           >
             Questions or concerns?
           </h2>
-          <p className="text-[#999] mb-10 text-sm">
+          <p className="text-[#6b6560] mb-10 text-sm">
             Our trust & safety team is here to help.
           </p>
           <Link

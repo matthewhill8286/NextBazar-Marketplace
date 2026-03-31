@@ -138,7 +138,7 @@ export default function PriceHistory({
               ? "bg-green-50 text-green-700"
               : isUp
                 ? "bg-red-50 text-red-600"
-                : "bg-[#f0eeeb] text-[#999]"
+                : "bg-[#f0eeeb] text-[#6b6560]"
           }`}
         >
           {isDown ? (
@@ -194,7 +194,7 @@ export default function PriceHistory({
               key={h.id}
               className="flex items-center justify-between text-xs"
             >
-              <span className="text-[#bbb]">
+              <span className="text-[#8a8280]">
                 {new Date(h.changed_at).toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",
@@ -203,7 +203,7 @@ export default function PriceHistory({
               </span>
               <div className="flex items-center gap-2">
                 {h.old_price != null && (
-                  <span className="text-[#bbb] line-through">
+                  <span className="text-[#8a8280] line-through">
                     {sym}
                     {h.old_price.toLocaleString()}
                   </span>

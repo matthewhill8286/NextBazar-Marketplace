@@ -25,34 +25,9 @@ export async function POST(request: NextRequest) {
     // Validate the promo code (case-insensitive)
     const normalised = code.trim().toUpperCase();
 
-    // ── TEMP DEBUG — remove after confirming fix ──
-    console.log(
-      "REDEEM DEBUG:",
-      JSON.stringify({
-        raw: code,
-        normalised,
-        expected: MASTER_PROMO_CODE,
-        rawLen: code.length,
-        normLen: normalised.length,
-        expLen: MASTER_PROMO_CODE.length,
-        match: normalised === MASTER_PROMO_CODE,
-        charCodes: [...normalised].map((c) => c.charCodeAt(0)),
-      }),
-    );
-
     if (normalised !== MASTER_PROMO_CODE) {
       return NextResponse.json(
-        {
-          error: "Invalid promo code",
-          // TEMP: include debug in response so we can see in network tab
-          _debug: {
-            received: normalised,
-            expected: MASTER_PROMO_CODE,
-            rawLen: code.length,
-            normLen: normalised.length,
-            match: normalised === MASTER_PROMO_CODE,
-          },
-        },
+        { error: "Invalid promo code" },
         { status: 404 },
       );
     }

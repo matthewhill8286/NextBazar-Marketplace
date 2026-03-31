@@ -56,7 +56,7 @@ function StarRow({
       {[1, 2, 3, 4, 5].map((n) => (
         <Star
           key={n}
-          className={`${cls} ${n <= Math.round(rating) ? "text-amber-400 fill-amber-400" : "text-[#ccc] fill-[#e8e6e3]"}`}
+          className={`${cls} ${n <= Math.round(rating) ? "text-amber-400 fill-amber-400" : "text-[#8a8280] fill-[#e8e6e3]"}`}
         />
       ))}
     </div>
@@ -96,7 +96,7 @@ export default function ProfileClient({
         <div className="max-w-5xl mx-auto px-4 py-10">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             {/* Avatar */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-3xl font-bold shrink-0 overflow-hidden shadow-sm">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#8E7A6B] to-[#7A6657] flex items-center justify-center text-white text-3xl font-bold shrink-0 overflow-hidden shadow-sm">
               {profile.avatar_url ? (
                 <Image
                   src={profile.avatar_url}
@@ -117,7 +117,7 @@ export default function ProfileClient({
                   {profile.display_name}
                 </h1>
                 {profile.verified && (
-                  <span className="flex items-center gap-1 bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-indigo-100">
+                  <span className="flex items-center gap-1 bg-[#f0eeeb] text-[#7A6657] text-xs font-semibold px-2.5 py-1 rounded-full border border-[#e8e6e3]">
                     <Shield className="w-3.5 h-3.5" />
                     Verified
                   </span>
@@ -136,7 +136,7 @@ export default function ProfileClient({
                   <span className="font-bold text-[#1a1a1a]">
                     {avgRating.toFixed(1)}
                   </span>
-                  <span className="text-sm text-[#bbb]">
+                  <span className="text-sm text-[#8a8280]">
                     ({reviewCount} review{reviewCount !== 1 ? "s" : ""})
                   </span>
                 </div>
@@ -148,7 +148,7 @@ export default function ProfileClient({
                 </p>
               )}
 
-              <div className="flex items-center gap-4 mt-3 text-xs text-[#999]">
+              <div className="flex items-center gap-4 mt-3 text-xs text-[#6b6560]">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3.5 h-3.5" />
                   Member since {memberSince(profile.created_at)}
@@ -172,7 +172,7 @@ export default function ProfileClient({
               <h2 className="text-lg font-bold text-[#1a1a1a]">
                 Active Listings
               </h2>
-              <span className="text-sm text-[#bbb]">
+              <span className="text-sm text-[#8a8280]">
                 {listings.length} item{listings.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -189,7 +189,7 @@ export default function ProfileClient({
           <section>
             <h2 className="text-lg font-bold text-[#1a1a1a] mb-4">
               Reviews
-              <span className="ml-2 text-sm font-normal text-[#bbb]">
+              <span className="ml-2 text-sm font-normal text-[#8a8280]">
                 ({reviewCount})
               </span>
             </h2>
@@ -201,7 +201,7 @@ export default function ProfileClient({
                   {avgRating.toFixed(1)}
                 </span>
                 <StarRow rating={avgRating} size="lg" />
-                <span className="text-sm text-[#bbb]">
+                <span className="text-sm text-[#8a8280]">
                   {reviewCount} review{reviewCount !== 1 ? "s" : ""}
                 </span>
               </div>
@@ -210,7 +210,9 @@ export default function ProfileClient({
               <div className="sm:col-span-2 bg-white border border-[#e8e6e3] p-5 space-y-2">
                 {dist.map(({ star, count, pct }) => (
                   <div key={star} className="flex items-center gap-3 text-sm">
-                    <span className="w-3 text-[#999] text-right">{star}</span>
+                    <span className="w-3 text-[#6b6560] text-right">
+                      {star}
+                    </span>
                     <Star className="w-3.5 h-3.5 fill-amber-400 stroke-amber-400 shrink-0" />
                     <div className="flex-1 h-2 bg-[#f0eeeb] rounded-full overflow-hidden">
                       <div
@@ -218,7 +220,7 @@ export default function ProfileClient({
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <span className="w-5 text-right text-[#bbb] text-xs">
+                    <span className="w-5 text-right text-[#8a8280] text-xs">
                       {count}
                     </span>
                   </div>
@@ -242,11 +244,13 @@ export default function ProfileClient({
                     key={review.id}
                     className="bg-white border border-[#e8e6e3] p-5 flex gap-4"
                   >
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-500 flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8E7A6B] to-[#7A6657] flex items-center justify-center text-white text-sm font-semibold shrink-0 overflow-hidden">
                       {rev?.avatar_url ? (
-                        <img
+                        <Image
                           src={rev.avatar_url}
                           alt=""
+                          width={40}
+                          height={40}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -258,7 +262,7 @@ export default function ProfileClient({
                         <span className="font-medium text-[#1a1a1a] text-sm">
                           {rev?.display_name || "Anonymous"}
                         </span>
-                        <span className="text-xs text-[#bbb] shrink-0">
+                        <span className="text-xs text-[#8a8280] shrink-0">
                           {timeAgo(review.created_at)}
                         </span>
                       </div>
@@ -277,7 +281,7 @@ export default function ProfileClient({
             {reviews.length > 4 && (
               <button
                 onClick={() => setShowAllReviews((v) => !v)}
-                className="mt-4 flex items-center gap-1 text-sm text-indigo-600 font-medium hover:underline mx-auto"
+                className="mt-4 flex items-center gap-1 text-sm text-[#8E7A6B] font-medium hover:underline mx-auto"
               >
                 {showAllReviews
                   ? "Show fewer reviews"
@@ -293,7 +297,7 @@ export default function ProfileClient({
         {listings.length === 0 && reviewCount === 0 && (
           <div className="bg-white border border-[#e8e6e3] p-16 text-center">
             <div className="text-4xl mb-3">🏪</div>
-            <p className="text-[#999] text-sm">
+            <p className="text-[#6b6560] text-sm">
               This seller hasn't posted any listings yet.
             </p>
           </div>

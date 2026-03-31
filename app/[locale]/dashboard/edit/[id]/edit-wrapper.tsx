@@ -59,7 +59,7 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-[#8E7A6B] animate-spin" />
       </div>
     );
   }
@@ -68,10 +68,10 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
     return (
       <div className="text-center py-20">
         <div className="text-4xl mb-3">🔍</div>
-        <p className="text-[#999] mb-4">Listing not found</p>
+        <p className="text-[#6b6560] mb-4">Listing not found</p>
         <Link
           href="/dashboard/listings"
-          className="text-indigo-600 font-medium hover:underline"
+          className="text-[#8E7A6B] font-medium hover:underline"
         >
           Back to listings
         </Link>

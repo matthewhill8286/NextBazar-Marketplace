@@ -17,18 +17,18 @@ function CounterOfferToast({
   avatarUrl,
   listingTitle,
   counterAmount,
-  onNavigate,
+  onNavigateAction,
 }: {
   toastId: string | number;
   sellerName: string;
   avatarUrl: string | null;
   listingTitle: string;
   counterAmount: string;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
 }) {
   return (
-    <div className="w-85 bg-white shadow-2xl shadow-indigo-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-linear-to-b from-indigo-500 to-violet-600 shrink-0" />
+    <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-[#8E7A6B] to-[#7A6657] shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -40,12 +40,12 @@ function CounterOfferToast({
                 className="w-8 h-8 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                <Tag className="w-4 h-4 text-indigo-600" />
+              <div className="w-8 h-8 bg-[#e8e6e3] rounded-full flex items-center justify-center shrink-0">
+                <Tag className="w-4 h-4 text-[#8E7A6B]" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-[#8E7A6B] uppercase tracking-widest">
                 Counter offer received
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
@@ -55,25 +55,25 @@ function CounterOfferToast({
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-[#bbb] truncate mb-1.5">
+        <p className="text-[11px] text-[#8a8280] truncate mb-1.5">
           {listingTitle}
         </p>
 
-        <div className="flex items-center justify-center bg-indigo-50 border border-indigo-100 py-2 mb-3">
-          <span className="text-xl font-extrabold text-indigo-600">
+        <div className="flex items-center justify-center bg-[#f0eeeb] border border-[#e8e6e3] py-2 mb-3">
+          <span className="text-xl font-extrabold text-[#8E7A6B]">
             {counterAmount}
           </span>
         </div>
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
           Review counter →
         </button>
@@ -88,14 +88,14 @@ function OfferStatusToast({
   personName,
   avatarUrl,
   listingTitle,
-  onNavigate,
+  onNavigateAction,
 }: {
   toastId: string | number;
   status: "accepted" | "declined";
   personName: string;
   avatarUrl: string | null;
   listingTitle: string;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
 }) {
   const isAccepted = status === "accepted";
   return (
@@ -136,16 +136,18 @@ function OfferStatusToast({
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-[#bbb] truncate mb-3">{listingTitle}</p>
+        <p className="text-[11px] text-[#8a8280] truncate mb-3">
+          {listingTitle}
+        </p>
 
         <button
-          onClick={onNavigate}
+          onClick={onNavigateAction}
           className={`w-full text-center text-xs font-semibold py-1.5 transition-colors ${isAccepted ? "text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100" : "text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100"}`}
         >
           View offer →
@@ -162,7 +164,7 @@ function MessageToast({
   listingTitle,
   preview,
   isOffer,
-  onNavigate,
+  onNavigateAction,
 }: {
   toastId: string | number;
   senderName: string;
@@ -170,11 +172,11 @@ function MessageToast({
   listingTitle: string;
   preview: string;
   isOffer: boolean;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
 }) {
   return (
-    <div className="w-85 bg-white shadow-2xl shadow-indigo-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-linear-to-b from-indigo-500 to-indigo-600 shrink-0" />
+    <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-[#8E7A6B] to-[#7A6657] shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -185,12 +187,12 @@ function MessageToast({
                 className="w-8 h-8 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                <MessageCircle className="w-4 h-4 text-indigo-600" />
+              <div className="w-8 h-8 bg-[#e8e6e3] rounded-full flex items-center justify-center shrink-0">
+                <MessageCircle className="w-4 h-4 text-[#8E7A6B]" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-[#8E7A6B] uppercase tracking-widest">
                 {isOffer ? "In-chat offer" : "New message"}
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
@@ -200,13 +202,13 @@ function MessageToast({
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-[#bbb] truncate mb-1.5">
+        <p className="text-[11px] text-[#8a8280] truncate mb-1.5">
           Re: {listingTitle}
         </p>
 
@@ -217,8 +219,8 @@ function MessageToast({
         )}
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
           View conversation →
         </button>
@@ -233,14 +235,14 @@ function OfferToast({
   avatarUrl,
   listingTitle,
   amount,
-  onNavigate,
+  onNavigateAction,
 }: {
   toastId: string | number;
   buyerName: string;
   avatarUrl: string | null;
   listingTitle: string;
   amount: string;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
 }) {
   return (
     <div className="w-85 bg-white shadow-2xl shadow-emerald-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
@@ -270,13 +272,13 @@ function OfferToast({
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-[#bbb] truncate mb-1.5">
+        <p className="text-[11px] text-[#8a8280] truncate mb-1.5">
           {listingTitle}
         </p>
 
@@ -287,7 +289,7 @@ function OfferToast({
         </div>
 
         <button
-          onClick={onNavigate}
+          onClick={onNavigateAction}
           className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-1.5 transition-colors"
         >
           Review offer →
@@ -310,9 +312,9 @@ const NOTIF_CONFIG: Record<
     label: "Price drop",
   },
   saved_search_match: {
-    accent: "from-violet-500 to-indigo-600",
-    iconBg: "bg-violet-100",
-    icon: <Bell className="w-4 h-4 text-violet-600" />,
+    accent: "from-[#8E7A6B] to-[#7A6657]",
+    iconBg: "bg-[#f0eeeb]",
+    icon: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
     label: "New match",
   },
   listing_expired: {
@@ -324,9 +326,9 @@ const NOTIF_CONFIG: Record<
 };
 
 const NOTIF_DEFAULT = {
-  accent: "from-indigo-500 to-indigo-600",
-  iconBg: "bg-indigo-100",
-  icon: <Bell className="w-4 h-4 text-indigo-600" />,
+  accent: "from-[#8E7A6B] to-[#7A6657]",
+  iconBg: "bg-[#e8e6e3]",
+  icon: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
   label: "Notification",
 };
 
@@ -335,18 +337,18 @@ function NotificationToast({
   type,
   title,
   body,
-  onNavigate,
+  onNavigateAction,
 }: {
   toastId: string | number;
   type: string;
   title: string;
   body: string | null;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
 }) {
   const cfg = NOTIF_CONFIG[type] ?? NOTIF_DEFAULT;
 
   return (
-    <div className="w-85 bg-white shadow-2xl shadow-indigo-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className={`w-1 bg-linear-to-b ${cfg.accent} shrink-0`} />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -357,7 +359,7 @@ function NotificationToast({
               {cfg.icon}
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-[#bbb] uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-[#8a8280] uppercase tracking-widest">
                 {cfg.label}
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
@@ -367,21 +369,21 @@ function NotificationToast({
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-[#ccc] hover:text-[#999] transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {body && (
-          <p className="text-xs text-[#999] line-clamp-2 mb-3 leading-relaxed">
+          <p className="text-xs text-[#6b6560] line-clamp-2 mb-3 leading-relaxed">
             {body}
           </p>
         )}
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
           View →
         </button>
@@ -459,7 +461,7 @@ export default function RealtimeToasts() {
             listingTitle={listingTitle}
             preview={preview}
             isOffer={isOffer}
-            onNavigate={() => {
+            onNavigateAction={() => {
               toast.dismiss(t);
               router.push(`/dashboard/messages/${msg.conversation_id}`);
             }}
@@ -504,7 +506,7 @@ export default function RealtimeToasts() {
             avatarUrl={buyer?.avatar_url ?? null}
             listingTitle={listingTitle}
             amount={amount}
-            onNavigate={() => {
+            onNavigateAction={() => {
               toast.dismiss(t);
               router.push(`/dashboard/offers?offer=${offer.id}`);
             }}
@@ -552,7 +554,7 @@ export default function RealtimeToasts() {
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
               counterAmount={counterAmount}
-              onNavigate={() => {
+              onNavigateAction={() => {
                 toast.dismiss(t);
                 router.push(`/dashboard/offers?offer=${offer.id}`);
               }}
@@ -584,7 +586,7 @@ export default function RealtimeToasts() {
               personName={sellerName}
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
-              onNavigate={() => {
+              onNavigateAction={() => {
                 toast.dismiss(t);
                 router.push(`/dashboard/offers?offer=${offer.id}`);
               }}
@@ -612,7 +614,7 @@ export default function RealtimeToasts() {
             type={String(notif.type)}
             title={String(notif.title)}
             body={notif.body ? String(notif.body) : null}
-            onNavigate={() => {
+            onNavigateAction={() => {
               toast.dismiss(t);
               router.push(String(notif.link ?? "/dashboard/notifications"));
             }}

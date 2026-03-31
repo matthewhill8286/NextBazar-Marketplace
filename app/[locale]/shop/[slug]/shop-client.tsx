@@ -147,20 +147,23 @@ export default function ShopClient({
     <div className="min-h-screen bg-[#faf9f7]">
       {/* ── Hero Banner ──────────────────────────────────────────────────── */}
       <div className="relative">
-        <div
-          className="h-56 sm:h-64 md:h-72 lg:h-80 w-full overflow-hidden"
-          style={{
-            backgroundImage: shop.banner_url
-              ? `url(${shop.banner_url})`
-              : `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 50%, ${adjustBrightness(gradientEnd, -15)} 100%)`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          {shop.banner_url && (
+        {shop.banner_url ? (
+          <div className="relative h-56 sm:h-64 md:h-72 lg:h-80 w-full overflow-hidden">
+            <Image
+              src={shop.banner_url}
+              alt="Shop banner"
+              fill
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/40" />
-          )}
-          {!shop.banner_url && (
+          </div>
+        ) : (
+          <div
+            className="h-56 sm:h-64 md:h-72 lg:h-80 w-full overflow-hidden relative"
+            style={{
+              background: `linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 50%, ${adjustBrightness(gradientEnd, -15)} 100%)`,
+            }}
+          >
             <div className="absolute inset-0 opacity-10">
               <div
                 className="absolute inset-0"
@@ -170,8 +173,8 @@ export default function ShopClient({
                 }}
               />
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Share button */}
         <button
@@ -242,15 +245,15 @@ export default function ShopClient({
                 )}
 
                 {/* Meta chips */}
-                <div className="flex flex-wrap items-center gap-2 text-xs text-[#999]">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-[#6b6560]">
                   {memberSince && (
                     <span className="inline-flex items-center gap-1.5 bg-[#faf9f7] px-3 py-1.5 rounded-full">
-                      <Calendar className="w-3.5 h-3.5 text-[#bbb]" />
+                      <Calendar className="w-3.5 h-3.5 text-[#8a8280]" />
                       Member since {memberSince}
                     </span>
                   )}
                   <span className="inline-flex items-center gap-1.5 bg-[#faf9f7] px-3 py-1.5 rounded-full">
-                    <Package className="w-3.5 h-3.5 text-[#bbb]" />
+                    <Package className="w-3.5 h-3.5 text-[#8a8280]" />
                     {listings.length}{" "}
                     {listings.length === 1 ? "listing" : "listings"}
                   </span>
@@ -270,14 +273,14 @@ export default function ShopClient({
                     href={shop.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 bg-[#faf9f7] text-[#666] hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+                    className="p-2.5 bg-[#faf9f7] text-[#666] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-all"
                     title="Website"
                   >
                     <Globe className="w-5 h-5" />
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#8a8280] cursor-not-allowed"
                     title="Website — not set"
                   >
                     <Globe className="w-5 h-5" />
@@ -295,7 +298,7 @@ export default function ShopClient({
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#8a8280] cursor-not-allowed"
                     title="Facebook — not set"
                   >
                     <Facebook className="w-5 h-5" />
@@ -313,7 +316,7 @@ export default function ShopClient({
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#8a8280] cursor-not-allowed"
                     title="Instagram — not set"
                   >
                     <Instagram className="w-5 h-5" />
@@ -331,7 +334,7 @@ export default function ShopClient({
                   </a>
                 ) : (
                   <span
-                    className="p-2.5 bg-[#faf9f7] text-[#ccc] cursor-not-allowed"
+                    className="p-2.5 bg-[#faf9f7] text-[#8a8280] cursor-not-allowed"
                     title="TikTok — not set"
                   >
                     <Music className="w-5 h-5" />
@@ -348,7 +351,7 @@ export default function ShopClient({
                 <div className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
                   {listings.length}
                 </div>
-                <div className="text-[11px] md:text-xs text-[#999] mt-0.5 font-medium">
+                <div className="text-[11px] md:text-xs text-[#6b6560] mt-0.5 font-medium">
                   Active Listings
                 </div>
               </div>
@@ -358,7 +361,7 @@ export default function ShopClient({
                     .reduce((s, l) => s + (l.view_count ?? 0), 0)
                     .toLocaleString()}
                 </div>
-                <div className="text-[11px] md:text-xs text-[#999] mt-0.5 font-medium">
+                <div className="text-[11px] md:text-xs text-[#6b6560] mt-0.5 font-medium">
                   Total Views
                 </div>
               </div>
@@ -370,7 +373,7 @@ export default function ShopClient({
                   />
                   PRO
                 </div>
-                <div className="text-[11px] md:text-xs text-[#999] mt-0.5 font-medium">
+                <div className="text-[11px] md:text-xs text-[#6b6560] mt-0.5 font-medium">
                   Seller Status
                 </div>
               </div>
@@ -386,9 +389,9 @@ export default function ShopClient({
             {/* Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <h2 className="text-lg md:text-xl font-bold text-[#1a1a1a] flex items-center gap-2">
-                <Grid3X3 className="w-5 h-5 text-[#bbb]" />
+                <Grid3X3 className="w-5 h-5 text-[#8a8280]" />
                 Shop Listings
-                <span className="text-sm font-normal text-[#bbb] ml-1">
+                <span className="text-sm font-normal text-[#8a8280] ml-1">
                   ({filtered.length})
                 </span>
               </h2>
@@ -396,13 +399,13 @@ export default function ShopClient({
               <div className="flex items-center gap-3">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#bbb] pointer-events-none" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280] pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Search listings..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="pl-10 pr-4 py-2.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#bbb] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 transition-all w-48 md:w-56"
+                    className="pl-10 pr-4 py-2.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#8a8280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/20 focus-visible:border-[#8E7A6B]/30 transition-all w-48 md:w-56"
                   />
                 </div>
 
@@ -410,7 +413,7 @@ export default function ShopClient({
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortOption)}
-                  className="px-3 py-2.5 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 cursor-pointer"
+                  className="px-3 py-2.5 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/20 focus-visible:border-[#8E7A6B]/30 cursor-pointer"
                 >
                   <option value="newest">Newest First</option>
                   <option value="popular">Most Popular</option>
@@ -433,11 +436,11 @@ export default function ShopClient({
 
             {filtered.length === 0 && search.trim() && (
               <div className="text-center py-16 bg-white border border-[#e8e6e3] mt-4">
-                <Search className="w-8 h-8 text-[#ccc] mx-auto mb-3" />
+                <Search className="w-8 h-8 text-[#8a8280] mx-auto mb-3" />
                 <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
                   No results found
                 </h3>
-                <p className="text-[#999] text-sm">
+                <p className="text-[#6b6560] text-sm">
                   Try a different search term.
                 </p>
               </div>
@@ -456,7 +459,7 @@ export default function ShopClient({
             <h2 className="text-xl font-bold text-[#1a1a1a] mb-2">
               No listings yet
             </h2>
-            <p className="text-[#999] max-w-sm mx-auto text-sm">
+            <p className="text-[#6b6560] max-w-sm mx-auto text-sm">
               This shop hasn&apos;t posted any items for sale yet. Check back
               soon for new arrivals!
             </p>

@@ -9,7 +9,6 @@ import CategoryIcon, {
 import { EmptyListingsIllustration } from "@/app/components/illustrations";
 import ListingCard from "@/app/components/listing-card";
 import {
-  getActiveListingCountCached,
   getCategoriesCached,
   getFeaturedListingsCached,
   getRecentListingsCached,
@@ -25,12 +24,11 @@ const LANDING_PAGES: Record<string, string> = {
 };
 
 export default async function Home() {
-  const [categories, featured, recent, totalCount, trending] =
+  const [categories, featured, recent, trending] =
     await Promise.all([
       getCategoriesCached(),
       getFeaturedListingsCached(),
       getRecentListingsCached(),
-      getActiveListingCountCached(),
       getTrendingListingsCached(),
     ]);
 
@@ -44,7 +42,7 @@ export default async function Home() {
         {/* Background image — uses Next.js Image with priority for fast LCP */}
         <Image
           src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/hero-poster.jpg`}
-          alt=""
+          alt="Showing the Cypris beachside"
           fill
           priority
           sizes="100vw"
@@ -103,7 +101,7 @@ export default async function Home() {
         aria-label="Browse by category"
       >
         <div className="text-center mb-14">
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
             Explore
           </p>
           <h2
@@ -154,7 +152,7 @@ export default async function Home() {
           <div className="max-w-7xl mx-auto px-6 py-20">
             <div className="flex items-end justify-between mb-12">
               <div>
-                <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+                <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
                   Promoted
                 </p>
                 <h2
@@ -205,7 +203,7 @@ export default async function Home() {
       >
         <div className="flex items-end justify-between mb-12">
           <div>
-            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#999] mb-4">
+            <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
               New arrivals
             </p>
             <h2
@@ -236,7 +234,7 @@ export default async function Home() {
           </div>
         ) : (
           <div className="text-center py-24 bg-white border border-[#e8e6e3]">
-            <EmptyListingsIllustration className="w-20 h-20 mx-auto mb-6 text-[#ccc]" />
+            <EmptyListingsIllustration className="w-20 h-20 mx-auto mb-6 text-[#8a8280]" />
             <h3
               className="text-2xl font-light text-[#1a1a1a] mb-3"
               style={{ fontFamily: "'Playfair Display', serif" }}

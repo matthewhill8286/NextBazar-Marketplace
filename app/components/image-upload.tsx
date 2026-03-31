@@ -184,21 +184,21 @@ export default function ImageUpload({
         onClick={() => fileInputRef.current?.click()}
         className={`border-2 border-dashed p-8 text-center cursor-pointer transition-colors bg-white ${
           dragOver
-            ? "border-indigo-400 bg-indigo-50"
-            : "border-[#e8e6e3] hover:border-indigo-400"
+            ? "border-[#8E7A6B] bg-[#f0eeeb]"
+            : "border-[#e8e6e3] hover:border-[#8E7A6B]"
         }`}
       >
-        <Upload className="w-10 h-10 text-[#bbb] mx-auto mb-3" />
+        <Upload className="w-10 h-10 text-[#8a8280] mx-auto mb-3" />
         <p className="font-semibold text-[#1a1a1a] mb-1">
           {images.length === 0
             ? "Upload Photos"
             : `Add More Photos (${images.length}/${maxImages})`}
         </p>
-        <p className="text-sm text-[#999] mb-3">
+        <p className="text-sm text-[#6b6560] mb-3">
           Drag & drop or click to browse. JPG, PNG, WebP — auto-optimised on
           upload.
         </p>
-        <div className="inline-flex items-center gap-2 bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 text-xs font-medium px-3 py-1.5 rounded-full">
+        <div className="inline-flex items-center gap-2 bg-linear-to-r from-[#f0eeeb] to-[#f0eeeb] text-[#7A6657] text-xs font-medium px-3 py-1.5 rounded-full">
           <Sparkles className="w-3.5 h-3.5" />
           AI will auto-fill details from your photos
         </div>
@@ -257,9 +257,9 @@ export default function ImageUpload({
               onDrop={(e) => e.preventDefault()}
               className={`relative aspect-square overflow-hidden border-2 group bg-[#f0eeeb] cursor-grab active:cursor-grabbing transition-all duration-150 ${
                 dragIdx === idx
-                  ? "opacity-40 scale-95 border-indigo-400"
+                  ? "opacity-40 scale-95 border-[#8E7A6B]"
                   : overIdx === idx && dragIdx !== null
-                    ? "border-indigo-400 ring-2 ring-indigo-200 scale-[1.02]"
+                    ? "border-[#8E7A6B] ring-2 ring-[#8E7A6B]/15 scale-[1.02]"
                     : "border-[#e8e6e3]"
               }`}
             >
@@ -293,6 +293,7 @@ export default function ImageUpload({
               {/* Remove button */}
               <button
                 type="button"
+                aria-label="Remove image"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeImage(img.id);

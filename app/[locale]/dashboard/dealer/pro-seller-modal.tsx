@@ -17,8 +17,8 @@ type Props = {
   dealerPrice: string;
   dealerInterval: string;
   subscribing: boolean;
-  onSubscribe: () => void;
-  onClose: () => void;
+  onSubscribeAction: () => void;
+  onCloseAction: () => void;
   /** Optional headline override — defaults to "Become a Pro Seller" */
   heading?: string;
   /** Optional subheading override */
@@ -29,8 +29,8 @@ export default function ProSellerModal({
   dealerPrice,
   dealerInterval,
   subscribing,
-  onSubscribe,
-  onClose,
+  onSubscribeAction,
+  onCloseAction,
   heading = "Become a Pro Seller",
   subheading = "Everything you need to grow your business on NextBazar.",
 }: Props) {
@@ -78,14 +78,19 @@ export default function ProSellerModal({
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={onCloseAction}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#2C2826] p-8 text-white text-center shadow-2xl">
+      <div
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#2C2826] p-8 text-white text-center shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Pro Seller Subscription"
+      >
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={onCloseAction}
           className="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
         >
           <X className="w-4 h-4" />
@@ -154,7 +159,7 @@ export default function ProSellerModal({
                     }}
                     onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
                     placeholder="Enter promo code"
-                    className="flex-1 bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#8E7A6B] font-mono tracking-wider"
+                    className="flex-1 bg-white/5 border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus-visible:border-[#8E7A6B] font-mono tracking-wider"
                     disabled={promoLoading}
                   />
                   <button
@@ -189,7 +194,7 @@ export default function ProSellerModal({
 
               {/* Subscribe with card */}
               <button
-                onClick={onSubscribe}
+                onClick={onSubscribeAction}
                 disabled={subscribing}
                 className="bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/90 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
               >

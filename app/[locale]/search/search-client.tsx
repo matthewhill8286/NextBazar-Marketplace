@@ -573,11 +573,11 @@ export default function SearchClient({
           <div className="bg-white border border-[#e8e6e3] p-4 mb-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-[#999] mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                   Category
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus:border-[#8E7A6B]"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={categorySlug}
                   onChange={(e) => {
                     setCategorySlug(e.target.value);
@@ -593,11 +593,11 @@ export default function SearchClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#999] mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                   Location
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus:border-[#8E7A6B]"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={locationSlug}
                   onChange={(e) => setLocationSlug(e.target.value)}
                 >
@@ -610,11 +610,11 @@ export default function SearchClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#999] mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                   Sort By
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus:border-[#8E7A6B]"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -627,12 +627,12 @@ export default function SearchClient({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#999] mb-1.5">
+              <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
                 Price Range (€)
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#bbb] text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
                     €
                   </span>
                   <input
@@ -641,12 +641,12 @@ export default function SearchClient({
                     placeholder="Min"
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <span className="text-[#bbb] text-sm shrink-0">–</span>
+                <span className="text-[#8a8280] text-sm shrink-0">–</span>
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#bbb] text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
                     €
                   </span>
                   <input
@@ -655,7 +655,7 @@ export default function SearchClient({
                     placeholder="Max"
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -663,7 +663,7 @@ export default function SearchClient({
 
             {visibleSubcategories.length > 0 && (
               <div>
-                <label className="block text-xs font-medium text-[#999] mb-2">
+                <label className="block text-xs font-medium text-[#6b6560] mb-2">
                   Subcategory
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -773,7 +773,7 @@ export default function SearchClient({
                 lastInternalQuery.current = "";
                 router.replace("/search", { scroll: false });
               }}
-              className="text-sm text-[#bbb] hover:text-[#666] ml-1"
+              className="text-sm text-[#8a8280] hover:text-[#666] ml-1"
             >
               Clear all
             </button>
@@ -783,7 +783,7 @@ export default function SearchClient({
         {/* ── AI interpretation banner ─────────────────────────────────────── */}
         {aiInterpretation && (
           <div className="flex items-center gap-2 bg-[#faf9f7] text-[#1a1a1a] text-sm px-4 py-2.5 border border-[#e8e6e3] mb-4">
-            <Sparkles className="w-4 h-4 text-[#999] shrink-0" />
+            <Sparkles className="w-4 h-4 text-[#6b6560] shrink-0" />
             <span>{aiInterpretation}</span>
           </div>
         )}
@@ -793,13 +793,13 @@ export default function SearchClient({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               {!loading && (
-                <p className="text-sm text-[#999]">
+                <p className="text-sm text-[#6b6560]">
                   <span className="font-semibold text-[#1a1a1a]">
                     {totalHits}
                   </span>{" "}
                   {totalHits === 1 ? "listing" : "listings"} found
                   {listings.length < totalHits && (
-                    <span className="text-[#bbb]">
+                    <span className="text-[#8a8280]">
                       {" "}
                       · showing {listings.length}
                     </span>
@@ -822,7 +822,7 @@ export default function SearchClient({
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#bbb] hover:text-[#666]"}`}
+                  className={`p-1.5 transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
                   title="Grid view"
                 >
                   <LayoutGrid className="w-4 h-4" />
@@ -830,7 +830,7 @@ export default function SearchClient({
                 <button
                   type="button"
                   onClick={() => setViewMode("map")}
-                  className={`p-1.5 transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#bbb] hover:text-[#666]"}`}
+                  className={`p-1.5 transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
                   title="Map view"
                 >
                   <MapIcon className="w-4 h-4" />
@@ -838,7 +838,7 @@ export default function SearchClient({
               </div>
               {!showFilters && (
                 <select
-                  className="text-sm border border-[#e8e6e3] px-3 py-1.5 outline-none focus:border-[#1a1a1a] bg-white"
+                  className="text-sm border border-[#e8e6e3] px-3 py-1.5 outline-none focus-visible:border-[#1a1a1a] bg-white"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -860,20 +860,20 @@ export default function SearchClient({
                 className="w-full bg-[#f0eeeb] animate-pulse flex items-center justify-center"
                 style={{ height: 420 }}
               >
-                <p className="text-sm text-[#bbb]">Updating map…</p>
+                <p className="text-sm text-[#8a8280]">Updating map…</p>
               </div>
             ) : (
               <>
                 <ListingsMap
                   locations={mapLocations}
                   selectedSlug={locationSlug}
-                  onSelectLocation={(slug) => {
+                  onSelectLocationAction={(slug) => {
                     setLocationSlug(slug === locationSlug ? "" : slug);
                     setViewMode("grid");
                   }}
                 />
                 {mapLocations.length === 0 && (
-                  <p className="text-center text-sm text-[#bbb] mt-3">
+                  <p className="text-center text-sm text-[#8a8280] mt-3">
                     No listings match your search in any mapped location.
                   </p>
                 )}
@@ -909,7 +909,7 @@ export default function SearchClient({
             >
               No listings found
             </h3>
-            <p className="text-[#999] text-sm mb-8">
+            <p className="text-[#6b6560] text-sm mb-8">
               We couldn't find anything matching
               {submittedQuery ? ` "${submittedQuery}"` : " your filters"}.
               {!wasAiSearch &&
@@ -925,7 +925,7 @@ export default function SearchClient({
                 <h4 className="font-semibold text-[#1a1a1a] mb-1">
                   Try AI Search
                 </h4>
-                <p className="text-sm text-[#999] mb-4">
+                <p className="text-sm text-[#6b6560] mb-4">
                   AI search understands phrases like{" "}
                   <em>"cheap car under 5k in Limassol"</em> or{" "}
                   <em>"second-hand iPhone good condition"</em>.
@@ -975,7 +975,7 @@ export default function SearchClient({
             </div>
             {listings.length < totalHits && (
               <div className="mt-8 flex flex-col items-center gap-2">
-                <p className="text-sm text-[#bbb]">
+                <p className="text-sm text-[#8a8280]">
                   Showing {listings.length} of {totalHits} listings
                 </p>
                 <button
@@ -1026,7 +1026,7 @@ export default function SearchClient({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 text-[#bbb]">
+              <div className="text-center py-20 text-[#8a8280]">
                 <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
                 <p className="text-sm">
                   Type something and press Enter to search

@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import ShopUrlCard from "./shop-url-card";
 import type { ListingRow } from "./types";
@@ -27,8 +28,8 @@ export default function OverviewTab({ listings, slug }: Props) {
       label: "Active Listings",
       value: activeListings.length,
       icon: ShoppingBag,
-      color: "text-indigo-600",
-      bg: "bg-indigo-50",
+      color: "text-[#8E7A6B]",
+      bg: "bg-[#f0eeeb]",
     },
     {
       label: "Total Views",
@@ -68,7 +69,7 @@ export default function OverviewTab({ listings, slug }: Props) {
               <s.icon className={`w-[18px] h-[18px] ${s.color}`} />
             </div>
             <div className="text-2xl font-bold text-[#1a1a1a]">{s.value}</div>
-            <div className="text-xs text-[#999] mt-0.5">{s.label}</div>
+            <div className="text-xs text-[#6b6560] mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
@@ -79,7 +80,7 @@ export default function OverviewTab({ listings, slug }: Props) {
       {/* Top performing listings */}
       <div className="bg-white border border-[#e8e6e3] p-5">
         <h3 className="text-sm font-semibold text-[#1a1a1a] mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-[#bbb]" />
+          <TrendingUp className="w-4 h-4 text-[#8a8280]" />
           Top Performing Listings
         </h3>
         <div className="space-y-2">
@@ -92,23 +93,25 @@ export default function OverviewTab({ listings, slug }: Props) {
                 href={`/listing/${l.slug}`}
                 className="flex items-center gap-3 p-2.5 -mx-2 hover:bg-[#faf9f7] transition-colors group"
               >
-                <span className="text-xs font-semibold text-[#ccc] w-5 text-center">
+                <span className="text-xs font-semibold text-[#8a8280] w-5 text-center">
                   {i + 1}
                 </span>
-                <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0">
+                <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
                   {l.primary_image_url && (
-                    <img
+                    <Image
                       src={l.primary_image_url}
                       alt=""
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="40px"
                     />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#1a1a1a] truncate group-hover:text-indigo-600 transition-colors">
+                  <p className="text-sm font-medium text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
                     {l.title}
                   </p>
-                  <p className="text-xs text-[#bbb]">
+                  <p className="text-xs text-[#8a8280]">
                     {l.view_count} views &middot; {l.favorite_count} saves
                   </p>
                 </div>
@@ -118,7 +121,7 @@ export default function OverviewTab({ listings, slug }: Props) {
               </Link>
             ))}
           {activeListings.length === 0 && (
-            <p className="text-sm text-[#bbb] text-center py-6">
+            <p className="text-sm text-[#8a8280] text-center py-6">
               No listings yet
             </p>
           )}

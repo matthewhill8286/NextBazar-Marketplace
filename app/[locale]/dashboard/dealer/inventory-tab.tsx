@@ -1,6 +1,7 @@
 "use client";
 
 import { Edit3, Plus, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -12,7 +13,7 @@ type Props = {
 
 const STATUS_BADGE: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-700",
-  sold: "bg-[#f0eeeb] text-[#999]",
+  sold: "bg-[#f0eeeb] text-[#6b6560]",
   draft: "bg-amber-50 text-amber-700",
   paused: "bg-orange-50 text-orange-600",
   removed: "bg-red-50 text-red-600",
@@ -75,22 +76,22 @@ export default function InventoryTab({ listings }: Props) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e8e6e3] bg-[#faf9f7]/50">
-              <th className="text-left px-4 py-3 font-medium text-[#999]">
+              <th className="text-left px-4 py-3 font-medium text-[#6b6560]">
                 Listing
               </th>
-              <th className="text-left px-4 py-3 font-medium text-[#999]">
+              <th className="text-left px-4 py-3 font-medium text-[#6b6560]">
                 Status
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#999]">
+              <th className="text-right px-4 py-3 font-medium text-[#6b6560]">
                 Price
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#999] hidden md:table-cell">
+              <th className="text-right px-4 py-3 font-medium text-[#6b6560] hidden md:table-cell">
                 Views
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#999] hidden md:table-cell">
+              <th className="text-right px-4 py-3 font-medium text-[#6b6560] hidden md:table-cell">
                 Saves
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#999]">
+              <th className="text-right px-4 py-3 font-medium text-[#6b6560]">
                 Actions
               </th>
             </tr>
@@ -103,12 +104,14 @@ export default function InventoryTab({ listings }: Props) {
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0">
+                    <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
                       {l.primary_image_url && (
-                        <img
+                        <Image
                           src={l.primary_image_url}
                           alt=""
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="40px"
                         />
                       )}
                     </div>
@@ -119,7 +122,7 @@ export default function InventoryTab({ listings }: Props) {
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_BADGE[l.status] || "bg-[#f0eeeb] text-[#999]"}`}
+                    className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_BADGE[l.status] || "bg-[#f0eeeb] text-[#6b6560]"}`}
                   >
                     {l.status}
                   </span>
@@ -134,16 +137,16 @@ export default function InventoryTab({ listings }: Props) {
                     ? `\u20AC${l.price.toLocaleString()}`
                     : "\u2014"}
                 </td>
-                <td className="px-4 py-3 text-right text-[#999] hidden md:table-cell">
+                <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
                   {l.view_count}
                 </td>
-                <td className="px-4 py-3 text-right text-[#999] hidden md:table-cell">
+                <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
                   {l.favorite_count}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/dashboard/edit/${l.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657]"
                   >
                     <Edit3 className="w-3 h-3" /> Edit
                   </Link>
@@ -153,11 +156,11 @@ export default function InventoryTab({ listings }: Props) {
           </tbody>
         </table>
         {listings.length === 0 && (
-          <div className="text-center py-12 text-[#bbb]">
-            <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-[#ccc]" />
+          <div className="text-center py-12 text-[#8a8280]">
+            <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
             <p className="font-medium">No listings yet</p>
             <p className="text-xs mt-1">
-              <Link href="/post" className="text-indigo-600 hover:underline">
+              <Link href="/post" className="text-[#8E7A6B] hover:underline">
                 Create your first listing
               </Link>
             </p>

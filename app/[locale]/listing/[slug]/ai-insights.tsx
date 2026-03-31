@@ -92,10 +92,10 @@ export default function AiInsights({
 
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 p-6 border border-indigo-100">
+      <div className="bg-gradient-to-br from-[#f0eeeb] via-[#f0eeeb] to-[#f0eeeb] p-6 border border-[#e8e6e3]">
         <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5 text-indigo-600 animate-pulse" />
-          <span className="font-semibold text-indigo-900">
+          <Sparkles className="w-5 h-5 text-[#8E7A6B] animate-pulse" />
+          <span className="font-semibold text-[#1a1a1a]">
             AI is analyzing this listing...
           </span>
         </div>
@@ -117,7 +117,7 @@ export default function AiInsights({
       ? "text-green-600"
       : insights.price_verdict === "overpriced"
         ? "text-red-600"
-        : "text-indigo-600";
+        : "text-[#8E7A6B]";
 
   const VerdictIcon =
     insights.price_verdict === "underpriced"
@@ -143,15 +143,15 @@ export default function AiInsights({
         : "text-[#666] bg-[#f0eeeb]";
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-indigo-50 p-6 border border-indigo-100">
+    <div className="bg-gradient-to-br from-[#f0eeeb] via-[#f0eeeb] to-[#f0eeeb] p-6 border border-[#e8e6e3]">
       <div className="flex items-center gap-2 mb-4">
-        <Sparkles className="w-5 h-5 text-indigo-600" />
-        <h2 className="text-lg font-semibold text-indigo-900">AI Insights</h2>
-        <span className="text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
+        <Sparkles className="w-5 h-5 text-[#8E7A6B]" />
+        <h2 className="text-lg font-semibold text-[#1a1a1a]">AI Insights</h2>
+        <span className="text-[10px] bg-[#e8e6e3] text-[#7A6657] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">
           Beta
         </span>
         {market.similar_count > 0 && (
-          <span className="text-xs text-indigo-400 ml-auto">
+          <span className="text-xs text-[#8E7A6B] ml-auto">
             Based on {market.similar_count} similar listings
           </span>
         )}
@@ -162,8 +162,8 @@ export default function AiInsights({
         {/* Price Analysis */}
         <div className="bg-white/80 backdrop-blur-sm p-4">
           <div className="flex items-center gap-1.5 mb-2">
-            <BarChart3 className="w-4 h-4 text-[#bbb]" />
-            <span className="text-[11px] text-[#999] font-medium">
+            <BarChart3 className="w-4 h-4 text-[#8a8280]" />
+            <span className="text-[11px] text-[#6b6560] font-medium">
               Price Analysis
             </span>
           </div>
@@ -177,7 +177,7 @@ export default function AiInsights({
             <VerdictIcon className="w-3 h-3" />
             {verdictLabel}
           </div>
-          <p className="text-xs text-[#999] mt-1.5 leading-relaxed">
+          <p className="text-xs text-[#6b6560] mt-1.5 leading-relaxed">
             {insights.price_explanation}
           </p>
         </div>
@@ -185,8 +185,8 @@ export default function AiInsights({
         {/* Quality Score */}
         <div className="bg-white/80 backdrop-blur-sm p-4">
           <div className="flex items-center gap-1.5 mb-2">
-            <Target className="w-4 h-4 text-[#bbb]" />
-            <span className="text-[11px] text-[#999] font-medium">
+            <Target className="w-4 h-4 text-[#8a8280]" />
+            <span className="text-[11px] text-[#6b6560] font-medium">
               Quality Score
             </span>
           </div>
@@ -208,7 +208,7 @@ export default function AiInsights({
             </span>
           </div>
           {insights.quality_tips?.slice(0, 2).map((tip) => (
-            <p key={tip} className="text-xs text-[#999] leading-relaxed">
+            <p key={tip} className="text-xs text-[#6b6560] leading-relaxed">
               • {tip}
             </p>
           ))}
@@ -217,8 +217,8 @@ export default function AiInsights({
         {/* Demand & Timing */}
         <div className="bg-white/80 backdrop-blur-sm p-4">
           <div className="flex items-center gap-1.5 mb-2">
-            <TrendingUp className="w-4 h-4 text-[#bbb]" />
-            <span className="text-[11px] text-[#999] font-medium">
+            <TrendingUp className="w-4 h-4 text-[#8a8280]" />
+            <span className="text-[11px] text-[#6b6560] font-medium">
               Demand & Timing
             </span>
           </div>
@@ -231,7 +231,7 @@ export default function AiInsights({
               Demand
             </span>
           </div>
-          <p className="text-xs text-[#999] leading-relaxed mb-1.5">
+          <p className="text-xs text-[#6b6560] leading-relaxed mb-1.5">
             {insights.demand_explanation}
           </p>
           <div className="flex items-center gap-1.5 text-xs text-[#666] font-medium">

@@ -387,12 +387,12 @@ export default function ShopPage() {
 
         <div className="bg-white border border-[#e8e6e3] p-8 text-center shadow-sm">
           <div className="w-16 h-16 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-5">
-            <StoreIcon className="w-8 h-8 text-[#bbb]" />
+            <StoreIcon className="w-8 h-8 text-[#8a8280]" />
           </div>
           <h2 className="text-xl font-bold text-[#1a1a1a] mb-2">
             Your shop is closed
           </h2>
-          <p className="text-sm text-[#999] max-w-md mx-auto mb-6">
+          <p className="text-sm text-[#6b6560] max-w-md mx-auto mb-6">
             Your shop and listings are no longer visible to buyers. You can
             reopen your shop at any time to pick up where you left off.
           </p>
@@ -413,7 +413,7 @@ export default function ShopPage() {
           </div>
 
           {shop?.stripe_subscription_id && (
-            <p className="text-xs text-[#bbb] mt-4">
+            <p className="text-xs text-[#8a8280] mt-4">
               Your Stripe subscription was cancelled. Reopening will require a
               new subscription.
             </p>
@@ -431,7 +431,7 @@ export default function ShopPage() {
           dealerPrice={dealerPrice}
           dealerInterval={dealerInterval}
           subscribing={subscribing}
-          onSubscribe={handleSubscribe}
+          onSubscribeAction={handleSubscribe}
         />
       </div>
     );
@@ -458,7 +458,7 @@ export default function ShopPage() {
             <h2 className="text-lg font-bold text-[#1a1a1a]">
               {branding.shopName || "Your Shop"}
             </h2>
-            <p className="text-xs text-[#999]">
+            <p className="text-xs text-[#6b6560]">
               Configure your shop branding and settings
             </p>
           </div>
@@ -466,7 +466,7 @@ export default function ShopPage() {
         <div className="flex items-center gap-2">
           <Link
             href={`/shop/${branding.slug}`}
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 px-3 py-2 hover:bg-indigo-50 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] px-3 py-2 hover:bg-[#f0eeeb] transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             View Shop
@@ -491,9 +491,9 @@ export default function ShopPage() {
         bannerUploading={bannerUploading}
         slugLocked={!!shop?.slug}
         onChange={handleBrandingChange}
-        onBannerUpload={handleBannerUpload}
-        onBannerRemove={handleBannerRemove}
-        onSave={handleSaveBranding}
+        onBannerUploadAction={handleBannerUpload}
+        onBannerRemoveAction={handleBannerRemove}
+        onSaveAction={handleSaveBranding}
       />
 
       {/* ── Close Shop — danger zone ────────────────────────────────── */}
@@ -511,7 +511,7 @@ export default function ShopPage() {
                 <p className="text-sm font-medium text-[#1a1a1a]">
                   Close your shop
                 </p>
-                <p className="text-xs text-[#999] mt-0.5">
+                <p className="text-xs text-[#6b6560] mt-0.5">
                   Your shop page and all active listings will be hidden from
                   buyers. You can reopen at any time.
                 </p>
@@ -557,7 +557,7 @@ export default function ShopPage() {
                 </button>
                 <button
                   onClick={() => setShowCloseConfirm(false)}
-                  className="text-sm text-[#999] hover:text-[#666] font-medium transition-colors"
+                  className="text-sm text-[#6b6560] hover:text-[#666] font-medium transition-colors"
                 >
                   Cancel
                 </button>

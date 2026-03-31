@@ -124,12 +124,14 @@ export default function ImageGallery({
           <>
             <button
               onClick={goPrev}
+              aria-label="Previous image"
               className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={goNext}
+              aria-label="Next image"
               className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
             >
               <ChevronRight className="w-5 h-5" />
@@ -148,6 +150,7 @@ export default function ImageGallery({
         {active.kind === "image" && (
           <button
             onClick={() => setLightboxOpen(true)}
+            aria-label="View full screen"
             className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-sm rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
           >
             <Maximize2 className="w-4 h-4" />
@@ -156,7 +159,7 @@ export default function ImageGallery({
 
         {/* Video badge on first item */}
         {active.kind === "video" && (
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-violet-600/90 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-[#8E7A6B]/90 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full pointer-events-none">
             <Play className="w-3 h-3 fill-white" />
             Video Tour
           </div>
@@ -172,7 +175,7 @@ export default function ImageGallery({
               onClick={() => setActiveIndex(idx)}
               className={`relative w-20 h-16 overflow-hidden shrink-0 border-2 transition-all ${
                 idx === activeIndex
-                  ? "border-indigo-500 ring-2 ring-indigo-200"
+                  ? "border-[#8E7A6B] ring-2 ring-[#8E7A6B]/15"
                   : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
@@ -193,7 +196,7 @@ export default function ImageGallery({
 
               {/* "VIDEO" label overlay */}
               {item.kind === "video" && (
-                <div className="absolute bottom-0 inset-x-0 bg-violet-600 text-white text-[9px] font-bold text-center py-0.5 tracking-wide">
+                <div className="absolute bottom-0 inset-x-0 bg-[#8E7A6B] text-white text-[9px] font-bold text-center py-0.5 tracking-wide">
                   VIDEO
                 </div>
               )}
@@ -209,6 +212,7 @@ export default function ImageGallery({
           onClick={() => setLightboxOpen(false)}
         >
           <button
+            aria-label="Close image viewer"
             className="absolute top-4 right-4 p-2 text-white/80 hover:text-white z-10"
             onClick={() => setLightboxOpen(false)}
           >
@@ -218,6 +222,7 @@ export default function ImageGallery({
           {media.length > 1 && (
             <>
               <button
+                aria-label="Previous image"
                 onClick={(e) => {
                   e.stopPropagation();
                   goPrev();
@@ -227,6 +232,7 @@ export default function ImageGallery({
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
+                aria-label="Next image"
                 onClick={(e) => {
                   e.stopPropagation();
                   goNext();
