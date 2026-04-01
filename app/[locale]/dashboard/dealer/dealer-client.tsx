@@ -8,9 +8,10 @@ import {
   ShoppingBag,
   Store,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
@@ -38,6 +39,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const t = useTranslations("dealer");
 
   const [tab, setTab] = useState<Tab>("overview");
   const [subscribing, setSubscribing] = useState(false);
@@ -196,14 +198,14 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] px-3 py-2 hover:bg-[#f0eeeb] transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            View Shop
+            {t("viewShop")}
           </Link>
           <button
             onClick={handleManageBilling}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors"
           >
             <CreditCard className="w-3.5 h-3.5" />
-            Billing
+            {t("billing")}
           </button>
         </div>
       </div>
@@ -212,22 +214,22 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
       <div className="flex gap-1 bg-[#f0eeeb] p-1 w-fit">
         {(
           [
-            { key: "overview", label: "Overview", icon: BarChart2 },
-            { key: "branding", label: "Branding", icon: Palette },
-            { key: "inventory", label: "Inventory", icon: ShoppingBag },
+            { key: "overview", labelKey: "tabOverview", icon: BarChart2 },
+            { key: "branding", labelKey: "tabBranding", icon: Palette },
+            { key: "inventory", labelKey: "tabInventory", icon: ShoppingBag },
           ] as const
-        ).map((t) => (
+        ).map((tabConfig) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={tabConfig.key}
+            onClick={() => setTab(tabConfig.key)}
             className={`flex items-center justify-center gap-2 py-2.5 px-5 text-sm font-semibold transition-all ${
-              tab === t.key
+              tab === tabConfig.key
                 ? "bg-white text-[#1a1a1a] shadow-sm"
                 : "text-[#6b6560] hover:text-[#666]"
             }`}
           >
-            <t.icon className="w-4 h-4" />
-            {t.label}
+            <tabConfig.icon className="w-4 h-4" />
+            {t(tabConfig.labelKey)}
           </button>
         ))}
       </div>

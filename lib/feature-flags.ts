@@ -5,8 +5,8 @@
  */
 
 export const FEATURE_FLAGS = {
-  /** Language / locale switcher in the user dropdown. Not yet ready for release. */
-  LANGUAGE_SWITCHER: false,
+  /** Language / locale switcher in the user dropdown. */
+  LANGUAGE_SWITCHER: true,
 
   /** Crypto payments via Coinbase Commerce. Flip to true once API keys are configured. */
   CRYPTO_PAYMENTS: false,

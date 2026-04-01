@@ -1,6 +1,7 @@
 import { Mail } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslator } from "@/lib/translations";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | NextBazar",
@@ -8,29 +9,30 @@ export const metadata: Metadata = {
     "Learn how NextBazar protects your personal data and privacy. We comply with GDPR and Cyprus data protection regulations.",
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslator(locale, "privacy");
+
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}
       <section className="bg-white border-b border-[#e8e6e3]">
         <div className="max-w-4xl mx-auto px-6 py-24 md:py-32">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
-            Legal
+            {t("badge")}
           </p>
           <h1
             className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-6 leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Privacy Policy
+            {t("title")}
           </h1>
-          <p className="text-lg text-[#6b6560] leading-relaxed">
-            At NextBazar, we believe privacy is fundamental. This policy
-            explains how we collect, use, and protect your personal data in
-            compliance with GDPR and Cyprus data protection law.
-          </p>
-          <p className="text-sm text-[#6b6560] mt-8">
-            Last updated: March 2026
-          </p>
+          <p className="text-lg text-[#6b6560] leading-relaxed">{t("intro")}</p>
+          <p className="text-sm text-[#6b6560] mt-8">{t("lastUpdated")}</p>
         </div>
       </section>
 
@@ -43,47 +45,44 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Information We Collect
+              {t("informationWeCollectTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed mb-4">
-              We collect information you provide directly and information
-              collected automatically when you use NextBazar:
+              {t("informationWeCollectDesc")}
             </p>
             <ul className="space-y-3 text-[#6b6560]">
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Account Information:</strong> Name, email address,
-                  phone number, payment information, and profile details when
-                  you register or post listings.
+                  <strong>{t("accountInformationLabel")}:</strong>{" "}
+                  {t("accountInformationDesc")}
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Listing Data:</strong> Photos, descriptions, location,
-                  category, and pricing information for items you list.
+                  <strong>{t("listingDataLabel")}:</strong>{" "}
+                  {t("listingDataDesc")}
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Communication Data:</strong> Messages, reviews, and
-                  ratings between buyers and sellers.
+                  <strong>{t("communicationDataLabel")}:</strong>{" "}
+                  {t("communicationDataDesc")}
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Device Information:</strong> IP address, browser type,
-                  device type, and operating system.
+                  <strong>{t("deviceInformationLabel")}:</strong>{" "}
+                  {t("deviceInformationDesc")}
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Usage Data:</strong> Pages visited, search queries,
-                  time spent on the platform, and other activity analytics.
+                  <strong>{t("usageDataLabel")}:</strong> {t("usageDataDesc")}
                 </span>
               </li>
             </ul>
@@ -95,20 +94,20 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              How We Use Information
+              {t("howWeUseInformationTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed mb-4">
-              We use your information to:
+              {t("howWeUseInformationDesc")}
             </p>
             <ul className="space-y-2 text-[#6b6560]">
-              <li>• Provide, maintain, and improve NextBazar services</li>
-              <li>• Process transactions and send related information</li>
-              <li>• Send technical notices and support messages</li>
-              <li>• Respond to your comments and questions</li>
-              <li>• Monitor and analyze trends and usage patterns</li>
-              <li>• Detect, prevent, and address fraud and security issues</li>
-              <li>• Send promotional communications (with your consent)</li>
-              <li>• Comply with legal obligations</li>
+              <li>• {t("useProvideServices")}</li>
+              <li>• {t("useProcessTransactions")}</li>
+              <li>• {t("useSendTechnical")}</li>
+              <li>• {t("useRespondComments")}</li>
+              <li>• {t("useMonitorAnalyze")}</li>
+              <li>• {t("useDetectFraud")}</li>
+              <li>• {t("usePromotion")}</li>
+              <li>• {t("useComplyLegal")}</li>
             </ul>
           </div>
 
@@ -118,32 +117,30 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Data Sharing
+              {t("dataSharingTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed mb-4">
-              We do not sell your personal data. We may share information with:
+              {t("dataSharingDesc")}
             </p>
             <ul className="space-y-3 text-[#6b6560]">
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Service Providers:</strong> Payment processors,
-                  hosting providers, and analytics services who help operate the
-                  platform.
+                  <strong>{t("serviceProvidersLabel")}:</strong>{" "}
+                  {t("serviceProvidersDesc")}
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Other Users:</strong> Your name, profile picture, and
-                  listing information are visible to other NextBazar users.
+                  <strong>{t("otherUsersLabel")}:</strong> {t("otherUsersDesc")}
                 </span>
               </li>
               <li className="flex gap-3">
                 <span className="text-[#8E7A6B] font-medium mt-1">•</span>
                 <span>
-                  <strong>Legal Requirements:</strong> When required by law or
-                  to protect our rights and safety.
+                  <strong>{t("legalRequirementsLabel")}:</strong>{" "}
+                  {t("legalRequirementsDesc")}
                 </span>
               </li>
             </ul>
@@ -155,17 +152,15 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Cookies and Tracking
+              {t("cookiesAndTrackingTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed">
-              We use cookies and similar tracking technologies to enhance your
-              experience. For detailed information about our cookie practices,
-              please visit our{" "}
+              {t("cookiesAndTrackingDesc")}{" "}
               <Link
                 href="/cookies"
                 className="text-[#8E7A6B] hover:text-[#7A6657] underline"
               >
-                Cookie Policy
+                {t("cookiePolicy")}
               </Link>
               .
             </p>
@@ -177,44 +172,22 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Your Data Rights (GDPR & Cyprus Law)
+              {t("yourDataRightsTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed mb-4">
-              Under GDPR and Cyprus data protection regulations, you have the
-              right to:
+              {t("yourDataRightsDesc")}
             </p>
             <ul className="space-y-2 text-[#6b6560]">
-              <li>
-                • <strong>Access:</strong> Request a copy of your personal data
-              </li>
-              <li>
-                • <strong>Correction:</strong> Request we correct inaccurate
-                information
-              </li>
-              <li>
-                • <strong>Deletion:</strong> Request deletion of your data
-                ("right to be forgotten")
-              </li>
-              <li>
-                • <strong>Restriction:</strong> Request we limit how we use your
-                data
-              </li>
-              <li>
-                • <strong>Portability:</strong> Receive your data in a portable
-                format
-              </li>
-              <li>
-                • <strong>Objection:</strong> Object to processing for direct
-                marketing
-              </li>
-              <li>
-                • <strong>Withdraw Consent:</strong> Withdraw consent at any
-                time
-              </li>
+              <li>• {t("rightAccess")}</li>
+              <li>• {t("rightCorrection")}</li>
+              <li>• {t("rightDeletion")}</li>
+              <li>• {t("rightRestriction")}</li>
+              <li>• {t("rightPortability")}</li>
+              <li>• {t("rightObjection")}</li>
+              <li>• {t("rightWithdrawConsent")}</li>
             </ul>
             <p className="text-[#6b6560] leading-relaxed mt-4">
-              To exercise any of these rights, please contact us using the
-              details below.
+              {t("exerciseRightsDesc")}
             </p>
           </div>
 
@@ -224,15 +197,10 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Data Security
+              {t("dataSecurityTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed">
-              We implement appropriate technical and organizational measures to
-              protect your personal data against unauthorized access,
-              alteration, and destruction. However, no method of transmission
-              over the internet is completely secure. We cannot guarantee
-              absolute security, but we are committed to protecting your
-              information.
+              {t("dataSecurityDesc")}
             </p>
           </div>
 
@@ -242,13 +210,10 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-[#1a1a1a] mb-4 pb-3 border-b border-[#e8e6e3]"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Data Retention
+              {t("dataRetentionTitle")}
             </h2>
             <p className="text-[#6b6560] leading-relaxed">
-              We retain your personal data for as long as necessary to provide
-              our services, comply with legal obligations, and resolve disputes.
-              Account information is retained for the duration of your account
-              and for a reasonable period afterward for legal compliance.
+              {t("dataRetentionDesc")}
             </p>
           </div>
 
@@ -258,23 +223,20 @@ export default function PrivacyPage() {
               className="text-2xl font-light text-white mb-6"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Questions About Your Privacy?
+              {t("contactTitle")}
             </h2>
             <p className="text-white/60 leading-relaxed mb-6">
-              If you have concerns about our privacy practices or wish to
-              exercise your data rights, please contact our Data Protection
-              Officer:
+              {t("contactDesc")}
             </p>
             <div className="flex items-start gap-3">
               <Mail className="w-5 h-5 text-[#8E7A6B] mt-1 shrink-0" />
               <div>
-                <p className="text-white mb-1">NextBazar Privacy Team</p>
-                <p className="text-white/60 text-sm">privacy@nextbazar.cy</p>
+                <p className="text-white mb-1">{t("privacyTeam")}</p>
+                <p className="text-white/60 text-sm">{t("privacyEmail")}</p>
               </div>
             </div>
             <p className="text-white/60 text-sm mt-6">
-              We will respond to all privacy requests within 30 days as required
-              by law.
+              {t("privacyResponseTime")}
             </p>
           </div>
 
@@ -284,7 +246,7 @@ export default function PrivacyPage() {
               href="/contact"
               className="text-[#8E7A6B] hover:text-[#7A6657] font-medium text-sm uppercase tracking-[0.1em]"
             >
-              Need Help? Contact Us
+              {t("needHelp")}
             </Link>
           </div>
         </div>

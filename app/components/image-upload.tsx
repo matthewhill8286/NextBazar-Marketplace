@@ -2,6 +2,7 @@
 
 import { GripVertical, Loader2, Sparkles, Upload, X } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -28,6 +29,7 @@ export default function ImageUpload({
   onChangeAction,
   maxImages = 15,
 }: ImageUploadProps) {
+  const t = useTranslations("imageUpload");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
@@ -191,16 +193,13 @@ export default function ImageUpload({
         <Upload className="w-10 h-10 text-[#8a8280] mx-auto mb-3" />
         <p className="font-semibold text-[#1a1a1a] mb-1">
           {images.length === 0
-            ? "Upload Photos"
-            : `Add More Photos (${images.length}/${maxImages})`}
+            ? t("uploadPhotos")
+            : t("addMorePhotos", { count: images.length, max: maxImages })}
         </p>
-        <p className="text-sm text-[#6b6560] mb-3">
-          Drag & drop or click to browse. JPG, PNG, WebP — auto-optimised on
-          upload.
-        </p>
+        <p className="text-sm text-[#6b6560] mb-3">{t("dragAndDrop")}</p>
         <div className="inline-flex items-center gap-2 bg-linear-to-r from-[#f0eeeb] to-[#f0eeeb] text-[#7A6657] text-xs font-medium px-3 py-1.5 rounded-full">
           <Sparkles className="w-3.5 h-3.5" />
-          AI will auto-fill details from your photos
+          {t("aiNote")}
         </div>
 
         <input
@@ -281,7 +280,7 @@ export default function ImageUpload({
               {/* Cover badge */}
               {idx === 0 && (
                 <span className="absolute bottom-1.5 left-1.5 bg-[#8E7A6B] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                  Cover
+                  {t("cover")}
                 </span>
               )}
 
@@ -293,7 +292,7 @@ export default function ImageUpload({
               {/* Remove button */}
               <button
                 type="button"
-                aria-label="Remove image"
+                aria-label={t("removeImage")}
                 onClick={(e) => {
                   e.stopPropagation();
                   removeImage(img.id);

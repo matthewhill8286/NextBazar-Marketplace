@@ -10,8 +10,9 @@ import {
   Trash2,
   TrendingDown,
 } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { timeAgo } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 
@@ -54,6 +55,7 @@ export default function NotificationsClient({
 }: {
   initialNotifications: Notification[];
 }) {
+  const t = useTranslations("dashboard.notifications");
   const supabase = createClient();
   const [notifications, setNotifications] = useState(initialNotifications);
   const [markingAll, setMarkingAll] = useState(false);
@@ -93,11 +95,11 @@ export default function NotificationsClient({
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">Notifications</h1>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
           <p className="text-sm text-[#6b6560] mt-0.5">
             {unread.length > 0
-              ? `${unread.length} unread notification${unread.length !== 1 ? "s" : ""}`
-              : "All caught up!"}
+              ? t("unread", { count: unread.length })
+              : t("allCaughtUp")}
           </p>
         </div>
 
@@ -112,7 +114,7 @@ export default function NotificationsClient({
             ) : (
               <CheckCheck className="w-4 h-4" />
             )}
-            Mark all read
+            {t("markAllRead")}
           </button>
         )}
       </div>
@@ -123,11 +125,9 @@ export default function NotificationsClient({
             <Bell className="w-7 h-7 text-[#8a8280]" />
           </div>
           <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
-            No notifications yet
+            {t("empty")}
           </h3>
-          <p className="text-[#6b6560] text-sm">
-            You'll be notified here about price drops, offers, and messages.
-          </p>
+          <p className="text-[#6b6560] text-sm">{t("emptyDesc")}</p>
         </div>
       ) : (
         <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7] overflow-hidden">

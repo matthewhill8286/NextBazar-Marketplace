@@ -19,10 +19,10 @@ export default async function SearchPage() {
   ]);
 
   return (
-      <SearchClient
-        initialCategories={categories}
-        initialSubcategories={subcategories}
-        initialLocations={locations}
-      />
+    <SearchClient
+      initialCategories={categories}
+      initialSubcategories={subcategories}
+      initialLocations={locations}
+    />
   );
 }

@@ -57,7 +57,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Strip locale prefix to check the actual route
-  const localePattern = /^\/(en|el)(\/|$)/;
+  const localePattern = /^\/(en|el|ru)(\/|$)/;
   const strippedPath = pathname.replace(localePattern, "/");
 
   if (

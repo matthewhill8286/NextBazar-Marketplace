@@ -17,8 +17,9 @@ import {
   Tag,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 type SidebarProps = {
@@ -32,26 +33,43 @@ type SidebarProps = {
   isAdmin?: boolean;
 };
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
-  { href: "/dashboard/saved", label: "Saved", icon: Heart },
-  { href: "/dashboard/offers", label: "Offers", icon: Tag },
-  { href: "/dashboard/purchases", label: "Purchases", icon: ShoppingBag },
-  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
-  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  {
-    href: "/dashboard/saved-searches",
-    label: "Saved Searches",
-    icon: BookMarked,
-  },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-];
-
 export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
+  const t = useTranslations("dashboard");
   const rawPathname = usePathname();
-  // Strip locale prefix (/en/ or /el/) so href comparisons work correctly
-  const pathname = rawPathname.replace(/^\/(en|el)(\/|$)/, "/");
+  // Strip locale prefix so href comparisons work correctly
+  const pathname = rawPathname.replace(/^\/(en|el|ru)(\/|$)/, "/");
+
+  const NAV_ITEMS = [
+    { href: "/dashboard", label: t("nav.overview"), icon: LayoutDashboard },
+    {
+      href: "/dashboard/messages",
+      label: t("nav.messages"),
+      icon: MessageCircle,
+    },
+    { href: "/dashboard/saved", label: t("nav.saved"), icon: Heart },
+    { href: "/dashboard/offers", label: t("nav.offers"), icon: Tag },
+    {
+      href: "/dashboard/purchases",
+      label: t("nav.purchases"),
+      icon: ShoppingBag,
+    },
+    {
+      href: "/dashboard/analytics",
+      label: t("nav.analytics"),
+      icon: BarChart2,
+    },
+    {
+      href: "/dashboard/notifications",
+      label: t("nav.notifications"),
+      icon: Bell,
+    },
+    {
+      href: "/dashboard/saved-searches",
+      label: t("nav.savedSearches"),
+      icon: BookMarked,
+    },
+    { href: "/dashboard/settings", label: t("nav.settings"), icon: Settings },
+  ];
 
   const initials =
     profile.display_name
@@ -91,7 +109,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
             <p className="text-xs text-[#6b6560] truncate">{profile.email}</p>
             {profile.is_pro_seller && (
               <span className="inline-block mt-1 text-[9px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5 tracking-[0.15em] uppercase">
-                Pro Seller
+                {t("proSeller")}
               </span>
             )}
           </div>
@@ -103,7 +121,13 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         {[
           ...NAV_ITEMS,
           ...(isAdmin && FEATURE_FLAGS.REPORTS
-            ? [{ href: "/admin/reports", label: "Reports Queue", icon: Flag }]
+            ? [
+                {
+                  href: "/admin/reports",
+                  label: t("nav.reportsQueue"),
+                  icon: Flag,
+                },
+              ]
             : []),
         ].map((item) => {
           const isActive =
@@ -139,7 +163,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               )}
             >
               <Store className="w-4 h-4" />
-              My Shop
+              {t("nav.myShop")}
             </Link>
           ) : (
             <Link
@@ -150,7 +174,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               )}
             >
               <Crown className="w-4 h-4" />
-              Become a Pro Seller
+              {t("nav.becomeProSeller")}
             </Link>
           ))}
       </nav>

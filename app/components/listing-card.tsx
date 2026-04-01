@@ -9,9 +9,9 @@ import {
   Store,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { memo, useEffect, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/lib/compare-context";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";

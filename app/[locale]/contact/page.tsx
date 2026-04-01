@@ -8,44 +8,12 @@ import {
   MessageCircle,
   ShieldCheck,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type React from "react";
 import { useState } from "react";
 
-const TOPICS = [
-  "General enquiry",
-  "Listing issue",
-  "Account / login problem",
-  "Billing or payments",
-  "Report a user or listing",
-  "Pro Seller / business account",
-  "Partnership",
-  "Other",
-];
-
-const CONTACT_CARDS = [
-  {
-    icon: Mail,
-    title: "Email Us",
-    detail: "hello@nextbazar.com",
-    sub: "We reply within 24 hours",
-    href: "mailto:hello@nextbazar.com",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Trust & Safety",
-    detail: "trust@nextbazar.com",
-    sub: "Urgent reports prioritised",
-    href: "mailto:trust@nextbazar.com",
-  },
-  {
-    icon: MessageCircle,
-    title: "Live Chat",
-    detail: "Available Mon–Fri",
-    sub: "9:00 – 18:00 EET",
-    href: "#chat",
-  },
-];
-
 export default function ContactPage() {
+  const t = useTranslations("contact");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -55,14 +23,42 @@ export default function ContactPage() {
     message: "",
   });
 
+  const TOPICS = [
+    t("form.topicOptions.general"),
+    t("form.topicOptions.listing"),
+    t("form.topicOptions.account"),
+    t("form.topicOptions.billing"),
+    t("form.topicOptions.report"),
+    t("form.topicOptions.proSeller"),
+    t("form.topicOptions.partnership"),
+    t("form.topicOptions.other"),
+  ];
+
+  const CONTACT_CARDS = [
+    {
+      icon: Mail,
+      title: t("email.title"),
+      detail: t("email.address"),
+      sub: t("email.sub"),
+      href: `mailto:${t("email.address")}`,
+    },
+    {
+      icon: ShieldCheck,
+      title: t("trust.title"),
+      detail: t("trust.address"),
+      sub: t("trust.sub"),
+      href: `mailto:${t("trust.address")}`,
+    },
+  ];
+
   function set(field: keyof typeof form, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setLoading(true);
-    // Simulate send
+    // Simulate sending
     await new Promise((r) => setTimeout(r, 900));
     setLoading(false);
     setSubmitted(true);
@@ -83,18 +79,17 @@ export default function ContactPage() {
             className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-5 leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Get in touch
+            {t("hero.title")}
           </h1>
           <p className="text-[#6b6560] max-w-md mx-auto leading-relaxed">
-            A question, a problem, or just want to say hello — we'd love to hear
-            from you. Our team usually responds within one business day.
+            {t("hero.subtitle")}
           </p>
         </div>
       </section>
 
       <div className="max-w-4xl mx-auto px-6 py-16 grid md:grid-cols-5 gap-8">
         {/* Contact cards — left col */}
-        <div className="md:col-span-2 space-y-px bg-[#e8e6e3]">
+        <div className="md:col-span-2 space-y-px">
           {CONTACT_CARDS.map((c) => (
             <a
               key={c.title}
@@ -126,12 +121,12 @@ export default function ContactPage() {
               </div>
               <div>
                 <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560] mb-1">
-                  Office
+                  {t("office.title")}
                 </div>
                 <div className="text-sm text-[#666] leading-relaxed">
-                  NextBazar Ltd
+                  {t("office.company")}
                   <br />
-                  Limassol, Cyprus
+                  {t("office.location")}
                 </div>
               </div>
             </div>
@@ -150,52 +145,50 @@ export default function ContactPage() {
                   className="text-xl font-light text-[#1a1a1a] mb-3"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  Message sent
+                  {t("success.title")}
                 </h2>
                 <p className="text-[#6b6560] text-sm max-w-xs mx-auto">
-                  Thanks for reaching out. We'll get back to you at{" "}
-                  <span className="font-medium text-[#666]">{form.email}</span>{" "}
-                  within 24 hours.
+                  {t("success.message", { email: form.email })}
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-2">
-                    Contact Form
+                    {t("form.label")}
                   </p>
                   <h2
                     className="text-xl font-light text-[#1a1a1a]"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
-                    Send us a message
+                    {t("form.heading")}
                   </h2>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-                      Your name
+                      {t("form.nameLabel")}
                     </label>
                     <input
                       required
                       type="text"
                       value={form.name}
                       onChange={(e) => set("name", e.target.value)}
-                      placeholder="Jane Doe"
+                      placeholder={t("form.namePlaceholder")}
                       className={INPUT_CLS}
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-                      Email address
+                      {t("form.emailLabel")}
                     </label>
                     <input
                       required
                       type="email"
                       value={form.email}
                       onChange={(e) => set("email", e.target.value)}
-                      placeholder="jane@example.com"
+                      placeholder={t("form.emailPlaceholder")}
                       className={INPUT_CLS}
                     />
                   </div>
@@ -203,7 +196,7 @@ export default function ContactPage() {
 
                 <div>
                   <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-                    Topic
+                    {t("form.topicLabel")}
                   </label>
                   <select
                     required
@@ -211,10 +204,10 @@ export default function ContactPage() {
                     onChange={(e) => set("topic", e.target.value)}
                     className={`${INPUT_CLS} text-[#666]`}
                   >
-                    <option value="">Select a topic…</option>
-                    {TOPICS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
+                    <option value="">{t("form.topicPlaceholder")}</option>
+                    {TOPICS.map((topic) => (
+                      <option key={topic} value={topic}>
+                        {topic}
                       </option>
                     ))}
                   </select>
@@ -222,14 +215,14 @@ export default function ContactPage() {
 
                 <div>
                   <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-                    Message
+                    {t("form.messageLabel")}
                   </label>
                   <textarea
                     required
                     rows={5}
                     value={form.message}
                     onChange={(e) => set("message", e.target.value)}
-                    placeholder="Describe your question or issue in as much detail as you can…"
+                    placeholder={t("form.messagePlaceholder")}
                     className={`${INPUT_CLS} resize-none`}
                   />
                 </div>
@@ -242,11 +235,11 @@ export default function ContactPage() {
                   {loading ? (
                     <>
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Sending…
+                      {t("form.submitting")}
                     </>
                   ) : (
                     <>
-                      Send Message <ArrowRight className="w-4 h-4" />
+                      {t("form.submit")} <ArrowRight className="w-4 h-4" />
                     </>
                   )}
                 </button>

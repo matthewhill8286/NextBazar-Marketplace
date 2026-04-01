@@ -285,6 +285,22 @@ export async function getListingPageDataCached(
   };
 }
 
+// ─── Popular listing slugs (for generateStaticParams) ───────────────────────
+
+export async function getPopularListingSlugs(limit = 50): Promise<string[]> {
+  "use cache";
+  cacheLife("reference");
+  cacheTag("listings");
+
+  const { data } = await publicClient()
+    .from("listings")
+    .select("slug")
+    .eq("status", "active")
+    .order("view_count", { ascending: false })
+    .limit(limit);
+  return (data ?? []).map((r) => r.slug);
+}
+
 // ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
 
 export async function getCategoryBySlugCached(slug: string) {

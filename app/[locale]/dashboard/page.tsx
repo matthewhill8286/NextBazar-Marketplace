@@ -9,8 +9,9 @@ import {
   Package,
   Plus,
 } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import { useDashboardData } from "./dashboard-context";
@@ -19,6 +20,7 @@ import ListingsClient from "./listings/listings-client";
 import ProfileNudge from "./profile-nudge";
 
 export default function DashboardPage() {
+  const t = useTranslations("dashboard");
   const {
     listings: initialListings,
     isDealer,
@@ -53,13 +55,13 @@ export default function DashboardPage() {
           className="text-3xl font-light text-[#1a1a1a]"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Dashboard
+          {t("title")}
         </h1>
         <Link
           href="/post"
           className="bg-[#8E7A6B] text-white px-5 py-2.5 text-[10px] font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center gap-2"
         >
-          <Plus className="w-3.5 h-3.5" /> New Listing
+          <Plus className="w-3.5 h-3.5" /> {t("newListing")}
         </Link>
       </div>
 
@@ -69,10 +71,22 @@ export default function DashboardPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: Package, label: "Active", value: activeCount },
-          { icon: Eye, label: "Views", value: totalViews.toLocaleString() },
-          { icon: Heart, label: "Saves", value: totalFavs.toLocaleString() },
-          { icon: MessageCircle, label: "Messages", value: totalMessages },
+          { icon: Package, label: t("stats.active"), value: activeCount },
+          {
+            icon: Eye,
+            label: t("stats.views"),
+            value: totalViews.toLocaleString(),
+          },
+          {
+            icon: Heart,
+            label: t("stats.saves"),
+            value: totalFavs.toLocaleString(),
+          },
+          {
+            icon: MessageCircle,
+            label: t("stats.messages"),
+            value: totalMessages,
+          },
         ].map(({ icon: Icon, label, value }) => (
           <div
             key={label}
@@ -111,16 +125,18 @@ export default function DashboardPage() {
                 className="text-xl font-light"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                Become a Pro Seller
+                {t("proCta.title")}
               </h3>
               <p className="text-white/50 text-sm mt-0.5">
-                Get unlimited listings, a branded shop page, analytics &amp;
-                more for just {dealerPrice}/{dealerInterval}
+                {t("proCta.desc", {
+                  price: dealerPrice,
+                  interval: dealerInterval,
+                })}
               </p>
             </div>
             <div className="hidden sm:flex items-center gap-2 border border-white/30 text-white font-medium text-[10px] tracking-[0.15em] uppercase px-5 py-2.5 shrink-0 group-hover:bg-white/10 transition-colors">
               <Crown className="w-3.5 h-3.5" />
-              Learn More
+              {t("proCta.learnMore")}
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>

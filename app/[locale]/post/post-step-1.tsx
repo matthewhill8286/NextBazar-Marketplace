@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Loader2, Sparkles, Wand2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -41,6 +42,7 @@ export default function PostStep1({
   onSelectCategoryAction,
   onNextAction,
 }: Props) {
+  const t = useTranslations("post");
   return (
     <div className="space-y-8">
       <div>
@@ -48,11 +50,9 @@ export default function PostStep1({
           className="text-3xl font-light text-[#1a1a1a] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          What are you selling?
+          {t("step1.heading")}
         </h2>
-        <p className="text-sm text-[#6b6560]">
-          Start with photos — we can suggest the rest
-        </p>
+        <p className="text-sm text-[#6b6560]">{t("step1.subheading")}</p>
       </div>
 
       {/* Image Upload */}
@@ -69,9 +69,9 @@ export default function PostStep1({
               href="/auth/login?redirect=/post"
               className="text-[#1a1a1a] font-medium hover:underline"
             >
-              Sign in
+              {t("step1.signInPrompt").split(" to ")[0]}
             </a>{" "}
-            to upload photos
+            {t("step1.signInPrompt").split(" to ")[1]}
           </p>
         </div>
       )}
@@ -87,12 +87,12 @@ export default function PostStep1({
           {aiLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Detecting title &amp; category...
+              {t("step1.detectingTitle")}
             </>
           ) : (
             <>
               <Wand2 className="w-4 h-4" />
-              Suggest title &amp; category with AI
+              {t("step1.suggestTitleCategory")}
               <span className="text-[9px] bg-white/20 px-2 py-0.5 font-medium uppercase tracking-[0.15em]">
                 Beta
               </span>
@@ -103,19 +103,19 @@ export default function PostStep1({
       {aiFilled && (
         <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 text-sm px-4 py-2.5 border border-emerald-100">
           <Sparkles className="w-4 h-4" />
-          AI suggested a title and category — review and adjust below
+          {t("step1.aiSuggestion")}
         </div>
       )}
 
       {/* Title */}
       <div>
         <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-          Title
+          {t("step1.titleLabel")}
         </label>
         <input
           type="text"
           className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm"
-          placeholder="e.g. iPhone 15 Pro Max 256GB Blue"
+          placeholder={t("titlePlaceholder")}
           value={formData.title}
           onChange={(e) => onUpdateAction("title", e.target.value)}
         />
@@ -124,7 +124,7 @@ export default function PostStep1({
       {/* Category */}
       <div>
         <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-3">
-          Category
+          {t("step1.categoryLabel")}
         </label>
         <div className="grid grid-cols-4 gap-2">
           {categories.map((cat) => (
@@ -152,7 +152,7 @@ export default function PostStep1({
         {visibleSubcategories.length > 0 && (
           <div className="mt-4 animate-in fade-in slide-in-from-top-1 duration-200">
             <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-              Subcategory
+              {t("step1.subcategoryLabel")}
             </label>
             <div className="flex flex-wrap gap-2">
               {visibleSubcategories.map((sub) => (
@@ -184,7 +184,7 @@ export default function PostStep1({
         }
         className="w-full bg-[#8E7A6B] text-white py-4 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center justify-center gap-2.5 disabled:opacity-40"
       >
-        Continue <ArrowRight className="w-3.5 h-3.5" />
+        {t("step1.continue")} <ArrowRight className="w-3.5 h-3.5" />
       </button>
     </div>
   );

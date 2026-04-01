@@ -1,10 +1,10 @@
 "use client";
 
 import { ArrowRight, Flame } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-
 import ListingCard from "@/app/components/listing-card";
+import { Link } from "@/i18n/navigation";
 import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import { CARD_SELECT } from "@/lib/supabase/selects";
@@ -16,6 +16,7 @@ type Props = {
 };
 
 export default function TrendingSection({ fallbackTrending }: Props) {
+  const t = useTranslations("home.trending");
   const supabase = createClient();
   const [trending, setTrending] = useState<ListingCardRow[]>(fallbackTrending);
   const [locationName, setLocationName] = useState<string | null>(null);
@@ -63,7 +64,7 @@ export default function TrendingSection({ fallbackTrending }: Props) {
         <div>
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4 flex items-center gap-1.5">
             <Flame className="w-3 h-3" />
-            Popular
+            {t("badge")}
           </p>
           <h2
             className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
@@ -71,11 +72,11 @@ export default function TrendingSection({ fallbackTrending }: Props) {
           >
             {locationName ? (
               <>
-                Trending in{" "}
+                {t("titleLocation", { location: "" })}
                 <em className="italic font-normal">{locationName}</em>
               </>
             ) : (
-              "Trending Now"
+              t("title")
             )}
           </h2>
         </div>
@@ -87,7 +88,7 @@ export default function TrendingSection({ fallbackTrending }: Props) {
           }
           className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
         >
-          View all
+          {t("viewAll")}
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>

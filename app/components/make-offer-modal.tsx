@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, CheckCircle, Euro, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type SubmitEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -27,6 +28,7 @@ export default function MakeOfferModal({
   onCloseAction,
   onOfferSentAction,
 }: Props) {
+  const t = useTranslations("makeOffer");
   const supabase = createClient();
   const sym = currency === "EUR" ? "€" : currency;
 
@@ -42,7 +44,7 @@ export default function MakeOfferModal({
     e.preventDefault();
     const val = Number(amount);
     if (!val || val <= 0) {
-      setErrorMsg("Please enter a valid offer amount.");
+      setErrorMsg(t("validation.required"));
       return;
     }
     setLoading(true);
@@ -95,11 +97,11 @@ export default function MakeOfferModal({
         className="bg-white shadow-2xl w-full max-w-md overflow-hidden"
         role="dialog"
         aria-modal="true"
-        aria-label="Make an offer"
+        aria-label={t("title")}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e6e3]">
-          <h2 className="text-lg font-bold text-[#1a1a1a]">Make an Offer</h2>
+          <h2 className="text-lg font-bold text-[#1a1a1a]">{t("title")}</h2>
           <button
             onClick={onCloseAction}
             className="p-2 rounded-full hover:bg-[#f0eeeb] transition-colors text-[#8a8280]"
@@ -114,35 +116,31 @@ export default function MakeOfferModal({
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>
             <h3 className="text-xl font-bold text-[#1a1a1a] mb-2">
-              Offer Sent!
+              {t("successTitle")}
             </h3>
             <p className="text-[#6b6560] text-sm mb-6">
-              Your offer of{" "}
-              <span className="font-semibold text-[#1a1a1a]">
-                {sym}
-                {Number(amount).toLocaleString()}
-              </span>{" "}
-              has been sent to the seller. You'll receive a notification when
-              they respond.
+              {t("successMessage", {
+                amount: `${sym}${Number(amount).toLocaleString()}`,
+              })}
             </p>
             <button
               onClick={onCloseAction}
               className="px-6 py-2.5 bg-[#2C2826] text-white text-sm font-medium hover:bg-[#3D3633] transition-colors"
             >
-              Done
+              {t("done")}
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
             {/* Listing context */}
             <div className="bg-[#faf9f7] p-3">
-              <p className="text-xs text-[#6b6560] mb-0.5">Listing</p>
+              <p className="text-xs text-[#6b6560] mb-0.5">{t("listing")}</p>
               <p className="font-medium text-[#1a1a1a] text-sm line-clamp-1">
                 {listingTitle}
               </p>
               {listingPrice && (
                 <p className="text-sm text-[#6b6560] mt-0.5">
-                  Asking price:{" "}
+                  {t("askingPrice")}{" "}
                   <span className="font-semibold text-[#1a1a1a]">
                     {sym}
                     {listingPrice.toLocaleString()}
@@ -154,7 +152,7 @@ export default function MakeOfferModal({
             {/* Amount */}
             <div>
               <label className="block text-sm font-medium text-[#666] mb-1.5">
-                Your Offer Amount
+                {t("yourOfferAmount")}
               </label>
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6b6560] font-medium">
@@ -182,10 +180,10 @@ export default function MakeOfferModal({
                   }`}
                 >
                   {pct! < 0
-                    ? `${Math.abs(pct!)}% below asking price`
+                    ? t("belowPrice", { percent: Math.abs(pct!) })
                     : pct! === 0
-                      ? "Matches asking price"
-                      : `${pct}% above asking price`}
+                      ? t("matchesPrice")
+                      : t("abovePrice", { percent: pct! })}
                 </p>
               )}
             </div>
@@ -193,8 +191,10 @@ export default function MakeOfferModal({
             {/* Message */}
             <div>
               <label className="block text-sm font-medium text-[#666] mb-1.5">
-                Message{" "}
-                <span className="font-normal text-[#8a8280]">(optional)</span>
+                {t("messageLabel")}{" "}
+                <span className="font-normal text-[#8a8280]">
+                  {t("messageOptional")}
+                </span>
               </label>
               <textarea
                 rows={3}
@@ -222,7 +222,7 @@ export default function MakeOfferModal({
                 onClick={onCloseAction}
                 className="flex-1 py-3 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 type="submit"
@@ -234,14 +234,14 @@ export default function MakeOfferModal({
                 ) : (
                   <>
                     <Euro className="w-4 h-4" />
-                    Send Offer
+                    {t("sendOffer")}
                   </>
                 )}
               </button>
             </div>
 
             <p className="text-xs text-[#8a8280] text-center">
-              Offers expire after 48 hours if not responded to.
+              {t("expiresInfo")}
             </p>
           </form>
         )}

@@ -2,9 +2,11 @@
 
 import { Bell, MessageCircle, Tag, TrendingDown, X } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { useRouter } from "@/i18n/navigation";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { createClient } from "@/lib/supabase/client";
@@ -18,6 +20,7 @@ function CounterOfferToast({
   listingTitle,
   counterAmount,
   onNavigateAction,
+  reviewCounterLabel,
 }: {
   toastId: string | number;
   sellerName: string;
@@ -25,6 +28,7 @@ function CounterOfferToast({
   listingTitle: string;
   counterAmount: string;
   onNavigateAction: () => void;
+  reviewCounterLabel: string;
 }) {
   return (
     <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
@@ -75,7 +79,7 @@ function CounterOfferToast({
           onClick={onNavigateAction}
           className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
-          Review counter →
+          {reviewCounterLabel}
         </button>
       </div>
     </div>
@@ -89,6 +93,9 @@ function OfferStatusToast({
   avatarUrl,
   listingTitle,
   onNavigateAction,
+  offerAcceptedLabel,
+  offerDeclinedLabel,
+  viewOfferLabel,
 }: {
   toastId: string | number;
   status: "accepted" | "declined";
@@ -96,8 +103,12 @@ function OfferStatusToast({
   avatarUrl: string | null;
   listingTitle: string;
   onNavigateAction: () => void;
+  offerAcceptedLabel: string;
+  offerDeclinedLabel: string;
+  viewOfferLabel: string;
 }) {
   const isAccepted = status === "accepted";
+  const statusLabel = isAccepted ? offerAcceptedLabel : offerDeclinedLabel;
   return (
     <div
       className={`w-85 bg-white shadow-2xl border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}
@@ -127,7 +138,7 @@ function OfferStatusToast({
               <p
                 className={`text-[10px] font-bold uppercase tracking-widest ${isAccepted ? "text-emerald-500" : "text-rose-500"}`}
               >
-                Offer {isAccepted ? "accepted" : "declined"}
+                {statusLabel}
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {personName}
@@ -150,7 +161,7 @@ function OfferStatusToast({
           onClick={onNavigateAction}
           className={`w-full text-center text-xs font-semibold py-1.5 transition-colors ${isAccepted ? "text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100" : "text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100"}`}
         >
-          View offer →
+          {viewOfferLabel}
         </button>
       </div>
     </div>
@@ -165,6 +176,9 @@ function MessageToast({
   preview,
   isOffer,
   onNavigateAction,
+  inChatOfferLabel,
+  newMessageLabel,
+  viewConversationLabel,
 }: {
   toastId: string | number;
   senderName: string;
@@ -173,7 +187,11 @@ function MessageToast({
   preview: string;
   isOffer: boolean;
   onNavigateAction: () => void;
+  inChatOfferLabel: string;
+  newMessageLabel: string;
+  viewConversationLabel: string;
 }) {
+  const headerLabel = isOffer ? inChatOfferLabel : newMessageLabel;
   return (
     <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className="w-1 bg-linear-to-b from-[#8E7A6B] to-[#7A6657] shrink-0" />
@@ -193,7 +211,7 @@ function MessageToast({
             )}
             <div className="min-w-0">
               <p className="text-[10px] font-bold text-[#8E7A6B] uppercase tracking-widest">
-                {isOffer ? "In-chat offer" : "New message"}
+                {headerLabel}
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {senderName}
@@ -222,7 +240,7 @@ function MessageToast({
           onClick={onNavigateAction}
           className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
-          View conversation →
+          {viewConversationLabel}
         </button>
       </div>
     </div>
@@ -236,6 +254,8 @@ function OfferToast({
   listingTitle,
   amount,
   onNavigateAction,
+  newOfferReceivedLabel,
+  reviewOfferLabel,
 }: {
   toastId: string | number;
   buyerName: string;
@@ -243,6 +263,8 @@ function OfferToast({
   listingTitle: string;
   amount: string;
   onNavigateAction: () => void;
+  newOfferReceivedLabel: string;
+  reviewOfferLabel: string;
 }) {
   return (
     <div className="w-85 bg-white shadow-2xl shadow-emerald-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
@@ -263,7 +285,7 @@ function OfferToast({
             )}
             <div className="min-w-0">
               <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
-                New offer received
+                {newOfferReceivedLabel}
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {buyerName}
@@ -292,7 +314,7 @@ function OfferToast({
           onClick={onNavigateAction}
           className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-1.5 transition-colors"
         >
-          Review offer →
+          {reviewOfferLabel}
         </button>
       </div>
     </div>
@@ -303,25 +325,22 @@ function OfferToast({
 
 const NOTIF_CONFIG: Record<
   string,
-  { accent: string; iconBg: string; icon: React.ReactNode; label: string }
+  { accent: string; iconBg: string; icon: React.ReactNode }
 > = {
   price_drop: {
     accent: "from-emerald-500 to-teal-600",
     iconBg: "bg-emerald-100",
     icon: <TrendingDown className="w-4 h-4 text-emerald-600" />,
-    label: "Price drop",
   },
   saved_search_match: {
     accent: "from-[#8E7A6B] to-[#7A6657]",
     iconBg: "bg-[#f0eeeb]",
     icon: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
-    label: "New match",
   },
   listing_expired: {
     accent: "from-rose-500 to-red-600",
     iconBg: "bg-rose-100",
     icon: <Bell className="w-4 h-4 text-rose-600" />,
-    label: "Listing expired",
   },
 };
 
@@ -329,7 +348,6 @@ const NOTIF_DEFAULT = {
   accent: "from-[#8E7A6B] to-[#7A6657]",
   iconBg: "bg-[#e8e6e3]",
   icon: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
-  label: "Notification",
 };
 
 function NotificationToast({
@@ -338,12 +356,16 @@ function NotificationToast({
   title,
   body,
   onNavigateAction,
+  label,
+  viewLabel,
 }: {
   toastId: string | number;
   type: string;
   title: string;
   body: string | null;
   onNavigateAction: () => void;
+  label: string;
+  viewLabel: string;
 }) {
   const cfg = NOTIF_CONFIG[type] ?? NOTIF_DEFAULT;
 
@@ -360,7 +382,7 @@ function NotificationToast({
             </div>
             <div className="min-w-0">
               <p className="text-[10px] font-bold text-[#8a8280] uppercase tracking-widest">
-                {cfg.label}
+                {label}
               </p>
               <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {title}
@@ -385,7 +407,7 @@ function NotificationToast({
           onClick={onNavigateAction}
           className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
-          View →
+          {viewLabel}
         </button>
       </div>
     </div>
@@ -405,6 +427,7 @@ const SKIP_NOTIF_TYPES = new Set([
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function RealtimeToasts() {
+  const t = useTranslations("notifications");
   const supabase = createClient();
   const { userId } = useCurrentUser();
   const router = useRouter();
@@ -449,22 +472,27 @@ export default function RealtimeToasts() {
       const listingTitle = (conv?.listings as any)?.title || "a listing";
       const isOffer = msg.message_type === "offer";
       const preview = isOffer
-        ? `Offered €${Number(msg.offer_price).toLocaleString()}`
+        ? t("offeredPrice", {
+            amount: Number(msg.offer_price).toLocaleString(),
+          })
         : String(msg.content || "").slice(0, 100);
 
       toast.custom(
-        (t) => (
+        (toastId) => (
           <MessageToast
-            toastId={t}
+            toastId={toastId}
             senderName={senderName}
             avatarUrl={sender?.avatar_url ?? null}
             listingTitle={listingTitle}
             preview={preview}
             isOffer={isOffer}
             onNavigateAction={() => {
-              toast.dismiss(t);
+              toast.dismiss(toastId);
               router.push(`/dashboard/messages/${msg.conversation_id}`);
             }}
+            inChatOfferLabel={t("inChatOffer")}
+            newMessageLabel={t("newMessage")}
+            viewConversationLabel={t("viewConversation")}
           />
         ),
         { duration: 7000, position: "top-right" },
@@ -499,17 +527,19 @@ export default function RealtimeToasts() {
       const amount = `${sym}${Number(offer.amount).toLocaleString()}`;
 
       toast.custom(
-        (t) => (
+        (toastId) => (
           <OfferToast
-            toastId={t}
+            toastId={toastId}
             buyerName={buyerName}
             avatarUrl={buyer?.avatar_url ?? null}
             listingTitle={listingTitle}
             amount={amount}
             onNavigateAction={() => {
-              toast.dismiss(t);
+              toast.dismiss(toastId);
               router.push(`/dashboard/offers?offer=${offer.id}`);
             }}
+            newOfferReceivedLabel={t("newOfferReceived")}
+            reviewOfferLabel={t("reviewOffer")}
           />
         ),
         { duration: 10000, position: "top-right" },
@@ -547,17 +577,18 @@ export default function RealtimeToasts() {
         const counterAmount = `${sym}${Number(offer.counter_amount).toLocaleString()}`;
 
         toast.custom(
-          (t) => (
+          (toastId) => (
             <CounterOfferToast
-              toastId={t}
+              toastId={toastId}
               sellerName={sellerName}
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
               counterAmount={counterAmount}
               onNavigateAction={() => {
-                toast.dismiss(t);
+                toast.dismiss(toastId);
                 router.push(`/dashboard/offers?offer=${offer.id}`);
               }}
+              reviewCounterLabel={t("reviewCounter")}
             />
           ),
           { duration: 10000, position: "top-right" },
@@ -579,17 +610,20 @@ export default function RealtimeToasts() {
         const listingTitle = listing?.title || "your listing";
 
         toast.custom(
-          (t) => (
+          (toastId) => (
             <OfferStatusToast
-              toastId={t}
+              toastId={toastId}
               status={offer.status as "accepted" | "declined"}
               personName={sellerName}
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
               onNavigateAction={() => {
-                toast.dismiss(t);
+                toast.dismiss(toastId);
                 router.push(`/dashboard/offers?offer=${offer.id}`);
               }}
+              offerAcceptedLabel={t("offerAccepted")}
+              offerDeclinedLabel={t("offerDeclined")}
+              viewOfferLabel={t("viewOffer")}
             />
           ),
           { duration: 10000, position: "top-right" },
@@ -599,6 +633,20 @@ export default function RealtimeToasts() {
     enabled: !!userId,
   });
 
+  // Helper to get notification label based on type
+  const getNotificationLabel = (type: string): string => {
+    switch (type) {
+      case "price_drop":
+        return t("priceDrop");
+      case "saved_search_match":
+        return t("savedSearchMatch");
+      case "listing_expired":
+        return t("listingExpired");
+      default:
+        return t("notification");
+    }
+  };
+
   // ── Generic notifications ────────────────────────────────────────────────
   useRealtimeTable({
     channelName: `rt-notifications-${userId ?? "anon"}`,
@@ -607,17 +655,20 @@ export default function RealtimeToasts() {
     filter: userId ? `user_id=eq.${userId}` : undefined,
     onPayload: ({ new: notif }) => {
       if (SKIP_NOTIF_TYPES.has(String(notif.type))) return;
+      const notifType = String(notif.type);
       toast.custom(
-        (t) => (
+        (toastId) => (
           <NotificationToast
-            toastId={t}
-            type={String(notif.type)}
+            toastId={toastId}
+            type={notifType}
             title={String(notif.title)}
             body={notif.body ? String(notif.body) : null}
             onNavigateAction={() => {
-              toast.dismiss(t);
+              toast.dismiss(toastId);
               router.push(String(notif.link ?? "/dashboard/notifications"));
             }}
+            label={getNotificationLabel(notifType)}
+            viewLabel={t("view")}
           />
         ),
         { duration: 8000, position: "top-right" },

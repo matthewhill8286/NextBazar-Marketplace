@@ -2,8 +2,9 @@
 
 import { ArrowRight, Check, Package, Search, Store } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import type { ShopCardRow } from "@/lib/supabase/queries";
 
 function getInitials(name: string | null | undefined): string {
@@ -34,6 +35,8 @@ interface ShopsClientProps {
 }
 
 export default function ShopsClient({ shops }: ShopsClientProps) {
+  const t = useTranslations("shops");
+  const locale = useLocale();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("listings");
 
@@ -75,17 +78,16 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
           <div className="text-center">
             <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#8E7A6B] mb-4 flex items-center justify-center gap-2">
               <Store className="w-3.5 h-3.5" />
-              Verified Pro Sellers
+              {t("badge")}
             </p>
             <h1
               className="text-3xl md:text-5xl font-light text-[#1a1a1a] mb-4"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Browse Shops
+              {t("title")}
             </h1>
             <p className="text-[#6b6560] text-base md:text-lg max-w-xl mx-auto mb-10">
-              Discover trusted Pro Seller shops from across Cyprus. Each shop is
-              run by a verified, premium seller.
+              {t("subtitle")}
             </p>
 
             {/* Search bar */}
@@ -93,7 +95,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8280] pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search shops by name or description..."
+                placeholder={t("searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-12 pr-4 py-3.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#8a8280] focus:outline-none focus-visible:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 transition-all"
@@ -108,19 +110,16 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
           <p className="text-sm text-[#6b6560]">
-            <span className="font-semibold text-[#1a1a1a]">
-              {filtered.length}
-            </span>{" "}
-            {filtered.length === 1 ? "shop" : "shops"} found
+            {t("shopCount", { count: filtered.length })}
           </p>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
             className="px-3 py-2 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus-visible:border-[#8E7A6B] cursor-pointer"
           >
-            <option value="listings">Most Listings</option>
-            <option value="newest">Newest</option>
-            <option value="name">A — Z</option>
+            <option value="listings">{t("sortListings")}</option>
+            <option value="newest">{t("sortNewest")}</option>
+            <option value="name">{t("sortName")}</option>
           </select>
         </div>
 
@@ -128,7 +127,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((shop) => (
-              <ShopCard key={shop.id} shop={shop} />
+              <ShopCard key={shop.id} shop={shop} locale={locale} />
             ))}
           </div>
         ) : (
@@ -140,12 +139,10 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
               className="text-xl font-light text-[#1a1a1a] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              {search.trim() ? "No shops found" : "No shops yet"}
+              {search.trim() ? t("noShopsFound") : t("noShopsYet")}
             </h2>
             <p className="text-[#6b6560] max-w-sm mx-auto text-sm">
-              {search.trim()
-                ? "Try a different search term."
-                : "Be the first to open a dealer shop on NextBazar!"}
+              {search.trim() ? t("noShopsFoundDesc") : t("noShopsYetDesc")}
             </p>
           </div>
         )}
@@ -156,7 +153,8 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
 
 /* ── Individual Shop Card ─────────────────────────────────────────────────── */
 
-function ShopCard({ shop }: { shop: ShopCardRow }) {
+function ShopCard({ shop, locale }: { shop: ShopCardRow; locale: string }) {
+  const t = useTranslations("shops");
   const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);
   const gradientStart = isValidHex ? accentColor : "#8E7A6B";
@@ -237,7 +235,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
               style={{
                 background: `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`,
               }}
-              title="Verified Pro Seller"
+              title={t("verifiedProSeller")}
             >
               <Check className="w-3 h-3" />
             </span>
@@ -257,15 +255,19 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-xs text-[#8a8280]">
             <span className="font-medium">
-              {shop.listing_count}{" "}
-              {shop.listing_count === 1 ? "listing" : "listings"}
+              {t("listingCount", { count: shop.listing_count })}
             </span>
             <span className="w-1 h-1 bg-[#ccc]" />
             <span>
-              Joined{" "}
-              {new Date(shop.created_at).toLocaleDateString("en-US", {
-                month: "short",
-                year: "numeric",
+              {t("joined", {
+                date: new Date(shop.created_at).toLocaleDateString(
+                  locale === "el"
+                    ? "el-GR"
+                    : locale === "ru"
+                      ? "ru-RU"
+                      : "en-US",
+                  { month: "short", year: "numeric" },
+                ),
               })}
             </span>
           </div>
@@ -279,6 +281,7 @@ function ShopCard({ shop }: { shop: ShopCardRow }) {
 /* ── Compact card for homepage featured section ───────────────────────────── */
 
 export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
+  const t = useTranslations("shops");
   const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);
   const gradientStart = isValidHex ? accentColor : "#8E7A6B";
@@ -355,8 +358,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
 
         <div className="flex items-center gap-1.5 text-[11px] text-[#8a8280] font-medium">
           <Package className="w-3 h-3" />
-          {shop.listing_count}{" "}
-          {shop.listing_count === 1 ? "listing" : "listings"}
+          {t("listingCount", { count: shop.listing_count })}
         </div>
       </div>
     </Link>

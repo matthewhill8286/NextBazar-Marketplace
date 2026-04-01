@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowRight, CreditCard, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 type Props = {

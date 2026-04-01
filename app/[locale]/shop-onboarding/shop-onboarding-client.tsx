@@ -1,9 +1,9 @@
 "use client";
 
 import { Loader2, Store } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "@/i18n/navigation";
 import ShopOnboardingWizard from "./shop-onboarding-wizard";
 
 interface Props {

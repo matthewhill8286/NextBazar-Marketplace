@@ -7,10 +7,15 @@ const ADMIN_EMAILS = ["matthill8286@gmail.com"];
  * Async server component that fetches profile data and renders the sidebar.
  * Wrapped in <Suspense> by the layout so it streams in without blocking.
  */
-export default async function SidebarServer({ userId }: { userId: string; userEmail: string }) {
+export default async function SidebarServer({
+  userId,
+}: {
+  userId: string;
+  userEmail: string;
+}) {
   const supabase = await createClient();
 
-  const [{ data: prof }, { data: shop }] = await Promise.all([
+  const [{ data: prof }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).single(),
     supabase
       .from("dealer_shops")

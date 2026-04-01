@@ -9,8 +9,8 @@ import {
   Ticket,
   X,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { PRO_SELLER_FEATURES } from "./pro-seller-features";
 
 type Props = {

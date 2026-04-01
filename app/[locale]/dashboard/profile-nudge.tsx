@@ -1,8 +1,9 @@
 "use client";
 
 import { ArrowRight, Camera, X } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,6 +13,7 @@ import { createClient } from "@/lib/supabase/client";
  * or until they dismiss it (stored in localStorage).
  */
 export default function ProfileNudge() {
+  const t = useTranslations("dashboard.profileNudge");
   const { userId } = useAuth();
   const [show, setShow] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -61,17 +63,14 @@ export default function ProfileNudge() {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-amber-900 mb-0.5">
-          Complete your profile to build trust
+          {t("title")}
         </p>
-        <p className="text-xs text-amber-700 leading-relaxed">
-          Sellers with a photo and bio get 3× more enquiries. Add yours now — it
-          only takes a minute.
-        </p>
+        <p className="text-xs text-amber-700 leading-relaxed">{t("desc")}</p>
         <Link
           href="/dashboard/settings"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 hover:text-amber-900 transition-colors mt-2"
         >
-          Complete your profile
+          {t("cta")}
           <ArrowRight className="w-3 h-3" />
         </Link>
       </div>

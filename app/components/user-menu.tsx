@@ -2,10 +2,10 @@
 
 import { ChevronDown, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
@@ -34,13 +34,16 @@ export default function UserMenu() {
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const currentLocale = pathname.startsWith("/el") ? "el" : "en";
+  const currentLocale = pathname.startsWith("/el")
+    ? "el"
+    : pathname.startsWith("/ru")
+      ? "ru"
+      : "en";
 
-  function switchLocale(locale: string) {
-    const strippedPath = pathname.replace(/^\/(en|el)(\/|$)/, "/");
-    const newPath = `/${locale}${strippedPath === "/" ? "" : strippedPath}`;
+  function switchLocale(newLocale: string) {
+    const strippedPath = pathname.replace(/^\/(en|el|ru)(\/|$)/, "/") || "/";
     setOpen(false);
-    router.push(newPath);
+    router.push(strippedPath, { locale: newLocale as "en" | "el" | "ru" });
   }
 
   // ── Load profile when auth user changes (no extra getUser() call) ────────
@@ -156,7 +159,7 @@ export default function UserMenu() {
               className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
             >
               <LayoutDashboard className="w-4 h-4 text-[#8a8280]" />
-              {tDash("overview")}
+              {tDash("nav.overview")}
             </Link>
             <Link
               href="/dashboard/settings"
@@ -164,7 +167,7 @@ export default function UserMenu() {
               className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
             >
               <Settings className="w-4 h-4 text-[#8a8280]" />
-              {tDash("settings")}
+              {tDash("nav.settings")}
             </Link>
           </div>
 
@@ -175,26 +178,25 @@ export default function UserMenu() {
                 Language
               </p>
               <div className="flex gap-1.5">
-                <button
-                  onClick={() => switchLocale("en")}
-                  className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
-                    currentLocale === "en"
-                      ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
-                      : "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3] hover:border-[#e8e6e3]"
-                  }`}
-                >
-                  🇬🇧 English
-                </button>
-                <button
-                  onClick={() => switchLocale("el")}
-                  className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
-                    currentLocale === "el"
-                      ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
-                      : "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3] hover:border-[#e8e6e3]"
-                  }`}
-                >
-                  🇨🇾 Ελληνικά
-                </button>
+                {(
+                  [
+                    { code: "en", label: "English" },
+                    { code: "el", label: "Ελληνικά" },
+                    { code: "ru", label: "Русский" },
+                  ] as const
+                ).map(({ code, label }) => (
+                  <button
+                    key={code}
+                    onClick={() => switchLocale(code)}
+                    className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
+                      currentLocale === code
+                        ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
+                        : "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3] hover:border-[#e8e6e3]"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
           )}

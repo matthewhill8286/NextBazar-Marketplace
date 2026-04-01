@@ -13,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -66,6 +67,7 @@ export default function PostStep3({
   onBackAction,
   onPublishAction,
 }: Props) {
+  const t = useTranslations("post");
   const category = categories.find((c) => c.id === formData.category_id);
   const location = locations.find((l) => l.id === formData.location_id);
   const firstImage = images.find((img) => img.preview);
@@ -91,11 +93,9 @@ export default function PostStep3({
           className="text-3xl font-light text-[#1a1a1a] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Review &amp; Publish
+          {t("step3.heading")}
         </h2>
-        <p className="text-sm text-[#6b6560]">
-          Choose how you want your listing to appear
-        </p>
+        <p className="text-sm text-[#6b6560]">{t("step3.subheading")}</p>
       </div>
 
       {/* ── Two-column layout: Preview (left) + Options (right) ── */}
@@ -104,7 +104,7 @@ export default function PostStep3({
         <div className="lg:sticky lg:top-8 space-y-3">
           <div className="flex items-center gap-2 text-[10px] font-medium tracking-[0.15em] uppercase text-[#8a8280]">
             <Eye className="w-3.5 h-3.5" />
-            Live Preview
+            {t("step3.livePreview")}
           </div>
 
           <div
@@ -147,14 +147,14 @@ export default function PostStep3({
               {/* Featured badge */}
               {selectedPackage === "featured" && (
                 <span className="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-medium tracking-[0.15em] uppercase px-3 py-1.5 shadow-sm flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3" /> Featured
+                  <Sparkles className="w-3 h-3" /> {t("step3.featured")}
                 </span>
               )}
 
               {/* Boost badge */}
               {selectedPackage === "urgent" && (
                 <span className="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-medium tracking-[0.15em] uppercase px-3 py-1.5 shadow-sm flex items-center gap-1.5">
-                  <Zap className="w-3 h-3" /> Boosted
+                  <Zap className="w-3 h-3" /> {t("step3.boosted")}
                 </span>
               )}
 
@@ -169,7 +169,8 @@ export default function PostStep3({
                 </span>
                 {video?.url && (
                   <span className="flex items-center gap-1">
-                    <Video className="w-3 h-3" /> 1
+                    <Video className="w-3 h-3" />{" "}
+                    {t("step3.videoTour").split(" ")[0] === "Video" ? "1" : "1"}
                   </span>
                 )}
               </div>
@@ -228,11 +229,11 @@ export default function PostStep3({
                 >
                   {formData.price
                     ? `\u20AC${Number(formData.price).toLocaleString()}`
-                    : "Contact for price"}
+                    : t("step3.contactForPrice")}
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-[#8a8280]">
                   <Clock className="w-3 h-3" />
-                  Just now
+                  {t("step3.just_now")}
                 </span>
               </div>
             </div>
@@ -252,10 +253,10 @@ export default function PostStep3({
           {/* Package visual hint */}
           <p className="text-center text-[11px] text-[#8a8280] mt-1 min-h-[1rem]">
             {selectedPackage === "featured"
-              ? "Your listing will appear at the top of search results with a golden highlight"
+              ? t("step3.featuredHint")
               : selectedPackage === "urgent"
-                ? "Your listing will stand out with a boost badge and priority placement"
-                : "Standard appearance — visible in search results for 30 days"}
+                ? t("step3.boostedHint")
+                : t("step3.standardHint")}
           </p>
         </div>
 
@@ -286,10 +287,10 @@ export default function PostStep3({
                 </div>
                 <div>
                   <div className="font-medium text-[#1a1a1a] text-sm">
-                    Free Listing
+                    {t("step3.freeListing")}
                   </div>
                   <div className="text-xs text-[#6b6560]">
-                    Standard visibility for 30 days
+                    {t("step3.standardVisibility")}
                   </div>
                 </div>
               </div>
@@ -297,7 +298,7 @@ export default function PostStep3({
                 className="font-light text-[#1a1a1a] shrink-0"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                Free
+                {t("step3.free")}
               </div>
             </div>
           </button>
@@ -313,7 +314,7 @@ export default function PostStep3({
             }`}
           >
             <div className="absolute -top-2.5 right-4 bg-[#8E7A6B] text-white text-[9px] font-medium tracking-[0.15em] uppercase px-3 py-0.5">
-              Popular
+              {t("step3.popular")}
             </div>
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -330,11 +331,10 @@ export default function PostStep3({
                 </div>
                 <div>
                   <div className="font-medium text-[#1a1a1a] text-sm">
-                    Featured Listing
+                    {t("step3.featuredListing")}
                   </div>
                   <div className="text-xs text-[#6b6560]">
-                    Top placement + highlighted badge for 7 days — up to 5x more
-                    views
+                    {t("step3.featuredListingHint")}
                   </div>
                 </div>
               </div>
@@ -372,11 +372,10 @@ export default function PostStep3({
                 </div>
                 <div>
                   <div className="font-medium text-[#1a1a1a] text-sm">
-                    Quick Boost
+                    {t("step3.quickBoost")}
                   </div>
                   <div className="text-xs text-[#6b6560]">
-                    Boosted visibility + priority in search for 3 days — up to
-                    3x more views
+                    {t("step3.quickBoostHint")}
                   </div>
                 </div>
               </div>
@@ -395,14 +394,14 @@ export default function PostStep3({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-[#1a1a1a] text-sm">
-                    Video Tour
+                    {t("step3.videoTour")}
                   </p>
                   <p className="text-xs text-[#6b6560] mt-0.5">
-                    Add a short video — included with your paid listing
+                    {t("step3.videoTourHint")}
                   </p>
                 </div>
                 <span className="text-[9px] font-medium bg-[#8E7A6B] text-white tracking-[0.15em] uppercase px-2.5 py-0.5">
-                  Included
+                  {t("step3.included")}
                 </span>
               </div>
               <VideoUpload
@@ -420,7 +419,7 @@ export default function PostStep3({
               onClick={onBackAction}
               className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back
+              <ArrowLeft className="w-3.5 h-3.5" /> {t("step3.back")}
             </button>
             <button
               type="button"
@@ -437,19 +436,18 @@ export default function PostStep3({
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : selectedPackage === "free" ? (
-                "Publish Listing"
+                t("step3.publishListing")
               ) : selectedPackage === "featured" ? (
-                `Publish & Feature — ${pricing.featured.price}`
+                t("step3.publishAndFeature", { price: pricing.featured.price })
               ) : (
-                `Publish & Boost — ${pricing.urgent.price}`
+                t("step3.publishAndBoost", { price: pricing.urgent.price })
               )}
             </button>
           </div>
 
           {selectedPackage !== "free" && (
             <p className="text-center text-xs text-[#8a8280]">
-              Your listing will be published, then pay to activate your
-              promotion.
+              {t("step3.paymentNote")}
             </p>
           )}
         </div>

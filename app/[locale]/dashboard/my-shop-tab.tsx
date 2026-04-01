@@ -1,10 +1,10 @@
 "use client";
 
 import { CreditCard, ExternalLink, Loader2, Store } from "lucide-react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";

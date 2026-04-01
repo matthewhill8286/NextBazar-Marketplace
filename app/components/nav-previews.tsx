@@ -2,7 +2,6 @@
 
 import { Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   type ReactNode,
@@ -11,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { Link } from "@/i18n/navigation";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";

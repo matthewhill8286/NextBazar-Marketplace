@@ -17,14 +17,15 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import { ConfirmDialog, EmptyState } from "@/app/components/ui";
+import { Link } from "@/i18n/navigation";
 import { LISTING_ACTIVE_MS } from "@/lib/constants";
 import {
   expiryBadge,
@@ -37,13 +38,6 @@ import type { DashboardListing } from "@/lib/supabase/supabase.types";
 
 /** Re-export so dashboard/page.tsx can import the canonical type. */
 export type { DashboardListing as Listing };
-
-const TABS = [
-  { key: "active", label: "Active" },
-  { key: "sold", label: "Sold" },
-  { key: "expired", label: "Expired" },
-  { key: "draft", label: "Drafts" },
-];
 
 /** Returns true when an active listing expires within 1 day. */
 function expiresSoon(expiresAt: string | null, status: string): boolean {
@@ -63,7 +57,15 @@ export default function ListingsClient({
 }) {
   const supabase = createClient();
   const searchParams = useSearchParams();
+  const t = useTranslations("dashboard.listings");
   const validTabs = ["active", "sold", "expired", "draft"];
+
+  const TABS = [
+    { key: "active", label: t("active") },
+    { key: "sold", label: t("sold") },
+    { key: "expired", label: t("expired") },
+    { key: "draft", label: t("drafts") },
+  ];
 
   function tabFromParams() {
     const t = searchParams.get("tab") ?? "";
@@ -146,13 +148,13 @@ export default function ListingsClient({
       .update({ status })
       .eq("id", id);
     if (error) {
-      toast.error("Failed to update listing status.");
+      toast.error(t("toastStatusError"));
     } else {
       setListings((prev) =>
         prev.map((l) => (l.id === id ? { ...l, status } : l)),
       );
       toast.success(
-        status === "sold" ? "Listing marked as sold" : "Listing status updated",
+        status === "sold" ? t("toastMarkedSold") : t("toastStatusUpdated"),
       );
     }
     setOpenMenu(null);
@@ -163,10 +165,10 @@ export default function ListingsClient({
     setLoadingAction(id);
     const { error } = await supabase.from("listings").delete().eq("id", id);
     if (error) {
-      toast.error("Failed to delete listing.");
+      toast.error(t("toastDeleteError"));
     } else {
       setListings((prev) => prev.filter((l) => l.id !== id));
-      toast.success("Listing deleted");
+      toast.success(t("toastDeleted"));
     }
     setOpenMenu(null);
     setLoadingAction(null);
@@ -256,7 +258,7 @@ export default function ListingsClient({
       })
       .eq("id", id);
     if (error) {
-      toast.error("Failed to renew listing.");
+      toast.error(t("toastRenewError"));
     } else {
       setListings((prev) =>
         prev.map((l) =>
@@ -265,7 +267,7 @@ export default function ListingsClient({
             : l,
         ),
       );
-      toast.success("Listing renewed for 30 days");
+      toast.success(t("toastRenewed"));
       if (tab === "expired") setTab("active");
     }
     setOpenMenu(null);
@@ -290,12 +292,10 @@ export default function ListingsClient({
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
     const { error } = await supabase.from("listings").delete().in("id", ids);
     if (error) {
-      toast.error("Failed to delete listings.");
+      toast.error(t("toastBulkDeleteError"));
     } else {
       setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} deleted`,
-      );
+      toast.success(t("toastBulkDeleted", { count: ids.length }));
     }
     clearSelection();
     setShowDeleteConfirm(false);
@@ -310,14 +310,12 @@ export default function ListingsClient({
       .update({ status: "sold" })
       .in("id", ids);
     if (error) {
-      toast.error("Failed to update listings.");
+      toast.error(t("toastBulkSoldError"));
     } else {
       setListings((prev) =>
         prev.map((l) => (ids.includes(l.id) ? { ...l, status: "sold" } : l)),
       );
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} marked as sold`,
-      );
+      toast.success(t("toastBulkSoldSuccess", { count: ids.length }));
       setTab("sold");
     }
     clearSelection();
@@ -374,9 +372,7 @@ export default function ListingsClient({
     }
 
     setListings((prev) => [...newListings, ...prev]);
-    toast.success(
-      `${newListings.length} listing${newListings.length !== 1 ? "s" : ""} relisted`,
-    );
+    toast.success(t("toastBulkRelistSuccess", { count: newListings.length }));
     clearSelection();
     setBulkLoading(false);
     setTab("active");
@@ -395,7 +391,7 @@ export default function ListingsClient({
       })
       .in("id", ids);
     if (error) {
-      toast.error("Failed to renew listings.");
+      toast.error(t("toastBulkRenewError"));
     } else {
       setListings((prev) =>
         prev.map((l) =>
@@ -404,9 +400,7 @@ export default function ListingsClient({
             : l,
         ),
       );
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} renewed`,
-      );
+      toast.success(t("toastBulkRenewSuccess", { count: ids.length }));
       setTab("active");
     }
     clearSelection();
@@ -422,7 +416,7 @@ export default function ListingsClient({
       .update({ status: "active", expires_at: newExpiresAt })
       .in("id", ids);
     if (error) {
-      toast.error("Failed to reactivate listings.");
+      toast.error(t("toastBulkReactivateError"));
     } else {
       setListings((prev) =>
         prev.map((l) =>
@@ -431,9 +425,7 @@ export default function ListingsClient({
             : l,
         ),
       );
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} reactivated`,
-      );
+      toast.success(t("toastBulkReactivateSuccess", { count: ids.length }));
       setTab("active");
     }
     clearSelection();
@@ -476,7 +468,7 @@ export default function ListingsClient({
       {isProSeller && selectedInTab.length > 0 && (
         <div className="flex items-center gap-3 px-4 py-3 bg-[#faf9f7] border border-[#e8e6e3] ">
           <span className="text-sm font-medium text-[#1a1a1a]">
-            {selectedInTab.length} selected
+            {t("selected", { count: selectedInTab.length })}
           </span>
           <div className="flex items-center gap-2 ml-auto flex-wrap">
             {tab === "expired" && (
@@ -491,7 +483,7 @@ export default function ListingsClient({
                   ) : (
                     <Clock className="w-3 h-3" />
                   )}
-                  Renew All
+                  {t("renewAll")}
                 </button>
                 <button
                   onClick={bulkRelist}
@@ -564,7 +556,7 @@ export default function ListingsClient({
                 className="flex items-center gap-2 text-xs text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
               >
                 <SelectIcon className="w-4 h-4" />
-                {allSelected ? "Deselect all" : "Select all"}
+                {allSelected ? t("deselectAll") : t("selectAll")}
               </button>
             </div>
           )}
@@ -932,9 +924,9 @@ export default function ListingsClient({
       {/* Bulk delete confirmation */}
       <ConfirmDialog
         open={showDeleteConfirm}
-        title={`Delete ${selectedInTab.length} listing${selectedInTab.length !== 1 ? "s" : ""}?`}
-        description="This action is permanent and cannot be undone."
-        confirmLabel="Delete"
+        title={t("confirmDeleteBulkTitle", { count: selectedInTab.length })}
+        description={t("confirmDeleteDesc")}
+        confirmLabel={t("delete")}
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={bulkLoading}
         onConfirm={bulkDelete}
@@ -944,9 +936,9 @@ export default function ListingsClient({
       {/* Single-item: Delete */}
       <ConfirmDialog
         open={confirmAction?.type === "delete"}
-        title="Delete listing?"
-        description={`"${confirmAction?.listingTitle}" will be permanently removed. This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t("confirmDeleteTitle")}
+        description={t("confirmDeleteDesc")}
+        confirmLabel={t("delete")}
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
@@ -956,9 +948,9 @@ export default function ListingsClient({
       {/* Single-item: Mark as Sold */}
       <ConfirmDialog
         open={confirmAction?.type === "sold"}
-        title="Mark as sold?"
-        description={`"${confirmAction?.listingTitle}" will be moved to your sold listings and will no longer be visible to buyers.`}
-        confirmLabel="Mark as Sold"
+        title={t("confirmSoldTitle")}
+        description={t("confirmSoldDesc")}
+        confirmLabel={t("markSold")}
         confirmClassName="bg-green-600 hover:bg-green-700"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
@@ -968,9 +960,9 @@ export default function ListingsClient({
       {/* Single-item: Renew */}
       <ConfirmDialog
         open={confirmAction?.type === "renew"}
-        title="Renew listing?"
-        description={`"${confirmAction?.listingTitle}" will be renewed for another 30 days.`}
-        confirmLabel="Renew"
+        title={t("confirmRenewTitle")}
+        description={t("confirmRenewDesc")}
+        confirmLabel={t("renew")}
         confirmClassName="bg-[#2C2826] hover:bg-[#3D3633]"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
@@ -980,9 +972,9 @@ export default function ListingsClient({
       {/* Single-item: Reactivate */}
       <ConfirmDialog
         open={confirmAction?.type === "reactivate"}
-        title="Reactivate listing?"
-        description={`"${confirmAction?.listingTitle}" will be moved back to your active listings and visible to buyers again.`}
-        confirmLabel="Reactivate"
+        title={t("confirmReactivateTitle")}
+        description={t("confirmReactivateDesc")}
+        confirmLabel={t("reactivate")}
         confirmClassName="bg-[#2C2826] hover:bg-[#3D3633]"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}

@@ -1,12 +1,15 @@
 "use client";
 
 import { Loader2, Lock, Mail } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ErrorBanner } from "@/app/components/ui";
+import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginForm() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -73,7 +76,7 @@ export default function LoginForm() {
             fill="#EA4335"
           />
         </svg>
-        Continue with Google
+        {t("continueWithGoogle")}
       </button>
 
       <div className="relative mb-6">
@@ -82,7 +85,7 @@ export default function LoginForm() {
         </div>
         <div className="relative flex justify-center text-xs">
           <span className="bg-white px-3 text-[#8a8280]">
-            or sign in with email
+            {t("orSignInWithEmail")}
           </span>
         </div>
       </div>
@@ -92,7 +95,7 @@ export default function LoginForm() {
 
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
-            Email
+            {t("email")}
           </label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
@@ -100,7 +103,7 @@ export default function LoginForm() {
               type="email"
               required
               className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
-              placeholder="you@example.com"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -109,7 +112,7 @@ export default function LoginForm() {
 
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
-            Password
+            {t("password")}
           </label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
@@ -117,7 +120,7 @@ export default function LoginForm() {
               type="password"
               required
               className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
-              placeholder="Your password"
+              placeholder={t("passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -129,7 +132,7 @@ export default function LoginForm() {
           disabled={loading}
           className="w-full bg-[#2C2826] text-white py-3 font-semibold hover:bg-[#3D3633] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm shadow-[#e8e6e3]"
         >
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign In"}
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t("signIn")}
         </button>
       </form>
     </div>

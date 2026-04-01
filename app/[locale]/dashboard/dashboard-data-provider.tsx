@@ -1,5 +1,5 @@
-import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import { createClient } from "@/lib/supabase/server";
+import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import DashboardShell from "./dashboard-shell";
 
 const LISTING_SELECT = `

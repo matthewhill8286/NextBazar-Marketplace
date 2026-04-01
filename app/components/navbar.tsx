@@ -2,9 +2,9 @@
 
 import { Bell, Heart, MessageCircle, Plus, Search, Store } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
@@ -85,13 +85,13 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href="/" className="shrink-0 flex items-center gap-3">
+        <Link href="/" className="shrink-0">
           <Image
-            src="/nextbazar-logo.svg"
+            src="/nextbazar-logo-beta.svg"
             alt="NextBazar"
             width={180}
             height={55}
-            style={{ width: "auto", height: "auto" }}
+            style={{ width: 180, height: 55 }}
             priority
             className="hidden md:block h-9 w-auto"
           />
@@ -100,13 +100,10 @@ export default function Navbar() {
             alt="NextBazar"
             width={40}
             height={40}
-            style={{ width: "auto", height: "auto" }}
+            style={{ width: 40, height: 40 }}
             priority
             className="md:hidden h-9 w-9"
           />
-          <span className="text-[8px] font-medium uppercase tracking-[0.2em] text-[#6b6560] border border-[#ddd] px-2 py-0.5">
-            Beta
-          </span>
         </Link>
 
         {/* Global search */}
@@ -168,7 +165,7 @@ export default function Navbar() {
             </NavPreviewWrapper>
           )}
 
-          {/* Post Ad CTA */}
+          {/* Post-Ad CTA */}
           <Link
             href="/post"
             className="bg-[#8E7A6B] text-white px-5 py-2.5 text-[10px] font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center gap-2 ml-2"
@@ -177,7 +174,7 @@ export default function Navbar() {
             <span className="hidden sm:inline">{t("postAd")}</span>
           </Link>
 
-          <div className="ml-3">
+          <div className="ml-1">
             <UserMenu />
           </div>
         </div>

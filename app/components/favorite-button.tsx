@@ -1,10 +1,12 @@
 "use client";
 
 import { Heart } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useSaved } from "@/lib/saved-context";
 
 export default function FavoriteButton({ listingId }: { listingId: string }) {
+  const t = useTranslations("favorite");
   const { isSaved, toggle } = useSaved();
   const [animating, setAnimating] = useState(false);
   const saved = isSaved(listingId);
@@ -19,7 +21,7 @@ export default function FavoriteButton({ listingId }: { listingId: string }) {
 
   return (
     <button
-      aria-label={saved ? "Remove from saved" : "Save listing"}
+      aria-label={saved ? t("removeFromSaved") : t("saveListing")}
       className="absolute top-2.5 right-2.5 p-2 bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors z-10"
       onClick={handleClick}
     >

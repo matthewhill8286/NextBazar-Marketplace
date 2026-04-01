@@ -2,10 +2,12 @@
 
 import { ArrowRight, X } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { useCompare } from "@/lib/compare-context";
 
 export default function CompareBar() {
+  const t = useTranslations("compare");
   const { items, remove, clear } = useCompare();
   const router = useRouter();
 
@@ -17,7 +19,7 @@ export default function CompareBar() {
     <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#e8e6e3] shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
         <span className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide shrink-0 hidden sm:block">
-          Compare
+          {t("label")}
         </span>
 
         {/* Slots */}
@@ -50,7 +52,7 @@ export default function CompareBar() {
                   type="button"
                   onClick={() => remove(listing.id)}
                   className="shrink-0 p-0.5 hover:bg-[#f0eeeb] text-[#8a8280] hover:text-[#666] transition-colors"
-                  aria-label="Remove from comparison"
+                  aria-label={t("removeFromComparison")}
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -61,8 +63,7 @@ export default function CompareBar() {
                 className="flex-1 max-w-50 h-13 border-2 border-dashed border-[#e8e6e3] flex items-center justify-center hidden sm:flex"
               >
                 <span className="text-xs text-[#8a8280]">
-                  {3 - items.length} slot{3 - items.length !== 1 ? "s" : ""}{" "}
-                  left
+                  {t("slotsLeft", { count: 3 - items.length })}
                 </span>
               </div>
             ),
@@ -76,7 +77,7 @@ export default function CompareBar() {
             onClick={clear}
             className="text-xs text-[#8a8280] hover:text-[#666] transition-colors px-2 py-1 hover:bg-[#f0eeeb]"
           >
-            Clear
+            {t("clear")}
           </button>
           <button
             type="button"
@@ -86,7 +87,7 @@ export default function CompareBar() {
             disabled={items.length < 2}
             className="flex items-center gap-1.5 px-4 py-2 bg-[#2C2826] text-white text-sm font-semibold hover:bg-[#3D3633] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Compare {items.length}
+            {t("compareButton", { count: items.length })}
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>

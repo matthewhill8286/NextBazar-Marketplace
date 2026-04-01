@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import ListingCard from "@/app/components/listing-card";
@@ -9,6 +10,7 @@ import { CARD_SELECT } from "@/lib/supabase/selects";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 export default function RecentlyViewedSection() {
+  const t = useTranslations("home.recentlyViewed");
   const supabase = createClient();
   const [recentlyViewed, setRecentlyViewed] = useState<ListingCardRow[]>([]);
 
@@ -48,13 +50,13 @@ export default function RecentlyViewedSection() {
         <div>
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4 flex items-center gap-1.5">
             <Clock className="w-3 h-3" />
-            Your history
+            {t("badge")}
           </p>
           <h2
             className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Recently Viewed
+            {t("title")}
           </h2>
         </div>
         <button
@@ -67,7 +69,7 @@ export default function RecentlyViewedSection() {
           }}
           className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
         >
-          Clear history
+          {t("clear")}
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

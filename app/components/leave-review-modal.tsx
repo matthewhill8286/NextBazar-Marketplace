@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle, Loader2, Star, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -21,6 +22,7 @@ export default function LeaveReviewModal({
   onCloseAction,
   onReviewedAction,
 }: Props) {
+  const t = useTranslations("leaveReview");
   const supabase = createClient();
   const [rating, setRating] = useState(0);
   const [hovered, setHovered] = useState(0);
@@ -29,7 +31,14 @@ export default function LeaveReviewModal({
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
 
-  const LABELS = ["", "Poor", "Fair", "Good", "Great", "Excellent"];
+  const LABELS = [
+    "",
+    t("ratingPoor"),
+    t("ratingFair"),
+    t("ratingGood"),
+    t("ratingGreat"),
+    t("ratingExcellent"),
+  ];
 
   async function submit() {
     if (!rating) return;
@@ -80,9 +89,9 @@ export default function LeaveReviewModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-[#e8e6e3]">
           <div>
-            <h2 className="text-lg font-bold text-[#1a1a1a]">Leave a Review</h2>
+            <h2 className="text-lg font-bold text-[#1a1a1a]">{t("title")}</h2>
             <p className="text-sm text-[#6b6560] mt-0.5">
-              How was your experience with {revieweeName}?
+              {t("subtitle", { name: revieweeName })}
             </p>
           </div>
           <button
@@ -97,10 +106,10 @@ export default function LeaveReviewModal({
           {done ? (
             <div className="flex flex-col items-center gap-3 py-6 text-center">
               <CheckCircle className="w-12 h-12 text-green-500" />
-              <p className="font-semibold text-[#1a1a1a]">Review submitted!</p>
-              <p className="text-sm text-[#6b6560]">
-                Thanks for your feedback.
+              <p className="font-semibold text-[#1a1a1a]">
+                {t("successTitle")}
               </p>
+              <p className="text-sm text-[#6b6560]">{t("successMessage")}</p>
             </div>
           ) : (
             <div className="space-y-5">
@@ -130,15 +139,17 @@ export default function LeaveReviewModal({
                     rating ? "text-amber-600" : "text-[#8a8280]"
                   }`}
                 >
-                  {LABELS[hovered || rating] || "Tap to rate"}
+                  {LABELS[hovered || rating] || t("tapToRate")}
                 </span>
               </div>
 
               {/* Comment */}
               <div>
                 <label className="block text-sm font-medium text-[#666] mb-1.5">
-                  Comment{" "}
-                  <span className="text-[#8a8280] font-normal">(optional)</span>
+                  {t("commentLabel")}{" "}
+                  <span className="text-[#8a8280] font-normal">
+                    {t("optional")}
+                  </span>
                 </label>
                 <textarea
                   rows={3}
@@ -167,7 +178,7 @@ export default function LeaveReviewModal({
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  "Submit Review"
+                  t("submitReview")
                 )}
               </button>
             </div>
