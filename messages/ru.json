@@ -1147,6 +1147,10 @@
     "billing": "Биллинг",
     "tabOverview": "Обзор",
     "tabBranding": "Брендинг",
-    "tabInventory": "Инвентарь"
+    "tabInventory": "Инвентарь",
+    "tabSales": "Продажи",
+    "tabOffers": "Предложения",
+    "tabMessages": "Сообщения",
+    "tabAnalytics": "Аналитика"
   }
 }

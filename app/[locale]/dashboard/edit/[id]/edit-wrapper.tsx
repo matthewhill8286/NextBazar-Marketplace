@@ -6,7 +6,13 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import EditClient from "./edit-client";
 
-export default function EditWrapper({ listingId }: { listingId: string }) {
+export default function EditWrapper({
+  listingId,
+  backHref = "/dashboard/listings",
+}: {
+  listingId: string;
+  backHref?: string;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const [listing, setListing] = useState<any>(null);
@@ -69,7 +75,7 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
         <div className="text-4xl mb-3">🔍</div>
         <p className="text-[#6b6560] mb-4">Listing not found</p>
         <Link
-          href="/dashboard/listings"
+          href={backHref}
           className="text-[#8E7A6B] font-medium hover:underline"
         >
           Back to listings
@@ -78,5 +84,5 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
     );
   }
 
-  return <EditClient listing={listing} />;
+  return <EditClient listing={listing} backHref={backHref} />;
 }

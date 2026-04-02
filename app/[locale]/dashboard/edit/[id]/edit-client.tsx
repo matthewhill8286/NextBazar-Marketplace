@@ -28,7 +28,13 @@ type ListingData = {
   images: { id: string; url: string; sort_order: number }[];
 };
 
-export default function EditClient({ listing }: { listing: ListingData }) {
+export default function EditClient({
+  listing,
+  backHref = "/dashboard/listings",
+}: {
+  listing: ListingData;
+  backHref?: string;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const { categories, locations } = useReferenceData();
@@ -169,14 +175,14 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
     toast.success("Listing updated successfully!");
     setLoading(false);
-    router.push("/dashboard/listings");
+    router.push(backHref);
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link
-          href="/dashboard/listings"
+          href={backHref}
           className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -384,7 +390,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
             Save Changes
           </button>
           <Link
-            href="/dashboard/listings"
+            href={backHref}
             className="px-6 py-3 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors"
           >
             Cancel

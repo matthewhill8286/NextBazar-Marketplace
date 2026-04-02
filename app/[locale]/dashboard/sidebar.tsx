@@ -154,10 +154,10 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         {FEATURE_FLAGS.DEALERS &&
           (profile.is_pro_seller ? (
             <Link
-              href="/dashboard/shop"
+              href="/shop-manager"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
-                pathname === "/dashboard/shop"
+                pathname.startsWith("/shop-manager")
                   ? "bg-[#f0eeeb] text-[#1a1a1a]"
                   : "text-[#6b6560] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}

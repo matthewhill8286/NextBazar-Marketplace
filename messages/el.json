@@ -1106,7 +1106,11 @@
     "billing": "Χρέωση",
     "tabOverview": "Επισκόπηση",
     "tabBranding": "Branding",
-    "tabInventory": "Ευθύνη"
+    "tabInventory": "Ευθύνη",
+    "tabSales": "Πωλήσεις",
+    "tabOffers": "Προσφορές",
+    "tabMessages": "Μηνύματα",
+    "tabAnalytics": "Αναλυτικά"
   },
   "about": {
     "hero": {

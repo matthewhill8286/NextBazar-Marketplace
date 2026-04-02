@@ -13,21 +13,26 @@ export async function proxy(request: NextRequest) {
   const isApi = pathname.startsWith("/api");
   const isStatic = /\.(svg|png|jpg|jpeg|gif|webp|ico|css|js)$/.test(pathname);
 
+  // Run next-intl middleware first to resolve locale headers & redirects
+  let intlResponse: NextResponse | undefined;
   if (!isApi && !isStatic) {
-    const intlResponse = intlMiddleware(request);
+    intlResponse = intlMiddleware(request);
+    // If intl wants to redirect, return immediately
     if (
       intlResponse &&
       (intlResponse.status === 301 ||
         intlResponse.status === 302 ||
-        intlResponse.status === 307 ||
-        intlResponse.headers.has("x-middleware-rewrite"))
+        intlResponse.status === 307)
     ) {
       return intlResponse;
     }
   }
 
   // ── Supabase session refresh ──────────────────────────────────────────────
-  let supabaseResponse = NextResponse.next({ request });
+  // Start from the intl response so locale headers (x-next-intl-locale etc.)
+  // are preserved — this is what allows server-component <Link> to resolve
+  // the current locale correctly.
+  let supabaseResponse = intlResponse ?? NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,7 +46,15 @@ export async function proxy(request: NextRequest) {
           for (const { name, value } of cookiesToSet) {
             request.cookies.set(name, value);
           }
-          supabaseResponse = NextResponse.next({ request });
+          // Rebuild the response but preserve intl headers so locale
+          // context survives into server components.
+          const fresh = NextResponse.next({ request });
+          if (intlResponse) {
+            intlResponse.headers.forEach((v, k) => {
+              fresh.headers.set(k, v);
+            });
+          }
+          supabaseResponse = fresh;
           for (const { name, value, options } of cookiesToSet) {
             supabaseResponse.cookies.set(name, value, options);
           }
