@@ -159,14 +159,16 @@ export default function UserMenu() {
 
           {/* Navigation */}
           <div className="py-1 border-b border-[#e8e6e3]">
-            <Link
-              href="/dashboard"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
-            >
-              <LayoutDashboard className="w-4 h-4 text-[#8a8280]" />
-              {tDash("nav.overview")}
-            </Link>
+            {!(user.is_pro_seller && FEATURE_FLAGS.DEALERS) && (
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
+              >
+                <LayoutDashboard className="w-4 h-4 text-[#8a8280]" />
+                {tDash("nav.overview")}
+              </Link>
+            )}
             {user.is_pro_seller && FEATURE_FLAGS.DEALERS && (
               <Link
                 href="/shop-manager"

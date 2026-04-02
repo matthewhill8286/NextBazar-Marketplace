@@ -67,6 +67,17 @@ export default function ShopDataLoader({
     setLoading(false);
   }, [userId, supabase]);
 
+  /** Soft refresh — re-fetches listings only, no skeleton flash */
+  const refreshListings = useCallback(async () => {
+    if (!userId) return;
+    const { data } = await supabase
+      .from("listings")
+      .select(LISTING_SELECT)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+    if (data) setListings(data as unknown as ListingRow[]);
+  }, [userId, supabase]);
+
   useEffect(() => {
     if (!authLoading && userId) load();
   }, [authLoading, userId, load]);
@@ -80,6 +91,7 @@ export default function ShopDataLoader({
         userId: userId ?? "",
         loading: authLoading || loading,
         refresh: load,
+        refreshListings,
       }}
     >
       {children}

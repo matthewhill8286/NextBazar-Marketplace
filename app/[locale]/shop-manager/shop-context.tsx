@@ -12,8 +12,10 @@ export type ShopCMSData = {
   profile: { display_name: string | null; is_pro_seller: boolean } | null;
   userId: string;
   loading: boolean;
-  /** Re-fetch shop + listings after mutations */
+  /** Re-fetch everything (shows skeleton) */
   refresh: () => void;
+  /** Re-fetch listings only without showing skeleton */
+  refreshListings: () => Promise<void>;
 };
 
 const ShopCMSContext = createContext<ShopCMSData>({
@@ -23,6 +25,7 @@ const ShopCMSContext = createContext<ShopCMSData>({
   userId: "",
   loading: true,
   refresh: () => {},
+  refreshListings: () => Promise.resolve(),
 });
 
 export const ShopCMSProvider = ShopCMSContext.Provider;

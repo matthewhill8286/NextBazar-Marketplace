@@ -2,7 +2,6 @@
 
 import clsx from "clsx";
 import {
-  ArrowLeft,
   BarChart2,
   CreditCard,
   DollarSign,
@@ -61,15 +60,6 @@ export default function ShopSidebar() {
 
   return (
     <aside className="shrink-0 w-full lg:w-[240px]">
-      {/* Back to Dashboard */}
-      <Link
-        href="/dashboard"
-        className="flex items-center gap-2 text-xs font-medium text-[#8a8280] hover:text-[#1a1a1a] transition-colors mb-3 px-1"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" />
-        Back to Dashboard
-      </Link>
-
       {/* Shop identity card */}
       <div className="bg-white border border-[#e8e6e3] p-4 mb-3">
         <div className="flex items-center gap-3">

@@ -1,17 +1,25 @@
 "use client";
 
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Check,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Edit3,
   FileSpreadsheet,
+  Loader2,
+  Minus,
   Plus,
   ShoppingBag,
+  X,
 } from "lucide-react";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 
 import { createClient } from "@/lib/supabase/client";
@@ -21,44 +29,262 @@ import { STATUS_BADGE } from "./types";
 
 const PAGE_SIZES = [10, 25, 50] as const;
 
+type SortKey =
+  | "title"
+  | "status"
+  | "price"
+  | "view_count"
+  | "favorite_count"
+  | "created_at";
+type SortDir = "asc" | "desc";
+
 type Props = {
   listings: ListingRow[];
   editBaseHref?: string;
+  /** Href for the "Add Inventory" / "New Listing" button */
+  newListingHref?: string;
+  /** Label for the new-listing button */
+  newListingLabel?: string;
+  /** Called after mutations to re-fetch listing data */
+  onRefresh?: () => void | Promise<void>;
 };
+
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  if (!active)
+    return (
+      <ArrowUpDown className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+    );
+  return dir === "asc" ? (
+    <ArrowUp className="w-3 h-3 text-[#8E7A6B]" />
+  ) : (
+    <ArrowDown className="w-3 h-3 text-[#8E7A6B]" />
+  );
+}
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+}
+
+// ── Checkbox component ──────────────────────────────────────────────────────
+function Checkbox({
+  checked,
+  indeterminate,
+  onChange,
+  disabled,
+}: {
+  checked: boolean;
+  indeterminate?: boolean;
+  onChange: () => void;
+  disabled?: boolean;
+}) {
+  const isOn = checked || indeterminate;
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={indeterminate ? "mixed" : checked}
+      onClick={onChange}
+      disabled={disabled}
+      className={`w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0 ${
+        isOn
+          ? "bg-[#8E7A6B] border-[#8E7A6B] text-white"
+          : "border-[#c5c0bb] bg-white hover:border-[#8E7A6B]"
+      } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+    >
+      {indeterminate && <Minus className="w-3 h-3" strokeWidth={3} />}
+      {checked && !indeterminate && (
+        <Check className="w-3 h-3" strokeWidth={3} />
+      )}
+    </button>
+  );
+}
 
 export default function InventoryTab({
   listings,
   editBaseHref = "/dashboard/edit",
+  newListingHref = "/post",
+  newListingLabel = "New Listing",
+  onRefresh,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
   const [showImport, setShowImport] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
+  const [sortKey, setSortKey] = useState<SortKey>("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [bulkAction, setBulkAction] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  const totalPages = Math.max(1, Math.ceil(listings.length / pageSize));
+  // ── Sort ──────────────────────────────────────────────────────────────────
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "title" || key === "status" ? "asc" : "desc");
+    }
+    setPage(1);
+  }
 
-  // Reset to page 1 when listings change or page size changes
+  const sorted = useMemo(() => {
+    const copy = [...listings];
+    copy.sort((a, b) => {
+      let cmp = 0;
+      switch (sortKey) {
+        case "title":
+          cmp = a.title.localeCompare(b.title);
+          break;
+        case "status":
+          cmp = a.status.localeCompare(b.status);
+          break;
+        case "price":
+          cmp = (a.price ?? -1) - (b.price ?? -1);
+          break;
+        case "view_count":
+          cmp = a.view_count - b.view_count;
+          break;
+        case "favorite_count":
+          cmp = a.favorite_count - b.favorite_count;
+          break;
+        case "created_at":
+          cmp =
+            new Date(a.created_at).getTime() -
+            new Date(b.created_at).getTime();
+          break;
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return copy;
+  }, [listings, sortKey, sortDir]);
+
+  // ── Pagination ────────────────────────────────────────────────────────────
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
   const safeP = Math.min(page, totalPages);
 
   const paginated = useMemo(() => {
     const start = (safeP - 1) * pageSize;
-    return listings.slice(start, start + pageSize);
-  }, [listings, safeP, pageSize]);
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, safeP, pageSize]);
 
-  const rangeStart = (safeP - 1) * pageSize + 1;
-  const rangeEnd = Math.min(safeP * pageSize, listings.length);
+  const rangeStart = sorted.length > 0 ? (safeP - 1) * pageSize + 1 : 0;
+  const rangeEnd = Math.min(safeP * pageSize, sorted.length);
 
   function goTo(p: number) {
     setPage(Math.max(1, Math.min(p, totalPages)));
   }
 
+  // ── Selection ─────────────────────────────────────────────────────────────
+  const pageIds = useMemo(() => paginated.map((l) => l.id), [paginated]);
+  const allIds = useMemo(() => sorted.map((l) => l.id), [sorted]);
+
+  const pageSelectedCount = useMemo(
+    () => pageIds.filter((id) => selected.has(id)).length,
+    [pageIds, selected],
+  );
+  const allPageSelected = pageIds.length > 0 && pageSelectedCount === pageIds.length;
+  const somePageSelected = pageSelectedCount > 0 && !allPageSelected;
+
+  const toggleRow = useCallback((id: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const togglePage = useCallback(() => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) {
+        // Deselect all on current page
+        pageIds.forEach((id) => next.delete(id));
+      } else {
+        // Select all on current page
+        pageIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  }, [allPageSelected, pageIds]);
+
+  const selectAll = useCallback(() => {
+    setSelected(new Set(allIds));
+  }, [allIds]);
+
+  const clearSelection = useCallback(() => {
+    setSelected(new Set());
+  }, []);
+
+  // ── Derived selection info ────────────────────────────────────────────────
+  const selectedListings = useMemo(
+    () => listings.filter((l) => selected.has(l.id)),
+    [listings, selected],
+  );
+  const selectedActivatable = useMemo(
+    () => selectedListings.filter((l) => l.status === "draft" || l.status === "paused"),
+    [selectedListings],
+  );
+  const selectedPausable = useMemo(
+    () => selectedListings.filter((l) => l.status === "active"),
+    [selectedListings],
+  );
+
+  // ── Bulk actions ──────────────────────────────────────────────────────────
   async function bulkUpdateStatus(ids: string[], status: string) {
-    for (const id of ids) {
-      await supabase.from("listings").update({ status }).eq("id", id);
+    if (ids.length === 0) return;
+    setBulkAction(status);
+    try {
+      const results = await Promise.all(
+        ids.map((id) =>
+          supabase.from("listings").update({ status }).eq("id", id),
+        ),
+      );
+      const errors = results.filter((r) => r.error);
+      if (errors.length > 0) {
+        toast.error(`Failed to update ${errors.length} listing(s)`, {
+          description: errors[0].error?.message ?? "Please try again.",
+        });
+      } else {
+        const label = status === "active" ? "activated" : "paused";
+        toast.success(
+          `${ids.length} listing${ids.length !== 1 ? "s" : ""} ${label}`,
+        );
+      }
+      setSelected(new Set());
+      if (onRefresh) await onRefresh();
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong", {
+        description: "Please try again.",
+      });
+    } finally {
+      setBulkAction(null);
     }
+  }
+
+  async function handleImportClose() {
+    setShowImport(false);
+    if (onRefresh) await onRefresh();
     router.refresh();
   }
+
+  const isBusy = bulkAction !== null;
+  const hasSelection = selected.size > 0;
+
+  const thBase = "px-4 py-3 font-medium text-[#6b6560] select-none";
+  const thBtn =
+    "group inline-flex items-center gap-1.5 hover:text-[#1a1a1a] transition-colors cursor-pointer";
 
   return (
     <div className="space-y-4">
@@ -75,126 +301,295 @@ export default function InventoryTab({
             Import CSV
           </button>
           <Link
-            href="/post"
+            href={newListingHref}
             className="inline-flex items-center gap-1.5 bg-[#8E7A6B] text-white px-4 py-2.5 text-sm font-semibold hover:bg-[#7A6657] transition-colors shadow-sm shadow-[#8E7A6B]/15"
           >
             <Plus className="w-4 h-4" />
-            New Listing
+            {newListingLabel}
           </Link>
         </div>
       </div>
 
       {/* CSV Import Modal */}
-      {showImport && <CSVImport onClose={() => setShowImport(false)} />}
+      {showImport && <CSVImport onClose={handleImportClose} />}
 
-      {/* Bulk actions */}
-      <div className="flex gap-2">
-        <button
-          onClick={() =>
-            bulkUpdateStatus(
-              listings.filter((l) => l.status === "draft").map((l) => l.id),
-              "active",
-            )
-          }
-          className="text-xs font-medium px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
-        >
-          Activate All Drafts
-        </button>
-        <button
-          onClick={() =>
-            bulkUpdateStatus(
-              listings.filter((l) => l.status === "active").map((l) => l.id),
-              "paused",
-            )
-          }
-          className="text-xs font-medium px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
-        >
-          Pause All Active
-        </button>
-      </div>
+      {/* Selection toolbar — appears when items are selected */}
+      {hasSelection ? (
+        <div className="flex items-center gap-3 bg-[#8E7A6B]/5 border border-[#8E7A6B]/20 px-4 py-2.5 text-sm">
+          <span className="font-medium text-[#2C2826]">
+            {selected.size} selected
+          </span>
+
+          {/* Select all across pages hint */}
+          {selected.size < sorted.length && (
+            <button
+              onClick={selectAll}
+              className="text-xs text-[#8E7A6B] hover:text-[#7A6657] font-medium underline underline-offset-2"
+            >
+              Select all {sorted.length}
+            </button>
+          )}
+
+          <div className="flex-1" />
+
+          {/* Activate selected */}
+          <button
+            onClick={() =>
+              bulkUpdateStatus(
+                selectedActivatable.map((l) => l.id),
+                "active",
+              )
+            }
+            disabled={selectedActivatable.length === 0 || isBusy}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {bulkAction === "active" ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : null}
+            Activate
+            {selectedActivatable.length > 0 && (
+              <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                {selectedActivatable.length}
+              </span>
+            )}
+          </button>
+
+          {/* Pause selected */}
+          <button
+            onClick={() =>
+              bulkUpdateStatus(
+                selectedPausable.map((l) => l.id),
+                "paused",
+              )
+            }
+            disabled={selectedPausable.length === 0 || isBusy}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {bulkAction === "paused" ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : null}
+            Pause
+            {selectedPausable.length > 0 && (
+              <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                {selectedPausable.length}
+              </span>
+            )}
+          </button>
+
+          {/* Clear selection */}
+          <button
+            onClick={clearSelection}
+            disabled={isBusy}
+            className="p-1.5 text-[#6b6560] hover:text-[#1a1a1a] hover:bg-[#e8e6e3] transition-colors rounded disabled:opacity-40"
+            aria-label="Clear selection"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        /* Default bulk actions when nothing is selected */
+        <div className="flex gap-2">
+          <button
+            onClick={() =>
+              bulkUpdateStatus(
+                listings
+                  .filter((l) => l.status === "draft")
+                  .map((l) => l.id),
+                "active",
+              )
+            }
+            disabled={
+              listings.filter((l) => l.status === "draft").length === 0 || isBusy
+            }
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {bulkAction === "active" && (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            )}
+            Activate All Drafts
+            {listings.filter((l) => l.status === "draft").length > 0 && (
+              <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                {listings.filter((l) => l.status === "draft").length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() =>
+              bulkUpdateStatus(
+                listings
+                  .filter((l) => l.status === "active")
+                  .map((l) => l.id),
+                "paused",
+              )
+            }
+            disabled={
+              listings.filter((l) => l.status === "active").length === 0 || isBusy
+            }
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {bulkAction === "paused" && (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            )}
+            Pause All Active
+            {listings.filter((l) => l.status === "active").length > 0 && (
+              <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                {listings.filter((l) => l.status === "active").length}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Listings table */}
       <div className="bg-white border border-[#e8e6e3] overflow-hidden">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#e8e6e3] bg-[#faf9f7]/50">
-              <th className="text-left px-4 py-3 font-medium text-[#6b6560]">
-                Listing
+              <th className="w-10 px-4 py-3">
+                <Checkbox
+                  checked={allPageSelected}
+                  indeterminate={somePageSelected}
+                  onChange={togglePage}
+                  disabled={paginated.length === 0 || isBusy}
+                />
               </th>
-              <th className="text-left px-4 py-3 font-medium text-[#6b6560]">
-                Status
+              <th className={`text-left ${thBase}`}>
+                <button
+                  onClick={() => toggleSort("title")}
+                  className={thBtn}
+                >
+                  Listing
+                  <SortIcon active={sortKey === "title"} dir={sortDir} />
+                </button>
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#6b6560]">
-                Price
+              <th className={`text-left ${thBase}`}>
+                <button
+                  onClick={() => toggleSort("status")}
+                  className={thBtn}
+                >
+                  Status
+                  <SortIcon active={sortKey === "status"} dir={sortDir} />
+                </button>
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#6b6560] hidden md:table-cell">
-                Views
+              <th className={`text-right ${thBase}`}>
+                <button
+                  onClick={() => toggleSort("price")}
+                  className={`${thBtn} ml-auto`}
+                >
+                  Price
+                  <SortIcon active={sortKey === "price"} dir={sortDir} />
+                </button>
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#6b6560] hidden md:table-cell">
-                Saves
+              <th className={`text-right ${thBase} hidden md:table-cell`}>
+                <button
+                  onClick={() => toggleSort("view_count")}
+                  className={`${thBtn} ml-auto`}
+                >
+                  Views
+                  <SortIcon active={sortKey === "view_count"} dir={sortDir} />
+                </button>
               </th>
-              <th className="text-right px-4 py-3 font-medium text-[#6b6560]">
-                Actions
+              <th className={`text-right ${thBase} hidden md:table-cell`}>
+                <button
+                  onClick={() => toggleSort("favorite_count")}
+                  className={`${thBtn} ml-auto`}
+                >
+                  Saves
+                  <SortIcon
+                    active={sortKey === "favorite_count"}
+                    dir={sortDir}
+                  />
+                </button>
               </th>
+              <th className={`text-right ${thBase} hidden lg:table-cell`}>
+                <button
+                  onClick={() => toggleSort("created_at")}
+                  className={`${thBtn} ml-auto`}
+                >
+                  Added
+                  <SortIcon
+                    active={sortKey === "created_at"}
+                    dir={sortDir}
+                  />
+                </button>
+              </th>
+              <th className={`text-right ${thBase}`}>Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#faf9f7]">
-            {paginated.map((l) => (
-              <tr
-                key={l.id}
-                className="hover:bg-[#faf9f7]/50 transition-colors"
-              >
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
-                      {l.primary_image_url && (
-                        <Image
-                          src={l.primary_image_url}
-                          alt=""
-                          fill
-                          className="object-cover"
-                          sizes="40px"
-                        />
-                      )}
+            {paginated.map((l) => {
+              const isSelected = selected.has(l.id);
+              return (
+                <tr
+                  key={l.id}
+                  className={`transition-colors ${
+                    isSelected
+                      ? "bg-[#8E7A6B]/[0.04]"
+                      : "hover:bg-[#faf9f7]/50"
+                  }`}
+                >
+                  <td className="w-10 px-4 py-3">
+                    <Checkbox
+                      checked={isSelected}
+                      onChange={() => toggleRow(l.id)}
+                      disabled={isBusy}
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
+                        {l.primary_image_url && (
+                          <Image
+                            src={l.primary_image_url}
+                            alt=""
+                            fill
+                            className="object-cover"
+                            sizes="40px"
+                          />
+                        )}
+                      </div>
+                      <span className="font-medium text-[#1a1a1a] truncate max-w-[200px]">
+                        {l.title}
+                      </span>
                     </div>
-                    <span className="font-medium text-[#1a1a1a] truncate max-w-[200px]">
-                      {l.title}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_BADGE[l.status] || "bg-[#f0eeeb] text-[#6b6560]"}`}
+                    >
+                      {l.status}
                     </span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-block text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize ${STATUS_BADGE[l.status] || "bg-[#f0eeeb] text-[#6b6560]"}`}
-                  >
-                    {l.status}
-                  </span>
-                  {l.is_promoted && (
-                    <span className="ml-1.5 text-[10px] font-semibold text-amber-600">
-                      &#10022;
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-right font-medium text-[#1a1a1a]">
-                  {l.price != null
-                    ? `\u20AC${l.price.toLocaleString()}`
-                    : "\u2014"}
-                </td>
-                <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
-                  {l.view_count}
-                </td>
-                <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
-                  {l.favorite_count}
-                </td>
-                <td className="px-4 py-3 text-right">
-                  <Link
-                    href={`${editBaseHref}/${l.id}`}
-                    className="inline-flex items-center gap-1 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657]"
-                  >
-                    <Edit3 className="w-3 h-3" /> Edit
-                  </Link>
-                </td>
-              </tr>
-            ))}
+                    {l.is_promoted && (
+                      <span className="ml-1.5 text-[10px] font-semibold text-amber-600">
+                        &#10022;
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right font-medium text-[#1a1a1a]">
+                    {l.price != null
+                      ? `\u20AC${l.price.toLocaleString()}`
+                      : "\u2014"}
+                  </td>
+                  <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
+                    {l.view_count}
+                  </td>
+                  <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
+                    {l.favorite_count}
+                  </td>
+                  <td className="px-4 py-3 text-right text-[#6b6560] text-xs hidden lg:table-cell">
+                    {timeAgo(l.created_at)}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Link
+                      href={`${editBaseHref}/${l.id}`}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657]"
+                    >
+                      <Edit3 className="w-3 h-3" /> Edit
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {listings.length === 0 && (
@@ -236,7 +631,7 @@ export default function InventoryTab({
           {/* Range + controls */}
           <div className="flex items-center gap-3">
             <span className="text-xs text-[#6b6560]">
-              {rangeStart}&ndash;{rangeEnd} of {listings.length}
+              {rangeStart}&ndash;{rangeEnd} of {sorted.length}
             </span>
 
             <div className="flex items-center gap-0.5">
@@ -260,7 +655,6 @@ export default function InventoryTab({
               {/* Page numbers */}
               {Array.from({ length: totalPages }, (_, i) => i + 1)
                 .filter((p) => {
-                  // Show first, last, and pages near current
                   if (p === 1 || p === totalPages) return true;
                   if (Math.abs(p - safeP) <= 1) return true;
                   return false;

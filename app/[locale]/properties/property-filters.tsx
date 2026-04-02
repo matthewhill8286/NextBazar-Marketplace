@@ -30,7 +30,7 @@ const BATHROOM_OPTIONS = ["1", "2", "3", "4+"] as const;
 
 const FURNISHING_OPTIONS = [
   "furnished",
-  "semi-furnished",
+  "part-furnished",
   "unfurnished",
 ] as const;
 
