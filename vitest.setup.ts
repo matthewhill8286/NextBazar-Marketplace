@@ -2,26 +2,36 @@ import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
 // ---------------------------------------------------------------------------
-// Global mocks for Next.js + next-intl navigation
-// next-intl/navigation internally imports "next/navigation" without the .js
-// extension which fails in Vitest's ESM-strict jsdom environment. Mock the
-// whole chain so component tests can render without a real Next.js router.
+// Global mock for @/i18n/navigation — this wraps next-intl/navigation which
+// internally imports "next/navigation". The resolve.alias in vitest.config.mts
+// handles the bare-specifier resolution; this mock provides a simple <a>-based
+// Link so component tests don't need a real Next.js router or IntlProvider.
 // ---------------------------------------------------------------------------
 
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    back: vi.fn(),
-    forward: vi.fn(),
-    refresh: vi.fn(),
-    prefetch: vi.fn(),
+// Default next-intl mock — returns translation keys as-is.
+// Individual test files can override with vi.mock("next-intl", ...) for
+// richer translation maps; per-test mocks take precedence over this one.
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string, params?: Record<string, any>) => {
+    if (params) {
+      let result = key;
+      for (const [k, v] of Object.entries(params)) {
+        result = result.replace(`{${k}}`, String(v));
+      }
+      return result;
+    }
+    return key;
+  },
+  useLocale: () => "en",
+  useMessages: () => ({}),
+  useNow: () => new Date(),
+  useTimeZone: () => "UTC",
+  useFormatter: () => ({
+    number: (n: number) => String(n),
+    dateTime: (d: Date) => d.toISOString(),
+    relativeTime: (d: Date) => "",
   }),
-  usePathname: () => "/",
-  useSearchParams: () => new URLSearchParams(),
-  useParams: () => ({}),
-  notFound: vi.fn(),
-  redirect: vi.fn(),
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 vi.mock("@/i18n/navigation", async () => {

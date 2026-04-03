@@ -13,8 +13,22 @@ const mockChannel = vi.fn().mockReturnValue({
   subscribe: vi.fn(),
 });
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+  usePathname: () => "/",
 }));
 
 vi.mock("next/image", () => ({
