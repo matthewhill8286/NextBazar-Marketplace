@@ -11,13 +11,12 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 

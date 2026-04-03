@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  ArrowRight,
   Box,
   Calendar,
   Car,
@@ -17,24 +16,24 @@ import {
   Tag,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
-import ListingCard from "@/app/components/listing-card";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_LABELS } from "@/lib/format-helpers";
 import type {
   ListingCardRow,
   ListingDetailRow,
 } from "@/lib/supabase/supabase.types";
+import { getTranslator } from "@/lib/translations";
 import ImageGallery from "./image-gallery";
 import { FavoriteAction, ReportAction, ShareAction } from "./listing-actions";
 import ListingInteractions from "./listing-interactions";
 import OwnerInsights from "./owner-insights";
 import PriceHistory from "./price-history";
 import { LeaveReviewPrompt, SellerReviews } from "./seller-reviews";
+import TimeAgo from "./time-ago";
 
 // ─── Helpers (server-safe, no hooks) ──────────────────────────────────────────
 
@@ -48,28 +47,11 @@ function formatPrice(
   return `${sym}${p.toLocaleString()}`;
 }
 
-function timeAgo(
-  dateStr: string,
-  locale: string,
-  labels: { m: string; h: string; d: string },
-): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return labels.m.replace("{n}", String(mins));
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return labels.h.replace("{n}", String(hrs));
-  const days = Math.floor(hrs / 24);
-  if (days < 30) return labels.d.replace("{n}", String(days));
-  const dateLocale = locale === "el" ? "el-GR" : "en-GB";
-  return new Date(dateStr).toLocaleDateString(dateLocale, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+// timeAgo moved to client component — Date.now() is not allowed during prerendering.
 
 function formatDate(dateStr: string, locale: string): string {
-  const dateLocale = locale === "el" ? "el-GR" : "en-GB";
+  const dateLocale =
+    locale === "el" ? "el-GR" : locale === "ru" ? "ru-RU" : "en-GB";
   return new Date(dateStr).toLocaleDateString(dateLocale, {
     day: "numeric",
     month: "long",
@@ -80,6 +62,7 @@ function formatDate(dateStr: string, locale: string): string {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Props = {
+  locale: string;
   listing: ListingDetailRow;
   related: ListingCardRow[];
   accentColor: string | null;
@@ -89,15 +72,14 @@ type Props = {
 // ─── Server Component ─────────────────────────────────────────────────────────
 
 export default async function ListingDetailServer({
+  locale,
   listing,
-  related,
   accentColor,
   shopSlug,
 }: Props) {
-  const [t, tCommon, locale] = await Promise.all([
-    getTranslations("listing"),
-    getTranslations("common"),
-    getLocale(),
+  const [t, tCommon] = await Promise.all([
+    getTranslator(locale, "listing"),
+    getTranslator(locale, "common"),
   ]);
 
   const profile = listing.profiles;
@@ -239,6 +221,16 @@ export default async function ListingDetailServer({
                       {tCommon("free")}
                     </span>
                   )}
+                  {listing.quantity != null && listing.quantity > 0 && (
+                    <span className="bg-[#f0eeeb] text-[#666] text-xs font-medium px-2.5 py-1">
+                      {listing.quantity} in stock
+                    </span>
+                  )}
+                  {listing.quantity === 0 && (
+                    <span className="bg-red-50 text-red-600 text-xs font-semibold px-2.5 py-1">
+                      Out of stock
+                    </span>
+                  )}
                 </div>
 
                 <h1
@@ -255,7 +247,11 @@ export default async function ListingDetailServer({
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-[#8a8280]" />
-                    {timeAgo(listing.created_at, locale, timeLabels)}
+                    <TimeAgo
+                      dateStr={listing.created_at}
+                      locale={locale}
+                      labels={timeLabels}
+                    />
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Eye className="w-4 h-4 text-[#8a8280]" />
@@ -382,52 +378,52 @@ export default async function ListingDetailServer({
                   icon: typeof Car;
                   format?: (v: string) => string;
                 }[] = [
-                  { key: "make", label: "Make", icon: Car },
-                  { key: "model", label: "Model", icon: Car },
-                  { key: "year", label: "Year", icon: Calendar },
+                  { key: "make", label: t("vehicleMake"), icon: Car },
+                  { key: "model", label: t("vehicleModel"), icon: Car },
+                  { key: "year", label: t("vehicleYear"), icon: Calendar },
                   {
                     key: "mileage",
-                    label: "Mileage",
+                    label: t("vehicleMileage"),
                     icon: Gauge,
                     format: (v) => `${Number(v).toLocaleString()} km`,
                   },
                   {
                     key: "fuel_type",
-                    label: "Fuel",
+                    label: t("vehicleFuel"),
                     icon: Fuel,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
                   {
                     key: "transmission",
-                    label: "Transmission",
+                    label: t("vehicleTransmission"),
                     icon: Tag,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
-                  { key: "color", label: "Color", icon: Palette },
+                  { key: "color", label: t("vehicleColor"), icon: Palette },
                   {
                     key: "body_type",
-                    label: "Body Type",
+                    label: t("vehicleBodyType"),
                     icon: Car,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
                   {
                     key: "engine_size",
-                    label: "Engine",
+                    label: t("vehicleEngine"),
                     icon: Gauge,
                     format: (v) =>
                       String(v).endsWith("L") ? String(v) : `${v}L`,
                   },
-                  { key: "doors", label: "Doors", icon: Car },
+                  { key: "doors", label: t("vehicleDoors"), icon: Car },
                   {
                     key: "drive_type",
-                    label: "Drive",
+                    label: t("vehicleDrive"),
                     icon: Car,
                     format: (v) => v.toUpperCase(),
                   },
-                  { key: "owners", label: "Owners", icon: Shield },
+                  { key: "owners", label: t("vehicleOwners"), icon: Shield },
                   {
                     key: "service_history",
-                    label: "Service History",
+                    label: t("vehicleServiceHistory"),
                     icon: Shield,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
@@ -442,7 +438,7 @@ export default async function ListingDetailServer({
                         className="text-lg font-light text-[#1a1a1a]"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                       >
-                        Vehicle Specifications
+                        {t("vehicleSpecifications")}
                       </h2>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -514,7 +510,7 @@ export default async function ListingDetailServer({
           {/* RIGHT COLUMN */}
           <div className="space-y-4">
             {/* Seller card */}
-            <div className="bg-white p-6 border border-[#e8e6e3] sticky top-20">
+            <div className="bg-white p-6 border border-[#e8e6e3]">
               <div className="flex items-center gap-3.5 mb-5">
                 <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
                   {profile?.avatar_url ? (
@@ -655,37 +651,6 @@ export default async function ListingDetailServer({
             )}
           </div>
         </div>
-
-        {/* Related Listings */}
-        {related.length > 0 && (
-          <section className="mt-20">
-            <div className="flex items-end justify-between mb-12">
-              <div>
-                <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
-                  More to explore
-                </p>
-                <h2
-                  className="text-3xl font-light text-[#1a1a1a]"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  {t("similarListings")}
-                </h2>
-              </div>
-              <Link
-                href={`/search?category=${listing.categories?.slug || ""}`}
-                className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
-              >
-                {t("viewMore")}
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {related.map((item) => (
-                <ListingCard key={item.id} listing={item} />
-              ))}
-            </div>
-          </section>
-        )}
       </div>
     </div>
   );

@@ -3,22 +3,31 @@
 import {
   BarChart2,
   CreditCard,
+  DollarSign,
   ExternalLink,
+  MessageCircle,
   Palette,
   ShoppingBag,
   Store,
+  Tag,
+  TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
+import AnalyticsTab from "./analytics-tab";
 import type { BrandingState } from "./branding-form";
 import BrandingForm from "./branding-form";
 import InventoryTab from "./inventory-tab";
+import MessagesTab from "./messages-tab";
+import OffersTab from "./offers-tab";
 import OverviewTab from "./overview-tab";
 import ProSellerCTA from "./pro-seller-cta";
+import SalesTab from "./sales-tab";
 import type { ListingRow } from "./types";
 import VerifyingSpinner from "./verifying-spinner";
 
@@ -32,12 +41,30 @@ type Props = {
   userEmail: string;
 };
 
-type Tab = "overview" | "branding" | "inventory";
+type Tab =
+  | "overview"
+  | "branding"
+  | "inventory"
+  | "sales"
+  | "offers"
+  | "messages"
+  | "analytics";
+
+const TABS = [
+  { key: "overview" as const, labelKey: "tabOverview", icon: BarChart2 },
+  { key: "inventory" as const, labelKey: "tabInventory", icon: ShoppingBag },
+  { key: "sales" as const, labelKey: "tabSales", icon: DollarSign },
+  { key: "offers" as const, labelKey: "tabOffers", icon: Tag },
+  { key: "messages" as const, labelKey: "tabMessages", icon: MessageCircle },
+  { key: "analytics" as const, labelKey: "tabAnalytics", icon: TrendingUp },
+  { key: "branding" as const, labelKey: "tabBranding", icon: Palette },
+];
 
 export default function DealerDashboardClient({ shop, listings }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
+  const t = useTranslations("dealer");
 
   const [tab, setTab] = useState<Tab>("overview");
   const [subscribing, setSubscribing] = useState(false);
@@ -67,7 +94,12 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
 
   const isActive = shop?.plan_status === "active";
 
-  // ─── Fetch pricing from DB ──────────────────────────────────────────────
+  // ─── Counts for tab badges ──────────────────────────────────────────
+  const pendingOffersBadge = ""; // loaded dynamically in OffersTab
+  const unreadMsgBadge = ""; // loaded dynamically in MessagesTab
+  const soldCount = listings.filter((l) => l.status === "sold").length;
+
+  // ─── Fetch pricing from DB ──────────────────────────────────────────
   useEffect(() => {
     fetch("/api/pricing")
       .then((r) => r.json())
@@ -80,7 +112,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
       .catch(() => {});
   }, []);
 
-  // ─── Post-checkout verification ─────────────────────────────────────────
+  // ─── Post-checkout verification ─────────────────────────────────────
   useEffect(() => {
     const isSetup = searchParams.get("setup") === "true";
     const sessionId = searchParams.get("session_id");
@@ -105,7 +137,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
     }
   }, [searchParams, shop?.plan_status, router]);
 
-  // ─── Actions ────────────────────────────────────────────────────────────
+  // ─── Actions ────────────────────────────────────────────────────────
   async function handleSubscribe() {
     setSubscribing(true);
     try {
@@ -150,7 +182,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
     router.refresh();
   }
 
-  // ─── Conditional renders ───────────────────────────────────────────────
+  // ─── Conditional renders ───────────────────────────────────────────
   if (verifying) return <VerifyingSpinner />;
 
   if (!isActive) {
@@ -164,7 +196,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
     );
   }
 
-  // ─── Active dealer dashboard ───────────────────────────────────────────
+  // ─── Active dealer dashboard — Full CMS ────────────────────────────
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -186,7 +218,8 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
               {branding.shopName || "Your Shop"}
             </h1>
             <p className="text-sm text-[#6b6560]">
-              Sellers Pro &mdash; manage your brand, listings, and analytics
+              Pro Seller CMS &mdash; manage your brand, inventory, sales &amp;
+              analytics
             </p>
           </div>
         </div>
@@ -196,46 +229,63 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] px-3 py-2 hover:bg-[#f0eeeb] transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            View Shop
+            {t("viewShop")}
           </Link>
           <button
             onClick={handleManageBilling}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors"
           >
             <CreditCard className="w-3.5 h-3.5" />
-            Billing
+            {t("billing")}
           </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 bg-[#f0eeeb] p-1 w-fit">
-        {(
-          [
-            { key: "overview", label: "Overview", icon: BarChart2 },
-            { key: "branding", label: "Branding", icon: Palette },
-            { key: "inventory", label: "Inventory", icon: ShoppingBag },
-          ] as const
-        ).map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`flex items-center justify-center gap-2 py-2.5 px-5 text-sm font-semibold transition-all ${
-              tab === t.key
-                ? "bg-white text-[#1a1a1a] shadow-sm"
-                : "text-[#6b6560] hover:text-[#666]"
-            }`}
-          >
-            <t.icon className="w-4 h-4" />
-            {t.label}
-          </button>
-        ))}
+      {/* Tabs — scrollable on mobile */}
+      <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-1 bg-[#f0eeeb] p-1 w-fit min-w-full sm:min-w-0">
+          {TABS.map((tabConfig) => {
+            const TabIcon = tabConfig.icon;
+            return (
+              <button
+                key={tabConfig.key}
+                onClick={() => setTab(tabConfig.key)}
+                className={`flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold transition-all whitespace-nowrap ${
+                  tab === tabConfig.key
+                    ? "bg-white text-[#1a1a1a] shadow-sm"
+                    : "text-[#6b6560] hover:text-[#666]"
+                }`}
+              >
+                <TabIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">
+                  {t(tabConfig.labelKey)}
+                </span>
+                {/* Show sold count badge on sales tab */}
+                {tabConfig.key === "sales" && soldCount > 0 && (
+                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 leading-none">
+                    {soldCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Tab content */}
       {tab === "overview" && (
         <OverviewTab listings={listings} slug={branding.slug} />
       )}
+
+      {tab === "inventory" && <InventoryTab listings={listings} />}
+
+      {tab === "sales" && <SalesTab listings={listings} />}
+
+      {tab === "offers" && <OffersTab />}
+
+      {tab === "messages" && <MessagesTab />}
+
+      {tab === "analytics" && <AnalyticsTab listings={listings} />}
 
       {tab === "branding" && (
         <BrandingForm
@@ -248,8 +298,6 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
           onSaveAction={handleSaveBranding}
         />
       )}
-
-      {tab === "inventory" && <InventoryTab listings={listings} />}
     </div>
   );
 }

@@ -7,43 +7,14 @@ import {
   Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { getTranslator } from "@/lib/translations";
 
 export const metadata: Metadata = {
   title: "About Us — NextBazar",
   description:
     "Learn about NextBazar — the modern marketplace built for Cyprus and beyond.",
 };
-
-const STATS = [
-  { label: "Active listings", value: "10,000+" },
-  { label: "Registered users", value: "25,000+" },
-  { label: "Cities covered", value: "12" },
-  { label: "Successful deals", value: "50,000+" },
-];
-
-const VALUES = [
-  {
-    icon: ShieldCheck,
-    title: "Trust & Safety",
-    desc: "Every listing is reviewed and our community reporting tools keep the platform clean and safe for everyone.",
-  },
-  {
-    icon: Zap,
-    title: "Speed",
-    desc: "Post an ad in under 2 minutes. Real-time messaging and instant notifications mean deals happen fast.",
-  },
-  {
-    icon: Heart,
-    title: "Community First",
-    desc: "We're built for real people, not bots. Verified profiles, honest reviews, and fair pricing tools put the community in control.",
-  },
-  {
-    icon: Globe2,
-    title: "Local Focus",
-    desc: "Rooted in Cyprus, NextBazar is designed for face-to-face commerce — with smart location filters and WhatsApp/Telegram contact options.",
-  },
-];
 
 const TEAM = [
   {
@@ -58,33 +29,35 @@ const TEAM = [
   },
 ];
 
-export default function AboutPage() {
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslator(locale, "about");
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}
       <section className="bg-white border-b border-[#e8e6e3]">
         <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
-            Our Story
+            {t("hero.badge")}
           </p>
           <h1
             className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-6 leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            The marketplace built
-            <br className="hidden md:block" />
-            for real people
+            {t("hero.title")}
           </h1>
           <p className="text-lg text-[#6b6560] max-w-2xl mx-auto mb-12 leading-relaxed">
-            NextBazar started with a simple belief: buying and selling locally
-            should be fast, safe, and actually enjoyable. We built the platform
-            we always wished existed.
+            {t("hero.subtitle")}
           </p>
           <Link
             href="/search"
             className="inline-flex items-center gap-2 bg-[#8E7A6B] text-white text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-[#7A6657] transition-colors"
           >
-            Browse Listings <ArrowRight className="w-4 h-4" />
+            {t("hero.browseListings")} <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
@@ -92,19 +65,50 @@ export default function AboutPage() {
       {/* Stats */}
       <section className="max-w-5xl mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#e8e6e3]">
-          {STATS.map((s) => (
-            <div key={s.label} className="bg-white p-8 text-center">
-              <div
-                className="text-3xl font-light text-[#1a1a1a] mb-2"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                {s.value}
-              </div>
-              <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560]">
-                {s.label}
-              </div>
+          <div className="bg-white p-8 text-center">
+            <div
+              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              10,000+
             </div>
-          ))}
+            <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560]">
+              {t("stats.activeListings")}
+            </div>
+          </div>
+          <div className="bg-white p-8 text-center">
+            <div
+              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              25,000+
+            </div>
+            <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560]">
+              {t("stats.registeredUsers")}
+            </div>
+          </div>
+          <div className="bg-white p-8 text-center">
+            <div
+              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              12
+            </div>
+            <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560]">
+              {t("stats.citiesCovered")}
+            </div>
+          </div>
+          <div className="bg-white p-8 text-center">
+            <div
+              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              50,000+
+            </div>
+            <div className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#6b6560]">
+              {t("stats.successfulDeals")}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -112,18 +116,16 @@ export default function AboutPage() {
       <section className="max-w-5xl mx-auto px-6 pb-16">
         <div className="bg-[#2C2826] p-10 md:p-16 text-white">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-6">
-            Our Mission
+            {t("mission.badge")}
           </p>
           <h2
             className="text-2xl md:text-3xl font-light mb-6 leading-[1.2]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Making every transaction seamless
+            {t("mission.title")}
           </h2>
           <p className="text-white/60 leading-relaxed text-lg max-w-2xl">
-            To make every transaction in Cyprus — from a second-hand sofa to a
-            pre-owned BMW — as seamless, transparent, and trustworthy as buying
-            from a friend. No hidden fees, no dark patterns, no noise.
+            {t("mission.desc")}
           </p>
         </div>
       </section>
@@ -131,46 +133,92 @@ export default function AboutPage() {
       {/* Values */}
       <section className="max-w-5xl mx-auto px-6 pb-16">
         <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
-          What We Stand For
+          {t("values.badge")}
         </p>
         <h2
           className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-12 text-center"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Our values
+          {t("values.title")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#e8e6e3]">
-          {VALUES.map((v) => (
-            <div key={v.title} className="bg-white p-8 flex gap-5">
-              <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
-                <v.icon className="w-5 h-5 text-[#8E7A6B]" />
-              </div>
-              <div>
-                <h3
-                  className="text-lg font-light text-[#1a1a1a] mb-2"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
-                >
-                  {v.title}
-                </h3>
-                <p className="text-sm text-[#6b6560] leading-relaxed">
-                  {v.desc}
-                </p>
-              </div>
+          <div className="bg-white p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5 text-[#8E7A6B]" />
             </div>
-          ))}
+            <div>
+              <h3
+                className="text-lg font-light text-[#1a1a1a] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {t("values.trustTitle")}
+              </h3>
+              <p className="text-sm text-[#6b6560] leading-relaxed">
+                {t("values.trustDesc")}
+              </p>
+            </div>
+          </div>
+          <div className="bg-white p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 text-[#8E7A6B]" />
+            </div>
+            <div>
+              <h3
+                className="text-lg font-light text-[#1a1a1a] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {t("values.speedTitle")}
+              </h3>
+              <p className="text-sm text-[#6b6560] leading-relaxed">
+                {t("values.speedDesc")}
+              </p>
+            </div>
+          </div>
+          <div className="bg-white p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+              <Heart className="w-5 h-5 text-[#8E7A6B]" />
+            </div>
+            <div>
+              <h3
+                className="text-lg font-light text-[#1a1a1a] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {t("values.communityTitle")}
+              </h3>
+              <p className="text-sm text-[#6b6560] leading-relaxed">
+                {t("values.communityDesc")}
+              </p>
+            </div>
+          </div>
+          <div className="bg-white p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+              <Globe2 className="w-5 h-5 text-[#8E7A6B]" />
+            </div>
+            <div>
+              <h3
+                className="text-lg font-light text-[#1a1a1a] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {t("values.localTitle")}
+              </h3>
+              <p className="text-sm text-[#6b6560] leading-relaxed">
+                {t("values.localDesc")}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Team */}
       <section className="max-w-5xl mx-auto px-6 pb-24">
         <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
-          The People Behind NextBazar
+          {t("team.badge")}
         </p>
         <h2
           className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-12 text-center"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Meet the team
+          {t("team.title")}
         </h2>
         <div className="flex flex-wrap justify-center gap-px bg-[#e8e6e3] max-w-md mx-auto">
           {TEAM.map((m) => (
@@ -203,23 +251,21 @@ export default function AboutPage() {
             className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
-            Ready to start selling?
+            {t("cta.title")}
           </h2>
-          <p className="text-[#6b6560] mb-10">
-            Post your first ad for free and reach thousands of buyers today.
-          </p>
+          <p className="text-[#6b6560] mb-10">{t("cta.subtitle")}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/post"
               className="inline-flex items-center justify-center gap-2 bg-[#8E7A6B] text-white text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-[#7A6657] transition-colors"
             >
-              Post an Ad
+              {t("cta.postAd")}
             </Link>
             <Link
               href="/contact"
               className="inline-flex items-center justify-center gap-2 border border-[#e8e6e3] text-[#666] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-[#f0eeeb] transition-colors"
             >
-              Get in Touch
+              {t("cta.getInTouch")}
             </Link>
           </div>
         </div>

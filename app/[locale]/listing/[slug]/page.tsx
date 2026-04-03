@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import { NotFoundIllustration } from "@/app/components/illustrations";
+import { Suspense } from "react";
+import { routing } from "@/i18n/routing";
 import {
   getListingBySlugCached,
-  getListingPageDataCached,
+  getPopularListingSlugs,
 } from "@/lib/supabase/queries";
-import ListingDetailServer from "./listing-detail-server";
+import ListingContent from "./listing-content";
+import ListingLoading from "./loading";
 
-// ─── SEO metadata (reuses the same cache as the page component) ──────────────
+// ─── Pre-render top listings at build time for instant loads ─────────────────
+export async function generateStaticParams() {
+  const slugs = await getPopularListingSlugs(50);
+  return routing.locales.flatMap((locale) =>
+    slugs.map((slug) => ({ locale, slug })),
+  );
+}
+
+// ─── SEO metadata ────────────────────────────────────────────────────────────
 export async function generateMetadata(
   props: PageProps<"/[locale]/listing/[slug]">,
 ): Promise<Metadata> {
@@ -60,42 +68,15 @@ export async function generateMetadata(
   };
 }
 
-export default async function ListingPage(
+// ─── Page component — synchronous shell, params deferred into Suspense ───────
+export default function ListingPage(
   props: PageProps<"/[locale]/listing/[slug]">,
 ) {
-  const { slug } = await props.params;
-
-  // Single cached call: listing + related + accent color + shop slug
-  // Internally runs listing first, then related & accent in parallel
-  const { listing, related, accentColor, shopSlug } =
-    await getListingPageDataCached(slug);
-
-  // Not-found state
-  if (!listing) {
-    const t = await getTranslations("listing");
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
-        <NotFoundIllustration className="w-32 h-28 mb-6 text-[#8a8280]" />
-        <h1 className="text-2xl font-bold text-[#1a1a1a] mb-2">
-          {t("notFound")}
-        </h1>
-        <p className="text-[#6b6560] mb-6">{t("notFoundDesc")}</p>
-        <Link
-          href="/"
-          className="bg-[#2C2826] text-white px-6 py-3 font-semibold hover:bg-[#3D3633] transition-colors"
-        >
-          {t("browseListings")}
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <ListingDetailServer
-      listing={listing}
-      related={related}
-      accentColor={accentColor}
-      shopSlug={shopSlug}
-    />
+    <Suspense fallback={<ListingLoading />}>
+      {props.params.then(({ locale, slug }) => (
+        <ListingContent locale={locale} slug={slug} />
+      ))}
+    </Suspense>
   );
 }

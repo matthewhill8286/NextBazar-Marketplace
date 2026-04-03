@@ -22,4 +22,3 @@ export const SEARCH_PAGE_SIZE = 24;
 
 /** localStorage key for persisting the last-used location slug. */
 export const LAST_SEARCH_LOCATION_KEY = "lastSearchLocation";
-

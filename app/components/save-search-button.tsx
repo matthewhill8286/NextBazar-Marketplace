@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, BellOff, Check, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
@@ -24,6 +25,7 @@ export default function SaveSearchButton({
   priceMax,
   sortBy,
 }: Props) {
+  const t = useTranslations("saveSearch");
   const supabase = createClient();
   const { userId } = useAuth();
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -113,7 +115,7 @@ export default function SaveSearchButton({
       <button
         onClick={handleRemove}
         disabled={saving}
-        title="Remove saved search"
+        title={t("removeSaved")}
         className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f0eeeb] border border-[#e8e6e3] text-[#7A6657] text-sm font-medium hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors disabled:opacity-50"
       >
         {saving ? (
@@ -121,7 +123,7 @@ export default function SaveSearchButton({
         ) : (
           <BellOff className="w-3.5 h-3.5" />
         )}
-        <span className="hidden sm:inline">Saved</span>
+        <span className="hidden sm:inline">{t("saved")}</span>
       </button>
     );
   }
@@ -130,7 +132,7 @@ export default function SaveSearchButton({
     <button
       onClick={handleSave}
       disabled={saving}
-      title="Save this search & get alerts"
+      title={t("saveSearch")}
       className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#e8e6e3] text-[#666] text-sm font-medium hover:bg-[#f0eeeb] hover:border-[#e8e6e3] hover:text-[#7A6657] transition-colors disabled:opacity-50"
     >
       {saving ? (
@@ -141,7 +143,7 @@ export default function SaveSearchButton({
         <Bell className="w-3.5 h-3.5" />
       )}
       <span className="hidden sm:inline">
-        {justSaved ? "Saved!" : "Save search"}
+        {justSaved ? t("justSaved") : t("buttonLabel")}
       </span>
     </button>
   );

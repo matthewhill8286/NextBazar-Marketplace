@@ -21,8 +21,8 @@ export default async function VehiclesPage() {
 
   const [subcategories, featured, recent] = await Promise.all([
     getSubcategoriesCached(),
-    getCategoryListingsCached(category.id, { promoted: true, limit: 12 }),
-    getCategoryListingsCached(category.id, { limit: 12 }),
+    getCategoryListingsCached(category.id, { promoted: true, limit: 24 }),
+    getCategoryListingsCached(category.id, { limit: 48 }),
   ]);
 
   const vehicleSubcategories = subcategories.filter(

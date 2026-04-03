@@ -2,9 +2,10 @@
 
 import { ArrowLeft, Check, ExternalLink, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import { CONDITION_LABELS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 
@@ -47,6 +48,7 @@ export default function ComparePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("compare");
 
   const ids = (searchParams.get("ids") ?? "")
     .split(",")
@@ -106,7 +108,7 @@ export default function ComparePage() {
     render: (l: CompareListing) => React.ReactNode;
   }[] = [
     {
-      label: "Price",
+      label: t("rowPrice"),
       render: (l) => {
         const sym = l.currency === "EUR" ? "€" : l.currency;
         return l.price ? (
@@ -115,34 +117,34 @@ export default function ComparePage() {
             {l.price.toLocaleString()}
           </span>
         ) : (
-          <span className="text-[#8a8280]">POA</span>
+          <span className="text-[#8a8280]">{t("poa")}</span>
         );
       },
     },
     {
-      label: "Condition",
+      label: t("rowCondition"),
       render: (l) => <ConditionDot condition={l.condition} />,
     },
     {
-      label: "Category",
+      label: t("rowCategory"),
       render: (l) => l.categories?.name ?? "—",
     },
     {
-      label: "Location",
+      label: t("rowLocation"),
       render: (l) => l.locations?.name ?? "—",
     },
     {
-      label: "Badges",
+      label: t("rowBadges"),
       render: (l) => (
         <span className="flex flex-wrap gap-1">
           {l.is_promoted && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-              ✨ Featured
+              ✨ {t("featured")}
             </span>
           )}
           {l.is_urgent && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
-              ⚡ Boosted
+              ⚡ {t("boosted")}
             </span>
           )}
           {!l.is_promoted && !l.is_urgent && (
@@ -152,11 +154,11 @@ export default function ComparePage() {
       ),
     },
     {
-      label: "Views",
+      label: t("rowViews"),
       render: (l) => l.view_count.toLocaleString(),
     },
     {
-      label: "Listed",
+      label: t("rowListed"),
       render: (l) =>
         new Date(l.created_at).toLocaleDateString("en-IE", {
           day: "numeric",
@@ -165,7 +167,7 @@ export default function ComparePage() {
         }),
     },
     {
-      label: "Description",
+      label: t("rowDescription"),
       render: (l) =>
         l.description ? (
           <p className="text-xs text-[#666] line-clamp-4">{l.description}</p>
@@ -187,12 +189,8 @@ export default function ComparePage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">
-            Compare listings
-          </h1>
-          <p className="text-sm text-[#6b6560] mt-0.5">
-            Side-by-side comparison of up to 3 listings
-          </p>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
+          <p className="text-sm text-[#6b6560] mt-0.5">{t("subtitle")}</p>
         </div>
       </div>
 
@@ -202,14 +200,12 @@ export default function ComparePage() {
         </div>
       ) : listings.length < 2 ? (
         <div className="text-center py-24">
-          <p className="text-[#6b6560] mb-4">
-            Select at least 2 listings to compare.
-          </p>
+          <p className="text-[#6b6560] mb-4">{t("emptyTitle")}</p>
           <Link
             href="/search"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8E7A6B] text-white text-sm font-semibold hover:bg-[#7A6657] transition-colors"
           >
-            Browse listings
+            {t("browseListing")}
           </Link>
         </div>
       ) : (
@@ -258,7 +254,8 @@ export default function ComparePage() {
                           href={`/listing/${l.slug}`}
                           className="inline-flex items-center gap-1 text-xs text-[#8E7A6B] hover:text-[#7A6657] mt-1.5 transition-colors"
                         >
-                          View listing <ExternalLink className="w-3 h-3" />
+                          {t("viewListing")}{" "}
+                          <ExternalLink className="w-3 h-3" />
                         </Link>
                       </div>
                     </div>
@@ -271,9 +268,7 @@ export default function ComparePage() {
                     <th key={`empty-${i}`} className="pb-6 px-3 align-top">
                       <div className="border-2 border-dashed border-[#e8e6e3] aspect-video flex items-center justify-center">
                         <p className="text-xs text-[#8a8280] text-center px-2">
-                          Add another listing
-                          <br />
-                          to compare
+                          {t("addAnother")}
                         </p>
                       </div>
                     </th>
@@ -318,8 +313,11 @@ export default function ComparePage() {
                       >
                         <Check className="w-4 h-4" />
                         {l.price
-                          ? `Buy for ${sym}${l.price.toLocaleString()}`
-                          : "View listing"}
+                          ? t("buyFor", {
+                              symbol: sym,
+                              price: l.price.toLocaleString(),
+                            })
+                          : t("viewListing")}
                       </Link>
                     </td>
                   );

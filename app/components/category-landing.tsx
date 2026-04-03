@@ -11,9 +11,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ListingCard from "@/app/components/listing-card";
+import { Link } from "@/i18n/navigation";
 import type {
   ListingCardRow,
   Subcategory,
@@ -65,7 +66,7 @@ function filterListings(
         l.profiles &&
         typeof l.profiles === "object" &&
         "is_pro_seller" in l.profiles &&
-        (l.profiles as { is_pro_seller?: boolean }).is_pro_seller === true,
+        (l.profiles as { is_pro_seller?: boolean }).is_pro_seller,
     );
   }
 
@@ -100,6 +101,7 @@ export default function CategoryLanding({
   postLabel = "Post a Listing",
   heroImage,
 }: Props) {
+  const t = useTranslations("categoryLanding");
   const [activeTab, setActiveTab] = useState(tabs[0]?.key ?? "");
 
   const activeTabConfig = tabs.find((t) => t.key === activeTab);
@@ -166,7 +168,7 @@ export default function CategoryLanding({
         <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-4">
-              {tabStats.total.toLocaleString()} listings available
+              {t("listingsAvailable")}
             </p>
 
             <h1
@@ -185,7 +187,7 @@ export default function CategoryLanding({
                 className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/90 transition-colors"
               >
                 <Search className="w-4 h-4" />
-                Browse All {categoryName}
+                {t("browseAll", { categoryName })}
               </Link>
               <Link
                 href="/post"
@@ -208,7 +210,7 @@ export default function CategoryLanding({
               <span className="font-semibold text-[#1a1a1a]">
                 {tabStats.total.toLocaleString()}
               </span>{" "}
-              listings available
+              {t("listingsAvailable")}
             </div>
             <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
             <div className="flex items-center gap-2 text-[#666]">
@@ -216,14 +218,14 @@ export default function CategoryLanding({
               <span className="font-semibold text-[#1a1a1a]">
                 {tabStats.newThisWeek.toLocaleString()}
               </span>{" "}
-              new this week
+              {t("newThisWeek")}
             </div>
             {tabStats.avgPrice > 0 && (
               <>
                 <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
                 <div className="flex items-center gap-2 text-[#666]">
                   <TrendingUp className="w-4 h-4 text-[#8a8280]" />
-                  avg price{" "}
+                  {t("avgPrice")}{" "}
                   <span className="font-semibold text-[#1a1a1a]">
                     {currency}
                     {tabStats.avgPrice.toLocaleString()}
@@ -290,17 +292,15 @@ export default function CategoryLanding({
                   className="text-xl font-light text-[#1a1a1a]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  Featured {categoryName}
+                  {t("featured", { categoryName })}
                 </h2>
-                <p className="text-sm text-[#8a8280] mt-0.5">
-                  Promoted listings from verified sellers
-                </p>
+                <p className="text-sm text-[#8a8280] mt-0.5">{t("promoted")}</p>
               </div>
               <Link
                 href={`/search?category=${categorySlug}&sort=promoted`}
                 className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
               >
-                View all <ArrowRight className="w-3.5 h-3.5" />
+                {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -336,17 +336,19 @@ export default function CategoryLanding({
               <section className="mb-12">
                 <div className="text-center py-16 text-[#8a8280]">
                   <p className="text-lg font-medium mb-1">
-                    No {activeTabConfig?.label.toLowerCase() ?? ""} listings yet
+                    {t("noListings", {
+                      category: activeTabConfig?.label.toLowerCase() ?? "",
+                    })}
                   </p>
                   <p className="text-sm">
-                    Be the first to{" "}
+                    {t("beFirst")}{" "}
                     <Link
                       href="/post"
                       className="text-[#1a1a1a] font-medium hover:underline"
                     >
-                      post a listing
+                      {t("postAListing")}
                     </Link>{" "}
-                    in this category, or try a different tab above.
+                    {t("differentTab")}
                   </p>
                 </div>
               </section>
@@ -369,8 +371,7 @@ export default function CategoryLanding({
                         {locName}
                       </h2>
                       <p className="text-xs text-[#8a8280]">
-                        {listings.length} listing
-                        {listings.length !== 1 ? "s" : ""}
+                        {t("locationListings", { count: listings.length })}
                       </p>
                     </div>
                   </div>
@@ -378,7 +379,7 @@ export default function CategoryLanding({
                     href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
                     className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
                   >
-                    View all <ArrowRight className="w-3.5 h-3.5" />
+                    {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -406,16 +407,15 @@ export default function CategoryLanding({
               className="text-2xl md:text-3xl font-light mb-3"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Ready to list your{" "}
-              {categoryName
-                .toLowerCase()
-                .replace(/ies$/, "y")
-                .replace(/s$/, "")}
-              ?
+              {t("readyToList", {
+                category: categoryName
+                  .toLowerCase()
+                  .replace(/ies$/, "y")
+                  .replace(/s$/, ""),
+              })}
             </h3>
             <p className="text-white/50 mb-8 max-w-lg mx-auto">
-              Reach thousands of buyers across Cyprus. AI-powered pricing
-              suggestions help you get the best deal.
+              {t("readyDesc")}
             </p>
             <Link
               href="/post"

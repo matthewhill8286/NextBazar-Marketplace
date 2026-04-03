@@ -2,10 +2,9 @@
 
 import { ArrowLeft, Check, Loader2, Star, TrendingUp, Zap } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 

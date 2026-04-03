@@ -1,10 +1,10 @@
 "use client";
 
 import { Tag } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import MakeOfferModal from "@/app/components/make-offer-modal";
+import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import type { ListingDetailRow } from "@/lib/supabase/supabase.types";
@@ -200,13 +200,13 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
                 <div className="bg-emerald-500 px-4 py-2 flex items-center gap-2">
                   <Tag className="w-3.5 h-3.5 text-emerald-100 shrink-0" />
                   <span className="text-xs font-bold text-white uppercase tracking-wide">
-                    Offer accepted!
+                    {t("offerAccepted")}
                   </span>
                 </div>
                 <div className="bg-emerald-50 px-4 py-3 flex items-center justify-between gap-3">
                   <div className="text-xs text-emerald-700">
                     <span className="block text-[11px] text-emerald-500 mb-0.5">
-                      Accepted amount
+                      {t("acceptedAmount")}
                     </span>
                     <span className="font-extrabold text-emerald-800 text-base">
                       {fmtPrice(existingOffer.amount, existingOffer.currency)}
@@ -228,13 +228,13 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
                 <div className="bg-[#8E7A6B] px-4 py-2 flex items-center gap-2">
                   <Tag className="w-3.5 h-3.5 text-white shrink-0" />
                   <span className="text-xs font-bold text-white uppercase tracking-wide">
-                    Counter offer received
+                    {t("offerCountered")}
                   </span>
                 </div>
                 <div className="bg-[#faf9f7] group-hover:bg-[#f0eeeb] transition-colors px-4 py-3 flex items-center justify-between gap-3">
                   <div className="text-xs text-[#666]">
                     <span className="block text-[11px] text-[#6b6560] mb-0.5">
-                      Your offer
+                      {t("yourOffer")}
                     </span>
                     <span className="font-semibold">
                       {fmtPrice(existingOffer.amount, existingOffer.currency)}
@@ -243,7 +243,7 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
                   <div className="w-px h-6 bg-[#e8e6e3]" />
                   <div className="text-xs text-[#666]">
                     <span className="block text-[11px] text-[#6b6560] mb-0.5">
-                      Counter
+                      {t("counterAmount")}
                     </span>
                     <span className="font-semibold text-[#1a1a1a]">
                       {fmtPrice(
@@ -265,13 +265,13 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
                 <div className="bg-amber-500 px-4 py-2 flex items-center gap-2">
                   <Tag className="w-3.5 h-3.5 text-amber-100 shrink-0" />
                   <span className="text-xs font-bold text-white uppercase tracking-wide">
-                    Offer pending
+                    {t("offerPending")}
                   </span>
                 </div>
                 <div className="bg-amber-50 group-hover:bg-amber-100 transition-colors px-4 py-3 flex items-center justify-between gap-3">
                   <div className="text-xs text-amber-700">
                     <span className="block text-[11px] text-amber-500 mb-0.5">
-                      Your offer
+                      {t("yourOffer")}
                     </span>
                     <span className="font-extrabold text-amber-800 text-base">
                       {fmtPrice(existingOffer.amount, existingOffer.currency)}
@@ -304,7 +304,7 @@ export default function ListingInteractions({ listing, accentColor }: Props) {
       {!isOwner && currentStatus === "sold" && (
         <div className="mt-3 w-full py-3 px-4 bg-[#f0eeeb] border-2 border-[#e8e6e3] text-[#6b6560] text-sm font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
           <span className="text-base">🏷️</span>
-          This item has been sold
+          {t("itemSold")}
         </div>
       )}
 

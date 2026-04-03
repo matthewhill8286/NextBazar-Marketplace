@@ -11,9 +11,8 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import { timeAgoCompact } from "@/lib/format-helpers";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { createClient } from "@/lib/supabase/client";

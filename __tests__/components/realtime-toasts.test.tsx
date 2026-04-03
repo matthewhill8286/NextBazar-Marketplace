@@ -89,7 +89,13 @@ vi.mock("next/image", () => ({
 let mockPathname = "/";
 vi.mock("next/navigation", () => ({
   usePathname: () => mockPathname,
+}));
+
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
+  Link: ({ href, children, className }: any) =>
+    React.createElement("a", { href, className }, children),
+  usePathname: () => mockPathname,
 }));
 
 // ---------------------------------------------------------------------------
@@ -307,8 +313,8 @@ describe("RealtimeToasts", () => {
       id: string,
     ) => React.ReactElement;
     const { getByText } = render(renderFn("toast-id-2"));
-    expect(getByText(/In-chat offer/i)).toBeInTheDocument();
-    expect(getByText(/€750/)).toBeInTheDocument();
+    expect(getByText(/inChatOffer/i)).toBeInTheDocument();
+    expect(getByText(/offeredPrice/)).toBeInTheDocument();
   });
 
   it("toast 'View conversation' button navigates to correct URL", async () => {
@@ -333,7 +339,7 @@ describe("RealtimeToasts", () => {
     ) => React.ReactElement;
     const { getByRole: getButton } = render(renderFn("toast-id-3"));
 
-    const btn = getButton("button", { name: /view conversation/i });
+    const btn = getButton("button", { name: /viewConversation/i });
     btn.click();
 
     expect(mockPush).toHaveBeenCalledWith("/dashboard/messages/conv-42");
@@ -432,7 +438,7 @@ describe("RealtimeToasts", () => {
     ) => React.ReactElement;
     const { getByRole } = render(renderFn("toast-id-5"));
 
-    getByRole("button", { name: /review offer/i }).click();
+    getByRole("button", { name: /reviewOffer/i }).click();
 
     expect(mockPush).toHaveBeenCalledWith("/dashboard/offers?offer=offer-99");
   });

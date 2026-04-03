@@ -1,14 +1,13 @@
 "use client";
 
-import { ArrowLeft, Loader2, PenLine, Save } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ArrowLeft, Loader2, Package, PenLine, Save } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
 
@@ -26,10 +25,18 @@ type ListingData = {
   primary_image_url: string | null;
   is_promoted: boolean;
   video_url: string | null;
+  quantity: number | null;
+  low_stock_threshold: number;
   images: { id: string; url: string; sort_order: number }[];
 };
 
-export default function EditClient({ listing }: { listing: ListingData }) {
+export default function EditClient({
+  listing,
+  backHref = "/dashboard/listings",
+}: {
+  listing: ListingData;
+  backHref?: string;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const { categories, locations } = useReferenceData();
@@ -69,6 +76,8 @@ export default function EditClient({ listing }: { listing: ListingData }) {
     contact_phone: listing.contact_phone || "",
     category_id: listing.category_id,
     location_id: listing.location_id || "",
+    quantity: listing.quantity?.toString() ?? "",
+    low_stock_threshold: (listing.low_stock_threshold ?? 3).toString(),
   });
 
   const update = (key: string, value: string) =>
@@ -131,6 +140,10 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         primary_image_url: uploadedUrls[0] || null,
         image_count: uploadedUrls.length,
         video_url: video?.url || null,
+        quantity: formData.quantity ? Number(formData.quantity) : null,
+        low_stock_threshold: formData.low_stock_threshold
+          ? Number(formData.low_stock_threshold)
+          : 3,
       })
       .eq("id", listing.id);
 
@@ -170,14 +183,15 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
     toast.success("Listing updated successfully!");
     setLoading(false);
-    router.push("/dashboard/listings");
+    router.push(backHref);
+    router.refresh();
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link
-          href="/dashboard/listings"
+          href={backHref}
           className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -370,6 +384,53 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           </p>
         </div>
 
+        {/* Stock Management */}
+        <div className="border-t border-[#e8e6e3] pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Package className="w-4 h-4 text-[#8E7A6B]" />
+            <p className="text-sm font-semibold text-[#1a1a1a]">
+              Stock Management
+            </p>
+            <span className="text-[10px] text-[#8a8280] font-normal">
+              (optional)
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
+                Quantity in Stock
+              </label>
+              <input
+                type="number"
+                min="0"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
+                placeholder="Leave blank for unlimited"
+                value={formData.quantity}
+                onChange={(e) => update("quantity", e.target.value)}
+              />
+              <p className="text-xs text-[#8a8280] mt-1">
+                Listing auto-pauses when stock reaches zero.
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
+                Low Stock Alert At
+              </label>
+              <input
+                type="number"
+                min="1"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
+                placeholder="3"
+                value={formData.low_stock_threshold}
+                onChange={(e) => update("low_stock_threshold", e.target.value)}
+              />
+              <p className="text-xs text-[#8a8280] mt-1">
+                You&apos;ll be notified when stock drops to this level.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Save */}
         <div className="flex items-center gap-3 pt-2">
           <button
@@ -385,7 +446,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
             Save Changes
           </button>
           <Link
-            href="/dashboard/listings"
+            href={backHref}
             className="px-6 py-3 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors"
           >
             Cancel

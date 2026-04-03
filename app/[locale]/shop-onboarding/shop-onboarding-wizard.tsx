@@ -17,10 +17,9 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 
@@ -358,7 +357,7 @@ export default function ShopOnboardingWizard({
               Add Your First Listing
             </Link>
             <Link
-              href="/dashboard/shop"
+              href="/shop-manager"
               className="inline-flex items-center gap-2 border border-[#e8e6e3] text-[#666] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-[#f0eeeb] transition-colors"
             >
               <Palette className="w-4 h-4" />
@@ -804,7 +803,7 @@ export default function ShopOnboardingWizard({
           <button
             type="button"
             onClick={() => {
-              router.push("/dashboard/shop");
+              router.push("/shop-manager");
               router.refresh();
             }}
             className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors"

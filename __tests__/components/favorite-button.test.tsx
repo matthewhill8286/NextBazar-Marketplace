@@ -2,6 +2,11 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import FavoriteButton from "@/app/components/favorite-button";
 
+// next-intl — return simple key-based translations so no provider is needed
+vi.mock("next-intl", () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 // ---------------------------------------------------------------------------
 // Mock the SavedContext — FavoriteButton is now purely a UI component that
 // delegates all state and persistence to the context.

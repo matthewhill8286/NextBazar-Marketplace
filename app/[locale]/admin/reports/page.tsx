@@ -9,11 +9,10 @@ import {
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/app/components/ui";
+import { Link, useRouter } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { timeAgo } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";

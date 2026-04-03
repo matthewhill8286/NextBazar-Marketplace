@@ -8,9 +8,9 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { Link } from "@/i18n/navigation";
 
 type ActivateResult = {
   success: boolean;

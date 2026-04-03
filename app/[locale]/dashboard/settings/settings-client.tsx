@@ -11,11 +11,12 @@ import {
   User,
 } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import PhoneInput from "@/app/components/phone-input";
 import { ErrorBanner, FormInput, FormTextarea } from "@/app/components/ui";
+import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type ProfileData = {
@@ -33,6 +34,7 @@ type ProfileData = {
 export default function SettingsClient({ profile }: { profile: ProfileData }) {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("settings");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -116,7 +118,7 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-[#1a1a1a]">Profile Settings</h1>
+      <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
 
       <ErrorBanner message={error} />
 
@@ -154,17 +156,17 @@ export default function SettingsClient({ profile }: { profile: ProfileData }) {
           </div>
 
           <div>
-            <p className="text-sm font-medium text-[#1a1a1a]">Profile Photo</p>
-            <p className="text-xs text-[#8a8280] mt-0.5">
-              JPG, PNG or WebP. Max 2 MB.
+            <p className="text-sm font-medium text-[#1a1a1a]">
+              {t("profilePhoto")}
             </p>
+            <p className="text-xs text-[#8a8280] mt-0.5">{t("photoFormats")}</p>
             <button
               type="button"
               onClick={() => avatarInputRef.current?.click()}
               disabled={avatarUploading}
               className="mt-2 text-xs font-medium text-[#666] hover:text-[#1a1a1a] transition-colors disabled:opacity-50"
             >
-              {avatarUrl ? "Change photo" : "Upload photo"}
+              {avatarUrl ? t("changePhoto") : t("uploadPhoto")}
             </button>
           </div>
 

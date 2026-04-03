@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Play, Video, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -26,6 +27,7 @@ export default function VideoUpload({
   video,
   onChangeAction,
 }: VideoUploadProps) {
+  const t = useTranslations("videoUpload");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const supabase = createClient();
@@ -35,11 +37,11 @@ export default function VideoUpload({
       !ACCEPTED.includes(file.type) &&
       !file.name.match(/\.(mp4|mov|webm)$/i)
     ) {
-      alert("Please upload an MP4, MOV, or WebM video.");
+      alert(t("fileTypeError"));
       return;
     }
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      alert(`Video must be under ${MAX_SIZE_MB}MB.`);
+      alert(t("fileSizeError", { max: MAX_SIZE_MB }));
       return;
     }
 
@@ -85,7 +87,7 @@ export default function VideoUpload({
       clearInterval(ticker);
       console.error("Video upload failed:", err);
       onChangeAction(null);
-      alert("Video upload failed. Please try again.");
+      alert(t("uploadFailed"));
     }
   }
 
@@ -117,7 +119,7 @@ export default function VideoUpload({
                 />
               </div>
               <p className="text-white/60 text-xs text-center mt-1.5">
-                Uploading video… {video.progress}%
+                {t("uploadingVideo", { percent: video.progress })}
               </p>
             </div>
           </div>
@@ -167,16 +169,16 @@ export default function VideoUpload({
       </div>
       <div className="text-center">
         <p className="text-sm font-semibold text-[#666]">
-          <span className="text-[#8E7A6B]">Click to upload</span> or drag &amp;
-          drop
+          <span className="text-[#8E7A6B]">{t("clickToUpload")}</span>{" "}
+          {t("dragAndDrop")}
         </p>
         <p className="text-xs text-[#8a8280] mt-0.5">
-          MP4, MOV or WebM · max {MAX_SIZE_MB}MB
+          {t("fileTypes", { max: MAX_SIZE_MB })}
         </p>
       </div>
       <div className="flex items-center gap-1.5 text-xs text-[#8E7A6B] font-medium">
         <Play className="w-3 h-3" />
-        Show buyers what makes your item special
+        {t("showBuyers")}
       </div>
       <input
         ref={fileInputRef}

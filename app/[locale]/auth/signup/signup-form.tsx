@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Lock, Mail, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ErrorBanner } from "@/app/components/ui";
 import { createClient } from "@/lib/supabase/client";
@@ -27,6 +28,7 @@ const GoogleIcon = () => (
 );
 
 export default function SignupForm() {
+  const t = useTranslations("auth");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +36,7 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -63,11 +65,10 @@ export default function SignupForm() {
       <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm text-center">
         <Mail className="w-12 h-12 mx-auto mb-4 text-[#666]" />
         <h2 className="text-lg font-semibold text-[#1a1a1a] mb-2">
-          Check your email
+          {t("checkYourEmail")}
         </h2>
         <p className="text-[#6b6560] text-sm">
-          We&apos;ve sent a confirmation link to <strong>{email}</strong>. Click
-          it to activate your account.
+          {t("confirmationMessage", { email })}
         </p>
       </div>
     );
@@ -90,7 +91,7 @@ export default function SignupForm() {
         className="w-full flex items-center justify-center gap-3 bg-white border border-[#e8e6e3] py-3 font-medium text-[#666] hover:bg-[#faf9f7] transition-colors mb-6"
       >
         <GoogleIcon />
-        Continue with Google
+        {t("continueWithGoogle")}
       </button>
 
       <div className="relative mb-6">
@@ -99,7 +100,7 @@ export default function SignupForm() {
         </div>
         <div className="relative flex justify-center text-xs">
           <span className="bg-white px-3 text-[#8a8280]">
-            or sign up with email
+            {t("orSignUpWithEmail")}
           </span>
         </div>
       </div>
@@ -109,7 +110,7 @@ export default function SignupForm() {
 
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
-            Full name
+            {t("fullNameLabel")}
           </label>
           <div className="relative">
             <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
@@ -117,7 +118,7 @@ export default function SignupForm() {
               type="text"
               required
               className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
-              placeholder="John Doe"
+              placeholder={t("fullNamePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -126,7 +127,7 @@ export default function SignupForm() {
 
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
-            Email
+            {t("email")}
           </label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
@@ -134,7 +135,7 @@ export default function SignupForm() {
               type="email"
               required
               className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
-              placeholder="you@example.com"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -143,7 +144,7 @@ export default function SignupForm() {
 
         <div>
           <label className="block text-sm font-medium text-[#666] mb-1.5">
-            Password
+            {t("password")}
           </label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8a8280]" />
@@ -152,7 +153,7 @@ export default function SignupForm() {
               required
               minLength={6}
               className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5 outline-none text-sm"
-              placeholder="At least 6 characters"
+              placeholder={t("passwordMinLength")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -167,7 +168,7 @@ export default function SignupForm() {
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            "Create Account"
+            t("createAccount")
           )}
         </button>
       </form>

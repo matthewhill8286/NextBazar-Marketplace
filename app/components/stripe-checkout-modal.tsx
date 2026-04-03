@@ -6,6 +6,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Bitcoin, CreditCard, ExternalLink, Loader2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import type { ClientPricing } from "@/lib/stripe";
@@ -43,6 +44,7 @@ function CryptoTab({
   listingId: string;
   promotionType: "featured" | "urgent";
 }) {
+  const t = useTranslations("checkout");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -75,7 +77,7 @@ function CryptoTab({
       {/* Accepted coins */}
       <div className="mb-5">
         <p className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide mb-3">
-          Accepted cryptocurrencies
+          {t("acceptedCryptos")}
         </p>
         <div className="grid grid-cols-3 gap-2">
           {COINS.map((coin) => (
@@ -104,10 +106,7 @@ function CryptoTab({
 
       {/* Info */}
       <div className="bg-amber-50 border border-amber-100 p-3 mb-5 text-xs text-amber-800 leading-relaxed">
-        <span className="font-semibold">Note:</span> You&apos;ll be redirected
-        to Coinbase Commerce to complete payment. Your promotion activates
-        automatically once the transaction is confirmed on-chain (usually within
-        a few minutes).
+        {t("coinbaseNote")}
       </div>
 
       {error && (
@@ -124,19 +123,19 @@ function CryptoTab({
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Preparing payment…
+            {t("preparingPayment")}
           </>
         ) : (
           <>
             <Bitcoin className="w-4 h-4" />
-            Pay with Crypto
+            {t("payWithCrypto")}
             <ExternalLink className="w-3.5 h-3.5 opacity-60" />
           </>
         )}
       </button>
 
       <p className="text-center text-[11px] text-[#8a8280] mt-3">
-        Powered by Coinbase Commerce · 1% processing fee
+        {t("poweredBy")}
       </p>
     </div>
   );
@@ -148,6 +147,7 @@ export default function StripeCheckoutModal({
   pricing,
   onCloseAction,
 }: Props) {
+  const t = useTranslations("checkout");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "crypto">("card");
   const cryptoEnabled = FEATURE_FLAGS.CRYPTO_PAYMENTS;
 
@@ -187,7 +187,7 @@ export default function StripeCheckoutModal({
                 : `Quick Boost — ${pricing?.urgent.price ?? "€4.99"}`}
             </p>
             <p className="text-xs text-[#8a8280] mt-0.5">
-              Choose your payment method below
+              {t("paymentMethod")}
             </p>
           </div>
           <button
@@ -210,7 +210,7 @@ export default function StripeCheckoutModal({
               }`}
             >
               <CreditCard className="w-4 h-4" />
-              Card / Bank
+              {t("cardTab")}
             </button>
             <button
               onClick={() => setPaymentMethod("crypto")}
@@ -221,7 +221,7 @@ export default function StripeCheckoutModal({
               }`}
             >
               <Bitcoin className="w-4 h-4" />
-              Crypto
+              {t("cryptoTab")}
             </button>
           </div>
         )}

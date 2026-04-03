@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 export default function Footer() {

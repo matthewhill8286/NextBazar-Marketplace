@@ -10,6 +10,7 @@ import {
   PenLine,
   Sparkles,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type {
   FormData,
   Location,
@@ -27,6 +28,8 @@ type Props = {
     | "condition"
     | "location_id"
     | "contact_phone"
+    | "quantity"
+    | "low_stock_threshold"
   >;
   locations: Location[];
   pricingData: PricingData | null;
@@ -39,7 +42,10 @@ type Props = {
   onSelectPriceKeyAction: (key: "low" | "suggested" | "high") => void;
   onAiDescriptionAction: () => void;
   onAiPricingAction: () => void;
-  onVehicleAttrUpdateAction: (key: keyof VehicleAttributes, value: string) => void;
+  onVehicleAttrUpdateAction: (
+    key: keyof VehicleAttributes,
+    value: string,
+  ) => void;
   onBackAction: () => void;
   onNextAction: () => void;
 };
@@ -65,10 +71,6 @@ const DRIVE_TYPES = [
 ] as const;
 const SERVICE_HISTORY = ["full", "partial", "none"] as const;
 
-function capitalize(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 const INPUT_CLASSES =
   "w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white";
 
@@ -92,6 +94,7 @@ export default function PostStep2({
   onBackAction,
   onNextAction,
 }: Props) {
+  const t = useTranslations("post");
   return (
     <div className="space-y-8">
       <div>
@@ -99,18 +102,16 @@ export default function PostStep2({
           className="text-3xl font-light text-[#1a1a1a] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Details &amp; Pricing
+          {t("step2.heading")}
         </h2>
-        <p className="text-sm text-[#6b6560]">
-          The more detail you add, the faster it sells
-        </p>
+        <p className="text-sm text-[#6b6560]">{t("step2.subheading")}</p>
       </div>
 
       {/* Description with AI writer */}
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
-            Description
+            {t("step2.descriptionLabel")}
           </label>
           <button
             type="button"
@@ -123,7 +124,7 @@ export default function PostStep2({
             ) : (
               <PenLine className="w-3 h-3" />
             )}
-            {descLoading ? "Writing..." : "Write with AI"}
+            {descLoading ? t("step2.writing") : t("step2.writeWithAi")}
             {!descLoading && (
               <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                 Beta
@@ -133,7 +134,7 @@ export default function PostStep2({
         </div>
         <textarea
           className={`${INPUT_CLASSES} h-32 resize-none`}
-          placeholder="Describe your item — or click 'Write with AI' to generate a description..."
+          placeholder={t("step2.descriptionPlaceholder")}
           value={formData.description}
           onChange={(e) => onUpdateAction("description", e.target.value)}
         />
@@ -148,7 +149,7 @@ export default function PostStep2({
               className="font-light text-[#1a1a1a] text-base"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Vehicle Details
+              {t("step2.vehicleDetails")}
             </span>
           </div>
 
@@ -156,38 +157,44 @@ export default function PostStep2({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Make
+                {t("step2.make")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. Toyota"
                 value={vehicleAttrs.make}
-                onChange={(e) => onVehicleAttrUpdateAction("make", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("make", e.target.value)
+                }
               />
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Model
+                {t("step2.model")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. Corolla"
                 value={vehicleAttrs.model}
-                onChange={(e) => onVehicleAttrUpdateAction("model", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("model", e.target.value)
+                }
               />
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Year
+                {t("step2.year")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 2020"
                 value={vehicleAttrs.year}
-                onChange={(e) => onVehicleAttrUpdateAction("year", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("year", e.target.value)
+                }
               />
             </div>
           </div>
@@ -196,19 +203,21 @@ export default function PostStep2({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Mileage (km)
+                {t("step2.mileage")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 45000"
                 value={vehicleAttrs.mileage}
-                onChange={(e) => onVehicleAttrUpdateAction("mileage", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("mileage", e.target.value)
+                }
               />
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Fuel Type
+                {t("step2.fuelType")}
               </label>
               <select
                 className={VEHICLE_INPUT_CLASSES}
@@ -220,14 +229,14 @@ export default function PostStep2({
                 <option value="">Select</option>
                 {FUEL_TYPES.map((ft) => (
                   <option key={ft} value={ft}>
-                    {capitalize(ft)}
+                    {t(`vehicle.${ft}`)}
                   </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Transmission
+                {t("step2.transmission")}
               </label>
               <select
                 className={VEHICLE_INPUT_CLASSES}
@@ -237,9 +246,9 @@ export default function PostStep2({
                 }
               >
                 <option value="">Select</option>
-                {TRANSMISSIONS.map((t) => (
-                  <option key={t} value={t}>
-                    {capitalize(t)}
+                {TRANSMISSIONS.map((tr) => (
+                  <option key={tr} value={tr}>
+                    {t(`vehicle.${tr}`)}
                   </option>
                 ))}
               </select>
@@ -250,19 +259,21 @@ export default function PostStep2({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Color
+                {t("step2.color")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. Black"
                 value={vehicleAttrs.color}
-                onChange={(e) => onVehicleAttrUpdateAction("color", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("color", e.target.value)
+                }
               />
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Body Type
+                {t("step2.bodyType")}
               </label>
               <select
                 className={VEHICLE_INPUT_CLASSES}
@@ -274,14 +285,14 @@ export default function PostStep2({
                 <option value="">Select</option>
                 {BODY_TYPES.map((bt) => (
                   <option key={bt} value={bt}>
-                    {capitalize(bt)}
+                    {t(`vehicle.${bt}`)}
                   </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Engine (L)
+                {t("step2.engine")}
               </label>
               <input
                 type="text"
@@ -299,19 +310,21 @@ export default function PostStep2({
           <div className="grid grid-cols-4 gap-3">
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Doors
+                {t("step2.doors")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 4"
                 value={vehicleAttrs.doors}
-                onChange={(e) => onVehicleAttrUpdateAction("doors", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("doors", e.target.value)
+                }
               />
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Drive
+                {t("step2.drive")}
               </label>
               <select
                 className={VEHICLE_INPUT_CLASSES}
@@ -323,26 +336,28 @@ export default function PostStep2({
                 <option value="">Select</option>
                 {DRIVE_TYPES.map((dt) => (
                   <option key={dt.value} value={dt.value}>
-                    {dt.label}
+                    {t(`vehicle.${dt.value}`)}
                   </option>
                 ))}
               </select>
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Owners
+                {t("step2.owners")}
               </label>
               <input
                 type="text"
                 className={VEHICLE_INPUT_CLASSES}
                 placeholder="e.g. 1"
                 value={vehicleAttrs.owners}
-                onChange={(e) => onVehicleAttrUpdateAction("owners", e.target.value)}
+                onChange={(e) =>
+                  onVehicleAttrUpdateAction("owners", e.target.value)
+                }
               />
             </div>
             <div>
               <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
-                Service
+                {t("step2.service")}
               </label>
               <select
                 className={VEHICLE_INPUT_CLASSES}
@@ -354,7 +369,7 @@ export default function PostStep2({
                 <option value="">Select</option>
                 {SERVICE_HISTORY.map((sh) => (
                   <option key={sh} value={sh}>
-                    {capitalize(sh)}
+                    {t(`vehicle.${sh}`)}
                   </option>
                 ))}
               </select>
@@ -362,8 +377,7 @@ export default function PostStep2({
           </div>
 
           <p className="text-[10px] text-[#8a8280] text-center tracking-wide">
-            These details help buyers find your vehicle and improve your listing
-            quality
+            {t("step2.vehicleDetailsHint")}
           </p>
         </div>
       )}
@@ -373,7 +387,7 @@ export default function PostStep2({
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
-              Price (&euro;)
+              {t("step2.priceLabel")}
             </label>
             <button
               type="button"
@@ -386,7 +400,9 @@ export default function PostStep2({
               ) : (
                 <BarChart3 className="w-3 h-3" />
               )}
-              {pricingLoading ? "Analyzing..." : "Get pricing guide"}
+              {pricingLoading
+                ? t("step2.analyzing")
+                : t("step2.getPricingGuide")}
               {!pricingLoading && (
                 <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                   Beta
@@ -409,18 +425,18 @@ export default function PostStep2({
         </div>
         <div>
           <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-            Condition
+            {t("step2.conditionLabel")}
           </label>
           <select
             className={INPUT_CLASSES}
             value={formData.condition}
             onChange={(e) => onUpdateAction("condition", e.target.value)}
           >
-            <option value="new">New</option>
-            <option value="like_new">Like New</option>
-            <option value="good">Good</option>
-            <option value="fair">Fair</option>
-            <option value="for_parts">For Parts</option>
+            <option value="new">{t("step2.conditionNew")}</option>
+            <option value="like_new">{t("step2.conditionLikeNew")}</option>
+            <option value="good">{t("step2.conditionGood")}</option>
+            <option value="fair">{t("step2.conditionFair")}</option>
+            <option value="for_parts">{t("step2.conditionForParts")}</option>
           </select>
         </div>
       </div>
@@ -428,7 +444,7 @@ export default function PostStep2({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-            Location
+            {t("step2.locationLabel")}
           </label>
           <select
             className={INPUT_CLASSES}
@@ -445,19 +461,56 @@ export default function PostStep2({
         </div>
         <div>
           <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-            Price Type
+            {t("step2.priceTypeLabel")}
           </label>
           <select
             className={INPUT_CLASSES}
             value={formData.price_type}
             onChange={(e) => onUpdateAction("price_type", e.target.value)}
           >
-            <option value="fixed">Fixed Price</option>
-            <option value="negotiable">Negotiable</option>
-            <option value="free">Free</option>
-            <option value="contact">Contact for Price</option>
+            <option value="fixed">{t("step2.priceTypeFixed")}</option>
+            <option value="negotiable">{t("step2.priceTypeNegotiable")}</option>
+            <option value="free">{t("step2.priceTypeFree")}</option>
+            <option value="contact">{t("step2.priceTypeContact")}</option>
           </select>
         </div>
+      </div>
+
+      {/* Stock / Quantity */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+            Quantity in stock
+          </label>
+          <input
+            type="number"
+            min="0"
+            className={INPUT_CLASSES}
+            placeholder="Leave empty for single item"
+            value={formData.quantity}
+            onChange={(e) => onUpdateAction("quantity", e.target.value)}
+          />
+          <p className="text-[10px] text-[#8a8280] mt-1">
+            Optional — track stock for items you sell multiple of
+          </p>
+        </div>
+        {formData.quantity && Number(formData.quantity) > 0 && (
+          <div>
+            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+              Low stock alert at
+            </label>
+            <input
+              type="number"
+              min="1"
+              className={INPUT_CLASSES}
+              value={formData.low_stock_threshold}
+              onChange={(e) => onUpdateAction("low_stock_threshold", e.target.value)}
+            />
+            <p className="text-[10px] text-[#8a8280] mt-1">
+              Get notified when stock drops to this level
+            </p>
+          </div>
+        )}
       </div>
 
       {/* AI Pricing Guide Panel */}
@@ -469,14 +522,16 @@ export default function PostStep2({
               className="font-light text-[#1a1a1a] text-base"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              AI Pricing Guide
+              {t("step2.aiPricingGuide")}
             </span>
             <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em]">
               Beta
             </span>
             {(pricingData.market?.similar_count ?? 0) > 0 && (
               <span className="text-xs text-[#8a8280] ml-auto">
-                Based on {pricingData.market!.similar_count} similar listings
+                {t("step2.basedOn", {
+                  count: pricingData.market!.similar_count,
+                })}
               </span>
             )}
           </div>
@@ -487,7 +542,10 @@ export default function PostStep2({
             <button
               type="button"
               onClick={() => {
-                onUpdateAction("price", pricingData.price_low?.toString() || "");
+                onUpdateAction(
+                  "price",
+                  pricingData.price_low?.toString() || "",
+                );
                 onSelectPriceKeyAction("low");
               }}
               className={`p-4 text-center transition-all cursor-pointer border ${
@@ -497,7 +555,7 @@ export default function PostStep2({
               }`}
             >
               <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1">
-                Quick Sale
+                {t("step2.quickSale")}
               </div>
               <div
                 className="text-xl font-light text-[#1a1a1a] mb-1"
@@ -506,7 +564,9 @@ export default function PostStep2({
                 &euro;{pricingData.price_low?.toLocaleString()}
               </div>
               <div className="text-[10px] text-emerald-600">
-                {selectedPriceKey === "low" ? "Selected" : "Competitive"}
+                {selectedPriceKey === "low"
+                  ? t("step2.selected")
+                  : t("step2.competitive")}
               </div>
             </button>
 
@@ -527,7 +587,7 @@ export default function PostStep2({
               }`}
             >
               <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#1a1a1a] mb-1">
-                Recommended
+                {t("step2.recommended")}
               </div>
               <div
                 className="text-xl font-light text-[#1a1a1a] mb-1"
@@ -536,7 +596,9 @@ export default function PostStep2({
                 &euro;{pricingData.suggested_price?.toLocaleString()}
               </div>
               <div className="text-[10px] text-[#6b6560]">
-                {selectedPriceKey === "suggested" ? "Selected" : "Fair value"}
+                {selectedPriceKey === "suggested"
+                  ? t("step2.selected")
+                  : t("step2.fairValue")}
               </div>
             </button>
 
@@ -544,7 +606,10 @@ export default function PostStep2({
             <button
               type="button"
               onClick={() => {
-                onUpdateAction("price", pricingData.price_high?.toString() || "");
+                onUpdateAction(
+                  "price",
+                  pricingData.price_high?.toString() || "",
+                );
                 onSelectPriceKeyAction("high");
               }}
               className={`p-4 text-center transition-all cursor-pointer border ${
@@ -554,7 +619,7 @@ export default function PostStep2({
               }`}
             >
               <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1">
-                Premium
+                {t("step2.premium")}
               </div>
               <div
                 className="text-xl font-light text-[#1a1a1a] mb-1"
@@ -563,7 +628,9 @@ export default function PostStep2({
                 &euro;{pricingData.price_high?.toLocaleString()}
               </div>
               <div className="text-[10px] text-amber-600">
-                {selectedPriceKey === "high" ? "Selected" : "Patient sell"}
+                {selectedPriceKey === "high"
+                  ? t("step2.selected")
+                  : t("step2.patientSell")}
               </div>
             </button>
           </div>
@@ -592,9 +659,7 @@ export default function PostStep2({
 
           {/* Selection hint */}
           <p className="text-[10px] text-[#8a8280] text-center tracking-wide">
-            {selectedPriceKey
-              ? "Price applied — you can change it anytime above"
-              : "Click a price above to apply it"}
+            {selectedPriceKey ? t("step2.priceApplied") : t("step2.clickPrice")}
           </p>
         </div>
       )}
@@ -602,9 +667,9 @@ export default function PostStep2({
       {/* Phone number */}
       <div>
         <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
-          Phone Number{" "}
+          {t("step2.phoneNumberLabel")}{" "}
           <span className="text-[#8a8280] font-normal normal-case tracking-normal text-xs">
-            (optional)
+            {t("step2.phoneNumberOptional")}
           </span>
         </label>
         <input
@@ -615,8 +680,7 @@ export default function PostStep2({
           onChange={(e) => onUpdateAction("contact_phone", e.target.value)}
         />
         <p className="text-xs text-[#8a8280] mt-1.5">
-          Add a phone number so buyers can call you directly. Leave blank to
-          only use messaging.
+          {t("step2.phoneNumberHint")}
         </p>
       </div>
 
@@ -626,14 +690,14 @@ export default function PostStep2({
           onClick={onBackAction}
           className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Back
+          <ArrowLeft className="w-3.5 h-3.5" /> {t("step2.back")}
         </button>
         <button
           type="button"
           onClick={onNextAction}
           className="flex-1 bg-[#8E7A6B] text-white py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center justify-center gap-2"
         >
-          Continue <ArrowRight className="w-3.5 h-3.5" />
+          {t("step2.continue")} <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

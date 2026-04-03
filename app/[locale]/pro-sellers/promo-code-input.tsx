@@ -1,8 +1,8 @@
 "use client";
 
 import { Gift, Loader2, Ticket } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 export default function PromoCodeInput() {

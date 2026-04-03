@@ -9,12 +9,13 @@ import {
   Tag,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import LeaveReviewModal from "@/app/components/leave-review-modal";
+import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 
@@ -89,6 +90,7 @@ function PurchaseCard({
   purchase: Purchase;
   userId: string;
 }) {
+  const t = useTranslations("dashboard.purchases");
   const supabase = createClient();
   const listing = purchase.listings;
   const seller = purchase.seller;
@@ -239,7 +241,9 @@ function PurchaseCard({
             hasReviewed ? (
               <div className="flex items-center gap-2">
                 <StarRow rating={existingRating ?? 0} />
-                <span className="text-xs text-[#8a8280]">Your review</span>
+                <span className="text-xs text-[#8a8280]">
+                  {t("yourReview")}
+                </span>
               </div>
             ) : (
               <button
@@ -289,6 +293,7 @@ export default function PurchasesClient({
   userId: string;
   purchases: Purchase[];
 }) {
+  const t = useTranslations("dashboard.purchases");
   const totalSpent = purchases.reduce((sum, p) => {
     return sum + (p.counter_amount ?? p.amount);
   }, 0);
@@ -300,7 +305,7 @@ export default function PurchasesClient({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">Purchases</h1>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
           <p className="text-sm text-[#6b6560] mt-0.5">
             All listings you've successfully bought.
           </p>
@@ -337,7 +342,9 @@ export default function PurchasesClient({
                 }).length
               }
             </div>
-            <div className="text-xs text-[#6b6560] mt-0.5">Transactions</div>
+            <div className="text-xs text-[#6b6560] mt-0.5">
+              {t("transactions")}
+            </div>
           </div>
           <div className="bg-white border border-[#e8e6e3] p-4 text-center">
             <div className="text-2xl font-bold text-green-600">
@@ -355,7 +362,9 @@ export default function PurchasesClient({
                     .toLocaleString()}`
                 : "—"}
             </div>
-            <div className="text-xs text-[#6b6560] mt-0.5">Saved vs asking</div>
+            <div className="text-xs text-[#6b6560] mt-0.5">
+              {t("savedVsAsking")}
+            </div>
           </div>
         </div>
       )}

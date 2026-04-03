@@ -12,9 +12,11 @@ import {
   X,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MapLocation } from "@/app/components/listings-map";
+import { useRouter } from "@/i18n/navigation";
 
 // Leaflet uses browser-only APIs — must be dynamically imported
 const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
@@ -56,6 +58,7 @@ export default function SearchClient({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("search");
 
   // ─── Seed from URL once on mount ─────────────────────────────────────────
   const initialQuery = searchParams.get("q") || "";
@@ -465,7 +468,7 @@ export default function SearchClient({
           {/* Dynamic title + count */}
           <div className="text-center mb-6">
             <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-3">
-              Search &amp; Discover
+              {t("searchHeader")}
             </p>
             <h1
               className="text-2xl md:text-3xl font-light"
@@ -473,34 +476,36 @@ export default function SearchClient({
             >
               {submittedQuery ? (
                 <>
-                  Results for{" "}
+                  {t("resultsFor")}{" "}
                   <span className="text-white/70">
                     &ldquo;{submittedQuery}&rdquo;
                   </span>
                 </>
               ) : activeCategory ? (
                 <>
-                  <span className="text-white/60">Browse</span>{" "}
+                  <span className="text-white/60">
+                    {t("filters_panel.allCategories").split(" ")[0]}
+                  </span>{" "}
                   {activeCategory.name}
                 </>
               ) : (
-                "Browse Listings"
+                t("browseListings")
               )}
             </h1>
             <p className="text-white/40 text-sm mt-2">
               {loading ? (
-                "Finding listings…"
+                t("findingListings")
               ) : totalHits > 0 ? (
                 <>
                   <span className="text-white font-semibold">
                     {totalHits.toLocaleString()}
                   </span>{" "}
-                  {totalHits === 1 ? "listing" : "listings"} available
+                  {t("availableListings", { count: totalHits })}
                 </>
               ) : hasFilters ? (
-                "No listings match your search"
+                t("noListingsMatch")
               ) : (
-                "Discover great deals across Cyprus"
+                t("discoverDeals")
               )}
             </p>
           </div>
@@ -511,7 +516,7 @@ export default function SearchClient({
             <input
               type="text"
               className="w-full pl-12 pr-28 py-4 border border-white/10 bg-white/5 text-white placeholder-white/30 focus:bg-white/10 focus:outline-none focus:border-white/20 text-sm"
-              placeholder="Search listings… or press Enter to search"
+              placeholder={t("placeholder")}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -554,12 +559,16 @@ export default function SearchClient({
 
           {/* Hint row */}
           <p className="text-center text-xs text-white/30 mt-3">
-            Press{" "}
-            <kbd className="bg-white/10 border border-white/15 px-1.5 py-0.5 text-white/40 font-mono text-[11px]">
-              Enter
-            </kbd>{" "}
-            to search · <Sparkles className="w-3 h-3 inline text-white/40" />{" "}
-            for AI smart search{" "}
+            {t.rich("hint", {
+              enter: (chunks) => (
+                <kbd className="bg-white/10 border border-white/15 px-1.5 py-0.5 text-white/40 font-mono text-[11px]">
+                  {chunks}
+                </kbd>
+              ),
+              sparkle: () => (
+                <Sparkles className="w-3 h-3 inline text-white/40" />
+              ),
+            })}{" "}
             <span className="text-[9px] bg-white/10 text-white/40 px-1.5 py-0.5 font-medium uppercase tracking-[0.15em]">
               Beta
             </span>
@@ -574,7 +583,7 @@ export default function SearchClient({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
-                  Category
+                  {t("filters_panel.category")}
                 </label>
                 <select
                   className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
@@ -584,7 +593,7 @@ export default function SearchClient({
                     setSubcategorySlug("");
                   }}
                 >
-                  <option value="">All Categories</option>
+                  <option value="">{t("filters_panel.allCategories")}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.slug}>
                       {cat.name}
@@ -594,14 +603,14 @@ export default function SearchClient({
               </div>
               <div>
                 <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
-                  Location
+                  {t("filters_panel.location")}
                 </label>
                 <select
                   className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={locationSlug}
                   onChange={(e) => setLocationSlug(e.target.value)}
                 >
-                  <option value="">All Locations</option>
+                  <option value="">{t("filters_panel.allLocations")}</option>
                   {locations.map((loc) => (
                     <option key={loc.id} value={loc.slug}>
                       {loc.name}
@@ -611,24 +620,28 @@ export default function SearchClient({
               </div>
               <div>
                 <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
-                  Sort By
+                  {t("filters_panel.sortBy")}
                 </label>
                 <select
                   className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="newest">Newest First</option>
-                  <option value="price_low">Price: Low → High</option>
-                  <option value="price_high">Price: High → Low</option>
-                  <option value="popular">Most Popular</option>
+                  <option value="newest">{t("filters_panel.newest")}</option>
+                  <option value="price_low">
+                    {t("filters_panel.priceLow")}
+                  </option>
+                  <option value="price_high">
+                    {t("filters_panel.priceHigh")}
+                  </option>
+                  <option value="popular">{t("filters_panel.popular")}</option>
                 </select>
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
-                Price Range (€)
+                {t("filters_panel.priceRange")}
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
@@ -638,7 +651,7 @@ export default function SearchClient({
                   <input
                     type="number"
                     min="0"
-                    placeholder="Min"
+                    placeholder={t("filters_panel.min")}
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
                     className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -652,7 +665,7 @@ export default function SearchClient({
                   <input
                     type="number"
                     min="0"
-                    placeholder="Max"
+                    placeholder={t("filters_panel.max")}
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
                     className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -664,7 +677,7 @@ export default function SearchClient({
             {visibleSubcategories.length > 0 && (
               <div>
                 <label className="block text-xs font-medium text-[#6b6560] mb-2">
-                  Subcategory
+                  {t("filters_panel.subcategory")}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {visibleSubcategories.map((sub) => (
@@ -775,7 +788,7 @@ export default function SearchClient({
               }}
               className="text-sm text-[#8a8280] hover:text-[#666] ml-1"
             >
-              Clear all
+              {t("clearAll")}
             </button>
           </div>
         )}
@@ -797,11 +810,11 @@ export default function SearchClient({
                   <span className="font-semibold text-[#1a1a1a]">
                     {totalHits}
                   </span>{" "}
-                  {totalHits === 1 ? "listing" : "listings"} found
+                  {t("found", { count: totalHits })}
                   {listings.length < totalHits && (
                     <span className="text-[#8a8280]">
                       {" "}
-                      · showing {listings.length}
+                      · {t("showing", { count: listings.length })}
                     </span>
                   )}
                 </p>
@@ -823,7 +836,7 @@ export default function SearchClient({
                   type="button"
                   onClick={() => setViewMode("grid")}
                   className={`p-1.5 transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
-                  title="Grid view"
+                  title={t("gridView")}
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
@@ -831,7 +844,7 @@ export default function SearchClient({
                   type="button"
                   onClick={() => setViewMode("map")}
                   className={`p-1.5 transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
-                  title="Map view"
+                  title={t("mapView")}
                 >
                   <MapIcon className="w-4 h-4" />
                 </button>
@@ -842,10 +855,14 @@ export default function SearchClient({
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="newest">Newest First</option>
-                  <option value="price_low">Price: Low → High</option>
-                  <option value="price_high">Price: High → Low</option>
-                  <option value="popular">Most Popular</option>
+                  <option value="newest">{t("filters_panel.newest")}</option>
+                  <option value="price_low">
+                    {t("filters_panel.priceLow")}
+                  </option>
+                  <option value="price_high">
+                    {t("filters_panel.priceHigh")}
+                  </option>
+                  <option value="popular">{t("filters_panel.popular")}</option>
                 </select>
               )}
             </div>
@@ -860,7 +877,7 @@ export default function SearchClient({
                 className="w-full bg-[#f0eeeb] animate-pulse flex items-center justify-center"
                 style={{ height: 420 }}
               >
-                <p className="text-sm text-[#8a8280]">Updating map…</p>
+                <p className="text-sm text-[#8a8280]">{t("updatingMap")}</p>
               </div>
             ) : (
               <>
@@ -874,7 +891,7 @@ export default function SearchClient({
                 />
                 {mapLocations.length === 0 && (
                   <p className="text-center text-sm text-[#8a8280] mt-3">
-                    No listings match your search in any mapped location.
+                    {t("noListingsOnMap")}
                   </p>
                 )}
               </>
@@ -907,13 +924,15 @@ export default function SearchClient({
               className="text-xl font-light text-[#1a1a1a] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              No listings found
+              {t("noResults.title")}
             </h3>
             <p className="text-[#6b6560] text-sm mb-8">
-              We couldn't find anything matching
-              {submittedQuery ? ` "${submittedQuery}"` : " your filters"}.
-              {!wasAiSearch &&
-                " Try AI search — it understands natural language and fuzzy matches."}
+              {t("noResults.subtitle", {
+                query: submittedQuery
+                  ? ` "${submittedQuery}"`
+                  : ` ${t("noResults.subtitle")}`,
+              })}
+              {!wasAiSearch && ` ${t("noResults.aiNudge")}`}
             </p>
 
             {/* AI search nudge — only show if they haven't tried it yet */}
@@ -923,12 +942,12 @@ export default function SearchClient({
                   <Wand2 className="w-6 h-6 text-white" />
                 </div>
                 <h4 className="font-semibold text-[#1a1a1a] mb-1">
-                  Try AI Search
+                  {t("noResults.tryAi")}
                 </h4>
                 <p className="text-sm text-[#6b6560] mb-4">
-                  AI search understands phrases like{" "}
-                  <em>"cheap car under 5k in Limassol"</em> or{" "}
-                  <em>"second-hand iPhone good condition"</em>.
+                  {t("aiSearch")} {t("noResults.aiNudge")}
+                  <em>{t("aiSearchExample1")}</em> or{" "}
+                  <em>{t("aiSearchExample2")}</em>.
                 </p>
                 <button
                   onClick={() => handleAiSearch(submittedQuery)}
@@ -940,7 +959,7 @@ export default function SearchClient({
                   ) : (
                     <Sparkles className="w-4 h-4" />
                   )}
-                  Search with AI
+                  {t("noResults.searchWithAi")}
                 </button>
               </div>
             )}
@@ -963,7 +982,7 @@ export default function SearchClient({
               }}
               className="text-[#8E7A6B] font-medium hover:underline text-sm"
             >
-              Clear all filters
+              {t("noResults.clearFilters")}
             </button>
           </div>
         ) : listings.length > 0 ? (
@@ -976,7 +995,10 @@ export default function SearchClient({
             {listings.length < totalHits && (
               <div className="mt-8 flex flex-col items-center gap-2">
                 <p className="text-sm text-[#8a8280]">
-                  Showing {listings.length} of {totalHits} listings
+                  {t("showingOf", {
+                    showing: listings.length,
+                    total: totalHits,
+                  })}
                 </p>
                 <button
                   onClick={loadMore}
@@ -985,10 +1007,11 @@ export default function SearchClient({
                 >
                   {loadingMore ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" /> Loading…
+                      <Loader2 className="w-4 h-4 animate-spin" />{" "}
+                      {t("loading")}
                     </>
                   ) : (
-                    `Load more (${totalHits - listings.length} remaining)`
+                    t("loadMore", { count: totalHits - listings.length })
                   )}
                 </button>
               </div>
@@ -1000,7 +1023,7 @@ export default function SearchClient({
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-medium text-[#666]">
-                Featured &amp; Promoted Listings
+                {t("featuredAndPromoted")}
               </h2>
             </div>
             {featuredLoading ? (
@@ -1028,9 +1051,7 @@ export default function SearchClient({
             ) : (
               <div className="text-center py-20 text-[#8a8280]">
                 <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">
-                  Type something and press Enter to search
-                </p>
+                <p className="text-sm">{t("emptyState")}</p>
               </div>
             )}
           </div>

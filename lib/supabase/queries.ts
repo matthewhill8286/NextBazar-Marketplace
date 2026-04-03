@@ -163,6 +163,7 @@ const LISTING_DETAIL_SELECT = `
   is_promoted, promoted_until, is_urgent,
   view_count, favorite_count, message_count,
   contact_phone, attributes,
+  quantity, low_stock_threshold,
   expires_at, created_at, updated_at,
   categories(name, slug, icon),
   subcategories(name, slug),
@@ -283,6 +284,22 @@ export async function getListingPageDataCached(
     accentColor: accentResult.data?.accent_color ?? null,
     shopSlug: accentResult.data?.slug ?? null,
   };
+}
+
+// ─── Popular listing slugs (for generateStaticParams) ───────────────────────
+
+export async function getPopularListingSlugs(limit = 50): Promise<string[]> {
+  "use cache";
+  cacheLife("reference");
+  cacheTag("listings");
+
+  const { data } = await publicClient()
+    .from("listings")
+    .select("slug")
+    .eq("status", "active")
+    .order("view_count", { ascending: false })
+    .limit(limit);
+  return (data ?? []).map((r) => r.slug);
 }
 
 // ─── Category landing page helpers (revalidate: 60 s) ────────────────────────

@@ -2,11 +2,10 @@
 
 import { Grid3X3, Heart, List, MapPin, Trash2 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
 import { ConfirmDialog } from "@/app/components/ui";
+import { Link, useRouter } from "@/i18n/navigation";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";

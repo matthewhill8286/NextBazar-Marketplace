@@ -11,8 +11,22 @@ const mockToggle = vi.fn().mockResolvedValue(undefined);
 let mockSavedIds = new Set<string>();
 let mockSavedLoading = false;
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
+  usePathname: () => "/",
 }));
 
 vi.mock("next/image", () => ({

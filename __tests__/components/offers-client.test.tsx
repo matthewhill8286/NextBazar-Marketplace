@@ -40,8 +40,19 @@ const { mockUpdateEq, mockUpdate, mockDeleteEq, mockRefresh } = vi.hoisted(
 
 // ── Mocks ─────────────────────────────────────────────────────────────────
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ refresh: mockRefresh }),
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) =>
+    React.createElement("a", { href, className }, children),
+  usePathname: () => "/",
 }));
 
 vi.mock("next/image", () => ({

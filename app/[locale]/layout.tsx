@@ -60,7 +60,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  if (!routing.locales.includes(locale as "en" | "el")) {
+  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
     notFound();
   }
 
@@ -69,9 +69,9 @@ export default async function LocaleLayout({
     .default;
 
   return (
-    <html lang={locale} className={`h-full antialiased ${playfair.variable}`}>
-      <body className="min-h-full flex flex-col bg-[#faf9f7]">
-        <Suspense>
+    <Suspense>
+      <html lang={locale} className={`h-full antialiased ${playfair.variable}`}>
+        <body className="min-h-full flex flex-col bg-[#faf9f7]">
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AuthProvider>
               <SavedProvider>
@@ -103,8 +103,8 @@ export default async function LocaleLayout({
               </SavedProvider>
             </AuthProvider>
           </NextIntlClientProvider>
-        </Suspense>
-      </body>
-    </html>
+        </body>
+      </html>
+    </Suspense>
   );
 }
