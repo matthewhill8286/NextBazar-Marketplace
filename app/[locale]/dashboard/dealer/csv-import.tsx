@@ -382,6 +382,8 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
   const [dragActive, setDragActive] = useState(false);
   const [aiEnhancing, setAiEnhancing] = useState(false);
   const [aiEnhancedCount, setAiEnhancedCount] = useState(0);
+  const [defaultQuantity, setDefaultQuantity] = useState("");
+  const [defaultLowStock, setDefaultLowStock] = useState("3");
 
   // ─── AI Enhance: generate descriptions for rows missing them ─────
   const rowsMissingDescription = useMemo(
@@ -623,8 +625,16 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
         contact_phone: r.data.contact_phone || undefined,
         image_url: r.data.image_url || undefined,
         attributes: Object.keys(attrs).length > 0 ? attrs : undefined,
-        quantity: r.data.quantity ? Number(r.data.quantity) : undefined,
-        low_stock_threshold: r.data.low_stock_threshold ? Number(r.data.low_stock_threshold) : undefined,
+        quantity: r.data.quantity
+          ? Number(r.data.quantity)
+          : defaultQuantity
+            ? Number(defaultQuantity)
+            : undefined,
+        low_stock_threshold: r.data.low_stock_threshold
+          ? Number(r.data.low_stock_threshold)
+          : defaultLowStock
+            ? Number(defaultLowStock)
+            : undefined,
       };
     });
 
@@ -674,7 +684,7 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
 
     setImporting(false);
     setPhase("results");
-  }, [validatedRows]);
+  }, [validatedRows, defaultQuantity, defaultLowStock]);
 
   // ─── Stats ─────────────────────────────────────────────────────────
   const validCount = validatedRows.filter((r) => r.valid).length;
@@ -686,6 +696,7 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
   const imageRowCount = imageUrlMapped
     ? validatedRows.filter((r) => r.valid && r.data.image_url).length
     : 0;
+  const quantityMapped = mappedKeys.has("quantity");
 
   // ─── Render ────────────────────────────────────────────────────────
   return (
@@ -1149,6 +1160,49 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                   </div>
                 </div>
               )}
+
+              {/* Stock defaults */}
+              <div className="bg-[#faf9f7] border border-[#e8e6e3] p-4">
+                <p className="text-xs font-semibold text-[#1a1a1a] mb-3">
+                  Stock Settings
+                  {quantityMapped && (
+                    <span className="font-normal text-[#8a8280] ml-2">
+                      (rows with a quantity column value will use that instead)
+                    </span>
+                  )}
+                </p>
+                <div className="flex items-end gap-4">
+                  <div className="flex-1 max-w-[180px]">
+                    <label className="block text-xs text-[#666] mb-1">
+                      Default quantity per listing
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="Leave blank for unlimited"
+                      className="w-full px-3 py-2 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-xs bg-white"
+                      value={defaultQuantity}
+                      onChange={(e) => setDefaultQuantity(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1 max-w-[180px]">
+                    <label className="block text-xs text-[#666] mb-1">
+                      Low stock alert at
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="3"
+                      className="w-full px-3 py-2 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-xs bg-white"
+                      value={defaultLowStock}
+                      onChange={(e) => setDefaultLowStock(e.target.value)}
+                    />
+                  </div>
+                  <p className="text-[10px] text-[#8a8280] pb-2 flex-1">
+                    Set a default stock quantity for all imported listings. Leave blank to skip stock tracking.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
 

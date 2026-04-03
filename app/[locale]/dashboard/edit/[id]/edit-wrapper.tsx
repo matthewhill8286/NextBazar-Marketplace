@@ -36,7 +36,7 @@ export default function EditWrapper({
           `
           id, title, description, price, price_type, condition, contact_phone,
           category_id, location_id, user_id, primary_image_url,
-          is_promoted, video_url,
+          is_promoted, video_url, quantity, low_stock_threshold,
           images:listing_images(id, url, sort_order)
         `,
         )

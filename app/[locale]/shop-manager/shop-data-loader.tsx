@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
@@ -30,6 +31,7 @@ export default function ShopDataLoader({
   children: React.ReactNode;
 }) {
   const { userId, loading: authLoading } = useAuth();
+  const pathname = usePathname();
   const supabase = createClient();
 
   const [loading, setLoading] = useState(true);
@@ -110,9 +112,22 @@ export default function ShopDataLoader({
     if (data) setListings(data as unknown as ListingRow[]);
   }, [userId, supabase]);
 
+  // Initial load
   useEffect(() => {
     if (!authLoading && userId) load();
   }, [authLoading, userId, load]);
+
+  // Soft-refresh listings when navigating back (e.g. from edit page)
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+    // After first mount, any pathname change triggers a soft refresh
+    if (userId) refreshListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   return (
     <ShopCMSProvider
