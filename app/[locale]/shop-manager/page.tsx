@@ -5,5 +5,5 @@ import { useShopCMS } from "./shop-context";
 
 export default function ShopManagerOverview() {
   const { shop, listings } = useShopCMS();
-  return <OverviewTab listings={listings} slug={shop?.slug ?? ""} />;
+  return <OverviewTab listings={listings} slug={shop?.slug ?? ""} shopMode />;
 }

@@ -28,6 +28,8 @@ type Props = {
     | "condition"
     | "location_id"
     | "contact_phone"
+    | "quantity"
+    | "low_stock_threshold"
   >;
   locations: Location[];
   pricingData: PricingData | null;
@@ -472,6 +474,43 @@ export default function PostStep2({
             <option value="contact">{t("step2.priceTypeContact")}</option>
           </select>
         </div>
+      </div>
+
+      {/* Stock / Quantity */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+            Quantity in stock
+          </label>
+          <input
+            type="number"
+            min="0"
+            className={INPUT_CLASSES}
+            placeholder="Leave empty for single item"
+            value={formData.quantity}
+            onChange={(e) => onUpdateAction("quantity", e.target.value)}
+          />
+          <p className="text-[10px] text-[#8a8280] mt-1">
+            Optional — track stock for items you sell multiple of
+          </p>
+        </div>
+        {formData.quantity && Number(formData.quantity) > 0 && (
+          <div>
+            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+              Low stock alert at
+            </label>
+            <input
+              type="number"
+              min="1"
+              className={INPUT_CLASSES}
+              value={formData.low_stock_threshold}
+              onChange={(e) => onUpdateAction("low_stock_threshold", e.target.value)}
+            />
+            <p className="text-[10px] text-[#8a8280] mt-1">
+              Get notified when stock drops to this level
+            </p>
+          </div>
+        )}
       </div>
 
       {/* AI Pricing Guide Panel */}

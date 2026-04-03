@@ -14,7 +14,7 @@ import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import type { ConversationRow } from "./types";
 
-export default function MessagesTab() {
+export default function MessagesTab({ shopMode = false }: { shopMode?: boolean }) {
   const { userId } = useAuth();
   const supabase = createClient();
 
@@ -103,10 +103,10 @@ export default function MessagesTab() {
           )}
         </h3>
         <Link
-          href="/messages"
+          href={shopMode ? "/shop-manager/messages" : "/messages"}
           className="text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657] transition-colors"
         >
-          Open full inbox &rarr;
+          {shopMode ? "View all" : "Open full inbox"} &rarr;
         </Link>
       </div>
 
@@ -138,6 +138,7 @@ export default function MessagesTab() {
                 key={c.id}
                 conversation={c}
                 timeAgo={timeAgo}
+                shopMode={shopMode}
               />
             ))}
           </>
@@ -145,7 +146,7 @@ export default function MessagesTab() {
 
         {/* Recent */}
         {grouped.unpinned.map((c) => (
-          <ConversationItem key={c.id} conversation={c} timeAgo={timeAgo} />
+          <ConversationItem key={c.id} conversation={c} timeAgo={timeAgo} shopMode={shopMode} />
         ))}
 
         {filtered.length === 0 && (
@@ -168,13 +169,15 @@ export default function MessagesTab() {
 function ConversationItem({
   conversation: c,
   timeAgo,
+  shopMode = false,
 }: {
   conversation: ConversationRow;
   timeAgo: (d: string | null) => string;
+  shopMode?: boolean;
 }) {
   return (
     <Link
-      href={`/messages/${c.id}`}
+      href={shopMode ? `/shop-manager/messages/${c.id}` : `/messages/${c.id}`}
       className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors group"
     >
       {/* Buyer avatar */}

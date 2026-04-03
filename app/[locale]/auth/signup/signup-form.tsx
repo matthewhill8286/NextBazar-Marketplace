@@ -36,7 +36,7 @@ export default function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -68,7 +68,7 @@ export default function SignupForm() {
           {t("checkYourEmail")}
         </h2>
         <p className="text-[#6b6560] text-sm">
-          {t("confirmationMessage").replace("{email}", email)}
+          {t("confirmationMessage", { email })}
         </p>
       </div>
     );

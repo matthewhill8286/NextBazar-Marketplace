@@ -5,5 +5,5 @@ import { useShopCMS } from "../shop-context";
 
 export default function ShopSalesPage() {
   const { listings } = useShopCMS();
-  return <SalesTab listings={listings} />;
+  return <SalesTab listings={listings} shopMode />;
 }

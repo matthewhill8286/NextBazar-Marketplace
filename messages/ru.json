@@ -98,7 +98,7 @@
     "browseAll": "Все объявления",
     "browseListings": "Обзор объявлений",
     "aiSearchBadge": "ИИ-поиск",
-    "found": "Найдено {count, plural, one {объявление} few {объявления} other {объявлений}",
+    "found": "Найдено {count, plural, one {объявление} few {объявления} other {объявлений}}",
     "showing": "показано {count}",
     "loadMore": "Загрузить ещё ({count} осталось)",
     "loading": "Загрузка…",
@@ -1151,6 +1151,7 @@
     "tabSales": "Продажи",
     "tabOffers": "Предложения",
     "tabMessages": "Сообщения",
+    "tabNotifications": "Уведомления",
     "tabAnalytics": "Аналитика"
   }
 }

@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import {
   BarChart2,
+  Bell,
   CreditCard,
   DollarSign,
   ExternalLink,
@@ -36,6 +37,11 @@ const NAV_ITEMS = [
     href: "/shop-manager/messages",
     labelKey: "tabMessages",
     icon: MessageCircle,
+  },
+  {
+    href: "/shop-manager/notifications",
+    labelKey: "tabNotifications",
+    icon: Bell,
   },
   {
     href: "/shop-manager/analytics",

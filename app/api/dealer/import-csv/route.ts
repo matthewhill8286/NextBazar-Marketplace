@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
  *
  * Accepts a JSON body with an array of parsed listing rows from the client.
  * Validates each row, inserts them in bulk, and returns results.
+ * Optionally downloads images from provided URLs and attaches them.
  *
  * Only available to authenticated Pro Sellers.
  */
@@ -20,7 +21,10 @@ type ImportRow = {
   subcategory_slug?: string;
   location_slug?: string;
   contact_phone?: string;
+  image_url?: string;
   attributes?: Record<string, string>;
+  quantity?: number;
+  low_stock_threshold?: number;
 };
 
 type InsertResult = {
@@ -30,6 +34,55 @@ type InsertResult = {
   slug?: string;
   error?: string;
 };
+
+/**
+ * Download an image from a URL and upload it to Supabase storage.
+ * Returns the public URL or null on failure.
+ */
+async function downloadAndUploadImage(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  imageUrl: string,
+  userId: string,
+  listingId: string,
+): Promise<string | null> {
+  try {
+    const response = await fetch(imageUrl, {
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get("content-type") || "image/jpeg";
+    const buffer = await response.arrayBuffer();
+
+    // Determine extension from content type
+    const extMap: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/gif": "gif",
+    };
+    const ext = extMap[contentType] || "jpg";
+    const filePath = `listings/${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("listings")
+      .upload(filePath, buffer, {
+        contentType,
+        upsert: false,
+      });
+
+    if (uploadError) return null;
+
+    const { data: urlData } = supabase.storage
+      .from("listings")
+      .getPublicUrl(filePath);
+
+    return urlData.publicUrl;
+  } catch {
+    return null;
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -125,7 +178,7 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Resolve subcategory (optional)
+      // Resolve subcategory (optional — NULL allowed)
       let subcategoryId: string | null = null;
       if (row.subcategory_slug) {
         const subSlug = row.subcategory_slug.toLowerCase().trim();
@@ -164,6 +217,8 @@ export async function POST(req: NextRequest) {
         Object.values(row.attributes).some((v) => v?.trim())
           ? { attributes: row.attributes }
           : {}),
+        ...(row.quantity != null ? { quantity: row.quantity } : {}),
+        ...(row.low_stock_threshold != null ? { low_stock_threshold: row.low_stock_threshold } : {}),
       };
 
       const { data, error } = await supabase
@@ -179,14 +234,43 @@ export async function POST(req: NextRequest) {
           title: row.title,
           error: error.message,
         });
-      } else {
-        results.push({
-          row: i + 1,
-          status: "created",
-          title: row.title,
-          slug: data.slug,
-        });
+        continue;
       }
+
+      // Download and attach image if URL provided
+      if (row.image_url?.trim()) {
+        const imagePublicUrl = await downloadAndUploadImage(
+          supabase,
+          row.image_url.trim(),
+          user.id,
+          data.id,
+        );
+
+        if (imagePublicUrl) {
+          // Update listing with primary image
+          await supabase
+            .from("listings")
+            .update({
+              primary_image_url: imagePublicUrl,
+              image_count: 1,
+            })
+            .eq("id", data.id);
+
+          // Insert into listing_images
+          await supabase.from("listing_images").insert({
+            listing_id: data.id,
+            url: imagePublicUrl,
+            sort_order: 0,
+          });
+        }
+      }
+
+      results.push({
+        row: i + 1,
+        status: "created",
+        title: row.title,
+        slug: data.slug,
+      });
     }
 
     const created = results.filter((r) => r.status === "created").length;

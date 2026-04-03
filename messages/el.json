@@ -98,7 +98,7 @@
     "browseAll": "Περιήγηση σε όλες τις αγγελίες",
     "browseListings": "Περιήγηση Αγγελιών",
     "aiSearchBadge": "Αναζήτηση AI",
-    "found": "{count} {count, plural, one {αγγελία} other {αγγελίες}} βρέθηκαν",
+    "found": "{count, plural, one {αγγελία} other {αγγελίες}} βρέθηκαν",
     "showing": "εμφάνιση {count}",
     "loadMore": "Περισσότερα ({count} ακόμα)",
     "loading": "Φόρτωση…",
@@ -1110,6 +1110,7 @@
     "tabSales": "Πωλήσεις",
     "tabOffers": "Προσφορές",
     "tabMessages": "Μηνύματα",
+    "tabNotifications": "Ειδοποιήσεις",
     "tabAnalytics": "Αναλυτικά"
   },
   "about": {

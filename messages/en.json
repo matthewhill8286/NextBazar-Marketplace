@@ -98,7 +98,7 @@
     "browseAll": "Browse all listings",
     "browseListings": "Browse Listings",
     "aiSearchBadge": "AI Search",
-    "found": "{count} {count, plural, one {listing} other {listings}} found",
+    "found": "{count, plural, one {listing} other {listings}} found",
     "showing": "showing {count}",
     "loadMore": "Load more ({count} remaining)",
     "loading": "Loading…",
@@ -1151,6 +1151,7 @@
     "tabSales": "Sales",
     "tabOffers": "Offers",
     "tabMessages": "Messages",
+    "tabNotifications": "Notifications",
     "tabAnalytics": "Analytics"
   }
 }

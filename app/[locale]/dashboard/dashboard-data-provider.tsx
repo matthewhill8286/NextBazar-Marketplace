@@ -7,6 +7,7 @@ const LISTING_SELECT = `
   primary_image_url, view_count, favorite_count, message_count,
   is_promoted, is_urgent, promoted_until, created_at, expires_at,
   category_id, location_id,
+  quantity, low_stock_threshold,
   categories(name, slug, icon),
   locations(name)
 `;

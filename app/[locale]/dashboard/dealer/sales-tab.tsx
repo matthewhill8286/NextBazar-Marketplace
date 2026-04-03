@@ -15,11 +15,12 @@ import type { ListingRow } from "./types";
 
 type Props = {
   listings: ListingRow[];
+  shopMode?: boolean;
 };
 
 type Period = "7d" | "30d" | "90d" | "all";
 
-export default function SalesTab({ listings }: Props) {
+export default function SalesTab({ listings, shopMode = false }: Props) {
   const [period, setPeriod] = useState<Period>("30d");
 
   const soldListings = useMemo(() => {
@@ -196,7 +197,7 @@ export default function SalesTab({ listings }: Props) {
                 >
                   <td className="px-4 py-3">
                     <Link
-                      href={`/listing/${l.slug}`}
+                      href={shopMode ? `/shop-manager/edit/${l.id}` : `/listing/${l.slug}`}
                       className="flex items-center gap-3 group"
                     >
                       <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">

@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
+import { useUserShop } from "@/lib/hooks/use-user-shop";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
 import GlobalSearch from "./global-search";
@@ -22,6 +23,7 @@ import UserMenu from "./user-menu";
 export default function Navbar() {
   const supabase = createClient();
   const { userId } = useCurrentUser();
+  const { hasShop } = useUserShop();
   const { count: savedCount } = useSaved();
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifCount, setNotifCount] = useState(0);
@@ -131,13 +133,13 @@ export default function Navbar() {
 
           {userId && (
             <NavPreviewWrapper
-              href="/dashboard/messages"
+              href={hasShop ? "/shop-manager/messages" : "/dashboard/messages"}
               badge={unreadCount}
               badgeColor="bg-[#8E7A6B]"
               label="Messages"
               icon={<MessageCircle className="w-4 h-4" aria-hidden="true" />}
             >
-              {() => <MessagesPreview />}
+              {() => <MessagesPreview shopMode={hasShop} />}
             </NavPreviewWrapper>
           )}
 
@@ -155,13 +157,13 @@ export default function Navbar() {
 
           {userId && (
             <NavPreviewWrapper
-              href="/dashboard/notifications"
+              href={hasShop ? "/shop-manager/notifications" : "/dashboard/notifications"}
               badge={notifCount}
               badgeColor="bg-[#8E7A6B]"
               label="Notifications"
               icon={<Bell className="w-4 h-4" aria-hidden="true" />}
             >
-              {() => <NotificationsPreview />}
+              {() => <NotificationsPreview shopMode={hasShop} />}
             </NavPreviewWrapper>
           )}
 

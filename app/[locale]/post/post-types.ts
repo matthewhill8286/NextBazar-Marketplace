@@ -28,6 +28,8 @@ export type FormData = {
   condition: string;
   location_id: string;
   contact_phone: string;
+  quantity: string;
+  low_stock_threshold: string;
 };
 
 // ─── Vehicle-specific attributes (stored in listings.attributes JSON) ─────────

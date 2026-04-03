@@ -6,9 +6,28 @@ import type { ListingRow } from "../dashboard/dealer/types";
 
 type DealerShop = Tables<"dealer_shops">;
 
+export type AnalyticsRow = {
+  listing_id: string;
+  date: string;
+  views: number;
+  favorites: number;
+  messages: number;
+};
+
+export type OfferRow = {
+  id: string;
+  listing_id: string;
+  amount: number;
+  status: string;
+  created_at: string;
+  responded_at: string | null;
+};
+
 export type ShopCMSData = {
   shop: DealerShop | null;
   listings: ListingRow[];
+  analytics: AnalyticsRow[];
+  offers: OfferRow[];
   profile: { display_name: string | null; is_pro_seller: boolean } | null;
   userId: string;
   loading: boolean;
@@ -21,6 +40,8 @@ export type ShopCMSData = {
 const ShopCMSContext = createContext<ShopCMSData>({
   shop: null,
   listings: [],
+  analytics: [],
+  offers: [],
   profile: null,
   userId: "",
   loading: true,

@@ -14,6 +14,8 @@ export type ListingRow = {
   is_promoted: boolean;
   category_id?: string;
   location_id?: string | null;
+  quantity?: number | null;
+  low_stock_threshold?: number | null;
   categories?: { name: string; slug: string; icon: string | null } | null;
   locations?: { name: string } | null;
 };

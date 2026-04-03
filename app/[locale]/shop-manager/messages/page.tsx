@@ -3,5 +3,5 @@
 import MessagesTab from "../../dashboard/dealer/messages-tab";
 
 export default function ShopMessagesPage() {
-  return <MessagesTab />;
+  return <MessagesTab shopMode />;
 }

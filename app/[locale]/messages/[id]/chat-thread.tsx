@@ -36,8 +36,13 @@ type Message = {
 
 export default function ChatThread({
   conversationId,
+  backHref = "/dashboard/messages",
+  embedded = false,
 }: {
   conversationId: string;
+  backHref?: string;
+  /** When true, removes fixed viewport height so the thread fits inside a parent layout (e.g. shop-manager). */
+  embedded?: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -71,7 +76,7 @@ export default function ChatThread({
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        router.push("/auth/login?redirect=/dashboard/messages");
+        router.push(`/auth/login?redirect=${backHref}`);
         return;
       }
       setUserId(user.id);
@@ -90,7 +95,7 @@ export default function ChatThread({
         .single();
 
       if (!conv) {
-        router.push("/dashboard/messages");
+        router.push(backHref);
         return;
       }
       setConversation(conv);
@@ -112,6 +117,13 @@ export default function ChatThread({
         .eq("conversation_id", conversationId)
         .neq("sender_id", user.id)
         .is("read_at", null);
+
+      // Reset the unread counter on the conversation itself
+      const isSeller = conv.seller_id === user.id;
+      await supabase
+        .from("conversations")
+        .update(isSeller ? { seller_unread: 0 } : { buyer_unread: 0 })
+        .eq("id", conversationId);
 
       setLoading(false);
     }
@@ -156,10 +168,23 @@ export default function ChatThread({
     enabled: !!conversationId && !!userId,
   });
 
-  // Auto-scroll to bottom
+  // Smooth-scroll to bottom inside the chat container only (never moves the page)
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const hasScrolled = useRef(false);
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!loading && messages.length > 0) {
+      const el = chatContainerRef.current;
+      if (!el) return;
+      if (!hasScrolled.current) {
+        // First load — jump instantly so the page doesn't animate
+        hasScrolled.current = true;
+        el.scrollTop = el.scrollHeight;
+      } else {
+        // Subsequent messages — smooth scroll within the chat
+        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      }
+    }
+  }, [loading, messages.length]);
 
   // Close context menu on outside click
   useEffect(() => {
@@ -245,7 +270,7 @@ export default function ChatThread({
   async function handleDeleteConversation() {
     setDeletingConv(true);
     await supabase.from("conversations").delete().eq("id", conversationId);
-    router.push("/dashboard/messages");
+    router.push(backHref);
   }
 
   async function handleDeleteMessage() {
@@ -435,12 +460,12 @@ export default function ChatThread({
   return (
     <div
       className="mx-auto flex flex-col"
-      style={{ height: "calc(100vh - 80px)" }}
+      style={embedded ? { height: "70vh", minHeight: 400 } : { height: "calc(100vh - 80px)" }}
     >
       {/* Header */}
       <div className="bg-white border-b border-[#e8e6e3] px-4 py-3 flex items-center gap-3 shrink-0">
         <Link
-          href="/dashboard/messages"
+          href={backHref}
           aria-label="Back to messages"
           className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
@@ -564,7 +589,7 @@ export default function ChatThread({
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
         {messages.length === 0 && (
           <div className="text-center py-12 text-[#8a8280] text-sm">
             Start the conversation by sending a message

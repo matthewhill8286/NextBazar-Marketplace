@@ -221,6 +221,16 @@ export default async function ListingDetailServer({
                       {tCommon("free")}
                     </span>
                   )}
+                  {listing.quantity != null && listing.quantity > 0 && (
+                    <span className="bg-[#f0eeeb] text-[#666] text-xs font-medium px-2.5 py-1">
+                      {listing.quantity} in stock
+                    </span>
+                  )}
+                  {listing.quantity === 0 && (
+                    <span className="bg-red-50 text-red-600 text-xs font-semibold px-2.5 py-1">
+                      Out of stock
+                    </span>
+                  )}
                 </div>
 
                 <h1
@@ -500,7 +510,7 @@ export default async function ListingDetailServer({
           {/* RIGHT COLUMN */}
           <div className="space-y-4">
             {/* Seller card */}
-            <div className="bg-white p-6 border border-[#e8e6e3] sticky top-20">
+            <div className="bg-white p-6 border border-[#e8e6e3]">
               <div className="flex items-center gap-3.5 mb-5">
                 <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
                   {profile?.avatar_url ? (

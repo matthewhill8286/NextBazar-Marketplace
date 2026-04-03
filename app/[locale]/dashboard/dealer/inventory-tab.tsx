@@ -15,6 +15,7 @@ import {
   Minus,
   Plus,
   ShoppingBag,
+  Trash2,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -22,8 +23,9 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 
+import { revalidateListings } from "@/app/actions/revalidate";
 import { createClient } from "@/lib/supabase/client";
-import CSVImport from "./csv-import";
+import CSVImport, { detectShopType } from "./csv-import";
 import type { ListingRow } from "./types";
 import { STATUS_BADGE } from "./types";
 
@@ -75,6 +77,79 @@ function timeAgo(dateStr: string) {
   return `${Math.floor(months / 12)}y ago`;
 }
 
+// ── Stock badge (click to edit inline) ─────────────────────────────────────
+function StockBadge({
+  quantity,
+  threshold,
+  listingId,
+  onUpdated,
+}: {
+  quantity: number;
+  threshold: number;
+  listingId: string;
+  onUpdated?: () => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(String(quantity));
+  const [saving, setSaving] = useState(false);
+
+  async function save() {
+    const num = parseInt(value, 10);
+    if (isNaN(num) || num < 0) return;
+    setSaving(true);
+    const supabase = createClient();
+    await supabase.from("listings").update({ quantity: num }).eq("id", listingId);
+    setSaving(false);
+    setEditing(false);
+    onUpdated?.();
+  }
+
+  if (editing) {
+    return (
+      <div className="inline-flex items-center gap-1">
+        <input
+          type="number"
+          min="0"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
+          className="w-14 text-xs text-right border border-[#8E7A6B] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#8E7A6B]"
+          autoFocus
+          disabled={saving}
+        />
+        <button onClick={save} disabled={saving} className="text-emerald-600 hover:text-emerald-700">
+          <Check className="w-3 h-3" />
+        </button>
+        <button onClick={() => setEditing(false)} className="text-[#8a8280] hover:text-[#1a1a1a]">
+          <X className="w-3 h-3" />
+        </button>
+      </div>
+    );
+  }
+
+  const badge = quantity === 0 ? (
+    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600">
+      Out of stock
+    </span>
+  ) : quantity <= threshold ? (
+    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+      {quantity} left
+    </span>
+  ) : (
+    <span className="text-xs text-[#6b6560]">{quantity}</span>
+  );
+
+  return (
+    <button
+      onClick={() => { setValue(String(quantity)); setEditing(true); }}
+      className="hover:opacity-70 transition-opacity cursor-pointer"
+      title="Click to edit stock"
+    >
+      {badge}
+    </button>
+  );
+}
+
 // ── Checkbox component ──────────────────────────────────────────────────────
 function Checkbox({
   checked,
@@ -118,6 +193,7 @@ export default function InventoryTab({
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
+  const shopType = useMemo(() => detectShopType(listings), [listings]);
   const [showImport, setShowImport] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(PAGE_SIZES[0]);
@@ -262,6 +338,8 @@ export default function InventoryTab({
         );
       }
       setSelected(new Set());
+      // Bust the server-side listing cache so detail pages reflect the new status
+      await revalidateListings();
       if (onRefresh) await onRefresh();
       router.refresh();
     } catch {
@@ -278,6 +356,67 @@ export default function InventoryTab({
     if (onRefresh) await onRefresh();
     router.refresh();
   }
+
+  // ── Delete ───────────────────────────────────────────────────────────────
+  const [deleteIds, setDeleteIds] = useState<string[]>([]);
+  const showDeleteConfirm = deleteIds.length > 0;
+
+  async function handleDelete(mode: "soft" | "hard") {
+    if (deleteIds.length === 0) return;
+    const actionKey = mode === "hard" ? "hard-delete" : "removed";
+    setBulkAction(actionKey);
+    try {
+      let errorCount = 0;
+      let firstError = "";
+
+      if (mode === "soft") {
+        const results = await Promise.all(
+          deleteIds.map((id) =>
+            supabase.from("listings").update({ status: "removed" }).eq("id", id),
+          ),
+        );
+        const errors = results.filter((r) => r.error);
+        errorCount = errors.length;
+        firstError = errors[0]?.error?.message ?? "";
+      } else {
+        // Hard delete — listing_images cascade automatically
+        const results = await Promise.all(
+          deleteIds.map((id) =>
+            supabase.from("listings").delete().eq("id", id),
+          ),
+        );
+        const errors = results.filter((r) => r.error);
+        errorCount = errors.length;
+        firstError = errors[0]?.error?.message ?? "";
+      }
+
+      if (errorCount > 0) {
+        toast.error(`Failed to delete ${errorCount} listing(s)`, {
+          description: firstError || "Please try again.",
+        });
+      } else {
+        const label = mode === "hard" ? "permanently deleted" : "removed";
+        toast.success(
+          `${deleteIds.length} listing${deleteIds.length !== 1 ? "s" : ""} ${label}`,
+        );
+      }
+      setSelected(new Set());
+      setDeleteIds([]);
+      if (onRefresh) await onRefresh();
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong", {
+        description: "Please try again.",
+      });
+    } finally {
+      setBulkAction(null);
+    }
+  }
+
+  const selectedDeletable = useMemo(
+    () => selectedListings.filter((l) => l.status !== "removed"),
+    [selectedListings],
+  );
 
   const isBusy = bulkAction !== null;
   const hasSelection = selected.size > 0;
@@ -311,7 +450,78 @@ export default function InventoryTab({
       </div>
 
       {/* CSV Import Modal */}
-      {showImport && <CSVImport onClose={handleImportClose} />}
+      {showImport && <CSVImport onClose={handleImportClose} shopType={shopType} />}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md shadow-2xl p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 bg-red-50 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-[#1a1a1a]">
+                  Delete {deleteIds.length} listing{deleteIds.length !== 1 ? "s" : ""}?
+                </h3>
+                <p className="text-xs text-[#8a8280] mt-0.5">
+                  Choose how to handle {deleteIds.length === 1 ? "this listing" : "these listings"}.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 mb-5">
+              {/* Soft delete option */}
+              <button
+                onClick={() => handleDelete("soft")}
+                disabled={isBusy}
+                className="w-full text-left px-4 py-3 border border-[#e8e6e3] hover:border-[#8E7A6B] hover:bg-[#faf9f7] transition-all disabled:opacity-50 group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-[#1a1a1a]">
+                    Remove from shop
+                  </span>
+                  {bulkAction === "removed" && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8E7A6B]" />
+                  )}
+                </div>
+                <p className="text-xs text-[#8a8280] mt-0.5">
+                  Hidden from buyers but kept in your records. You can restore {deleteIds.length === 1 ? "it" : "them"} later.
+                </p>
+              </button>
+
+              {/* Hard delete option */}
+              <button
+                onClick={() => handleDelete("hard")}
+                disabled={isBusy}
+                className="w-full text-left px-4 py-3 border border-red-200 hover:border-red-400 hover:bg-red-50/50 transition-all disabled:opacity-50 group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-red-700">
+                    Delete permanently
+                  </span>
+                  {bulkAction === "hard-delete" && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-red-600" />
+                  )}
+                </div>
+                <p className="text-xs text-red-400 mt-0.5">
+                  Permanently erased — listing data and images cannot be recovered.
+                </p>
+              </button>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => setDeleteIds([])}
+                disabled={isBusy}
+                className="px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors disabled:opacity-40"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Selection toolbar — appears when items are selected */}
       {hasSelection ? (
@@ -372,6 +582,27 @@ export default function InventoryTab({
             {selectedPausable.length > 0 && (
               <span className="bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
                 {selectedPausable.length}
+              </span>
+            )}
+          </button>
+
+          {/* Delete selected */}
+          <button
+            onClick={() =>
+              setDeleteIds(selectedDeletable.map((l) => l.id))
+            }
+            disabled={selectedDeletable.length === 0 || isBusy}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            {bulkAction === "removed" ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <Trash2 className="w-3 h-3" />
+            )}
+            Delete
+            {selectedDeletable.length > 0 && (
+              <span className="bg-red-100 text-red-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                {selectedDeletable.length}
               </span>
             )}
           </button>
@@ -501,6 +732,9 @@ export default function InventoryTab({
                   />
                 </button>
               </th>
+              <th className={`text-right ${thBase} hidden md:table-cell`}>
+                Stock
+              </th>
               <th className={`text-right ${thBase} hidden lg:table-cell`}>
                 <button
                   onClick={() => toggleSort("created_at")}
@@ -536,7 +770,10 @@ export default function InventoryTab({
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
+                    <Link
+                      href={`/listing/${l.slug}`}
+                      className="flex items-center gap-3 group/listing"
+                    >
                       <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
                         {l.primary_image_url && (
                           <Image
@@ -548,10 +785,10 @@ export default function InventoryTab({
                           />
                         )}
                       </div>
-                      <span className="font-medium text-[#1a1a1a] truncate max-w-[200px]">
+                      <span className="font-medium text-[#1a1a1a] truncate max-w-[200px] group-hover/listing:text-[#8E7A6B] transition-colors">
                         {l.title}
                       </span>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -576,16 +813,35 @@ export default function InventoryTab({
                   <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
                     {l.favorite_count}
                   </td>
+                  <td className="px-4 py-3 text-right hidden md:table-cell">
+                    {l.quantity != null ? (
+                      <StockBadge quantity={l.quantity} threshold={l.low_stock_threshold ?? 3} listingId={l.id} onUpdated={onRefresh} />
+                    ) : (
+                      <span className="text-[#8a8280] text-xs">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-right text-[#6b6560] text-xs hidden lg:table-cell">
                     {timeAgo(l.created_at)}
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`${editBaseHref}/${l.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657]"
-                    >
-                      <Edit3 className="w-3 h-3" /> Edit
-                    </Link>
+                    <div className="inline-flex items-center gap-3">
+                      <Link
+                        href={`${editBaseHref}/${l.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657]"
+                      >
+                        <Edit3 className="w-3 h-3" /> Edit
+                      </Link>
+                      {l.status !== "removed" && (
+                        <button
+                          onClick={() => setDeleteIds([l.id])}
+                          disabled={isBusy}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-[#8a8280] hover:text-red-600 disabled:opacity-40 transition-colors"
+                          aria-label={`Delete ${l.title}`}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );
@@ -597,7 +853,7 @@ export default function InventoryTab({
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
             <p className="font-medium">No listings yet</p>
             <p className="text-xs mt-1">
-              <Link href="/post" className="text-[#8E7A6B] hover:underline">
+              <Link href={newListingHref} className="text-[#8E7A6B] hover:underline">
                 Create your first listing
               </Link>
             </p>

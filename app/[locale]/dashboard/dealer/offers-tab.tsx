@@ -4,7 +4,7 @@ import {
   ArrowLeftRight,
   Check,
   Clock,
-  DollarSign,
+  Euro,
   Loader2,
   MessageCircle,
   X,
@@ -19,7 +19,7 @@ import { OFFER_STATUS_BADGE } from "./types";
 
 type OfferFilter = "all" | "pending" | "accepted" | "rejected" | "countered" | "expired";
 
-export default function OffersTab() {
+export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) {
   const { userId } = useAuth();
   const supabase = createClient();
 
@@ -133,7 +133,7 @@ export default function OffersTab() {
         </div>
         <div className="bg-white border border-[#e8e6e3] p-5">
           <div className="w-9 h-9 bg-emerald-50 flex items-center justify-center mb-3">
-            <DollarSign className="w-[18px] h-[18px] text-emerald-600" />
+            <Euro className="w-[18px] h-[18px] text-emerald-600" />
           </div>
           <div className="text-2xl font-bold text-[#1a1a1a]">
             &euro;{totalOfferValue.toLocaleString()}
@@ -388,7 +388,7 @@ export default function OffersTab() {
 
         {filtered.length === 0 && (
           <div className="bg-white border border-[#e8e6e3] p-12 text-center">
-            <DollarSign className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
+            <Euro className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
             <p className="font-medium text-[#1a1a1a]">No offers found</p>
             <p className="text-xs text-[#6b6560] mt-1">
               {filter === "all"

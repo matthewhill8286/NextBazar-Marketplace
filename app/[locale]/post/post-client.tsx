@@ -66,6 +66,8 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
     condition: "good",
     location_id: "",
     contact_phone: "",
+    quantity: "",
+    low_stock_threshold: "3",
   });
 
   // Determine if current category is "vehicles"
@@ -131,6 +133,7 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
         ...prev,
         title: data.title || prev.title,
         category_id: data.category_id || prev.category_id,
+        subcategory_id: data.subcategory_id || prev.subcategory_id,
       }));
 
       // If AI detected a vehicle, pre-fill vehicle attributes from the image
@@ -271,6 +274,10 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
         image_count: uploadedUrls.length,
         video_url: video?.url || null,
         ...(attributes ? { attributes } : {}),
+        ...(formData.quantity ? {
+          quantity: Number(formData.quantity),
+          low_stock_threshold: Number(formData.low_stock_threshold) || 3,
+        } : {}),
       })
       .select("id, slug")
       .single();
