@@ -1,16 +1,15 @@
 "use client";
 
-import { ArrowLeft, Loader2, PenLine, Save } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ArrowLeft, Loader2, Package, PenLine, Save } from "lucide-react";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
-import { toast } from "sonner";
 
 type ListingData = {
   id: string;
@@ -26,10 +25,18 @@ type ListingData = {
   primary_image_url: string | null;
   is_promoted: boolean;
   video_url: string | null;
+  quantity: number | null;
+  low_stock_threshold: number;
   images: { id: string; url: string; sort_order: number }[];
 };
 
-export default function EditClient({ listing }: { listing: ListingData }) {
+export default function EditClient({
+  listing,
+  backHref = "/dashboard/listings",
+}: {
+  listing: ListingData;
+  backHref?: string;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const { categories, locations } = useReferenceData();
@@ -69,6 +76,8 @@ export default function EditClient({ listing }: { listing: ListingData }) {
     contact_phone: listing.contact_phone || "",
     category_id: listing.category_id,
     location_id: listing.location_id || "",
+    quantity: listing.quantity?.toString() ?? "",
+    low_stock_threshold: (listing.low_stock_threshold ?? 3).toString(),
   });
 
   const update = (key: string, value: string) =>
@@ -131,6 +140,10 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         primary_image_url: uploadedUrls[0] || null,
         image_count: uploadedUrls.length,
         video_url: video?.url || null,
+        quantity: formData.quantity ? Number(formData.quantity) : null,
+        low_stock_threshold: formData.low_stock_threshold
+          ? Number(formData.low_stock_threshold)
+          : 3,
       })
       .eq("id", listing.id);
 
@@ -170,22 +183,23 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
     toast.success("Listing updated successfully!");
     setLoading(false);
-    router.push("/dashboard/listings");
+    router.push(backHref);
+    router.refresh();
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Link
-          href="/dashboard/listings"
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
+          href={backHref}
+          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">Edit Listing</h1>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">Edit Listing</h1>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-6">
+      <div className="bg-white border border-[#e8e6e3] p-6 space-y-6">
         {/* Images */}
         <ImageUpload
           userId={listing.user_id}
@@ -195,18 +209,18 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
         {/* Video Tour — promoted listings only */}
         {listing.is_promoted && (
-          <div className="rounded-2xl border-2 border-violet-200 bg-violet-50/50 p-5 space-y-3">
+          <div className="border-2 border-[#e8e6e3] bg-[#f0eeeb]/50 p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-gray-900 text-sm">
+                <p className="font-semibold text-[#1a1a1a] text-sm">
                   🎬 Video Tour
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-[#6b6560] mt-0.5">
                   Add or replace a short video — included with your Featured
                   listing
                 </p>
               </div>
-              <span className="text-[10px] font-bold bg-violet-600 text-white px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold bg-[#8E7A6B] text-white px-2 py-0.5 rounded-full">
                 PAID FEATURE
               </span>
             </div>
@@ -220,12 +234,12 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Title
           </label>
           <input
             type="text"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
             value={formData.title}
             onChange={(e) => update("title", e.target.value)}
           />
@@ -234,14 +248,14 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         {/* Description with AI writer */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-[#666]">
               Description
             </label>
             <button
               type="button"
               onClick={handleAiDescription}
               disabled={descLoading || !formData.title}
-              className="flex items-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
             >
               {descLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -250,14 +264,14 @@ export default function EditClient({ listing }: { listing: ListingData }) {
               )}
               {descLoading ? "Writing..." : "Write with AI"}
               {!descLoading && (
-                <span className="text-[9px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
+                <span className="text-[9px] bg-[#e8e6e3] text-[#7A6657] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
                   Beta
                 </span>
               )}
             </button>
           </div>
           <textarea
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm h-32 resize-none"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm h-32 resize-none"
             placeholder="Describe your item — or click 'Write with AI' to generate a description..."
             value={formData.description}
             onChange={(e) => update("description", e.target.value)}
@@ -267,27 +281,27 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         {/* Price & Condition */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[#666] mb-1.5">
               Price (€)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280]">
                 €
               </span>
               <input
                 type="number"
-                className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+                className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
                 value={formData.price}
                 onChange={(e) => update("price", e.target.value)}
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[#666] mb-1.5">
               Price Type
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.price_type}
               onChange={(e) => update("price_type", e.target.value)}
             >
@@ -302,11 +316,11 @@ export default function EditClient({ listing }: { listing: ListingData }) {
         {/* Category & Location & Condition */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[#666] mb-1.5">
               Category
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.category_id}
               onChange={(e) => update("category_id", e.target.value)}
             >
@@ -318,11 +332,11 @@ export default function EditClient({ listing }: { listing: ListingData }) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[#666] mb-1.5">
               Location
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.location_id}
               onChange={(e) => update("location_id", e.target.value)}
             >
@@ -335,11 +349,11 @@ export default function EditClient({ listing }: { listing: ListingData }) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-[#666] mb-1.5">
               Condition
             </label>
             <select
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm bg-white"
+              className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm bg-white"
               value={formData.condition}
               onChange={(e) => update("condition", e.target.value)}
             >
@@ -354,20 +368,67 @@ export default function EditClient({ listing }: { listing: ListingData }) {
 
         {/* Phone */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-[#666] mb-1.5">
             Phone Number{" "}
-            <span className="text-gray-400 font-normal">(optional)</span>
+            <span className="text-[#8a8280] font-normal">(optional)</span>
           </label>
           <input
             type="tel"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm"
+            className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
             placeholder="+357 99 123456"
             value={formData.contact_phone}
             onChange={(e) => update("contact_phone", e.target.value)}
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-[#8a8280] mt-1">
             Leave blank to hide the phone button on your listing.
           </p>
+        </div>
+
+        {/* Stock Management */}
+        <div className="border-t border-[#e8e6e3] pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Package className="w-4 h-4 text-[#8E7A6B]" />
+            <p className="text-sm font-semibold text-[#1a1a1a]">
+              Stock Management
+            </p>
+            <span className="text-[10px] text-[#8a8280] font-normal">
+              (optional)
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
+                Quantity in Stock
+              </label>
+              <input
+                type="number"
+                min="0"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
+                placeholder="Leave blank for unlimited"
+                value={formData.quantity}
+                onChange={(e) => update("quantity", e.target.value)}
+              />
+              <p className="text-xs text-[#8a8280] mt-1">
+                Listing auto-pauses when stock reaches zero.
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
+                Low Stock Alert At
+              </label>
+              <input
+                type="number"
+                min="1"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
+                placeholder="3"
+                value={formData.low_stock_threshold}
+                onChange={(e) => update("low_stock_threshold", e.target.value)}
+              />
+              <p className="text-xs text-[#8a8280] mt-1">
+                You&apos;ll be notified when stock drops to this level.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Save */}
@@ -375,7 +436,7 @@ export default function EditClient({ listing }: { listing: ListingData }) {
           <button
             onClick={handleSave}
             disabled={loading || !formData.title}
-            className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-indigo-200"
+            className="bg-[#8E7A6B] text-white px-6 py-3 font-semibold hover:bg-[#7A6657] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm shadow-[#8E7A6B]/15"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -385,8 +446,8 @@ export default function EditClient({ listing }: { listing: ListingData }) {
             Save Changes
           </button>
           <Link
-            href="/dashboard/listings"
-            className="px-6 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+            href={backHref}
+            className="px-6 py-3 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors"
           >
             Cancel
           </Link>

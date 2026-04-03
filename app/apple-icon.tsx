@@ -12,33 +12,16 @@ export default function AppleIcon() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #3B82F6 0%, #6366F1 100%)",
+        background: "#8E7A6B",
         borderRadius: "40px",
       }}
     >
-      {/* Shine strip */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "35%",
-          background:
-            "linear-gradient(180deg, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0) 100%)",
-          borderRadius: "40px 40px 0 0",
-          display: "flex",
-        }}
-      />
-
-      {/* N letter */}
       <span
         style={{
           color: "white",
           fontSize: 108,
-          fontWeight: 900,
-          fontFamily: "sans-serif",
-          letterSpacing: "-5px",
+          fontWeight: 400,
+          fontFamily: "Georgia, serif",
           lineHeight: 1,
           marginTop: "-8px",
         }}

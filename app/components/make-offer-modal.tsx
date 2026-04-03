@@ -1,7 +1,8 @@
 "use client";
 
 import { AlertCircle, CheckCircle, Euro, Loader2, X } from "lucide-react";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { type SubmitEvent, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
@@ -27,6 +28,7 @@ export default function MakeOfferModal({
   onCloseAction,
   onOfferSentAction,
 }: Props) {
+  const t = useTranslations("makeOffer");
   const supabase = createClient();
   const sym = currency === "EUR" ? "€" : currency;
 
@@ -38,11 +40,11 @@ export default function MakeOfferModal({
   const [state, setState] = useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
     const val = Number(amount);
     if (!val || val <= 0) {
-      setErrorMsg("Please enter a valid offer amount.");
+      setErrorMsg(t("validation.required"));
       return;
     }
     setLoading(true);
@@ -91,13 +93,18 @@ export default function MakeOfferModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div
+        className="bg-white shadow-2xl w-full max-w-md overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t("title")}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-bold text-gray-900">Make an Offer</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e6e3]">
+          <h2 className="text-lg font-bold text-[#1a1a1a]">{t("title")}</h2>
           <button
             onClick={onCloseAction}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+            className="p-2 rounded-full hover:bg-[#f0eeeb] transition-colors text-[#8a8280]"
           >
             <X className="w-5 h-5" />
           </button>
@@ -108,37 +115,33 @@ export default function MakeOfferModal({
             <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-green-500" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
-              Offer Sent!
+            <h3 className="text-xl font-bold text-[#1a1a1a] mb-2">
+              {t("successTitle")}
             </h3>
-            <p className="text-gray-500 text-sm mb-6">
-              Your offer of{" "}
-              <span className="font-semibold text-gray-900">
-                {sym}
-                {Number(amount).toLocaleString()}
-              </span>{" "}
-              has been sent to the seller. You'll receive a notification when
-              they respond.
+            <p className="text-[#6b6560] text-sm mb-6">
+              {t("successMessage", {
+                amount: `${sym}${Number(amount).toLocaleString()}`,
+              })}
             </p>
             <button
               onClick={onCloseAction}
-              className="px-6 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition-colors"
+              className="px-6 py-2.5 bg-[#2C2826] text-white text-sm font-medium hover:bg-[#3D3633] transition-colors"
             >
-              Done
+              {t("done")}
             </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="px-6 py-5 space-y-5">
             {/* Listing context */}
-            <div className="bg-gray-50 rounded-xl p-3">
-              <p className="text-xs text-gray-500 mb-0.5">Listing</p>
-              <p className="font-medium text-gray-900 text-sm line-clamp-1">
+            <div className="bg-[#faf9f7] p-3">
+              <p className="text-xs text-[#6b6560] mb-0.5">{t("listing")}</p>
+              <p className="font-medium text-[#1a1a1a] text-sm line-clamp-1">
                 {listingTitle}
               </p>
               {listingPrice && (
-                <p className="text-sm text-gray-500 mt-0.5">
-                  Asking price:{" "}
-                  <span className="font-semibold text-gray-900">
+                <p className="text-sm text-[#6b6560] mt-0.5">
+                  {t("askingPrice")}{" "}
+                  <span className="font-semibold text-[#1a1a1a]">
                     {sym}
                     {listingPrice.toLocaleString()}
                   </span>
@@ -148,11 +151,11 @@ export default function MakeOfferModal({
 
             {/* Amount */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Your Offer Amount
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
+                {t("yourOfferAmount")}
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6b6560] font-medium">
                   {sym}
                 </span>
                 <input
@@ -162,7 +165,7 @@ export default function MakeOfferModal({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   required
-                  className="w-full pl-8 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="0"
                 />
               </div>
@@ -172,24 +175,26 @@ export default function MakeOfferModal({
                     pct! < 0
                       ? "text-amber-600"
                       : pct! === 0
-                        ? "text-gray-400"
+                        ? "text-[#8a8280]"
                         : "text-green-600"
                   }`}
                 >
                   {pct! < 0
-                    ? `${Math.abs(pct!)}% below asking price`
+                    ? t("belowPrice", { percent: Math.abs(pct!) })
                     : pct! === 0
-                      ? "Matches asking price"
-                      : `${pct}% above asking price`}
+                      ? t("matchesPrice")
+                      : t("abovePrice", { percent: pct! })}
                 </p>
               )}
             </div>
 
             {/* Message */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Message{" "}
-                <span className="font-normal text-gray-400">(optional)</span>
+              <label className="block text-sm font-medium text-[#666] mb-1.5">
+                {t("messageLabel")}{" "}
+                <span className="font-normal text-[#8a8280]">
+                  {t("messageOptional")}
+                </span>
               </label>
               <textarea
                 rows={3}
@@ -197,15 +202,15 @@ export default function MakeOfferModal({
                 onChange={(e) => setMessage(e.target.value)}
                 maxLength={500}
                 placeholder="Why you're interested, pickup availability, etc."
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none text-sm resize-none"
+                className="w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm resize-none"
               />
-              <p className="text-xs text-gray-400 text-right mt-1">
+              <p className="text-xs text-[#8a8280] text-right mt-1">
                 {message.length}/500
               </p>
             </div>
 
             {errorMsg && (
-              <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3 text-sm text-red-700">
+              <div className="flex items-start gap-2 bg-red-50 border border-red-100 p-3 text-sm text-red-700">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                 {errorMsg}
               </div>
@@ -215,28 +220,28 @@ export default function MakeOfferModal({
               <button
                 type="button"
                 onClick={onCloseAction}
-                className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 py-3 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors"
               >
-                Cancel
+                {t("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl bg-linear-to-r from-indigo-600 to-indigo-600 text-white text-sm font-medium hover:from-indigo-700 hover:to-indigo-700 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-linear-to-r from-[#8E7A6B] to-[#7A6657] text-white text-sm font-medium hover:from-[#7A6657] hover:to-[#7A6657] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
                     <Euro className="w-4 h-4" />
-                    Send Offer
+                    {t("sendOffer")}
                   </>
                 )}
               </button>
             </div>
 
-            <p className="text-xs text-gray-400 text-center">
-              Offers expire after 48 hours if not responded to.
+            <p className="text-xs text-[#8a8280] text-center">
+              {t("expiresInfo")}
             </p>
           </form>
         )}

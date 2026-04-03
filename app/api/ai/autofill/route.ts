@@ -14,19 +14,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing imageUrl" }, { status: 400 });
     }
 
-    // Fetch categories for matching
-    const { data: categories, error: catError } = await supabase
-      .from("categories")
-      .select("id, name, slug")
-      .order("name");
+    // Fetch categories and subcategories for matching
+    const [{ data: categories, error: catError }, { data: subcategories }] =
+      await Promise.all([
+        supabase.from("categories").select("id, name, slug").order("name"),
+        supabase
+          .from("subcategories")
+          .select("id, name, slug, category_id")
+          .order("sort_order"),
+      ]);
 
     if (catError) {
       console.error("Categories fetch error:", catError);
     }
 
     const categoryList = (categories || [])
-      .map((c) => `${c.slug}: ${c.name}`)
-      .join(", ");
+      .map((c) => {
+        const subs = (subcategories || [])
+          .filter((s) => s.category_id === c.id)
+          .map((s) => s.slug)
+          .join(", ");
+        return `${c.slug}: ${c.name}${subs ? ` (subcategories: ${subs})` : ""}`;
+      })
+      .join("; ");
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -45,6 +55,7 @@ Respond in JSON format:
   "title": "<catchy, specific listing title, max 60 chars>",
   "description": "<detailed description, 2-3 sentences about the item, its condition, and key features>",
   "category_slug": "<one of: ${(categories || []).map((c) => c.slug).join(", ")}>",
+  "subcategory_slug": "<best matching subcategory slug from the category's subcategories list, or null>",
   "condition": "<one of: new, like_new, good, fair, for_parts>",
   "suggested_price": <number in EUR, or null if can't determine>,
   "price_confidence": "high" | "medium" | "low",
@@ -94,10 +105,21 @@ Only include vehicle_attributes fields you can confidently determine from the im
       (c) => c.slug === result.category_slug,
     );
 
+    // Map subcategory slug to ID (must belong to the matched category)
+    const matchedSubcategory = matchedCategory
+      ? (subcategories || []).find(
+          (s) =>
+            s.slug === result.subcategory_slug &&
+            s.category_id === matchedCategory.id,
+        )
+      : null;
+
     return NextResponse.json({
       ...result,
       category_id: matchedCategory?.id || null,
       category_name: matchedCategory?.name || null,
+      subcategory_id: matchedSubcategory?.id || null,
+      subcategory_name: matchedSubcategory?.name || null,
     });
   } catch (err: unknown) {
     console.error("AI autofill error:", err);

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import {
   getCategoryBySlugCached,
   getCategoryListingsCached,
-  getCategoryStatsCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import VehiclesClient from "./vehicles-client";
@@ -17,14 +16,13 @@ export default async function VehiclesPage() {
   const category = await getCategoryBySlugCached("vehicles");
   if (!category)
     return (
-      <div className="p-20 text-center text-gray-400">Category not found.</div>
+      <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
     );
 
-  const [subcategories, featured, recent, stats] = await Promise.all([
+  const [subcategories, featured, recent] = await Promise.all([
     getSubcategoriesCached(),
-    getCategoryListingsCached(category.id, { promoted: true, limit: 12 }),
-    getCategoryListingsCached(category.id, { limit: 12 }),
-    getCategoryStatsCached(category.id),
+    getCategoryListingsCached(category.id, { promoted: true, limit: 24 }),
+    getCategoryListingsCached(category.id, { limit: 48 }),
   ]);
 
   const vehicleSubcategories = subcategories.filter(
@@ -37,7 +35,6 @@ export default async function VehiclesPage() {
       subcategories={vehicleSubcategories}
       featuredListings={featured}
       recentListings={recent}
-      stats={stats}
     />
   );
 }

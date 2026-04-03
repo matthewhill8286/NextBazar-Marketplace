@@ -2,9 +2,10 @@
 
 import { ArrowLeft, Check, ExternalLink, X } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import { CONDITION_LABELS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 
@@ -36,7 +37,7 @@ function ConditionDot({ condition }: { condition: string | null }) {
   return (
     <span className="flex items-center gap-1.5">
       <span
-        className={`inline-block w-2 h-2 rounded-full ${colors[condition ?? ""] ?? "bg-gray-300"}`}
+        className={`inline-block w-2 h-2 rounded-full ${colors[condition ?? ""] ?? "bg-[#ccc]"}`}
       />
       {CONDITION_LABELS[condition ?? ""] ?? "—"}
     </span>
@@ -47,6 +48,7 @@ export default function ComparePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("compare");
 
   const ids = (searchParams.get("ids") ?? "")
     .split(",")
@@ -106,57 +108,57 @@ export default function ComparePage() {
     render: (l: CompareListing) => React.ReactNode;
   }[] = [
     {
-      label: "Price",
+      label: t("rowPrice"),
       render: (l) => {
         const sym = l.currency === "EUR" ? "€" : l.currency;
         return l.price ? (
-          <span className="font-bold text-gray-900">
+          <span className="font-bold text-[#1a1a1a]">
             {sym}
             {l.price.toLocaleString()}
           </span>
         ) : (
-          <span className="text-gray-400">POA</span>
+          <span className="text-[#8a8280]">{t("poa")}</span>
         );
       },
     },
     {
-      label: "Condition",
+      label: t("rowCondition"),
       render: (l) => <ConditionDot condition={l.condition} />,
     },
     {
-      label: "Category",
+      label: t("rowCategory"),
       render: (l) => l.categories?.name ?? "—",
     },
     {
-      label: "Location",
+      label: t("rowLocation"),
       render: (l) => l.locations?.name ?? "—",
     },
     {
-      label: "Badges",
+      label: t("rowBadges"),
       render: (l) => (
         <span className="flex flex-wrap gap-1">
           {l.is_promoted && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
-              ✨ Featured
+              ✨ {t("featured")}
             </span>
           )}
           {l.is_urgent && (
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
-              ⚡ Boosted
+              ⚡ {t("boosted")}
             </span>
           )}
           {!l.is_promoted && !l.is_urgent && (
-            <span className="text-gray-400 text-xs">—</span>
+            <span className="text-[#8a8280] text-xs">—</span>
           )}
         </span>
       ),
     },
     {
-      label: "Views",
+      label: t("rowViews"),
       render: (l) => l.view_count.toLocaleString(),
     },
     {
-      label: "Listed",
+      label: t("rowListed"),
       render: (l) =>
         new Date(l.created_at).toLocaleDateString("en-IE", {
           day: "numeric",
@@ -165,12 +167,12 @@ export default function ComparePage() {
         }),
     },
     {
-      label: "Description",
+      label: t("rowDescription"),
       render: (l) =>
         l.description ? (
-          <p className="text-xs text-gray-600 line-clamp-4">{l.description}</p>
+          <p className="text-xs text-[#666] line-clamp-4">{l.description}</p>
         ) : (
-          <span className="text-gray-400">—</span>
+          <span className="text-[#8a8280]">—</span>
         ),
     },
   ];
@@ -182,32 +184,28 @@ export default function ComparePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="p-2 rounded-xl hover:bg-gray-100 transition-colors text-gray-500"
+          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Compare listings</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Side-by-side comparison of up to 3 listings
-          </p>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
+          <p className="text-sm text-[#6b6560] mt-0.5">{t("subtitle")}</p>
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-[#e8e6e3] border-t-[#8E7A6B] rounded-full animate-spin" />
         </div>
       ) : listings.length < 2 ? (
         <div className="text-center py-24">
-          <p className="text-gray-500 mb-4">
-            Select at least 2 listings to compare.
-          </p>
+          <p className="text-[#6b6560] mb-4">{t("emptyTitle")}</p>
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8E7A6B] text-white text-sm font-semibold hover:bg-[#7A6657] transition-colors"
           >
-            Browse listings
+            {t("browseListing")}
           </Link>
         </div>
       ) : (
@@ -220,9 +218,9 @@ export default function ComparePage() {
 
                 {listings.map((l) => (
                   <th key={l.id} className="pb-6 px-3 align-top">
-                    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                    <div className="bg-white border border-[#e8e6e3] overflow-hidden shadow-sm">
                       {/* Image */}
-                      <div className="relative aspect-video bg-gray-100">
+                      <div className="relative aspect-video bg-[#f0eeeb]">
                         {l.primary_image_url ? (
                           <Image
                             src={l.primary_image_url}
@@ -240,7 +238,7 @@ export default function ComparePage() {
                         <button
                           type="button"
                           onClick={() => remove(l.id)}
-                          className="absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-white transition-colors shadow-sm"
+                          className="absolute top-2 right-2 w-7 h-7 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-[#6b6560] hover:text-red-600 hover:bg-white transition-colors shadow-sm"
                           aria-label="Remove from comparison"
                         >
                           <X className="w-3.5 h-3.5" />
@@ -249,14 +247,15 @@ export default function ComparePage() {
 
                       {/* Title + link */}
                       <div className="p-3">
-                        <p className="font-semibold text-gray-900 text-sm line-clamp-2 text-left">
+                        <p className="font-semibold text-[#1a1a1a] text-sm line-clamp-2 text-left">
                           {l.title}
                         </p>
                         <Link
                           href={`/listing/${l.slug}`}
-                          className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 mt-1.5 transition-colors"
+                          className="inline-flex items-center gap-1 text-xs text-[#8E7A6B] hover:text-[#7A6657] mt-1.5 transition-colors"
                         >
-                          View listing <ExternalLink className="w-3 h-3" />
+                          {t("viewListing")}{" "}
+                          <ExternalLink className="w-3 h-3" />
                         </Link>
                       </div>
                     </div>
@@ -267,11 +266,9 @@ export default function ComparePage() {
                 {listings.length < 3 &&
                   Array.from({ length: 3 - listings.length }).map((_, i) => (
                     <th key={`empty-${i}`} className="pb-6 px-3 align-top">
-                      <div className="rounded-2xl border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center">
-                        <p className="text-xs text-gray-400 text-center px-2">
-                          Add another listing
-                          <br />
-                          to compare
+                      <div className="border-2 border-dashed border-[#e8e6e3] aspect-video flex items-center justify-center">
+                        <p className="text-xs text-[#8a8280] text-center px-2">
+                          {t("addAnother")}
                         </p>
                       </div>
                     </th>
@@ -283,15 +280,15 @@ export default function ComparePage() {
               {rows.map(({ label, render }, ri) => (
                 <tr
                   key={label}
-                  className={ri % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  className={ri % 2 === 0 ? "bg-[#faf9f7]" : "bg-white"}
                 >
-                  <td className="py-3 px-2 text-xs font-semibold text-gray-500 uppercase tracking-wide align-top whitespace-nowrap">
+                  <td className="py-3 px-2 text-xs font-semibold text-[#6b6560] uppercase tracking-wide align-top whitespace-nowrap">
                     {label}
                   </td>
                   {listings.map((l) => (
                     <td
                       key={l.id}
-                      className="py-3 px-3 text-sm text-gray-700 align-top"
+                      className="py-3 px-3 text-sm text-[#666] align-top"
                     >
                       {render(l)}
                     </td>
@@ -312,12 +309,15 @@ export default function ComparePage() {
                     <td key={l.id} className="py-4 px-3">
                       <Link
                         href={`/listing/${l.slug}`}
-                        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#8E7A6B] text-white text-sm font-semibold hover:bg-[#7A6657] transition-colors"
                       >
                         <Check className="w-4 h-4" />
                         {l.price
-                          ? `Buy for ${sym}${l.price.toLocaleString()}`
-                          : "View listing"}
+                          ? t("buyFor", {
+                              symbol: sym,
+                              price: l.price.toLocaleString(),
+                            })
+                          : t("viewListing")}
                       </Link>
                     </td>
                   );

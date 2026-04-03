@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, Play, Video, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -26,6 +27,7 @@ export default function VideoUpload({
   video,
   onChangeAction,
 }: VideoUploadProps) {
+  const t = useTranslations("videoUpload");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const supabase = createClient();
@@ -35,11 +37,11 @@ export default function VideoUpload({
       !ACCEPTED.includes(file.type) &&
       !file.name.match(/\.(mp4|mov|webm)$/i)
     ) {
-      alert("Please upload an MP4, MOV, or WebM video.");
+      alert(t("fileTypeError"));
       return;
     }
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      alert(`Video must be under ${MAX_SIZE_MB}MB.`);
+      alert(t("fileSizeError", { max: MAX_SIZE_MB }));
       return;
     }
 
@@ -85,7 +87,7 @@ export default function VideoUpload({
       clearInterval(ticker);
       console.error("Video upload failed:", err);
       onChangeAction(null);
-      alert("Video upload failed. Please try again.");
+      alert(t("uploadFailed"));
     }
   }
 
@@ -104,7 +106,7 @@ export default function VideoUpload({
   // ── State: has a video ───────────────────────────────────────────────────
   if (video) {
     return (
-      <div className="relative rounded-2xl overflow-hidden bg-gray-900 aspect-video">
+      <div className="relative overflow-hidden bg-[#2C2826] aspect-video">
         {video.uploading ? (
           /* Upload in progress */
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
@@ -117,7 +119,7 @@ export default function VideoUpload({
                 />
               </div>
               <p className="text-white/60 text-xs text-center mt-1.5">
-                Uploading video… {video.progress}%
+                {t("uploadingVideo", { percent: video.progress })}
               </p>
             </div>
           </div>
@@ -156,27 +158,27 @@ export default function VideoUpload({
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
-      className={`relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
+      className={`relative border-2 border-dashed p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
         dragOver
-          ? "border-violet-400 bg-violet-50"
-          : "border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50"
+          ? "border-[#8E7A6B] bg-[#f0eeeb]"
+          : "border-[#e8e6e3] bg-white hover:border-[#bbb] hover:bg-[#faf9f7]"
       }`}
     >
-      <div className="p-3 bg-violet-100 rounded-full">
-        <Video className="w-6 h-6 text-violet-600" />
+      <div className="p-3 bg-[#f0eeeb] rounded-full">
+        <Video className="w-6 h-6 text-[#8E7A6B]" />
       </div>
       <div className="text-center">
-        <p className="text-sm font-semibold text-gray-700">
-          <span className="text-violet-600">Click to upload</span> or drag &amp;
-          drop
+        <p className="text-sm font-semibold text-[#666]">
+          <span className="text-[#8E7A6B]">{t("clickToUpload")}</span>{" "}
+          {t("dragAndDrop")}
         </p>
-        <p className="text-xs text-gray-400 mt-0.5">
-          MP4, MOV or WebM · max {MAX_SIZE_MB}MB
+        <p className="text-xs text-[#8a8280] mt-0.5">
+          {t("fileTypes", { max: MAX_SIZE_MB })}
         </p>
       </div>
-      <div className="flex items-center gap-1.5 text-xs text-violet-600 font-medium">
+      <div className="flex items-center gap-1.5 text-xs text-[#8E7A6B] font-medium">
         <Play className="w-3 h-3" />
-        Show buyers what makes your item special
+        {t("showBuyers")}
       </div>
       <input
         ref={fileInputRef}

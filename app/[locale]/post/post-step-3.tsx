@@ -12,6 +12,8 @@ import {
   Video,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
+import { useTranslations } from "next-intl";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
@@ -38,10 +40,10 @@ type Props = {
   isVehicle: boolean;
   vehicleAttrs: VehicleAttributes;
   pricing: ClientPricing;
-  onSetPackage: (pkg: "free" | "featured" | "urgent") => void;
-  onSetVideo: (v: UploadedVideo | null) => void;
-  onBack: () => void;
-  onPublish: () => void;
+  onSetPackageAction: (pkg: "free" | "featured" | "urgent") => void;
+  onSetVideoAction: (v: UploadedVideo | null) => void;
+  onBackAction: () => void;
+  onPublishAction: () => void;
 };
 
 function capitalize(s: string) {
@@ -60,11 +62,12 @@ export default function PostStep3({
   isVehicle,
   vehicleAttrs,
   pricing,
-  onSetPackage,
-  onSetVideo,
-  onBack,
-  onPublish,
+  onSetPackageAction,
+  onSetVideoAction,
+  onBackAction,
+  onPublishAction,
 }: Props) {
+  const t = useTranslations("post");
   const category = categories.find((c) => c.id === formData.category_id);
   const location = locations.find((l) => l.id === formData.location_id);
   const firstImage = images.find((img) => img.preview);
@@ -84,43 +87,48 @@ export default function PostStep3({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Boost Your Listing</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Choose how you want your listing to appear
-        </p>
+        <h2
+          className="text-3xl font-light text-[#1a1a1a] mb-2"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          {t("step3.heading")}
+        </h2>
+        <p className="text-sm text-[#6b6560]">{t("step3.subheading")}</p>
       </div>
 
       {/* ── Two-column layout: Preview (left) + Options (right) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* ═══ LEFT COLUMN — Live Preview ═══ */}
-        <div className="lg:sticky lg:top-8 space-y-2">
-          <div className="flex items-center gap-2 text-xs font-medium text-gray-400 uppercase tracking-wider">
+        {/* LEFT COLUMN — Live Preview */}
+        <div className="lg:sticky lg:top-8 space-y-3">
+          <div className="flex items-center gap-2 text-[10px] font-medium tracking-[0.15em] uppercase text-[#8a8280]">
             <Eye className="w-3.5 h-3.5" />
-            Live Preview
+            {t("step3.livePreview")}
           </div>
 
           <div
-            className={`relative bg-white rounded-2xl border overflow-hidden transition-all duration-300 ${
+            className={`relative bg-white border overflow-hidden transition-all duration-300 ${
               selectedPackage === "featured"
-                ? "border-amber-300 shadow-sm shadow-amber-100/60 ring-1 ring-amber-200"
+                ? "border-amber-300 shadow-sm shadow-amber-100/60"
                 : selectedPackage === "urgent"
-                  ? "border-red-200 shadow-sm shadow-red-100/40 ring-1 ring-red-100"
-                  : "border-gray-200 shadow-sm"
+                  ? "border-red-200 shadow-sm shadow-red-100/40"
+                  : "border-[#e8e6e3] shadow-sm"
             }`}
           >
             {/* Image area */}
-            <div className="relative aspect-4/3 overflow-hidden bg-gray-100">
+            <div className="relative aspect-4/3 overflow-hidden bg-[#f0eeeb]">
               {firstImage ? (
-                <img
+                <Image
                   src={firstImage.preview}
                   alt=""
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Camera className="w-10 h-10 text-gray-300" />
+                  <Camera className="w-10 h-10 text-[#8a8280]" />
                 </div>
               )}
 
@@ -138,15 +146,15 @@ export default function PostStep3({
 
               {/* Featured badge */}
               {selectedPackage === "featured" && (
-                <span className="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Featured
+                <span className="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-medium tracking-[0.15em] uppercase px-3 py-1.5 shadow-sm flex items-center gap-1.5">
+                  <Sparkles className="w-3 h-3" /> {t("step3.featured")}
                 </span>
               )}
 
               {/* Boost badge */}
               {selectedPackage === "urgent" && (
-                <span className="absolute top-3 left-3 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1">
-                  <Zap className="w-3 h-3" /> Boosted
+                <span className="absolute top-3 left-3 bg-red-600 text-white text-[9px] font-medium tracking-[0.15em] uppercase px-3 py-1.5 shadow-sm flex items-center gap-1.5">
+                  <Zap className="w-3 h-3" /> {t("step3.boosted")}
                 </span>
               )}
 
@@ -161,7 +169,8 @@ export default function PostStep3({
                 </span>
                 {video?.url && (
                   <span className="flex items-center gap-1">
-                    <Video className="w-3 h-3" /> 1
+                    <Video className="w-3 h-3" />{" "}
+                    {t("step3.videoTour").split(" ")[0] === "Video" ? "1" : "1"}
                   </span>
                 )}
               </div>
@@ -169,7 +178,7 @@ export default function PostStep3({
 
             {/* Card body */}
             <div className="p-4">
-              <h3 className="font-semibold text-gray-900 text-[15px] leading-snug line-clamp-2 mb-1.5">
+              <h3 className="font-medium text-[#1a1a1a] text-[15px] leading-snug line-clamp-2 mb-1.5">
                 {formData.title || "Your listing title"}
               </h3>
 
@@ -179,7 +188,7 @@ export default function PostStep3({
                   {vehicleChips.map((chip) => (
                     <span
                       key={chip}
-                      className="text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full"
+                      className="text-[10px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5"
                     >
                       {chip}
                     </span>
@@ -188,12 +197,12 @@ export default function PostStep3({
               )}
 
               {/* Meta row */}
-              <div className="flex items-center gap-1.5 text-gray-400 text-xs mb-3">
+              <div className="flex items-center gap-1.5 text-[#8a8280] text-xs mb-3">
                 <MapPin className="w-3 h-3 shrink-0" />
                 <span className="truncate">{location?.name || "Cyprus"}</span>
                 {formData.condition && (
                   <>
-                    <span className="text-gray-200">·</span>
+                    <span className="text-[#ddd]">&middot;</span>
                     <span className="shrink-0">
                       {capitalize(formData.condition)}
                     </span>
@@ -203,7 +212,7 @@ export default function PostStep3({
 
               {/* Description preview */}
               {formData.description && (
-                <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed">
+                <p className="text-xs text-[#6b6560] line-clamp-2 mb-3 leading-relaxed">
                   {formData.description}
                 </p>
               )}
@@ -211,48 +220,56 @@ export default function PostStep3({
               {/* Price and time */}
               <div className="flex items-center justify-between">
                 <span
-                  className={`font-extrabold ${formData.price ? "text-gray-900 text-lg" : "text-gray-500 text-sm"}`}
+                  className="text-lg font-light text-[#1a1a1a]"
+                  style={
+                    formData.price
+                      ? { fontFamily: "'Playfair Display', serif" }
+                      : undefined
+                  }
                 >
                   {formData.price
-                    ? `€${Number(formData.price).toLocaleString()}`
-                    : "Contact for price"}
+                    ? `\u20AC${Number(formData.price).toLocaleString()}`
+                    : t("step3.contactForPrice")}
                 </span>
-                <span className="flex items-center gap-1 text-[11px] text-gray-400">
+                <span className="flex items-center gap-1 text-[11px] text-[#8a8280]">
                   <Clock className="w-3 h-3" />
-                  Just now
+                  {t("step3.just_now")}
                 </span>
               </div>
             </div>
 
-            {/* Accent stripe */}
-            {selectedPackage === "featured" && (
-              <div className="absolute left-0 bottom-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400" />
-            )}
-            {selectedPackage === "urgent" && (
-              <div className="absolute left-0 bottom-0 right-0 h-1 bg-gradient-to-r from-red-400 via-rose-400 to-red-400" />
-            )}
+            {/* Bottom accent line */}
+            <div
+              className={`absolute left-0 bottom-0 right-0 h-[2px] ${
+                selectedPackage === "featured"
+                  ? "bg-amber-400"
+                  : selectedPackage === "urgent"
+                    ? "bg-red-400"
+                    : "bg-[#8E7A6B] scale-x-0"
+              }`}
+            />
           </div>
 
           {/* Package visual hint */}
-          <p className="text-center text-[11px] text-gray-400 mt-1 min-h-[1rem]">
+          <p className="text-center text-[11px] text-[#8a8280] mt-1 min-h-[1rem]">
             {selectedPackage === "featured"
-              ? "Your listing will appear at the top of search results with a golden highlight"
+              ? t("step3.featuredHint")
               : selectedPackage === "urgent"
-                ? "Your listing will stand out with a boost badge and priority placement"
-                : "Standard appearance — visible in search results for 30 days"}
+                ? t("step3.boostedHint")
+                : t("step3.standardHint")}
           </p>
         </div>
 
-        {/* ═══ RIGHT COLUMN — Package Selection + Actions ═══ */}
+        {/* RIGHT COLUMN — Package Selection + Actions */}
         <div className="space-y-4">
           {/* Free tier */}
           <button
             type="button"
-            onClick={() => onSetPackage("free")}
-            className={`w-full text-left rounded-xl border-2 p-4 transition-all ${
+            onClick={() => onSetPackageAction("free")}
+            className={`w-full text-left border p-5 transition-all ${
               selectedPackage === "free"
-                ? "border-indigo-400 bg-indigo-50/50 ring-2 ring-indigo-100"
-                : "border-gray-200 bg-white hover:border-gray-300"
+                ? "border-[#8E7A6B] bg-[#faf9f7] ring-1 ring-[#8E7A6B]"
+                : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
             }`}
           >
             <div className="flex items-center justify-between gap-3">
@@ -260,8 +277,8 @@ export default function PostStep3({
                 <div
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                     selectedPackage === "free"
-                      ? "border-indigo-500 bg-indigo-500"
-                      : "border-gray-300"
+                      ? "border-[#8E7A6B] bg-[#8E7A6B]"
+                      : "border-[#e8e6e3]"
                   }`}
                 >
                   {selectedPackage === "free" && (
@@ -269,30 +286,35 @@ export default function PostStep3({
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm">
-                    Free Listing
+                  <div className="font-medium text-[#1a1a1a] text-sm">
+                    {t("step3.freeListing")}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Standard visibility for 30 days
+                  <div className="text-xs text-[#6b6560]">
+                    {t("step3.standardVisibility")}
                   </div>
                 </div>
               </div>
-              <div className="font-bold text-gray-900 shrink-0">Free</div>
+              <div
+                className="font-light text-[#1a1a1a] shrink-0"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {t("step3.free")}
+              </div>
             </div>
           </button>
 
           {/* Featured tier */}
           <button
             type="button"
-            onClick={() => onSetPackage("featured")}
-            className={`w-full text-left rounded-xl border-2 p-4 transition-all relative ${
+            onClick={() => onSetPackageAction("featured")}
+            className={`w-full text-left border p-5 transition-all relative ${
               selectedPackage === "featured"
-                ? "border-amber-400 bg-amber-50/60 ring-2 ring-amber-100"
-                : "border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50 hover:border-amber-400"
+                ? "border-amber-400 bg-amber-50/40 ring-1 ring-amber-400"
+                : "border-amber-200 bg-amber-50/20 hover:border-amber-300"
             }`}
           >
-            <div className="absolute -top-2.5 right-4 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">
-              POPULAR
+            <div className="absolute -top-2.5 right-4 bg-[#8E7A6B] text-white text-[9px] font-medium tracking-[0.15em] uppercase px-3 py-0.5">
+              {t("step3.popular")}
             </div>
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
@@ -308,16 +330,18 @@ export default function PostStep3({
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm">
-                    Featured Listing
+                  <div className="font-medium text-[#1a1a1a] text-sm">
+                    {t("step3.featuredListing")}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Top placement + highlighted badge for 7 days · Up to 5× more
-                    views
+                  <div className="text-xs text-[#6b6560]">
+                    {t("step3.featuredListingHint")}
                   </div>
                 </div>
               </div>
-              <div className="font-bold text-amber-600 shrink-0">
+              <div
+                className="font-light text-amber-700 shrink-0"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 {pricing.featured.price}
               </div>
             </div>
@@ -326,11 +350,11 @@ export default function PostStep3({
           {/* Urgent tier */}
           <button
             type="button"
-            onClick={() => onSetPackage("urgent")}
-            className={`w-full text-left rounded-xl border-2 p-4 transition-all ${
+            onClick={() => onSetPackageAction("urgent")}
+            className={`w-full text-left border p-5 transition-all ${
               selectedPackage === "urgent"
-                ? "border-red-400 bg-red-50/50 ring-2 ring-red-100"
-                : "border-gray-200 bg-white hover:border-gray-300"
+                ? "border-red-300 bg-red-50/40 ring-1 ring-red-300"
+                : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
             }`}
           >
             <div className="flex items-center justify-between gap-3">
@@ -339,7 +363,7 @@ export default function PostStep3({
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                     selectedPackage === "urgent"
                       ? "border-red-500 bg-red-500"
-                      : "border-gray-300"
+                      : "border-[#e8e6e3]"
                   }`}
                 >
                   {selectedPackage === "urgent" && (
@@ -347,16 +371,18 @@ export default function PostStep3({
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm">
-                    Quick Boost
+                  <div className="font-medium text-[#1a1a1a] text-sm">
+                    {t("step3.quickBoost")}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Boosted visibility + priority in search for 3 days · Up to
-                    3× more views
+                  <div className="text-xs text-[#6b6560]">
+                    {t("step3.quickBoostHint")}
                   </div>
                 </div>
               </div>
-              <div className="font-bold text-red-600 shrink-0">
+              <div
+                className="font-light text-red-700 shrink-0"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 {pricing.urgent.price}
               </div>
             </div>
@@ -364,24 +390,24 @@ export default function PostStep3({
 
           {/* Video Tour — paid tiers only */}
           {selectedPackage !== "free" && userId && (
-            <div className="rounded-xl border-2 border-violet-200 bg-violet-50/50 p-4 space-y-3">
+            <div className="border border-[#e8e6e3] bg-[#faf9f7] p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">
-                    Video Tour
+                  <p className="font-medium text-[#1a1a1a] text-sm">
+                    {t("step3.videoTour")}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Add a short video — included with your paid listing
+                  <p className="text-xs text-[#6b6560] mt-0.5">
+                    {t("step3.videoTourHint")}
                   </p>
                 </div>
-                <span className="text-[10px] font-bold bg-violet-600 text-white px-2 py-0.5 rounded-full">
-                  INCLUDED
+                <span className="text-[9px] font-medium bg-[#8E7A6B] text-white tracking-[0.15em] uppercase px-2.5 py-0.5">
+                  {t("step3.included")}
                 </span>
               </div>
               <VideoUpload
                 userId={userId}
                 video={video}
-                onChangeAction={onSetVideo}
+                onChangeAction={onSetVideoAction}
               />
             </div>
           )}
@@ -390,39 +416,38 @@ export default function PostStep3({
           <div className="flex gap-3 pt-2">
             <button
               type="button"
-              onClick={onBack}
-              className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+              onClick={onBackAction}
+              className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
             >
-              <ArrowLeft className="w-4 h-4" /> Back
+              <ArrowLeft className="w-3.5 h-3.5" /> {t("step3.back")}
             </button>
             <button
               type="button"
-              onClick={onPublish}
+              onClick={onPublishAction}
               disabled={loading}
-              className={`flex-[2] py-3.5 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${
+              className={`flex-[2] py-3.5 text-xs font-medium tracking-[0.15em] uppercase transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${
                 selectedPackage === "free"
-                  ? "bg-green-600 text-white hover:bg-green-700"
+                  ? "bg-[#8E7A6B] text-white hover:bg-[#7A6657]"
                   : selectedPackage === "featured"
-                    ? "bg-amber-500 text-white hover:bg-amber-600 shadow-sm shadow-amber-200"
-                    : "bg-red-500 text-white hover:bg-red-600 shadow-sm shadow-red-200"
+                    ? "bg-amber-500 text-white hover:bg-amber-600"
+                    : "bg-red-600 text-white hover:bg-red-700"
               }`}
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : selectedPackage === "free" ? (
-                "Publish Listing"
+                t("step3.publishListing")
               ) : selectedPackage === "featured" ? (
-                `Publish & Feature — ${pricing.featured.price}`
+                t("step3.publishAndFeature", { price: pricing.featured.price })
               ) : (
-                `Publish & Boost — ${pricing.urgent.price}`
+                t("step3.publishAndBoost", { price: pricing.urgent.price })
               )}
             </button>
           </div>
 
           {selectedPackage !== "free" && (
-            <p className="text-center text-xs text-gray-400">
-              Your listing will be published, then pay to activate your
-              promotion.
+            <p className="text-center text-xs text-[#8a8280]">
+              {t("step3.paymentNote")}
             </p>
           )}
         </div>

@@ -2,9 +2,11 @@
 
 import { Bell, MessageCircle, Tag, TrendingDown, X } from "lucide-react";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { useRouter } from "@/i18n/navigation";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { createClient } from "@/lib/supabase/client";
@@ -17,18 +19,20 @@ function CounterOfferToast({
   avatarUrl,
   listingTitle,
   counterAmount,
-  onNavigate,
+  onNavigateAction,
+  reviewCounterLabel,
 }: {
   toastId: string | number;
   sellerName: string;
   avatarUrl: string | null;
   listingTitle: string;
   counterAmount: string;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
+  reviewCounterLabel: string;
 }) {
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-linear-to-b from-indigo-500 to-violet-600 shrink-0" />
+    <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-[#8E7A6B] to-[#7A6657] shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -40,42 +44,42 @@ function CounterOfferToast({
                 className="w-8 h-8 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                <Tag className="w-4 h-4 text-indigo-600" />
+              <div className="w-8 h-8 bg-[#e8e6e3] rounded-full flex items-center justify-center shrink-0">
+                <Tag className="w-4 h-4 text-[#8E7A6B]" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-[#8E7A6B] uppercase tracking-widest">
                 Counter offer received
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {sellerName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+        <p className="text-[11px] text-[#8a8280] truncate mb-1.5">
           {listingTitle}
         </p>
 
-        <div className="flex items-center justify-center bg-indigo-50 border border-indigo-100 rounded-xl py-2 mb-3">
-          <span className="text-xl font-extrabold text-indigo-600">
+        <div className="flex items-center justify-center bg-[#f0eeeb] border border-[#e8e6e3] py-2 mb-3">
+          <span className="text-xl font-extrabold text-[#8E7A6B]">
             {counterAmount}
           </span>
         </div>
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
-          Review counter →
+          {reviewCounterLabel}
         </button>
       </div>
     </div>
@@ -88,19 +92,26 @@ function OfferStatusToast({
   personName,
   avatarUrl,
   listingTitle,
-  onNavigate,
+  onNavigateAction,
+  offerAcceptedLabel,
+  offerDeclinedLabel,
+  viewOfferLabel,
 }: {
   toastId: string | number;
   status: "accepted" | "declined";
   personName: string;
   avatarUrl: string | null;
   listingTitle: string;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
+  offerAcceptedLabel: string;
+  offerDeclinedLabel: string;
+  viewOfferLabel: string;
 }) {
   const isAccepted = status === "accepted";
+  const statusLabel = isAccepted ? offerAcceptedLabel : offerDeclinedLabel;
   return (
     <div
-      className={`w-85 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}
+      className={`w-85 bg-white shadow-2xl border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300 ${isAccepted ? "shadow-emerald-100/60" : "shadow-rose-100/60"}`}
     >
       <div
         className={`w-1 shrink-0 ${isAccepted ? "bg-linear-to-b from-emerald-500 to-teal-600" : "bg-linear-to-b from-rose-500 to-red-600"}`}
@@ -127,30 +138,30 @@ function OfferStatusToast({
               <p
                 className={`text-[10px] font-bold uppercase tracking-widest ${isAccepted ? "text-emerald-500" : "text-rose-500"}`}
               >
-                Offer {isAccepted ? "accepted" : "declined"}
+                {statusLabel}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {personName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-3">
+        <p className="text-[11px] text-[#8a8280] truncate mb-3">
           {listingTitle}
         </p>
 
         <button
-          onClick={onNavigate}
-          className={`w-full text-center text-xs font-semibold rounded-xl py-1.5 transition-colors ${isAccepted ? "text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100" : "text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100"}`}
+          onClick={onNavigateAction}
+          className={`w-full text-center text-xs font-semibold py-1.5 transition-colors ${isAccepted ? "text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100" : "text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100"}`}
         >
-          View offer →
+          {viewOfferLabel}
         </button>
       </div>
     </div>
@@ -164,7 +175,10 @@ function MessageToast({
   listingTitle,
   preview,
   isOffer,
-  onNavigate,
+  onNavigateAction,
+  inChatOfferLabel,
+  newMessageLabel,
+  viewConversationLabel,
 }: {
   toastId: string | number;
   senderName: string;
@@ -172,11 +186,15 @@ function MessageToast({
   listingTitle: string;
   preview: string;
   isOffer: boolean;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
+  inChatOfferLabel: string;
+  newMessageLabel: string;
+  viewConversationLabel: string;
 }) {
+  const headerLabel = isOffer ? inChatOfferLabel : newMessageLabel;
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
-      <div className="w-1 bg-linear-to-b from-indigo-500 to-indigo-600 shrink-0" />
+    <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+      <div className="w-1 bg-linear-to-b from-[#8E7A6B] to-[#7A6657] shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2.5">
@@ -187,42 +205,42 @@ function MessageToast({
                 className="w-8 h-8 rounded-full object-cover shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                <MessageCircle className="w-4 h-4 text-indigo-600" />
+              <div className="w-8 h-8 bg-[#e8e6e3] rounded-full flex items-center justify-center shrink-0">
+                <MessageCircle className="w-4 h-4 text-[#8E7A6B]" />
               </div>
             )}
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">
-                {isOffer ? "In-chat offer" : "New message"}
+              <p className="text-[10px] font-bold text-[#8E7A6B] uppercase tracking-widest">
+                {headerLabel}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {senderName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+        <p className="text-[11px] text-[#8a8280] truncate mb-1.5">
           Re: {listingTitle}
         </p>
 
         {preview && (
-          <p className="text-xs text-gray-600 line-clamp-2 mb-3 bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-100">
+          <p className="text-xs text-[#666] line-clamp-2 mb-3 bg-[#faf9f7] px-2.5 py-1.5 border border-[#e8e6e3]">
             &ldquo;{preview}&rdquo;
           </p>
         )}
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
-          View conversation →
+          {viewConversationLabel}
         </button>
       </div>
     </div>
@@ -235,17 +253,21 @@ function OfferToast({
   avatarUrl,
   listingTitle,
   amount,
-  onNavigate,
+  onNavigateAction,
+  newOfferReceivedLabel,
+  reviewOfferLabel,
 }: {
   toastId: string | number;
   buyerName: string;
   avatarUrl: string | null;
   listingTitle: string;
   amount: string;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
+  newOfferReceivedLabel: string;
+  reviewOfferLabel: string;
 }) {
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-emerald-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-emerald-100/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className="w-1 bg-linear-to-b from-emerald-500 to-teal-600 shrink-0" />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -263,36 +285,36 @@ function OfferToast({
             )}
             <div className="min-w-0">
               <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
-                New offer received
+                {newOfferReceivedLabel}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {buyerName}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <p className="text-[11px] text-gray-400 truncate mb-1.5">
+        <p className="text-[11px] text-[#8a8280] truncate mb-1.5">
           {listingTitle}
         </p>
 
-        <div className="flex items-center justify-center bg-emerald-50 border border-emerald-100 rounded-xl py-2 mb-3">
+        <div className="flex items-center justify-center bg-emerald-50 border border-emerald-100 py-2 mb-3">
           <span className="text-xl font-extrabold text-emerald-600">
             {amount}
           </span>
         </div>
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-1.5 transition-colors"
         >
-          Review offer →
+          {reviewOfferLabel}
         </button>
       </div>
     </div>
@@ -303,33 +325,29 @@ function OfferToast({
 
 const NOTIF_CONFIG: Record<
   string,
-  { accent: string; iconBg: string; icon: React.ReactNode; label: string }
+  { accent: string; iconBg: string; icon: React.ReactNode }
 > = {
   price_drop: {
     accent: "from-emerald-500 to-teal-600",
     iconBg: "bg-emerald-100",
     icon: <TrendingDown className="w-4 h-4 text-emerald-600" />,
-    label: "Price drop",
   },
   saved_search_match: {
-    accent: "from-violet-500 to-indigo-600",
-    iconBg: "bg-violet-100",
-    icon: <Bell className="w-4 h-4 text-violet-600" />,
-    label: "New match",
+    accent: "from-[#8E7A6B] to-[#7A6657]",
+    iconBg: "bg-[#f0eeeb]",
+    icon: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
   },
   listing_expired: {
     accent: "from-rose-500 to-red-600",
     iconBg: "bg-rose-100",
     icon: <Bell className="w-4 h-4 text-rose-600" />,
-    label: "Listing expired",
   },
 };
 
 const NOTIF_DEFAULT = {
-  accent: "from-indigo-500 to-indigo-600",
-  iconBg: "bg-indigo-100",
-  icon: <Bell className="w-4 h-4 text-indigo-600" />,
-  label: "Notification",
+  accent: "from-[#8E7A6B] to-[#7A6657]",
+  iconBg: "bg-[#e8e6e3]",
+  icon: <Bell className="w-4 h-4 text-[#8E7A6B]" />,
 };
 
 function NotificationToast({
@@ -337,18 +355,22 @@ function NotificationToast({
   type,
   title,
   body,
-  onNavigate,
+  onNavigateAction,
+  label,
+  viewLabel,
 }: {
   toastId: string | number;
   type: string;
   title: string;
   body: string | null;
-  onNavigate: () => void;
+  onNavigateAction: () => void;
+  label: string;
+  viewLabel: string;
 }) {
   const cfg = NOTIF_CONFIG[type] ?? NOTIF_DEFAULT;
 
   return (
-    <div className="w-85 bg-white rounded-2xl shadow-2xl shadow-indigo-100/60 border border-gray-100 overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
+    <div className="w-85 bg-white shadow-2xl shadow-[#e8e6e3]/60 border border-[#e8e6e3] overflow-hidden flex animate-in slide-in-from-right-4 duration-300">
       <div className={`w-1 bg-linear-to-b ${cfg.accent} shrink-0`} />
       <div className="flex-1 p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -359,33 +381,33 @@ function NotificationToast({
               {cfg.icon}
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                {cfg.label}
+              <p className="text-[10px] font-bold text-[#8a8280] uppercase tracking-widest">
+                {label}
               </p>
-              <p className="text-sm font-bold text-gray-900 truncate">
+              <p className="text-sm font-bold text-[#1a1a1a] truncate">
                 {title}
               </p>
             </div>
           </div>
           <button
             onClick={() => toast.dismiss(toastId)}
-            className="text-gray-300 hover:text-gray-500 transition-colors mt-0.5 shrink-0"
+            className="text-[#8a8280] hover:text-[#6b6560] transition-colors mt-0.5 shrink-0"
           >
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         {body && (
-          <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed">
+          <p className="text-xs text-[#6b6560] line-clamp-2 mb-3 leading-relaxed">
             {body}
           </p>
         )}
 
         <button
-          onClick={onNavigate}
-          className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl py-1.5 transition-colors"
+          onClick={onNavigateAction}
+          className="w-full text-center text-xs font-semibold text-[#8E7A6B] hover:text-[#7A6657] bg-[#f0eeeb] hover:bg-[#e8e6e3] py-1.5 transition-colors"
         >
-          View →
+          {viewLabel}
         </button>
       </div>
     </div>
@@ -405,6 +427,7 @@ const SKIP_NOTIF_TYPES = new Set([
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function RealtimeToasts() {
+  const t = useTranslations("notifications");
   const supabase = createClient();
   const { userId } = useCurrentUser();
   const router = useRouter();
@@ -449,22 +472,27 @@ export default function RealtimeToasts() {
       const listingTitle = (conv?.listings as any)?.title || "a listing";
       const isOffer = msg.message_type === "offer";
       const preview = isOffer
-        ? `Offered €${Number(msg.offer_price).toLocaleString()}`
+        ? t("offeredPrice", {
+            amount: Number(msg.offer_price).toLocaleString(),
+          })
         : String(msg.content || "").slice(0, 100);
 
       toast.custom(
-        (t) => (
+        (toastId) => (
           <MessageToast
-            toastId={t}
+            toastId={toastId}
             senderName={senderName}
             avatarUrl={sender?.avatar_url ?? null}
             listingTitle={listingTitle}
             preview={preview}
             isOffer={isOffer}
-            onNavigate={() => {
-              toast.dismiss(t);
+            onNavigateAction={() => {
+              toast.dismiss(toastId);
               router.push(`/dashboard/messages/${msg.conversation_id}`);
             }}
+            inChatOfferLabel={t("inChatOffer")}
+            newMessageLabel={t("newMessage")}
+            viewConversationLabel={t("viewConversation")}
           />
         ),
         { duration: 7000, position: "top-right" },
@@ -499,17 +527,19 @@ export default function RealtimeToasts() {
       const amount = `${sym}${Number(offer.amount).toLocaleString()}`;
 
       toast.custom(
-        (t) => (
+        (toastId) => (
           <OfferToast
-            toastId={t}
+            toastId={toastId}
             buyerName={buyerName}
             avatarUrl={buyer?.avatar_url ?? null}
             listingTitle={listingTitle}
             amount={amount}
-            onNavigate={() => {
-              toast.dismiss(t);
+            onNavigateAction={() => {
+              toast.dismiss(toastId);
               router.push(`/dashboard/offers?offer=${offer.id}`);
             }}
+            newOfferReceivedLabel={t("newOfferReceived")}
+            reviewOfferLabel={t("reviewOffer")}
           />
         ),
         { duration: 10000, position: "top-right" },
@@ -547,17 +577,18 @@ export default function RealtimeToasts() {
         const counterAmount = `${sym}${Number(offer.counter_amount).toLocaleString()}`;
 
         toast.custom(
-          (t) => (
+          (toastId) => (
             <CounterOfferToast
-              toastId={t}
+              toastId={toastId}
               sellerName={sellerName}
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
               counterAmount={counterAmount}
-              onNavigate={() => {
-                toast.dismiss(t);
+              onNavigateAction={() => {
+                toast.dismiss(toastId);
                 router.push(`/dashboard/offers?offer=${offer.id}`);
               }}
+              reviewCounterLabel={t("reviewCounter")}
             />
           ),
           { duration: 10000, position: "top-right" },
@@ -579,17 +610,20 @@ export default function RealtimeToasts() {
         const listingTitle = listing?.title || "your listing";
 
         toast.custom(
-          (t) => (
+          (toastId) => (
             <OfferStatusToast
-              toastId={t}
+              toastId={toastId}
               status={offer.status as "accepted" | "declined"}
               personName={sellerName}
               avatarUrl={seller?.avatar_url ?? null}
               listingTitle={listingTitle}
-              onNavigate={() => {
-                toast.dismiss(t);
+              onNavigateAction={() => {
+                toast.dismiss(toastId);
                 router.push(`/dashboard/offers?offer=${offer.id}`);
               }}
+              offerAcceptedLabel={t("offerAccepted")}
+              offerDeclinedLabel={t("offerDeclined")}
+              viewOfferLabel={t("viewOffer")}
             />
           ),
           { duration: 10000, position: "top-right" },
@@ -599,6 +633,20 @@ export default function RealtimeToasts() {
     enabled: !!userId,
   });
 
+  // Helper to get notification label based on type
+  const getNotificationLabel = (type: string): string => {
+    switch (type) {
+      case "price_drop":
+        return t("priceDrop");
+      case "saved_search_match":
+        return t("savedSearchMatch");
+      case "listing_expired":
+        return t("listingExpired");
+      default:
+        return t("notification");
+    }
+  };
+
   // ── Generic notifications ────────────────────────────────────────────────
   useRealtimeTable({
     channelName: `rt-notifications-${userId ?? "anon"}`,
@@ -607,17 +655,20 @@ export default function RealtimeToasts() {
     filter: userId ? `user_id=eq.${userId}` : undefined,
     onPayload: ({ new: notif }) => {
       if (SKIP_NOTIF_TYPES.has(String(notif.type))) return;
+      const notifType = String(notif.type);
       toast.custom(
-        (t) => (
+        (toastId) => (
           <NotificationToast
-            toastId={t}
-            type={String(notif.type)}
+            toastId={toastId}
+            type={notifType}
             title={String(notif.title)}
             body={notif.body ? String(notif.body) : null}
-            onNavigate={() => {
-              toast.dismiss(t);
+            onNavigateAction={() => {
+              toast.dismiss(toastId);
               router.push(String(notif.link ?? "/dashboard/notifications"));
             }}
+            label={getNotificationLabel(notifType)}
+            viewLabel={t("view")}
           />
         ),
         { duration: 8000, position: "top-right" },

@@ -1,28 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" fill="none" role="img" aria-label="NextBazar">
-  <defs>
-    <linearGradient id="grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60A5FA"/>
-      <stop offset="100%" stop-color="#818CF8"/>
-    </linearGradient>
-  </defs>
-
   <!-- Wordmark — light on dark -->
   <text
-    x="0" y="52"
-    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
-    font-size="34" font-weight="800" fill="#F8FAFC"
-    letter-spacing="-1.5"
+    x="0"
+    y="50"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
+    font-size="34"
+    font-weight="400"
+    fill="#faf9f7"
+    letter-spacing="0.5"
   >Next</text>
+
   <text
-    x="72" y="52"
-    font-family="'SF Pro Display', 'Inter', 'Helvetica Neue', Arial, sans-serif"
-    font-size="34" font-weight="800" fill="url(#grad-main)"
-    letter-spacing="-1.5"
+    x="72"
+    y="50"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
+    font-size="34"
+    font-weight="600"
+    fill="#8E7A6B"
+    letter-spacing="0.5"
   >Bazar</text>
+
   <text
-    x="0" y="67"
-    font-family="'SF Pro Text', 'Inter', 'Helvetica Neue', Arial, sans-serif"
-    font-size="10.5" font-weight="500" fill="#94A3B8"
-    letter-spacing="2.5"
+    x="1"
+    y="66"
+    font-family="'Helvetica Neue', 'Arial', sans-serif"
+    font-size="8.5"
+    font-weight="500"
+    fill="#666666"
+    letter-spacing="3.5"
   >MARKETPLACE</text>
 </svg>

@@ -28,9 +28,9 @@ export interface CategoryConfig {
 const CONFIG: Record<string, CategoryConfig> = {
   electronics: {
     Icon: Laptop,
-    bg: "bg-indigo-50",
-    color: "text-indigo-500",
-    gradient: "from-indigo-500 to-cyan-400",
+    bg: "bg-[#f0eeeb]",
+    color: "text-[#8E7A6B]",
+    gradient: "from-[#8E7A6B] to-cyan-400",
     accent: "#3B82F6",
   },
   fashion: {
@@ -49,9 +49,9 @@ const CONFIG: Record<string, CategoryConfig> = {
   },
   jobs: {
     Icon: Briefcase,
-    bg: "bg-purple-50",
-    color: "text-purple-500",
-    gradient: "from-purple-500 to-violet-400",
+    bg: "bg-[#f0eeeb]",
+    color: "text-[#8E7A6B]",
+    gradient: "from-[#f0eeeb]0 to-[#8E7A6B]",
     accent: "#8B5CF6",
   },
   property: {
@@ -86,9 +86,9 @@ const CONFIG: Record<string, CategoryConfig> = {
 
 const FALLBACK: CategoryConfig = {
   Icon: Tag,
-  bg: "bg-gray-50",
-  color: "text-gray-400",
-  gradient: "from-gray-400 to-gray-300",
+  bg: "bg-[#faf9f7]",
+  color: "text-[#8a8280]",
+  gradient: "from-[#bbb] to-[#ccc]",
   accent: "#9CA3AF",
 };
 

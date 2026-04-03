@@ -123,6 +123,8 @@ type ListingDetailColumns = Pick<
   | "message_count"
   | "contact_phone"
   | "attributes"
+  | "quantity"
+  | "low_stock_threshold"
   | "expires_at"
   | "created_at"
   | "updated_at"
@@ -205,6 +207,8 @@ export type DashboardListing = Pick<
   | "expires_at"
   | "category_id"
   | "location_id"
+  | "quantity"
+  | "low_stock_threshold"
 > & {
   message_count: number;
   /** Present only after the boosted_until migration has been applied. */

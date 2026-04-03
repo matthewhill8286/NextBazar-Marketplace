@@ -1,8 +1,6 @@
 /** Shared skeleton primitives for dashboard loading states. */
 export function Bone({ className = "" }: { className?: string }) {
-  return (
-    <div className={`animate-pulse rounded-lg bg-gray-200 ${className}`} />
-  );
+  return <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />;
 }
 
 /** Header with title and optional subtitle. */
@@ -24,9 +22,7 @@ export function CardSkeleton({
   className?: string;
 }) {
   return (
-    <div
-      className={`bg-white rounded-xl border border-gray-100 p-5 ${className}`}
-    >
+    <div className={`bg-white border border-[#e8e6e3] p-5 ${className}`}>
       {children}
     </div>
   );
@@ -35,10 +31,10 @@ export function CardSkeleton({
 /** Row item with thumbnail + text lines. */
 export function ListRowSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+    <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
       {Array.from({ length: count }).map((_, i) => (
         <div key={`list-row-${i}`} className="flex items-center gap-3 p-4">
-          <Bone className="w-12 h-10 rounded-lg shrink-0" />
+          <Bone className="w-12 h-10 shrink-0" />
           <div className="flex-1 space-y-2">
             <Bone className="h-4 w-3/4" />
             <Bone className="h-3 w-1/2" />
@@ -59,7 +55,7 @@ export function StatsGridSkeleton({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={`stats-grid-${i}`}
-          className="bg-white rounded-xl border border-gray-100 p-4 space-y-2"
+          className="bg-white border border-[#e8e6e3] p-4 space-y-2"
         >
           <Bone className="h-3 w-16" />
           <Bone className="h-6 w-12" />
@@ -72,9 +68,9 @@ export function StatsGridSkeleton({ count = 4 }: { count?: number }) {
 /** Tab bar skeleton. */
 export function TabsSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6">
+    <div className="flex gap-1 bg-[#f0eeeb] p-1 mb-6">
       {Array.from({ length: count }).map((_, i) => (
-        <Bone key={`tab-${i}`} className="h-9 flex-1 rounded-lg" />
+        <Bone key={`tab-${i}`} className="h-9 flex-1 " />
       ))}
     </div>
   );
@@ -87,7 +83,7 @@ export function ListingGridSkeleton({ count = 4 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={`listing-grid-${i}`}
-          className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+          className="bg-white border border-[#e8e6e3] overflow-hidden"
         >
           <Bone className="h-40 w-full rounded-none" />
           <div className="p-3 space-y-2">

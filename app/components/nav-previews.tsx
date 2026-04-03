@@ -2,7 +2,6 @@
 
 import { Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   type ReactNode,
@@ -11,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { Link } from "@/i18n/navigation";
 import { useCurrentUser } from "@/lib/hooks/use-current-user";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
@@ -22,6 +22,7 @@ type WrapperProps = {
   badge?: number;
   badgeColor?: string;
   icon: ReactNode;
+  label?: string;
   children: (opts: { load: () => void }) => ReactNode;
 };
 
@@ -35,6 +36,7 @@ export function NavPreviewWrapper({
   badge,
   badgeColor = "bg-red-500",
   icon,
+  label,
   children,
 }: WrapperProps) {
   const [open, setOpen] = useState(false);
@@ -72,7 +74,8 @@ export function NavPreviewWrapper({
     >
       <Link
         href={href}
-        className="flex items-center gap-1.5 text-sm text-gray-600 hover:text-gray-900 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors relative"
+        aria-label={label}
+        className="flex items-center gap-1.5 text-sm text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors relative"
       >
         {icon}
         {!!badge && badge > 0 && (
@@ -84,9 +87,12 @@ export function NavPreviewWrapper({
         )}
       </Link>
 
-      {/* Dropdown */}
+      {/* Dropdown — close on any click inside (e.g. navigating to an item) */}
       {open && (
-        <div className="absolute right-0 top-full mt-1.5 w-80 bg-white rounded-xl border border-gray-100 shadow-sm shadow-gray-200/40 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-1 duration-150">
+        <div
+          onClick={() => setOpen(false)}
+          className="absolute right-0 top-full mt-1.5 w-80 bg-white border border-[#e8e6e3] shadow-sm shadow-[#e8e6e3]/40 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-1 duration-150"
+        >
           {loaded && children({ load: () => {} })}
         </div>
       )}
@@ -113,7 +119,7 @@ type ConversationPreview = {
   } | null;
 };
 
-export function MessagesPreview() {
+export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
   const { userId } = useCurrentUser();
   const [convos, setConvos] = useState<ConversationPreview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,10 +152,10 @@ export function MessagesPreview() {
       <div className="p-3 space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-10 h-10 rounded-full bg-gray-100 shrink-0" />
+            <div className="w-10 h-10 rounded-full bg-[#f0eeeb] shrink-0" />
             <div className="flex-1 space-y-1.5 pt-1">
-              <div className="h-3 w-24 bg-gray-100 rounded" />
-              <div className="h-3 w-40 bg-gray-100 rounded" />
+              <div className="h-3 w-24 bg-[#f0eeeb] rounded" />
+              <div className="h-3 w-40 bg-[#f0eeeb] rounded" />
             </div>
           </div>
         ))}
@@ -160,26 +166,24 @@ export function MessagesPreview() {
   if (convos.length === 0) {
     return (
       <div className="px-4 py-6 text-center">
-        <MessageCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-        <p className="text-sm text-gray-400">
-          {t("noMessages")}
-        </p>
+        <MessageCircle className="w-8 h-8 text-[#8a8280] mx-auto mb-2" />
+        <p className="text-sm text-[#8a8280]">{t("noMessages")}</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-[#e8e6e3]">
         {convos.map((c) => {
           const other = c.buyer?.id === userId ? c.seller : c.buyer;
           return (
             <Link
               key={c.id}
-              href={`/dashboard/messages/${c.id}`}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+              href={shopMode ? `/shop-manager/messages` : `/dashboard/messages/${c.id}`}
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors"
             >
-              <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-sm font-bold shrink-0 overflow-hidden">
+              <div className="w-10 h-10 rounded-full bg-[#f0eeeb] flex items-center justify-center text-[#666] text-sm font-bold shrink-0 overflow-hidden">
                 {other?.avatar_url ? (
                   <Image
                     src={other.avatar_url}
@@ -193,15 +197,15 @@ export function MessagesPreview() {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-[#1a1a1a] truncate">
                   {other?.display_name || "User"}
                 </p>
-                <p className="text-xs text-gray-500 truncate">
+                <p className="text-xs text-[#6b6560] truncate">
                   {c.last_message_preview || c.listings?.title || "…"}
                 </p>
               </div>
               {c.last_message_at && (
-                <span className="text-[10px] text-gray-400 shrink-0">
+                <span className="text-[10px] text-[#8a8280] shrink-0">
                   {shortTimeAgo(c.last_message_at)}
                 </span>
               )}
@@ -210,8 +214,8 @@ export function MessagesPreview() {
         })}
       </div>
       <Link
-        href="/dashboard/messages"
-        className="block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 py-2.5 border-t border-gray-100 hover:bg-gray-50 transition-colors"
+        href={shopMode ? "/shop-manager/messages" : "/dashboard/messages"}
+        className="block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 border-t border-[#e8e6e3] hover:bg-[#faf9f7] transition-colors"
       >
         View all messages →
       </Link>
@@ -261,10 +265,10 @@ export function SavedPreview() {
       <div className="p-3 space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-12 h-10 rounded-lg bg-gray-100 shrink-0" />
+            <div className="w-12 h-10 bg-[#f0eeeb] shrink-0" />
             <div className="flex-1 space-y-1.5 pt-1">
-              <div className="h-3 w-28 bg-gray-100 rounded" />
-              <div className="h-3 w-16 bg-gray-100 rounded" />
+              <div className="h-3 w-28 bg-[#f0eeeb] rounded" />
+              <div className="h-3 w-16 bg-[#f0eeeb] rounded" />
             </div>
           </div>
         ))}
@@ -275,22 +279,22 @@ export function SavedPreview() {
   if (items.length === 0) {
     return (
       <div className="px-4 py-6 text-center">
-        <Heart className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-        <p className="text-sm text-gray-400">No saved listings yet</p>
+        <Heart className="w-8 h-8 text-[#8a8280] mx-auto mb-2" />
+        <p className="text-sm text-[#8a8280]">No saved listings yet</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-[#e8e6e3]">
         {items.map((item) => (
           <Link
             key={item.id}
             href={`/listing/${item.slug}`}
-            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors"
           >
-            <div className="w-12 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden">
+            <div className="w-12 h-10 bg-[#f0eeeb] shrink-0 overflow-hidden">
               {item.primary_image_url && (
                 <Image
                   src={item.primary_image_url}
@@ -302,10 +306,10 @@ export function SavedPreview() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-[#1a1a1a] truncate">
                 {item.title}
               </p>
-              <p className="text-xs font-semibold text-indigo-600">
+              <p className="text-xs font-semibold text-[#666]">
                 {item.price != null
                   ? `${item.currency === "EUR" ? "€" : item.currency}${item.price.toLocaleString()}`
                   : "Contact"}
@@ -316,7 +320,7 @@ export function SavedPreview() {
       </div>
       <Link
         href="/dashboard/saved"
-        className="block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 py-2.5 border-t border-gray-100 hover:bg-gray-50 transition-colors"
+        className="block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 border-t border-[#e8e6e3] hover:bg-[#faf9f7] transition-colors"
       >
         View all saved →
       </Link>
@@ -337,17 +341,17 @@ type NotificationPreview = {
 };
 
 const NOTIF_ICONS: Record<string, string> = {
-  price_drop: "💰",
-  offer_received: "🏷️",
-  offer_accepted: "✅",
-  offer_declined: "❌",
-  offer_countered: "🔄",
+  price_drop: "▼",
+  offer_received: "◆",
+  offer_accepted: "✓",
+  offer_declined: "✕",
+  offer_countered: "↻",
   new_message: "💬",
-  saved_search_match: "🔍",
-  listing_expired: "⏰",
+  saved_search_match: "◎",
+  listing_expired: "⌛",
 };
 
-export function NotificationsPreview() {
+export function NotificationsPreview({ shopMode = false }: { shopMode?: boolean }) {
   const { userId } = useCurrentUser();
   const [notifs, setNotifs] = useState<NotificationPreview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -373,10 +377,10 @@ export function NotificationsPreview() {
       <div className="p-3 space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-8 h-8 rounded-full bg-gray-100 shrink-0" />
+            <div className="w-8 h-8 rounded-full bg-[#f0eeeb] shrink-0" />
             <div className="flex-1 space-y-1.5 pt-0.5">
-              <div className="h-3 w-32 bg-gray-100 rounded" />
-              <div className="h-3 w-48 bg-gray-100 rounded" />
+              <div className="h-3 w-32 bg-[#f0eeeb] rounded" />
+              <div className="h-3 w-48 bg-[#f0eeeb] rounded" />
             </div>
           </div>
         ))}
@@ -388,7 +392,7 @@ export function NotificationsPreview() {
     return (
       <div className="px-4 py-6 text-center">
         <span className="text-2xl block mb-2">🔔</span>
-        <p className="text-sm text-gray-400">No notifications yet</p>
+        <p className="text-sm text-[#8a8280]">No notifications yet</p>
       </div>
     );
   }
@@ -397,7 +401,11 @@ export function NotificationsPreview() {
     if (!n.read) {
       // Mark as read in the database
       const supabase = createClient();
-      supabase.from("notifications").update({ read: true }).eq("id", n.id).then();
+      supabase
+        .from("notifications")
+        .update({ read: true })
+        .eq("id", n.id)
+        .then();
       // Update local state immediately
       setNotifs((prev) =>
         prev.map((item) => (item.id === n.id ? { ...item, read: true } : item)),
@@ -407,47 +415,60 @@ export function NotificationsPreview() {
 
   return (
     <>
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-[#e8e6e3]">
         {notifs.map((n) => {
-          const Wrapper = n.link ? Link : "div";
-          const wrapperProps = n.link ? { href: n.link } : {};
+          // Rewrite dashboard links to shop-manager when in shop mode
+          let href = n.link;
+          if (href && shopMode) {
+            href = href
+              .replace(/^\/dashboard\/offers/, "/shop-manager/offers")
+              .replace(/^\/dashboard\/messages/, "/shop-manager/messages")
+              .replace(/^\/dashboard\/notifications/, "/shop-manager/notifications")
+              .replace(/^\/dashboard/, "/shop-manager");
+          }
+          const Wrapper = href ? Link : "div";
+          const wrapperProps = href ? { href } : {};
           return (
             <Wrapper
               key={n.id}
               {...(wrapperProps as any)}
               onClick={() => handleClick(n)}
-              className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer ${!n.read ? "bg-indigo-50/40" : ""}`}
+              className={`flex items-start gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors cursor-pointer ${!n.read ? "bg-[#faf9f7]/40" : ""}`}
             >
               <span className="text-base shrink-0 mt-0.5">
                 {NOTIF_ICONS[n.type] || "📋"}
               </span>
               <div className="flex-1 min-w-0">
                 <p
-                  className={`text-sm truncate ${!n.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}
+                  className={`text-sm truncate ${!n.read ? "font-semibold text-[#1a1a1a]" : "font-medium text-[#666]"}`}
                 >
                   {n.title}
                 </p>
                 {n.body && (
-                  <p className="text-xs text-gray-500 truncate">{n.body}</p>
+                  <p className="text-xs text-[#6b6560] truncate">{n.body}</p>
                 )}
-                <p className="text-[10px] text-gray-400 mt-0.5">
+                <p className="text-[10px] text-[#8a8280] mt-0.5">
                   {shortTimeAgo(n.created_at)}
                 </p>
               </div>
               {!n.read && (
-                <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0 mt-2" />
+                <div className="w-2 h-2 rounded-full bg-[#666] shrink-0 mt-2" />
               )}
             </Wrapper>
           );
         })}
       </div>
-      <div className="flex items-center border-t border-gray-100">
+      <div className="flex items-center border-t border-[#e8e6e3]">
         {notifs.some((n) => !n.read) && (
           <button
             onClick={() => {
               const supabase = createClient();
               const unreadIds = notifs.filter((n) => !n.read).map((n) => n.id);
-              supabase.from("notifications").update({ read: true }).in("id", unreadIds).then();
+              supabase
+                .from("notifications")
+                .update({ read: true })
+                .in("id", unreadIds)
+                .then();
               setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
             }}
             className="flex-1 text-center text-xs font-semibold text-green-600 hover:text-green-700 py-2.5 hover:bg-green-50/50 transition-colors flex items-center justify-center gap-1"
@@ -456,8 +477,8 @@ export function NotificationsPreview() {
           </button>
         )}
         <Link
-          href="/dashboard/notifications"
-          className={`flex-1 block text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 py-2.5 hover:bg-gray-50 transition-colors ${notifs.some((n) => !n.read) ? "border-l border-gray-100" : ""}`}
+          href={shopMode ? "/shop-manager/notifications" : "/dashboard/notifications"}
+          className={`flex-1 block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 hover:bg-[#faf9f7] transition-colors ${notifs.some((n) => !n.read) ? "border-l border-[#e8e6e3]" : ""}`}
         >
           View all notifications →
         </Link>

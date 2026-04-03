@@ -10,7 +10,7 @@ export default function DealerLoading() {
           <Bone className="h-5 w-40" />
           <Bone className="h-4 w-full" />
           <Bone className="h-4 w-3/4" />
-          <Bone className="h-11 w-40 rounded-xl" />
+          <Bone className="h-11 w-40 " />
         </div>
       </CardSkeleton>
     </div>

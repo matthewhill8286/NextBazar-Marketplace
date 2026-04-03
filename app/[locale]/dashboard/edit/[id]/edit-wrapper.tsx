@@ -1,13 +1,18 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import EditClient from "./edit-client";
 
-export default function EditWrapper({ listingId }: { listingId: string }) {
+export default function EditWrapper({
+  listingId,
+  backHref = "/dashboard/listings",
+}: {
+  listingId: string;
+  backHref?: string;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const [listing, setListing] = useState<any>(null);
@@ -31,7 +36,7 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
           `
           id, title, description, price, price_type, condition, contact_phone,
           category_id, location_id, user_id, primary_image_url,
-          is_promoted, video_url,
+          is_promoted, video_url, quantity, low_stock_threshold,
           images:listing_images(id, url, sort_order)
         `,
         )
@@ -59,7 +64,7 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+        <Loader2 className="w-6 h-6 text-[#8E7A6B] animate-spin" />
       </div>
     );
   }
@@ -68,10 +73,10 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
     return (
       <div className="text-center py-20">
         <div className="text-4xl mb-3">🔍</div>
-        <p className="text-gray-500 mb-4">Listing not found</p>
+        <p className="text-[#6b6560] mb-4">Listing not found</p>
         <Link
-          href="/dashboard/listings"
-          className="text-indigo-600 font-medium hover:underline"
+          href={backHref}
+          className="text-[#8E7A6B] font-medium hover:underline"
         >
           Back to listings
         </Link>
@@ -79,5 +84,5 @@ export default function EditWrapper({ listingId }: { listingId: string }) {
     );
   }
 
-  return <EditClient listing={listing} />;
+  return <EditClient listing={listing} backHref={backHref} />;
 }

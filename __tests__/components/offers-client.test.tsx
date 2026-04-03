@@ -40,8 +40,19 @@ const { mockUpdateEq, mockUpdate, mockDeleteEq, mockRefresh } = vi.hoisted(
 
 // ── Mocks ─────────────────────────────────────────────────────────────────
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ refresh: mockRefresh }),
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) =>
+    React.createElement("a", { href, className }, children),
+  usePathname: () => "/",
 }));
 
 vi.mock("next/image", () => ({
@@ -114,10 +125,10 @@ const PENDING_OFFER = {
   amount: 150,
   currency: "EUR",
   status: "pending",
-  message: null,
-  counter_amount: null,
-  counter_message: null,
-  responded_at: null,
+  message: null as string | null,
+  counter_amount: null as number | null,
+  counter_message: null as string | null,
+  responded_at: null as string | null,
   expires_at: new Date(Date.now() + 86_400_000).toISOString(),
   created_at: new Date().toISOString(),
   listings: BASE_LISTING,
@@ -135,16 +146,16 @@ const COUNTERED_OFFER = {
 
 // ── Shared render helpers ─────────────────────────────────────────────────
 
-const onUpdate = vi.fn();
-const onDelete = vi.fn();
+const onUpdateAction = vi.fn();
+const onDeleteAction = vi.fn();
 
 function renderBuyer(offer = PENDING_OFFER) {
   return render(
     <BuyerOfferCard
       offer={offer}
       userId="user-buyer"
-      onUpdate={onUpdate}
-      onDelete={onDelete}
+      onUpdateAction={onUpdateAction}
+      onDeleteAction={onDeleteAction}
     />,
   );
 }
@@ -154,8 +165,8 @@ function renderSeller(offer = PENDING_OFFER) {
     <SellerOfferCard
       offer={offer}
       userId="user-seller"
-      onUpdate={onUpdate}
-      onDelete={onDelete}
+      onUpdateAction={onUpdateAction}
+      onDeleteAction={onDeleteAction}
     />,
   );
 }
@@ -198,8 +209,8 @@ async function clickAndConfirm(
 
 beforeEach(() => {
   vi.clearAllMocks();
-  onUpdate.mockReset();
-  onDelete.mockReset();
+  onUpdateAction.mockReset();
+  onDeleteAction.mockReset();
   // Default: successful update
   mockUpdateEq.mockResolvedValue({ error: null });
   mockDeleteEq.mockResolvedValue({ error: null });
@@ -239,7 +250,7 @@ describe("BuyerOfferCard — withdraw pending offer", () => {
     await expand();
     await clickAndConfirm(/Withdraw offer/i, /Withdraw this offer/, /^Withdraw$/);
     await waitFor(() =>
-      expect(onUpdate).toHaveBeenCalledWith(
+      expect(onUpdateAction).toHaveBeenCalledWith(
         "offer-1",
         expect.objectContaining({ status: "withdrawn" }),
       ),

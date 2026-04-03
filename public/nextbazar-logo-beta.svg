@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" fill="none" role="img" aria-label="NextBazar Beta">
+  <!-- ─── Wordmark ─── -->
+  <!-- "Next" — dark, serif -->
+  <text
+    x="0"
+    y="50"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
+    font-size="34"
+    font-weight="400"
+    fill="#1a1a1a"
+    letter-spacing="0.5"
+  >Next</text>
+
+  <!-- "Bazar" — warm taupe accent -->
+  <text
+    x="72"
+    y="50"
+    font-family="'Playfair Display', 'Georgia', 'Times New Roman', serif"
+    font-size="34"
+    font-weight="600"
+    fill="#8E7A6B"
+    letter-spacing="0.5"
+  >Bazar</text>
+
+  <!-- BETA tagline — replaces MARKETPLACE, same position -->
+  <text
+    x="1"
+    y="66"
+    font-family="'Helvetica Neue', 'Arial', sans-serif"
+    font-size="8.5"
+    font-weight="600"
+    fill="#8E7A6B"
+    letter-spacing="3.5"
+  >BETA</text>
+</svg>

@@ -17,14 +17,15 @@ import {
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
 import { ConfirmDialog, EmptyState } from "@/app/components/ui";
+import { Link } from "@/i18n/navigation";
 import { LISTING_ACTIVE_MS } from "@/lib/constants";
 import {
   expiryBadge,
@@ -38,13 +39,6 @@ import type { DashboardListing } from "@/lib/supabase/supabase.types";
 /** Re-export so dashboard/page.tsx can import the canonical type. */
 export type { DashboardListing as Listing };
 
-const TABS = [
-  { key: "active", label: "Active" },
-  { key: "sold", label: "Sold" },
-  { key: "expired", label: "Expired" },
-  { key: "draft", label: "Drafts" },
-];
-
 /** Returns true when an active listing expires within 1 day. */
 function expiresSoon(expiresAt: string | null, status: string): boolean {
   if (status !== "active" || !expiresAt) return false;
@@ -55,15 +49,23 @@ function expiresSoon(expiresAt: string | null, status: string): boolean {
 export default function ListingsClient({
   initialListings,
   isProSeller = false,
-  onListingsChange,
+  onListingsChangeAction,
 }: {
   initialListings: DashboardListing[];
   isProSeller?: boolean;
-  onListingsChange?: (listings: DashboardListing[]) => void;
+  onListingsChangeAction?: (listings: DashboardListing[]) => void;
 }) {
   const supabase = createClient();
   const searchParams = useSearchParams();
+  const t = useTranslations("dashboard.listings");
   const validTabs = ["active", "sold", "expired", "draft"];
+
+  const TABS = [
+    { key: "active", label: t("active") },
+    { key: "sold", label: t("sold") },
+    { key: "expired", label: t("expired") },
+    { key: "draft", label: t("drafts") },
+  ];
 
   function tabFromParams() {
     const t = searchParams.get("tab") ?? "";
@@ -75,8 +77,8 @@ export default function ListingsClient({
   // Notify parent whenever listings change — done in an effect to avoid
   // calling setState in a parent component during this component's render.
   useEffect(() => {
-    onListingsChange?.(listings);
-  }, [listings, onListingsChange]);
+    onListingsChangeAction?.(listings);
+  }, [listings, onListingsChangeAction]);
   const [tab, setTab] = useState(tabFromParams);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
@@ -146,13 +148,13 @@ export default function ListingsClient({
       .update({ status })
       .eq("id", id);
     if (error) {
-      toast.error("Failed to update listing status.");
+      toast.error(t("toastStatusError"));
     } else {
       setListings((prev) =>
         prev.map((l) => (l.id === id ? { ...l, status } : l)),
       );
       toast.success(
-        status === "sold" ? "Listing marked as sold" : "Listing status updated",
+        status === "sold" ? t("toastMarkedSold") : t("toastStatusUpdated"),
       );
     }
     setOpenMenu(null);
@@ -163,10 +165,10 @@ export default function ListingsClient({
     setLoadingAction(id);
     const { error } = await supabase.from("listings").delete().eq("id", id);
     if (error) {
-      toast.error("Failed to delete listing.");
+      toast.error(t("toastDeleteError"));
     } else {
       setListings((prev) => prev.filter((l) => l.id !== id));
-      toast.success("Listing deleted");
+      toast.success(t("toastDeleted"));
     }
     setOpenMenu(null);
     setLoadingAction(null);
@@ -256,7 +258,7 @@ export default function ListingsClient({
       })
       .eq("id", id);
     if (error) {
-      toast.error("Failed to renew listing.");
+      toast.error(t("toastRenewError"));
     } else {
       setListings((prev) =>
         prev.map((l) =>
@@ -265,7 +267,7 @@ export default function ListingsClient({
             : l,
         ),
       );
-      toast.success("Listing renewed for 30 days");
+      toast.success(t("toastRenewed"));
       if (tab === "expired") setTab("active");
     }
     setOpenMenu(null);
@@ -290,12 +292,10 @@ export default function ListingsClient({
     const ids = [...selected].filter((id) => filtered.some((l) => l.id === id));
     const { error } = await supabase.from("listings").delete().in("id", ids);
     if (error) {
-      toast.error("Failed to delete listings.");
+      toast.error(t("toastBulkDeleteError"));
     } else {
       setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} deleted`,
-      );
+      toast.success(t("toastBulkDeleted", { count: ids.length }));
     }
     clearSelection();
     setShowDeleteConfirm(false);
@@ -310,14 +310,12 @@ export default function ListingsClient({
       .update({ status: "sold" })
       .in("id", ids);
     if (error) {
-      toast.error("Failed to update listings.");
+      toast.error(t("toastBulkSoldError"));
     } else {
       setListings((prev) =>
         prev.map((l) => (ids.includes(l.id) ? { ...l, status: "sold" } : l)),
       );
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} marked as sold`,
-      );
+      toast.success(t("toastBulkSoldSuccess", { count: ids.length }));
       setTab("sold");
     }
     clearSelection();
@@ -374,9 +372,7 @@ export default function ListingsClient({
     }
 
     setListings((prev) => [...newListings, ...prev]);
-    toast.success(
-      `${newListings.length} listing${newListings.length !== 1 ? "s" : ""} relisted`,
-    );
+    toast.success(t("toastBulkRelistSuccess", { count: newListings.length }));
     clearSelection();
     setBulkLoading(false);
     setTab("active");
@@ -395,7 +391,7 @@ export default function ListingsClient({
       })
       .in("id", ids);
     if (error) {
-      toast.error("Failed to renew listings.");
+      toast.error(t("toastBulkRenewError"));
     } else {
       setListings((prev) =>
         prev.map((l) =>
@@ -404,9 +400,7 @@ export default function ListingsClient({
             : l,
         ),
       );
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} renewed`,
-      );
+      toast.success(t("toastBulkRenewSuccess", { count: ids.length }));
       setTab("active");
     }
     clearSelection();
@@ -422,7 +416,7 @@ export default function ListingsClient({
       .update({ status: "active", expires_at: newExpiresAt })
       .in("id", ids);
     if (error) {
-      toast.error("Failed to reactivate listings.");
+      toast.error(t("toastBulkReactivateError"));
     } else {
       setListings((prev) =>
         prev.map((l) =>
@@ -431,9 +425,7 @@ export default function ListingsClient({
             : l,
         ),
       );
-      toast.success(
-        `${ids.length} listing${ids.length !== 1 ? "s" : ""} reactivated`,
-      );
+      toast.success(t("toastBulkReactivateSuccess", { count: ids.length }));
       setTab("active");
     }
     clearSelection();
@@ -445,7 +437,7 @@ export default function ListingsClient({
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+      <div className="flex gap-1 bg-[#f0eeeb] p-1">
         {TABS.map((t) => {
           const count = listings.filter((l) => l.status === t.key).length;
           return (
@@ -455,15 +447,15 @@ export default function ListingsClient({
                 setTab(t.key);
                 clearSelection();
               }}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 tab === t.key
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-[#1a1a1a] shadow-sm"
+                  : "text-[#6b6560] hover:text-[#666]"
               }`}
             >
               {t.label}
               {count > 0 && (
-                <span className="ml-1.5 text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded-full">
+                <span className="ml-1.5 text-xs bg-[#e8e6e3] text-[#666] px-1.5 py-0.5 rounded-full">
                   {count}
                 </span>
               )}
@@ -474,9 +466,9 @@ export default function ListingsClient({
 
       {/* Bulk action bar — Pro Sellers only */}
       {isProSeller && selectedInTab.length > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-indigo-50 border border-indigo-100 rounded-xl">
-          <span className="text-sm font-medium text-indigo-800">
-            {selectedInTab.length} selected
+        <div className="flex items-center gap-3 px-4 py-3 bg-[#faf9f7] border border-[#e8e6e3] ">
+          <span className="text-sm font-medium text-[#1a1a1a]">
+            {t("selected", { count: selectedInTab.length })}
           </span>
           <div className="flex items-center gap-2 ml-auto flex-wrap">
             {tab === "expired" && (
@@ -484,19 +476,19 @@ export default function ListingsClient({
                 <button
                   onClick={bulkRenew}
                   disabled={bulkLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C2826] text-white text-xs font-semibold hover:bg-[#3D3633] transition-colors disabled:opacity-50"
                 >
                   {bulkLoading ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
                   ) : (
                     <Clock className="w-3 h-3" />
                   )}
-                  Renew All
+                  {t("renewAll")}
                 </button>
                 <button
                   onClick={bulkRelist}
                   disabled={bulkLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e8e6e3] bg-[#faf9f7] text-[#666] text-xs font-semibold hover:bg-[#f0eeeb] transition-colors disabled:opacity-50"
                 >
                   {bulkLoading ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
@@ -511,7 +503,7 @@ export default function ListingsClient({
               <button
                 onClick={bulkReactivate}
                 disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C2826] text-white text-xs font-semibold hover:bg-[#3D3633] transition-colors disabled:opacity-50"
               >
                 {bulkLoading ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -525,7 +517,7 @@ export default function ListingsClient({
               <button
                 onClick={bulkMarkSold}
                 disabled={bulkLoading}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white text-xs font-semibold hover:bg-green-700 transition-colors disabled:opacity-50"
               >
                 {bulkLoading ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -538,14 +530,14 @@ export default function ListingsClient({
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={bulkLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-100 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
             >
               <Trash2 className="w-3 h-3" />
               Delete
             </button>
             <button
               onClick={clearSelection}
-              className="text-xs text-gray-500 hover:text-gray-700 transition-colors px-2"
+              className="text-xs text-[#6b6560] hover:text-[#666] transition-colors px-2"
             >
               Cancel
             </button>
@@ -555,16 +547,16 @@ export default function ListingsClient({
 
       {/* Listings */}
       {filtered.length > 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
           {/* Select-all header — Pro Sellers only */}
           {isProSeller && (
-            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-gray-100 bg-gray-50/60 rounded-t-xl">
+            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#e8e6e3] bg-[#faf9f7]/60 rounded-t-xl">
               <button
                 onClick={toggleSelectAll}
-                className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-800 transition-colors"
+                className="flex items-center gap-2 text-xs text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
               >
                 <SelectIcon className="w-4 h-4" />
-                {allSelected ? "Deselect all" : "Select all"}
+                {allSelected ? t("deselectAll") : t("selectAll")}
               </button>
             </div>
           )}
@@ -578,7 +570,7 @@ export default function ListingsClient({
             return (
               <div
                 key={listing.id}
-                className={`relative flex items-center gap-3 p-4 hover:bg-gray-50/50 transition-colors ${isSelected ? "bg-indigo-50/40" : isExpiringSoon ? "bg-amber-50/50" : ""}`}
+                className={`relative flex items-center gap-3 p-4 hover:bg-[#faf9f7]/50 transition-colors ${isSelected ? "bg-[#faf9f7]/40" : isExpiringSoon ? "bg-amber-50/50" : ""}`}
               >
                 {isExpiringSoon && (
                   <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-400 rounded-r" />
@@ -587,10 +579,10 @@ export default function ListingsClient({
                 {isProSeller && (
                   <button
                     onClick={() => toggleSelect(listing.id)}
-                    className="shrink-0 text-gray-400 hover:text-indigo-600 transition-colors"
+                    className="shrink-0 text-[#8a8280] hover:text-[#666] transition-colors"
                   >
                     {isSelected ? (
-                      <CheckSquare className="w-5 h-5 text-indigo-600" />
+                      <CheckSquare className="w-5 h-5 text-[#666]" />
                     ) : (
                       <Square className="w-5 h-5" />
                     )}
@@ -598,7 +590,7 @@ export default function ListingsClient({
                 )}
 
                 {/* Thumbnail */}
-                <div className="w-20 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
+                <div className="w-20 h-16 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
                   {listing.primary_image_url ? (
                     <Image
                       src={listing.primary_image_url}
@@ -631,7 +623,7 @@ export default function ListingsClient({
                     )}
                   {listing.status === "sold" && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <span className="bg-white text-gray-900 text-[9px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">
+                      <span className="bg-white text-[#1a1a1a] text-[9px] font-bold px-2 py-0.5 rounded tracking-wide uppercase">
                         Sold
                       </span>
                     </div>
@@ -642,12 +634,12 @@ export default function ListingsClient({
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/listing/${listing.slug}`}
-                    className="font-medium text-gray-900 text-sm hover:text-indigo-600 truncate block"
+                    className="font-medium text-[#1a1a1a] text-sm hover:text-[#666] truncate block"
                   >
                     {listing.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 flex-wrap">
-                    <span className="font-semibold text-gray-900">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-[#6b6560] flex-wrap">
+                    <span className="font-semibold text-[#1a1a1a]">
                       {formatPrice(listing.price, listing.currency)}
                     </span>
                     <span>·</span>
@@ -709,7 +701,7 @@ export default function ListingsClient({
                           <>
                             <span>·</span>
                             <span className="text-red-500 font-medium">
-                              ⚡ Boosted · {days}d left
+                              ↑ Boosted · {days}d left
                             </span>
                           </>
                         );
@@ -718,7 +710,7 @@ export default function ListingsClient({
                 </div>
 
                 {/* Stats */}
-                <div className="hidden md:flex items-center gap-5 text-xs text-gray-500 shrink-0">
+                <div className="hidden md:flex items-center gap-5 text-xs text-[#6b6560] shrink-0">
                   <div className="flex items-center gap-1">
                     <Eye className="w-3.5 h-3.5" />
                     <span>{(listing.view_count || 0).toLocaleString()}</span>
@@ -743,7 +735,7 @@ export default function ListingsClient({
                         })
                       }
                       disabled={loadingAction === listing.id}
-                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 shrink-0"
+                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 text-white text-xs font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 shrink-0"
                     >
                       {loadingAction === listing.id ? (
                         <Loader2 className="w-3 h-3 animate-spin" />
@@ -766,7 +758,7 @@ export default function ListingsClient({
                         })
                       }
                       disabled={loadingAction === listing.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C2826] text-white text-xs font-semibold hover:bg-[#3D3633] transition-colors disabled:opacity-50"
                     >
                       {loadingAction === listing.id ? (
                         <Loader2 className="w-3 h-3 animate-spin" />
@@ -778,7 +770,7 @@ export default function ListingsClient({
                     <button
                       onClick={() => relistListing(listing.id)}
                       disabled={loadingAction === listing.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 text-xs font-semibold hover:bg-indigo-100 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e8e6e3] bg-[#faf9f7] text-[#666] text-xs font-semibold hover:bg-[#f0eeeb] transition-colors disabled:opacity-50"
                     >
                       <RefreshCw className="w-3 h-3" />
                       Relist
@@ -789,23 +781,23 @@ export default function ListingsClient({
                 {/* Actions Menu */}
                 <div className="relative shrink-0">
                   {loadingAction === listing.id ? (
-                    <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#8a8280] animate-spin" />
                   ) : (
                     <button
                       onClick={() =>
                         setOpenMenu(openMenu === listing.id ? null : listing.id)
                       }
-                      className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                      className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#8a8280] hover:text-[#666]"
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>
                   )}
 
                   {openMenu === listing.id && (
-                    <div className="absolute right-0 top-10 w-48 bg-white rounded-xl border border-gray-100 shadow-sm py-1.5 z-20">
+                    <div className="absolute right-0 top-10 w-48 bg-white border border-[#e8e6e3] shadow-sm py-1.5 z-20">
                       <Link
                         href={`/dashboard/edit/${listing.id}`}
-                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7]"
                         onClick={() => setOpenMenu(null)}
                       >
                         <Pencil className="w-3.5 h-3.5" /> Edit Listing
@@ -831,7 +823,7 @@ export default function ListingsClient({
                               listingTitle: listing.title,
                             });
                           }}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
                         >
                           <CheckCircle className="w-3.5 h-3.5" /> Mark as Sold
                         </button>
@@ -846,7 +838,7 @@ export default function ListingsClient({
                               listingTitle: listing.title,
                             });
                           }}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
                         >
                           <RotateCcw className="w-3.5 h-3.5" /> Reactivate
                         </button>
@@ -879,13 +871,13 @@ export default function ListingsClient({
                                 listingTitle: listing.title,
                               });
                             }}
-                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 w-full"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
                           >
                             <Clock className="w-3.5 h-3.5" /> Renew listing
                           </button>
                           <button
                             onClick={() => relistListing(listing.id)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
                           >
                             <RefreshCw className="w-3.5 h-3.5" /> Relist as new
                           </button>
@@ -924,7 +916,7 @@ export default function ListingsClient({
         </div>
       ) : (
         <EmptyState
-          emoji={tab === "active" ? "📦" : tab === "sold" ? "✅" : "⏳"}
+          emoji={tab === "active" ? "◻" : tab === "sold" ? "✓" : "⌛"}
           title={`No ${tab} listings`}
         />
       )}
@@ -932,9 +924,9 @@ export default function ListingsClient({
       {/* Bulk delete confirmation */}
       <ConfirmDialog
         open={showDeleteConfirm}
-        title={`Delete ${selectedInTab.length} listing${selectedInTab.length !== 1 ? "s" : ""}?`}
-        description="This action is permanent and cannot be undone."
-        confirmLabel="Delete"
+        title={t("confirmDeleteBulkTitle", { count: selectedInTab.length })}
+        description={t("confirmDeleteDesc")}
+        confirmLabel={t("delete")}
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={bulkLoading}
         onConfirm={bulkDelete}
@@ -944,9 +936,9 @@ export default function ListingsClient({
       {/* Single-item: Delete */}
       <ConfirmDialog
         open={confirmAction?.type === "delete"}
-        title="Delete listing?"
-        description={`"${confirmAction?.listingTitle}" will be permanently removed. This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t("confirmDeleteTitle")}
+        description={t("confirmDeleteDesc")}
+        confirmLabel={t("delete")}
         confirmClassName="bg-red-600 hover:bg-red-700"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
@@ -956,9 +948,9 @@ export default function ListingsClient({
       {/* Single-item: Mark as Sold */}
       <ConfirmDialog
         open={confirmAction?.type === "sold"}
-        title="Mark as sold?"
-        description={`"${confirmAction?.listingTitle}" will be moved to your sold listings and will no longer be visible to buyers.`}
-        confirmLabel="Mark as Sold"
+        title={t("confirmSoldTitle")}
+        description={t("confirmSoldDesc")}
+        confirmLabel={t("markSold")}
         confirmClassName="bg-green-600 hover:bg-green-700"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
@@ -968,10 +960,10 @@ export default function ListingsClient({
       {/* Single-item: Renew */}
       <ConfirmDialog
         open={confirmAction?.type === "renew"}
-        title="Renew listing?"
-        description={`"${confirmAction?.listingTitle}" will be renewed for another 30 days.`}
-        confirmLabel="Renew"
-        confirmClassName="bg-indigo-600 hover:bg-indigo-700"
+        title={t("confirmRenewTitle")}
+        description={t("confirmRenewDesc")}
+        confirmLabel={t("renew")}
+        confirmClassName="bg-[#2C2826] hover:bg-[#3D3633]"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
         onCancel={() => setConfirmAction(null)}
@@ -980,10 +972,10 @@ export default function ListingsClient({
       {/* Single-item: Reactivate */}
       <ConfirmDialog
         open={confirmAction?.type === "reactivate"}
-        title="Reactivate listing?"
-        description={`"${confirmAction?.listingTitle}" will be moved back to your active listings and visible to buyers again.`}
-        confirmLabel="Reactivate"
-        confirmClassName="bg-indigo-600 hover:bg-indigo-700"
+        title={t("confirmReactivateTitle")}
+        description={t("confirmReactivateDesc")}
+        confirmLabel={t("reactivate")}
+        confirmClassName="bg-[#2C2826] hover:bg-[#3D3633]"
         loading={loadingAction !== null}
         onConfirm={handleConfirmAction}
         onCancel={() => setConfirmAction(null)}

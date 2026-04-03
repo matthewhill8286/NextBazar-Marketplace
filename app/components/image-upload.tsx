@@ -2,6 +2,7 @@
 
 import { GripVertical, Loader2, Sparkles, Upload, X } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -28,6 +29,7 @@ export default function ImageUpload({
   onChangeAction,
   maxImages = 15,
 }: ImageUploadProps) {
+  const t = useTranslations("imageUpload");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [dragIdx, setDragIdx] = useState<number | null>(null);
@@ -182,25 +184,22 @@ export default function ImageUpload({
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors bg-white ${
+        className={`border-2 border-dashed p-8 text-center cursor-pointer transition-colors bg-white ${
           dragOver
-            ? "border-indigo-400 bg-indigo-50"
-            : "border-gray-300 hover:border-indigo-400"
+            ? "border-[#8E7A6B] bg-[#f0eeeb]"
+            : "border-[#e8e6e3] hover:border-[#8E7A6B]"
         }`}
       >
-        <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-        <p className="font-semibold text-gray-900 mb-1">
+        <Upload className="w-10 h-10 text-[#8a8280] mx-auto mb-3" />
+        <p className="font-semibold text-[#1a1a1a] mb-1">
           {images.length === 0
-            ? "Upload Photos"
-            : `Add More Photos (${images.length}/${maxImages})`}
+            ? t("uploadPhotos")
+            : t("addMorePhotos", { count: images.length, max: maxImages })}
         </p>
-        <p className="text-sm text-gray-500 mb-3">
-          Drag & drop or click to browse. JPG, PNG, WebP — auto-optimised on
-          upload.
-        </p>
-        <div className="inline-flex items-center gap-2 bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 text-xs font-medium px-3 py-1.5 rounded-full">
+        <p className="text-sm text-[#6b6560] mb-3">{t("dragAndDrop")}</p>
+        <div className="inline-flex items-center gap-2 bg-linear-to-r from-[#f0eeeb] to-[#f0eeeb] text-[#7A6657] text-xs font-medium px-3 py-1.5 rounded-full">
           <Sparkles className="w-3.5 h-3.5" />
-          AI will auto-fill details from your photos
+          {t("aiNote")}
         </div>
 
         <input
@@ -241,7 +240,11 @@ export default function ImageUpload({
                 }
               }}
               onDragEnd={() => {
-                if (dragIdx !== null && overIdx !== null && dragIdx !== overIdx) {
+                if (
+                  dragIdx !== null &&
+                  overIdx !== null &&
+                  dragIdx !== overIdx
+                ) {
                   const reordered = [...images];
                   const [moved] = reordered.splice(dragIdx, 1);
                   reordered.splice(overIdx, 0, moved);
@@ -251,12 +254,12 @@ export default function ImageUpload({
                 setOverIdx(null);
               }}
               onDrop={(e) => e.preventDefault()}
-              className={`relative aspect-square rounded-xl overflow-hidden border-2 group bg-gray-100 cursor-grab active:cursor-grabbing transition-all duration-150 ${
+              className={`relative aspect-square overflow-hidden border-2 group bg-[#f0eeeb] cursor-grab active:cursor-grabbing transition-all duration-150 ${
                 dragIdx === idx
-                  ? "opacity-40 scale-95 border-indigo-400"
+                  ? "opacity-40 scale-95 border-[#8E7A6B]"
                   : overIdx === idx && dragIdx !== null
-                    ? "border-indigo-400 ring-2 ring-indigo-200 scale-[1.02]"
-                    : "border-gray-200"
+                    ? "border-[#8E7A6B] ring-2 ring-[#8E7A6B]/15 scale-[1.02]"
+                    : "border-[#e8e6e3]"
               }`}
             >
               <Image
@@ -276,8 +279,8 @@ export default function ImageUpload({
 
               {/* Cover badge */}
               {idx === 0 && (
-                <span className="absolute bottom-1.5 left-1.5 bg-indigo-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                  Cover
+                <span className="absolute bottom-1.5 left-1.5 bg-[#8E7A6B] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                  {t("cover")}
                 </span>
               )}
 
@@ -289,6 +292,7 @@ export default function ImageUpload({
               {/* Remove button */}
               <button
                 type="button"
+                aria-label={t("removeImage")}
                 onClick={(e) => {
                   e.stopPropagation();
                   removeImage(img.id);

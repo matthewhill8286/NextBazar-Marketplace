@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
 /**
- * Legacy dealer dashboard route — redirects to the dedicated shop page.
+ * Legacy dealer dashboard route — redirects to the standalone Shop Manager.
  */
 export default function DealerDashboardPage() {
-  redirect("/dashboard/shop");
+  redirect("/shop-manager");
 }

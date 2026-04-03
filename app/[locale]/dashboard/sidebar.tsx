@@ -16,8 +16,10 @@ import {
   Store,
   Tag,
 } from "lucide-react";
-import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 type SidebarProps = {
@@ -31,26 +33,43 @@ type SidebarProps = {
   isAdmin?: boolean;
 };
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/messages", label: "Messages", icon: MessageCircle },
-  { href: "/dashboard/saved", label: "Saved", icon: Heart },
-  { href: "/dashboard/offers", label: "Offers", icon: Tag },
-  { href: "/dashboard/purchases", label: "Purchases", icon: ShoppingBag },
-  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart2 },
-  { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
-  {
-    href: "/dashboard/saved-searches",
-    label: "Saved Searches",
-    icon: BookMarked,
-  },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
-];
-
 export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
+  const t = useTranslations("dashboard");
   const rawPathname = usePathname();
-  // Strip locale prefix (/en/ or /el/) so href comparisons work correctly
-  const pathname = rawPathname.replace(/^\/(en|el)(\/|$)/, "/");
+  // Strip locale prefix so href comparisons work correctly
+  const pathname = rawPathname.replace(/^\/(en|el|ru)(\/|$)/, "/");
+
+  const NAV_ITEMS = [
+    { href: "/dashboard", label: t("nav.overview"), icon: LayoutDashboard },
+    {
+      href: "/dashboard/messages",
+      label: t("nav.messages"),
+      icon: MessageCircle,
+    },
+    { href: "/dashboard/saved", label: t("nav.saved"), icon: Heart },
+    { href: "/dashboard/offers", label: t("nav.offers"), icon: Tag },
+    {
+      href: "/dashboard/purchases",
+      label: t("nav.purchases"),
+      icon: ShoppingBag,
+    },
+    {
+      href: "/dashboard/analytics",
+      label: t("nav.analytics"),
+      icon: BarChart2,
+    },
+    {
+      href: "/dashboard/notifications",
+      label: t("nav.notifications"),
+      icon: Bell,
+    },
+    {
+      href: "/dashboard/saved-searches",
+      label: t("nav.savedSearches"),
+      icon: BookMarked,
+    },
+    { href: "/dashboard/settings", label: t("nav.settings"), icon: Settings },
+  ];
 
   const initials =
     profile.display_name
@@ -63,14 +82,16 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
   return (
     <aside className="space-y-4">
       {/* Profile Card */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
+      <div className="bg-white border border-[#e8e6e3] p-5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0">
+          <div className="w-12 h-12 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-lg shrink-0">
             {profile.avatar_url ? (
-              <img
+              <Image
                 src={profile.avatar_url}
                 alt=""
-                className="w-full h-full rounded-full object-cover"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
               />
             ) : (
               initials
@@ -78,17 +99,17 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="font-semibold text-gray-900 truncate">
+              <p className="font-medium text-[#1a1a1a] truncate">
                 {profile.display_name}
               </p>
               {profile.verified && (
-                <Shield className="w-4 h-4 text-indigo-500 shrink-0" />
+                <Shield className="w-4 h-4 text-[#6b6560] shrink-0" />
               )}
             </div>
-            <p className="text-xs text-gray-500 truncate">{profile.email}</p>
+            <p className="text-xs text-[#6b6560] truncate">{profile.email}</p>
             {profile.is_pro_seller && (
-              <span className="inline-block mt-1 text-[10px] font-semibold bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">
-                Pro Seller
+              <span className="inline-block mt-1 text-[9px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5 tracking-[0.15em] uppercase">
+                {t("proSeller")}
               </span>
             )}
           </div>
@@ -96,11 +117,17 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="bg-white rounded-xl border border-gray-100 p-2">
+      <nav className="bg-white border border-[#e8e6e3] p-2">
         {[
           ...NAV_ITEMS,
           ...(isAdmin && FEATURE_FLAGS.REPORTS
-            ? [{ href: "/admin/reports", label: "Reports Queue", icon: Flag }]
+            ? [
+                {
+                  href: "/admin/reports",
+                  label: t("nav.reportsQueue"),
+                  icon: Flag,
+                },
+              ]
             : []),
         ].map((item) => {
           const isActive =
@@ -111,10 +138,10 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                  ? "bg-[#f0eeeb] text-[#1a1a1a]"
+                  : "text-[#6b6560] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <item.icon className="w-4 h-4" />
@@ -127,27 +154,27 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         {FEATURE_FLAGS.DEALERS &&
           (profile.is_pro_seller ? (
             <Link
-              href="/dashboard/shop"
+              href="/shop-manager"
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                pathname === "/dashboard/shop"
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
+                "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
+                pathname.startsWith("/shop-manager")
+                  ? "bg-[#f0eeeb] text-[#1a1a1a]"
+                  : "text-[#6b6560] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <Store className="w-4 h-4" />
-              My Shop
+              {t("nav.myShop")}
             </Link>
           ) : (
             <Link
               href="/pro-sellers"
               className={clsx(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mt-1 border border-dashed",
-                "text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700",
+                "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors mt-1 border border-dashed",
+                "text-[#6b6560] border-[#e8e6e3] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
               )}
             >
               <Crown className="w-4 h-4" />
-              Become a Pro Seller
+              {t("nav.becomeProSeller")}
             </Link>
           ))}
       </nav>

@@ -11,13 +11,12 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 
@@ -275,7 +274,7 @@ export default function GlobalSearch() {
     >
       {/* Search input */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b6560] pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -288,7 +287,7 @@ export default function GlobalSearch() {
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           placeholder={t("searchPlaceholder")}
-          className="w-full pl-10 pr-20 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-100 transition-all"
+          className="w-full pl-10 pr-20 py-2.5 bg-[#faf9f7] border border-[#e8e6e3] text-sm text-[#1a1a1a] placeholder:text-[#8a8280] outline-none focus-visible:border-[#8E7A6B] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 transition-all"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           {query ? (
@@ -300,12 +299,12 @@ export default function GlobalSearch() {
                 setActiveCategory(null);
                 inputRef.current?.focus();
               }}
-              className="p-0.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-200 transition-colors"
+              className="p-0.5 text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           ) : (
-            <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-[10px] font-medium text-gray-400">
+            <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 bg-[#f0eeeb] border border-[#e8e6e3] text-[10px] font-medium text-[#6b6560]">
               {"Ctrl+"}K
             </kbd>
           )}
@@ -314,11 +313,11 @@ export default function GlobalSearch() {
 
       {/* ── Suggestions dropdown (empty state) ───────────────────────────── */}
       {showSuggestions && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e8e6e3] shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
           {/* Recent searches */}
           {recentSearches.length > 0 && (
             <div className="px-3.5 pt-3 pb-1">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2">
                 {t("recentSearches")}
               </p>
               <div className="space-y-0.5">
@@ -330,15 +329,15 @@ export default function GlobalSearch() {
                         setQuery(term);
                         goToSearch(term);
                       }}
-                      className="flex-1 flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                      className="flex-1 flex items-center gap-2.5 px-2 py-1.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors text-left"
                     >
-                      <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-[#8a8280] shrink-0" />
                       <span className="truncate">{term}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => removeRecent(term)}
-                      className="p-1 rounded-md text-gray-300 hover:text-gray-500 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                      className="p-1 text-[#8a8280] hover:text-[#666] opacity-0 group-hover:opacity-100 transition-all shrink-0"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -351,7 +350,7 @@ export default function GlobalSearch() {
           {/* Categories */}
           {categories.length > 0 && (
             <div className="px-3.5 pt-3 pb-2">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2">
                 {t("categories")}
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -362,7 +361,7 @@ export default function GlobalSearch() {
                       key={cat.id}
                       href={`/search?category=${cat.slug}`}
                       onClick={() => setOpen(false)}
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors hover:shadow-sm ${cfg.bg} ${cfg.color} border-transparent hover:border-current/10`}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium border transition-colors hover:shadow-sm ${cfg.bg} ${cfg.color} border-transparent hover:border-current/10`}
                     >
                       <CategoryIcon slug={cat.slug} size={13} />
                       {cat.name}
@@ -376,7 +375,7 @@ export default function GlobalSearch() {
           {/* Trending */}
           {trending.length > 0 && (
             <div className="px-3.5 pt-3 pb-3">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 {t("trending")}
               </p>
@@ -386,9 +385,9 @@ export default function GlobalSearch() {
                     key={item.id}
                     href={`/listing/${item.slug}`}
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 px-2 py-1.5 hover:bg-[#faf9f7] transition-colors"
                   >
-                    <div className="w-9 h-9 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
+                    <div className="w-9 h-9 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
                       {item.primary_image_url ? (
                         <Image
                           src={item.primary_image_url}
@@ -398,20 +397,20 @@ export default function GlobalSearch() {
                           sizes="36px"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">
-                          📦
+                        <div className="w-full h-full flex items-center justify-center text-[#8a8280] text-sm">
+                          <Tag className="w-3.5 h-3.5" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-gray-800 truncate">
+                      <p className="text-sm text-[#1a1a1a] truncate">
                         {item.title}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span className="font-semibold text-gray-700">
+                      <div className="flex items-center gap-2 text-xs text-[#6b6560]">
+                        <span className="font-medium text-[#1a1a1a]">
                           {formatPrice(item.price, item.currency)}
                         </span>
-                        <span className="flex items-center gap-0.5 text-amber-500">
+                        <span className="flex items-center gap-0.5 text-[#8a8280]">
                           <Flame className="w-3 h-3" />
                           {item.view_count.toLocaleString()}
                         </span>
@@ -427,18 +426,18 @@ export default function GlobalSearch() {
 
       {/* ── Results dropdown (active query) ──────────────────────────────── */}
       {showResults && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl border border-gray-200 shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e8e6e3] shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
           {/* Category quick-filter chips */}
           {categories.length > 0 && (
-            <div className="px-3.5 pt-3 pb-2 border-b border-gray-100">
+            <div className="px-3.5 pt-3 pb-2 border-b border-[#e8e6e3]">
               <div className="flex flex-wrap gap-1.5">
                 <button
                   type="button"
                   onClick={() => setActiveCategory(null)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  className={`px-2.5 py-1 text-xs font-medium transition-colors ${
                     !activeCategory
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-[#2C2826] text-white"
+                      : "bg-[#f0eeeb] text-[#666] hover:bg-[#e8e6e3]"
                   }`}
                 >
                   {t("allCategories")}
@@ -452,10 +451,10 @@ export default function GlobalSearch() {
                         activeCategory === cat.slug ? null : cat.slug,
                       )
                     }
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${
                       activeCategory === cat.slug
-                        ? "bg-indigo-600 text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        ? "bg-[#2C2826] text-white"
+                        : "bg-[#f0eeeb] text-[#666] hover:bg-[#e8e6e3]"
                     }`}
                   >
                     <CategoryIcon slug={cat.slug} size={12} />
@@ -468,17 +467,17 @@ export default function GlobalSearch() {
 
           {loading && results.length === 0 ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
+              <Loader2 className="w-5 h-5 text-[#6b6560] animate-spin" />
             </div>
           ) : results.length === 0 ? (
             <div className="px-4 py-6 text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-[#6b6560]">
                 {t("noResults", { query: trimmedQuery })}
               </p>
               <button
                 type="button"
                 onClick={() => goToSearch()}
-                className="mt-2 text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                className="mt-2 text-xs font-medium text-[#666] hover:text-[#1a1a1a]"
               >
                 {t("tryFullSearch")}
               </button>
@@ -496,11 +495,13 @@ export default function GlobalSearch() {
                       }}
                       onMouseEnter={() => setHighlighted(i)}
                       className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
-                        highlighted === i ? "bg-indigo-50" : "hover:bg-gray-50"
+                        highlighted === i
+                          ? "bg-[#faf9f7]"
+                          : "hover:bg-[#faf9f7]"
                       }`}
                     >
                       {/* Thumbnail */}
-                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0 relative">
+                      <div className="w-12 h-12 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
                         {r.primary_image_url ? (
                           <Image
                             src={r.primary_image_url}
@@ -510,12 +511,12 @@ export default function GlobalSearch() {
                             sizes="48px"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">
-                            📦
+                          <div className="w-full h-full flex items-center justify-center text-[#8a8280] text-lg">
+                            <Tag className="w-4 h-4" />
                           </div>
                         )}
                         {r.is_promoted && (
-                          <span className="absolute top-0 left-0 bg-amber-500 text-white text-[7px] font-bold px-1 py-px rounded-br">
+                          <span className="absolute top-0 left-0 bg-[#2C2826] text-white text-[7px] font-medium px-1 py-px tracking-wider">
                             AD
                           </span>
                         )}
@@ -523,16 +524,16 @@ export default function GlobalSearch() {
 
                       {/* Details */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-[#1a1a1a] truncate">
                           {r.title}
                         </p>
-                        <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
-                          <span className="font-semibold text-gray-800">
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-[#6b6560]">
+                          <span className="font-medium text-[#1a1a1a]">
                             {formatPrice(r.price, r.currency)}
                           </span>
                           {r.categories?.name && (
                             <>
-                              <span className="text-gray-300">·</span>
+                              <span className="text-[#ddd]">&middot;</span>
                               <span className="flex items-center gap-0.5">
                                 <Tag className="w-3 h-3" />
                                 {r.categories.name}
@@ -541,7 +542,7 @@ export default function GlobalSearch() {
                           )}
                           {r.locations?.name && (
                             <>
-                              <span className="text-gray-300">·</span>
+                              <span className="text-[#ddd]">&middot;</span>
                               <span className="flex items-center gap-0.5">
                                 <MapPin className="w-3 h-3" />
                                 {r.locations.name}
@@ -550,7 +551,7 @@ export default function GlobalSearch() {
                           )}
                           {r.condition && (
                             <>
-                              <span className="text-gray-300">·</span>
+                              <span className="text-[#ddd]">&middot;</span>
                               <span className="capitalize">{r.condition}</span>
                             </>
                           )}
@@ -562,11 +563,11 @@ export default function GlobalSearch() {
               </ul>
 
               {/* Footer: view all results */}
-              <div className="border-t border-gray-100 px-3.5 py-2.5">
+              <div className="border-t border-[#e8e6e3] px-3.5 py-2.5">
                 <button
                   type="button"
                   onClick={() => goToSearch()}
-                  className="w-full text-center text-xs font-semibold text-indigo-600 hover:text-indigo-700 py-1 rounded-lg hover:bg-indigo-50 transition-colors"
+                  className="w-full text-center text-xs font-medium text-[#666] hover:text-[#1a1a1a] py-1 hover:bg-[#faf9f7] transition-colors"
                 >
                   {t("viewAllResults", { query: trimmedQuery })}
                 </button>

@@ -15,24 +15,25 @@ import {
   Star,
   Tag,
 } from "lucide-react";
-import Link from "next/link";
-import { getLocale, getTranslations } from "next-intl/server";
+import Image from "next/image";
 import CategoryIcon, {
   getCategoryConfig,
 } from "@/app/components/category-icon";
-import ListingCard from "@/app/components/listing-card";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_LABELS } from "@/lib/format-helpers";
 import type {
   ListingCardRow,
   ListingDetailRow,
 } from "@/lib/supabase/supabase.types";
+import { getTranslator } from "@/lib/translations";
 import ImageGallery from "./image-gallery";
 import { FavoriteAction, ReportAction, ShareAction } from "./listing-actions";
 import ListingInteractions from "./listing-interactions";
 import OwnerInsights from "./owner-insights";
 import PriceHistory from "./price-history";
 import { LeaveReviewPrompt, SellerReviews } from "./seller-reviews";
+import TimeAgo from "./time-ago";
 
 // ─── Helpers (server-safe, no hooks) ──────────────────────────────────────────
 
@@ -42,32 +43,15 @@ function formatPrice(
   contactLabel: string,
 ): string {
   if (p === null) return contactLabel;
-  const sym = currency === "EUR" ? "€" : currency;
+  const sym = currency === "EUR" ? "\u20AC" : currency;
   return `${sym}${p.toLocaleString()}`;
 }
 
-function timeAgo(
-  dateStr: string,
-  locale: string,
-  labels: { m: string; h: string; d: string },
-): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return labels.m.replace("{n}", String(mins));
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return labels.h.replace("{n}", String(hrs));
-  const days = Math.floor(hrs / 24);
-  if (days < 30) return labels.d.replace("{n}", String(days));
-  const dateLocale = locale === "el" ? "el-GR" : "en-GB";
-  return new Date(dateStr).toLocaleDateString(dateLocale, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
+// timeAgo moved to client component — Date.now() is not allowed during prerendering.
 
 function formatDate(dateStr: string, locale: string): string {
-  const dateLocale = locale === "el" ? "el-GR" : "en-GB";
+  const dateLocale =
+    locale === "el" ? "el-GR" : locale === "ru" ? "ru-RU" : "en-GB";
   return new Date(dateStr).toLocaleDateString(dateLocale, {
     day: "numeric",
     month: "long",
@@ -78,6 +62,7 @@ function formatDate(dateStr: string, locale: string): string {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Props = {
+  locale: string;
   listing: ListingDetailRow;
   related: ListingCardRow[];
   accentColor: string | null;
@@ -87,15 +72,14 @@ type Props = {
 // ─── Server Component ─────────────────────────────────────────────────────────
 
 export default async function ListingDetailServer({
+  locale,
   listing,
-  related,
   accentColor,
   shopSlug,
 }: Props) {
-  const [t, tCommon, locale] = await Promise.all([
-    getTranslations("listing"),
-    getTranslations("common"),
-    getLocale(),
+  const [t, tCommon] = await Promise.all([
+    getTranslator(locale, "listing"),
+    getTranslator(locale, "common"),
   ]);
 
   const profile = listing.profiles;
@@ -115,7 +99,7 @@ export default async function ListingDetailServer({
         : [];
 
   const conditionLabel = (c: string | null): string => {
-    if (!c) return "—";
+    if (!c) return "\u2014";
     return (
       CONDITION_LABELS[c] ||
       c.replace(/_/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase())
@@ -129,44 +113,44 @@ export default async function ListingDetailServer({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#faf9f7]">
       {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <nav className="flex items-center gap-1.5 text-sm text-gray-500 overflow-x-auto hide-scrollbar">
+      <div className="max-w-7xl mx-auto px-6 py-4">
+        <nav className="flex items-center gap-1.5 text-sm text-[#6b6560] overflow-x-auto hide-scrollbar">
           <Link
             href="/"
-            className="hover:text-gray-700 flex items-center gap-1 shrink-0"
+            className="hover:text-[#1a1a1a] flex items-center gap-1 shrink-0 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {tCommon("home")}
           </Link>
-          <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+          <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd]" />
           <Link
             href={`/search?category=${listing.categories?.slug || ""}`}
-            className="hover:text-gray-700 shrink-0"
+            className="hover:text-[#1a1a1a] shrink-0 transition-colors"
           >
             {listing.categories?.name || "Listing"}
           </Link>
           {listing.subcategories && (
             <>
-              <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
+              <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd]" />
               <Link
                 href={`/search?category=${listing.categories?.slug || ""}&subcategory=${listing.subcategories.slug}`}
-                className="hover:text-gray-700 shrink-0"
+                className="hover:text-[#1a1a1a] shrink-0 transition-colors"
               >
                 {listing.subcategories.name}
               </Link>
             </>
           )}
-          <ChevronRight className="w-3 h-3 shrink-0 text-gray-300" />
-          <span className="text-gray-900 font-medium truncate">
+          <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd]" />
+          <span className="text-[#1a1a1a] font-medium truncate">
             {listing.title}
           </span>
         </nav>
       </div>
 
       {/* Gallery — client component, renders immediately with server data */}
-      <div className="max-w-7xl mx-auto px-4 mb-6">
+      <div className="max-w-7xl mx-auto px-6 mb-6">
         <ImageGallery
           images={galleryImages}
           title={listing.title}
@@ -176,42 +160,42 @@ export default async function ListingDetailServer({
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-16">
+      <div className="max-w-7xl mx-auto px-6 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ═══ LEFT COLUMN ═══ */}
+          {/* LEFT COLUMN */}
           <div className="lg:col-span-2 space-y-6">
             {/* Title card */}
             <div
-              className={`bg-white rounded-2xl border overflow-hidden ${listing.status === "sold" ? "border-gray-200" : "border-gray-100"}`}
+              className={`bg-white border overflow-hidden ${listing.status === "sold" ? "border-[#ccc]" : "border-[#e8e6e3]"}`}
             >
               {/* Sold banner */}
               {listing.status === "sold" && (
-                <div className="flex items-center justify-center gap-3 bg-gray-900 text-white py-3 px-6">
-                  <span className="text-xs font-black uppercase tracking-widest opacity-60">
-                    ━━━
+                <div className="flex items-center justify-center gap-3 bg-[#8E7A6B] text-white py-3 px-6">
+                  <span className="text-xs font-medium uppercase tracking-widest opacity-60">
+                    ---
                   </span>
-                  <span className="text-sm font-black uppercase tracking-[0.2em]">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.3em]">
                     {t("sold")}
                   </span>
-                  <span className="text-xs font-black uppercase tracking-widest opacity-60">
-                    ━━━
+                  <span className="text-xs font-medium uppercase tracking-widest opacity-60">
+                    ---
                   </span>
                 </div>
               )}
               <div className="p-6">
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {listing.is_promoted && (
-                    <span className="bg-linear-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                    <span className="bg-[#8E7A6B] text-white text-[9px] font-medium px-3 py-1 uppercase tracking-[0.2em]">
                       {t("featured")}
                     </span>
                   )}
                   {listing.is_urgent && (
-                    <span className="bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                    <span className="bg-red-700 text-white text-[9px] font-medium px-3 py-1 uppercase tracking-[0.2em]">
                       {t("urgent")}
                     </span>
                   )}
                   <span
-                    className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5`}
+                    className={`${getCategoryConfig(listing.categories?.slug).bg} text-xs font-medium px-2.5 py-1 flex items-center gap-1.5`}
                   >
                     <CategoryIcon slug={listing.categories?.slug} size={12} />
                     <span
@@ -223,43 +207,60 @@ export default async function ListingDetailServer({
                     </span>
                   </span>
                   {listing.condition && (
-                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span className="bg-[#f0eeeb] text-[#666] text-xs font-medium px-2.5 py-1">
                       {conditionLabel(listing.condition)}
                     </span>
                   )}
                   {listing.price_type === "negotiable" && (
-                    <span className="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1">
                       {tCommon("negotiable")}
                     </span>
                   )}
                   {listing.price_type === "free" && (
-                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1">
                       {tCommon("free")}
+                    </span>
+                  )}
+                  {listing.quantity != null && listing.quantity > 0 && (
+                    <span className="bg-[#f0eeeb] text-[#666] text-xs font-medium px-2.5 py-1">
+                      {listing.quantity} in stock
+                    </span>
+                  )}
+                  {listing.quantity === 0 && (
+                    <span className="bg-red-50 text-red-600 text-xs font-semibold px-2.5 py-1">
+                      Out of stock
                     </span>
                   )}
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                <h1
+                  className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-3 leading-tight"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
                   {listing.title}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-500 mb-5">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[#6b6560] mb-5">
                   <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <MapPin className="w-4 h-4 text-[#8a8280]" />
                     {listing.locations?.name || "Cyprus"}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-gray-400" />
-                    {timeAgo(listing.created_at, locale, timeLabels)}
+                    <Clock className="w-4 h-4 text-[#8a8280]" />
+                    <TimeAgo
+                      dateStr={listing.created_at}
+                      locale={locale}
+                      labels={timeLabels}
+                    />
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-gray-400" />
+                    <Eye className="w-4 h-4 text-[#8a8280]" />
                     {t("views", {
                       count: (listing.view_count || 0).toLocaleString(),
                     })}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Heart className="w-4 h-4 text-gray-400" />
+                    <Heart className="w-4 h-4 text-[#8a8280]" />
                     {t("savedCount", {
                       count: (listing.favorite_count || 0).toLocaleString(),
                     })}
@@ -267,7 +268,10 @@ export default async function ListingDetailServer({
                 </div>
 
                 <div className="flex items-end gap-3 mb-1">
-                  <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                  <span
+                    className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
                     {formatPrice(
                       listing.price,
                       listing.currency,
@@ -275,7 +279,7 @@ export default async function ListingDetailServer({
                     )}
                   </span>
                   {listing.price_type === "negotiable" && (
-                    <span className="text-sm text-green-600 font-medium pb-1">
+                    <span className="text-sm text-emerald-600 font-medium pb-1">
                       {t("priceNegotiable")}
                     </span>
                   )}
@@ -291,61 +295,64 @@ export default async function ListingDetailServer({
             </div>
 
             {/* Details grid */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white p-6 border border-[#e8e6e3]">
+              <h2
+                className="text-lg font-light text-[#1a1a1a] mb-4"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 {t("details")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Tag className="w-4 h-4 text-gray-500" />
+                <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                  <div className="p-2 bg-white shadow-sm">
+                    <Tag className="w-4 h-4 text-[#6b6560]" />
                   </div>
                   <div>
-                    <div className="text-[11px] text-gray-500 font-medium">
+                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                       {t("category")}
                     </div>
-                    <div className="text-sm font-semibold text-gray-900">
-                      {listing.categories?.name || "—"}
+                    <div className="text-sm font-medium text-[#1a1a1a]">
+                      {listing.categories?.name || "\u2014"}
                     </div>
                   </div>
                 </div>
                 {listing.condition && (
-                  <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
-                      <Box className="w-4 h-4 text-gray-500" />
+                  <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                    <div className="p-2 bg-white shadow-sm">
+                      <Box className="w-4 h-4 text-[#6b6560]" />
                     </div>
                     <div>
-                      <div className="text-[11px] text-gray-500 font-medium">
+                      <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                         {t("condition")}
                       </div>
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-medium text-[#1a1a1a]">
                         {conditionLabel(listing.condition)}
                       </div>
                     </div>
                   </div>
                 )}
-                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <MapPin className="w-4 h-4 text-gray-500" />
+                <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                  <div className="p-2 bg-white shadow-sm">
+                    <MapPin className="w-4 h-4 text-[#6b6560]" />
                   </div>
                   <div>
-                    <div className="text-[11px] text-gray-500 font-medium">
+                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                       {t("location")}
                     </div>
-                    <div className="text-sm font-semibold text-gray-900">
+                    <div className="text-sm font-medium text-[#1a1a1a]">
                       {listing.locations?.name || "Cyprus"}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3.5">
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Calendar className="w-4 h-4 text-gray-500" />
+                <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
+                  <div className="p-2 bg-white shadow-sm">
+                    <Calendar className="w-4 h-4 text-[#6b6560]" />
                   </div>
                   <div>
-                    <div className="text-[11px] text-gray-500 font-medium">
+                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                       {t("posted")}
                     </div>
-                    <div className="text-sm font-semibold text-gray-900">
+                    <div className="text-sm font-medium text-[#1a1a1a]">
                       {formatDate(listing.created_at, locale)}
                     </div>
                   </div>
@@ -371,52 +378,52 @@ export default async function ListingDetailServer({
                   icon: typeof Car;
                   format?: (v: string) => string;
                 }[] = [
-                  { key: "make", label: "Make", icon: Car },
-                  { key: "model", label: "Model", icon: Car },
-                  { key: "year", label: "Year", icon: Calendar },
+                  { key: "make", label: t("vehicleMake"), icon: Car },
+                  { key: "model", label: t("vehicleModel"), icon: Car },
+                  { key: "year", label: t("vehicleYear"), icon: Calendar },
                   {
                     key: "mileage",
-                    label: "Mileage",
+                    label: t("vehicleMileage"),
                     icon: Gauge,
                     format: (v) => `${Number(v).toLocaleString()} km`,
                   },
                   {
                     key: "fuel_type",
-                    label: "Fuel",
+                    label: t("vehicleFuel"),
                     icon: Fuel,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
                   {
                     key: "transmission",
-                    label: "Transmission",
+                    label: t("vehicleTransmission"),
                     icon: Tag,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
-                  { key: "color", label: "Color", icon: Palette },
+                  { key: "color", label: t("vehicleColor"), icon: Palette },
                   {
                     key: "body_type",
-                    label: "Body Type",
+                    label: t("vehicleBodyType"),
                     icon: Car,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
                   {
                     key: "engine_size",
-                    label: "Engine",
+                    label: t("vehicleEngine"),
                     icon: Gauge,
                     format: (v) =>
                       String(v).endsWith("L") ? String(v) : `${v}L`,
                   },
-                  { key: "doors", label: "Doors", icon: Car },
+                  { key: "doors", label: t("vehicleDoors"), icon: Car },
                   {
                     key: "drive_type",
-                    label: "Drive",
+                    label: t("vehicleDrive"),
                     icon: Car,
                     format: (v) => v.toUpperCase(),
                   },
-                  { key: "owners", label: "Owners", icon: Shield },
+                  { key: "owners", label: t("vehicleOwners"), icon: Shield },
                   {
                     key: "service_history",
-                    label: "Service History",
+                    label: t("vehicleServiceHistory"),
                     icon: Shield,
                     format: (v) => v.charAt(0).toUpperCase() + v.slice(1),
                   },
@@ -424,11 +431,14 @@ export default async function ListingDetailServer({
                 const visible = fields.filter((f) => attrs[f.key]?.trim());
                 if (visible.length === 0) return null;
                 return (
-                  <div className="bg-white rounded-2xl p-6 border border-gray-100">
+                  <div className="bg-white p-6 border border-[#e8e6e3]">
                     <div className="flex items-center gap-2 mb-4">
-                      <Car className="w-5 h-5 text-blue-600" />
-                      <h2 className="text-lg font-semibold text-gray-900">
-                        Vehicle Specifications
+                      <Car className="w-5 h-5 text-[#6b6560]" />
+                      <h2
+                        className="text-lg font-light text-[#1a1a1a]"
+                        style={{ fontFamily: "'Playfair Display', serif" }}
+                      >
+                        {t("vehicleSpecifications")}
                       </h2>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -439,16 +449,16 @@ export default async function ListingDetailServer({
                         return (
                           <div
                             key={field.key}
-                            className="flex items-center gap-3 bg-blue-50/60 rounded-xl p-3.5"
+                            className="flex items-center gap-3 bg-[#faf9f7] p-3.5"
                           >
-                            <div className="p-2 bg-white rounded-lg shadow-sm">
-                              <Icon className="w-4 h-4 text-blue-500" />
+                            <div className="p-2 bg-white shadow-sm">
+                              <Icon className="w-4 h-4 text-[#6b6560]" />
                             </div>
                             <div>
-                              <div className="text-[11px] text-gray-500 font-medium">
+                              <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
                                 {field.label}
                               </div>
-                              <div className="text-sm font-semibold text-gray-900">
+                              <div className="text-sm font-medium text-[#1a1a1a]">
                                 {display}
                               </div>
                             </div>
@@ -462,11 +472,14 @@ export default async function ListingDetailServer({
 
             {/* Description */}
             {listing.description && (
-              <div className="bg-white rounded-2xl p-6 border border-gray-100">
-                <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              <div className="bg-white p-6 border border-[#e8e6e3]">
+                <h2
+                  className="text-lg font-light text-[#1a1a1a] mb-3"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
                   {t("description")}
                 </h2>
-                <div className="text-gray-600 leading-relaxed whitespace-pre-wrap text-[15px]">
+                <div className="text-[#666] leading-relaxed whitespace-pre-wrap text-[15px]">
                   {listing.description}
                 </div>
               </div>
@@ -494,18 +507,20 @@ export default async function ListingDetailServer({
             </div>
           </div>
 
-          {/* ═══ RIGHT COLUMN ═══ */}
+          {/* RIGHT COLUMN */}
           <div className="space-y-4">
             {/* Seller card */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 sticky top-20">
+            <div className="bg-white p-6 border border-[#e8e6e3]">
               <div className="flex items-center gap-3.5 mb-5">
-                <div className="w-14 h-14 bg-linear-to-br from-indigo-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-md shadow-indigo-100">
+                <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
                   {profile?.avatar_url ? (
-                    <img
+                    <Image
                       src={profile.avatar_url}
                       alt={profile?.display_name || "Seller"}
-                      loading="eager"
-                      className="w-full h-full rounded-full object-cover"
+                      width={56}
+                      height={56}
+                      priority
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     (profile?.display_name || "U")[0].toUpperCase()
@@ -519,7 +534,7 @@ export default async function ListingDetailServer({
                           ? `/shop/${shopSlug}`
                           : `/profile/${listing.user_id}`
                       }
-                      className="font-semibold text-gray-900 truncate transition-colors"
+                      className="font-medium text-[#1a1a1a] truncate transition-colors hover:text-[#666]"
                       style={
                         accentColor
                           ? {
@@ -536,25 +551,12 @@ export default async function ListingDetailServer({
                         style={
                           accentColor
                             ? { color: accentColor }
-                            : { color: "#6366f1" }
+                            : { color: "#1a1a1a" }
                         }
                       />
                     )}
                     {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                      <span
-                        className="text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0"
-                        style={
-                          accentColor
-                            ? {
-                                backgroundColor: `${accentColor}14`,
-                                color: accentColor,
-                              }
-                            : {
-                                backgroundColor: "rgb(243 232 255)",
-                                color: "rgb(126 34 206)",
-                              }
-                        }
-                      >
+                      <span className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase bg-red-50 text-red-600 border border-red-100">
                         PRO
                       </span>
                     )}
@@ -570,11 +572,11 @@ export default async function ListingDetailServer({
                         stroke="#f59e0b"
                       />
                     ))}
-                    <span className="text-xs text-gray-500 ml-1">
+                    <span className="text-xs text-[#6b6560] ml-1">
                       {sellerRating} ({sellerReviews})
                     </span>
                   </div>
-                  <p className="text-[11px] text-gray-400 mt-0.5">
+                  <p className="text-[11px] text-[#8a8280] mt-0.5">
                     {t("memberSince")} {sellerYear}
                   </p>
                 </div>
@@ -587,15 +589,15 @@ export default async function ListingDetailServer({
                 shopSlug={shopSlug}
               />
 
-              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+              <div className="mt-4 pt-4 border-t border-[#e8e6e3] text-center">
                 <Link
                   href={
                     shopSlug
                       ? `/shop/${shopSlug}`
                       : `/profile/${listing.user_id}`
                   }
-                  className="text-sm font-medium hover:underline"
-                  style={{ color: accentColor || "#4f46e5" }}
+                  className="text-sm font-medium hover:underline text-[#1a1a1a]"
+                  style={accentColor ? { color: accentColor } : undefined}
                 >
                   {shopSlug ? t("visitShop") : t("viewSellerProfile")}
                 </Link>
@@ -603,25 +605,28 @@ export default async function ListingDetailServer({
             </div>
 
             {/* Safety tips */}
-            <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
-              <p className="text-sm text-amber-800 font-semibold mb-2">
-                🛡️ {t("safetyTips")}
-              </p>
-              <ul className="space-y-1.5 text-xs text-amber-700 leading-relaxed">
+            <div className="bg-[#faf9f7] p-5 border border-[#e8e6e3]">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield className="w-4 h-4 text-[#6b6560]" />
+                <p className="text-sm text-[#1a1a1a] font-medium">
+                  {t("safetyTips")}
+                </p>
+              </div>
+              <ul className="space-y-2 text-xs text-[#6b6560] leading-relaxed">
                 <li className="flex gap-2">
-                  <span className="shrink-0">•</span>
+                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
                   {t("safetyTip1")}
                 </li>
                 <li className="flex gap-2">
-                  <span className="shrink-0">•</span>
+                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
                   {t("safetyTip2")}
                 </li>
                 <li className="flex gap-2">
-                  <span className="shrink-0">•</span>
+                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
                   {t("safetyTip3")}
                 </li>
                 <li className="flex gap-2">
-                  <span className="shrink-0">•</span>
+                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
                   {t("safetyTip4")}
                 </li>
               </ul>
@@ -646,28 +651,6 @@ export default async function ListingDetailServer({
             )}
           </div>
         </div>
-
-        {/* Related Listings */}
-        {related.length > 0 && (
-          <section className="mt-12">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xl font-bold text-gray-900">
-                {t("similarListings")}
-              </h2>
-              <Link
-                href={`/search?category=${listing.categories?.slug || ""}`}
-                className="text-sm text-indigo-600 font-medium hover:underline flex items-center gap-1"
-              >
-                {t("viewMore")} <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {related.map((item) => (
-                <ListingCard key={item.id} listing={item} />
-              ))}
-            </div>
-          </section>
-        )}
       </div>
     </div>
   );

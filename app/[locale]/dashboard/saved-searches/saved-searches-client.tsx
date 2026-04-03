@@ -1,8 +1,9 @@
 "use client";
 
 import { Bell, ExternalLink, Loader2, Search, Trash2 } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type SavedSearch = {
@@ -48,6 +49,7 @@ export default function SavedSearchesClient({
 }: {
   initialSearches: SavedSearch[];
 }) {
+  const t = useTranslations("dashboard.savedSearches");
   const supabase = createClient();
   const [searches, setSearches] = useState(initialSearches);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -63,57 +65,52 @@ export default function SavedSearchesClient({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Saved Searches</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            You'll be alerted when new listings match your saved searches.
-          </p>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
+          <p className="text-sm text-[#6b6560] mt-0.5">{t("subtitle")}</p>
         </div>
         <Link
           href="/search"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#8E7A6B] text-white text-sm font-medium hover:bg-[#7A6657] transition-colors"
         >
           <Search className="w-4 h-4" />
-          New Search
+          {t("newSearch")}
         </Link>
       </div>
 
       {searches.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-16 text-center">
-          <div className="w-14 h-14 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-7 h-7 text-indigo-400" />
+        <div className="bg-white border border-[#e8e6e3] p-16 text-center">
+          <div className="w-14 h-14 bg-[#f0eeeb] rounded-full flex items-center justify-center mx-auto mb-4">
+            <Bell className="w-7 h-7 text-[#8E7A6B]" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">
-            No saved searches yet
+          <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
+            {t("empty")}
           </h3>
-          <p className="text-gray-500 text-sm mb-6">
-            Save a search on the search page and we'll alert you when new
-            matching listings appear.
-          </p>
+          <p className="text-[#6b6560] text-sm mb-6">{t("emptyDesc")}</p>
           <Link
             href="/search"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8E7A6B] text-white text-sm font-medium hover:bg-[#7A6657] transition-colors"
           >
             <Search className="w-4 h-4" />
-            Go to Search
+            {t("goToSearch")}
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 divide-y divide-gray-50">
+        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
           {searches.map((s) => {
             const tags = buildTags(s);
             return (
               <div
                 key={s.id}
-                className="flex items-center gap-4 p-4 hover:bg-gray-50/50 transition-colors"
+                className="flex items-center gap-4 p-4 hover:bg-[#faf9f7]/50 transition-colors"
               >
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                  <Bell className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 bg-[#f0eeeb] flex items-center justify-center shrink-0">
+                  <Bell className="w-5 h-5 text-[#8E7A6B]" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <Link
                     href={buildSearchUrl(s)}
-                    className="font-medium text-gray-900 hover:text-indigo-600 transition-colors"
+                    className="font-medium text-[#1a1a1a] hover:text-[#8E7A6B] transition-colors"
                   >
                     {s.name}
                   </Link>
@@ -122,14 +119,14 @@ export default function SavedSearchesClient({
                       {tags.map((tag) => (
                         <span
                           key={tag}
-                          className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+                          className="text-xs bg-[#f0eeeb] text-[#666] px-2 py-0.5 rounded-full"
                         >
                           {tag}
                         </span>
                       ))}
                     </div>
                   )}
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-[#8a8280] mt-1">
                     Saved{" "}
                     {new Date(s.created_at).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -152,16 +149,16 @@ export default function SavedSearchesClient({
                 <div className="flex items-center gap-2 shrink-0">
                   <Link
                     href={buildSearchUrl(s)}
-                    className="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
-                    title="Run search"
+                    className="p-2 text-[#8a8280] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
+                    title={t("run")}
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Link>
                   <button
                     onClick={() => handleDelete(s.id)}
                     disabled={deleting === s.id}
-                    className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-                    title="Delete"
+                    className="p-2 text-[#8a8280] hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                    title={t("delete")}
                   >
                     {deleting === s.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -176,10 +173,9 @@ export default function SavedSearchesClient({
         </div>
       )}
 
-      <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-sm text-amber-700">
-        <strong>How alerts work:</strong> When a new listing is posted that
-        matches one of your saved searches, you'll receive an email
-        notification. Make sure your email address is verified in{" "}
+      <div className="bg-amber-50 border border-amber-100 p-4 text-sm text-amber-700">
+        <strong>{t("howAlertsWork")}</strong> {t("alertsDesc")} Make sure your
+        email address is verified in{" "}
         <Link href="/dashboard/settings" className="underline font-medium">
           Account Settings
         </Link>

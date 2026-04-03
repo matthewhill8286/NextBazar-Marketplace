@@ -5,7 +5,7 @@ export default function ListingsLoading() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <Bone className="h-7 w-36" />
-        <Bone className="h-10 w-32 rounded-xl" />
+        <Bone className="h-10 w-32 " />
       </div>
       <TabsSkeleton count={4} />
       <ListRowSkeleton count={6} />

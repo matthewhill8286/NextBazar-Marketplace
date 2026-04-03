@@ -1,10 +1,10 @@
 "use client";
 
-import { Flame } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, Flame } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-
 import ListingCard from "@/app/components/listing-card";
+import { Link } from "@/i18n/navigation";
 import { LAST_SEARCH_LOCATION_KEY } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import { CARD_SELECT } from "@/lib/supabase/selects";
@@ -16,6 +16,7 @@ type Props = {
 };
 
 export default function TrendingSection({ fallbackTrending }: Props) {
+  const t = useTranslations("home.trending");
   const supabase = createClient();
   const [trending, setTrending] = useState<ListingCardRow[]>(fallbackTrending);
   const [locationName, setLocationName] = useState<string | null>(null);
@@ -58,17 +59,26 @@ export default function TrendingSection({ fallbackTrending }: Props) {
   if (trending.length === 0) return null;
 
   return (
-    <section className="mb-12">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-6 bg-linear-to-b from-orange-400 to-red-500 rounded-full" />
-          <h2 className="text-xl font-bold text-gray-900">
-            {locationName ? `Trending in ${locationName}` : "Trending Now"}
-          </h2>
-          <span className="flex items-center gap-1 bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wide">
+    <section className="py-20">
+      <div className="flex items-end justify-between mb-12">
+        <div>
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4 flex items-center gap-1.5">
             <Flame className="w-3 h-3" />
-            Hot
-          </span>
+            {t("badge")}
+          </p>
+          <h2
+            className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {locationName ? (
+              <>
+                {t("titleLocation", { location: "" })}
+                <em className="italic font-normal">{locationName}</em>
+              </>
+            ) : (
+              t("title")
+            )}
+          </h2>
         </div>
         <Link
           href={
@@ -76,12 +86,13 @@ export default function TrendingSection({ fallbackTrending }: Props) {
               ? `/search?location=${locationSlug}&sort=popular`
               : "/search?sort=popular"
           }
-          className="text-sm text-indigo-600 font-semibold hover:underline"
+          className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
         >
-          View all →
+          {t("viewAll")}
+          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {trending.map((listing) => (
           <ListingCard key={listing.id} listing={listing} />
         ))}

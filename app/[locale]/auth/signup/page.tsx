@@ -1,33 +1,41 @@
-import type { Metadata } from "next";
-import Link from "next/link";
+import { AuthIllustration } from "@/app/components/illustrations";
+import { Link } from "@/i18n/navigation";
+import { getTranslator } from "@/lib/translations";
 import SignupForm from "./signup-form";
 
-export const metadata: Metadata = {
-  title: "Sign Up — NextBazar",
-};
+export default async function SignupPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslator(locale, "auth");
 
-export default function SignupPage() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Create your account
+          <AuthIllustration className="w-24 h-24 mx-auto mb-6 text-[#8a8280]" />
+          <h1
+            className="text-3xl font-light text-[#1a1a1a]"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            {t("signupTitle")}
           </h1>
-          <p className="text-gray-500 mt-1">
-            Join Next Bazar and start buying &amp; selling
+          <p className="text-[#6b6560] mt-2 text-sm">
+            {t("signupSubtitleAlt")}
           </p>
         </div>
 
         <SignupForm />
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Already have an account?{" "}
+        <p className="text-center text-sm text-[#6b6560] mt-6">
+          {t("haveAccount")}{" "}
           <Link
             href="/auth/login"
-            className="text-indigo-600 font-medium hover:underline"
+            className="text-[#8E7A6B] font-medium hover:underline"
           >
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </div>

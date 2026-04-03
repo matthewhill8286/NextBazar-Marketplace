@@ -2,11 +2,11 @@ import {
   BarChart2,
   Bell,
   CheckCircle,
+  Crown,
   Megaphone,
   MessageCircle,
   Package,
   ShieldCheck,
-  Star,
   Tag,
   Zap,
 } from "lucide-react";
@@ -27,49 +27,41 @@ export const metadata: Metadata = {
 const FEATURES = [
   {
     icon: Package,
-    color: "bg-indigo-50 text-indigo-600",
     title: "Unlimited listings",
     desc: "List your entire inventory with no cap. Manage everything from one dashboard.",
   },
   {
     icon: Megaphone,
-    color: "bg-amber-50 text-amber-600",
     title: "3 free Quick Boosts / month",
     desc: "Promote listings to the top of search results for maximum visibility — included in your plan.",
   },
   {
     icon: BarChart2,
-    color: "bg-emerald-50 text-emerald-600",
     title: "Analytics dashboard",
     desc: "Track views, saves, messages, and performance per listing. Know exactly what's working.",
   },
   {
     icon: Tag,
-    color: "bg-violet-50 text-violet-600",
     title: "Branded shop page",
     desc: "Your own custom URL, logo, banner, and accent colour — a professional storefront that builds trust.",
   },
   {
     icon: MessageCircle,
-    color: "bg-rose-50 text-rose-600",
     title: "Quick-reply templates",
     desc: "Pre-written message templates so you can respond to buyers in seconds.",
   },
   {
     icon: ShieldCheck,
-    color: "bg-cyan-50 text-cyan-600",
     title: "Verified Pro Seller badge",
     desc: "A PRO badge on your profile and every listing builds buyer trust and increases click-through rate.",
   },
   {
     icon: Bell,
-    color: "bg-orange-50 text-orange-600",
     title: "Auto-renewal",
     desc: "Expiring listings are automatically renewed so you never miss a sale.",
   },
   {
     icon: Zap,
-    color: "bg-yellow-50 text-yellow-600",
     title: "Response time badge",
     desc: "Show buyers how quickly you reply — fast responders get more enquiries.",
   },
@@ -82,7 +74,6 @@ const TESTIMONIALS = [
     quote:
       "Since upgrading to Pro Seller our enquiries doubled within the first month. The analytics alone are worth it.",
     initials: "SP",
-    color: "from-indigo-400 to-indigo-600",
   },
   {
     name: "Maria K.",
@@ -90,7 +81,6 @@ const TESTIMONIALS = [
     quote:
       "The branded shop page gives me a professional presence. Buyers trust me more and I close deals faster.",
     initials: "MK",
-    color: "from-violet-400 to-violet-600",
   },
 ];
 
@@ -102,27 +92,34 @@ export default async function DealersPage() {
   const dealerInterval = pricing.dealer.interval;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-20 text-center">
-          <span className="inline-flex items-center gap-1.5 bg-violet-50 text-violet-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            <Star className="w-3.5 h-3.5 fill-violet-500" /> Professional
-            sellers
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-5 leading-tight">
-            Grow your business <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">
-              with NextBazar Pro
-            </span>
+      <section className="bg-white border-b border-[#e8e6e3]">
+        <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
+          <div className="w-14 h-14 bg-[#faf9f7] flex items-center justify-center mx-auto mb-6">
+            <Crown className="w-6 h-6 text-[#8E7A6B]" />
+          </div>
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
+            Professional Sellers
+          </p>
+          <h1
+            className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-6 leading-[1.1]"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Grow your business
+            <br className="hidden md:block" />
+            with NextBazar Pro
           </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-10">
+          <p className="text-lg text-[#6b6560] max-w-2xl mx-auto mb-10 leading-relaxed">
             Everything a professional seller needs — unlimited listings,
             powerful analytics, a branded shop page, and a verified badge that
             builds instant buyer trust. All for just{" "}
-            <strong className="text-gray-700">
+            <span
+              className="text-[#1a1a1a]"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               {dealerPrice}/{dealerInterval}
-            </strong>
+            </span>
             .
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -132,55 +129,71 @@ export default async function DealersPage() {
           </div>
 
           {/* Promo code section */}
-          <div className="flex items-center gap-3 my-6 max-w-md mx-auto">
-            <div className="flex-1 border-t border-gray-200" />
-            <span className="text-gray-400 text-xs font-medium">or</span>
-            <div className="flex-1 border-t border-gray-200" />
+          <div className="flex items-center gap-3 my-8 max-w-md mx-auto">
+            <div className="flex-1 border-t border-[#e8e6e3]" />
+            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#8a8280]">
+              or
+            </span>
+            <div className="flex-1 border-t border-[#e8e6e3]" />
           </div>
           <PromoCodeInput />
         </div>
       </section>
 
       {/* Features grid */}
-      <section className="max-w-5xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">
+      <section className="max-w-5xl mx-auto px-6 py-20">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          What You Get
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
           Built for high-volume sellers
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e8e6e3]">
           {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm"
-            >
-              <div className={`p-2.5 rounded-xl w-fit mb-3 ${f.color}`}>
-                <f.icon className="w-5 h-5" />
+            <div key={f.title} className="bg-white p-7">
+              <div className="w-10 h-10 bg-[#faf9f7] flex items-center justify-center mb-4">
+                <f.icon className="w-5 h-5 text-[#8E7A6B]" />
               </div>
-              <h3 className="font-semibold text-gray-900 mb-1.5 text-sm">
+              <h3
+                className="font-light text-[#1a1a1a] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 {f.title}
               </h3>
-              <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
+              <p className="text-xs text-[#6b6560] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Feature groups — detailed breakdown */}
-      <section className="max-w-5xl mx-auto px-4 pb-16">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">
+      <section className="max-w-5xl mx-auto px-6 pb-20">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          Full Breakdown
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
           Everything included
         </h2>
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3]">
           {PRO_SELLER_FEATURE_GROUPS.map((group) => (
-            <div
-              key={group.heading}
-              className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
-            >
-              <h3 className="font-bold text-gray-900 mb-3">{group.heading}</h3>
-              <ul className="space-y-2">
+            <div key={group.heading} className="bg-white p-8">
+              <h3
+                className="text-lg font-light text-[#1a1a1a] mb-5"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {group.heading}
+              </h3>
+              <ul className="space-y-3">
                 {group.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-emerald-500" />
-                    <span className="text-gray-600">{item}</span>
+                  <li key={item} className="flex items-start gap-3 text-sm">
+                    <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#8E7A6B]" />
+                    <span className="text-[#666]">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -190,18 +203,23 @@ export default async function DealersPage() {
       </section>
 
       {/* Pricing */}
-      <section className="max-w-3xl mx-auto px-4 pb-16">
-        <div className="bg-indigo-600 text-white rounded-2xl p-8 md:p-10 shadow-xl shadow-indigo-200 text-center">
-          <div className="text-xs font-semibold uppercase tracking-wide text-indigo-200 mb-2">
+      <section className="max-w-3xl mx-auto px-6 pb-20">
+        <div className="bg-[#2C2826] text-white p-10 md:p-14 text-center">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-4">
             Pro Seller
-          </div>
+          </p>
           <div className="flex items-end gap-1 justify-center mb-4">
-            <span className="text-5xl font-black">{dealerPrice}</span>
-            <span className="text-lg text-indigo-200 pb-1">
+            <span
+              className="text-5xl font-light"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              {dealerPrice}
+            </span>
+            <span className="text-lg text-white/40 pb-1">
               /{dealerInterval}
             </span>
           </div>
-          <p className="text-indigo-100 text-sm mb-8 max-w-md mx-auto">
+          <p className="text-white/50 text-sm mb-10 max-w-md mx-auto">
             Cancel anytime. No setup fees. Start selling like a pro today.
           </p>
           <DealersSubscribeButton label="Subscribe Now" variant="white" />
@@ -209,30 +227,34 @@ export default async function DealersPage() {
       </section>
 
       {/* Testimonials */}
-      <section className="max-w-5xl mx-auto px-4 pb-20">
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">
+      <section className="max-w-5xl mx-auto px-6 pb-24">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          What Sellers Say
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
           Trusted by local sellers
         </h2>
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid md:grid-cols-2 gap-px bg-[#e8e6e3]">
           {TESTIMONIALS.map((t) => (
-            <div
-              key={t.name}
-              className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
-            >
-              <p className="text-gray-600 text-sm leading-relaxed mb-5 italic">
+            <div key={t.name} className="bg-white p-8">
+              <p
+                className="text-[#666] text-lg leading-relaxed mb-8 font-light italic"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
                 &ldquo;{t.quote}&rdquo;
               </p>
-              <div className="flex items-center gap-3">
-                <div
-                  className={`w-10 h-10 rounded-full bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-sm`}
-                >
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-sm">
                   {t.initials}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 text-sm">
+                  <div className="text-sm font-medium text-[#1a1a1a]">
                     {t.name}
                   </div>
-                  <div className="text-xs text-gray-400">{t.role}</div>
+                  <div className="text-xs text-[#6b6560]">{t.role}</div>
                 </div>
               </div>
             </div>
@@ -241,10 +263,15 @@ export default async function DealersPage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="bg-gradient-to-br from-indigo-600 to-violet-600 py-16">
-        <div className="max-w-xl mx-auto px-4 text-center text-white">
-          <h2 className="text-2xl font-bold mb-3">Ready to go pro?</h2>
-          <p className="text-indigo-100 mb-7">
+      <section className="bg-[#2C2826] py-20">
+        <div className="max-w-xl mx-auto px-6 text-center text-white">
+          <h2
+            className="text-2xl md:text-3xl font-light mb-4"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Ready to go pro?
+          </h2>
+          <p className="text-white/50 mb-10">
             Join hundreds of sellers already growing their business on
             NextBazar.
           </p>

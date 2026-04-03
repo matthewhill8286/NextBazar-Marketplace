@@ -43,7 +43,7 @@ Respond in JSON:
   "max_price": <number or null>,
   "condition": "<new|like_new|good|fair|for_parts or null>",
   "sort": "newest" | "price_low" | "price_high" | "popular",
-  "interpretation": "<1 sentence explaining how you interpreted the query>"
+  "interpretation": "<1 friendly sentence explaining how you interpreted the query — address the user directly as 'you' instead of 'the user', e.g. 'Showing marina-related listings across all locations'>"
 }`,
         },
       ],
