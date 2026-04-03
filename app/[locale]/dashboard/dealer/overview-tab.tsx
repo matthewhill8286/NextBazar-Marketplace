@@ -91,7 +91,7 @@ export default function OverviewTab({ listings, slug, shopMode = false }: Props)
             .map((l, i) => (
               <Link
                 key={l.id}
-                href={`/listing/${l.slug}`}
+                href={shopMode ? `/shop-manager/edit/${l.id}` : `/listing/${l.slug}`}
                 className="flex items-center gap-3 p-2.5 -mx-2 hover:bg-[#faf9f7] transition-colors group"
               >
                 <span className="text-xs font-semibold text-[#8a8280] w-5 text-center">
