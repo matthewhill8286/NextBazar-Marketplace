@@ -7,6 +7,7 @@ import {
   CreditCard,
   DollarSign,
   ExternalLink,
+  Loader2,
   MessageCircle,
   Palette,
   ShoppingBag,
@@ -16,6 +17,8 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import { useShopCMS } from "./shop-context";
 
@@ -58,6 +61,7 @@ const NAV_ITEMS = [
 export default function ShopSidebar() {
   const t = useTranslations("dealer");
   const { shop, listings } = useShopCMS();
+  const [billingLoading, setBillingLoading] = useState(false);
   const rawPathname = usePathname();
   const pathname = rawPathname.replace(/^\/(en|el|ru)(\/|$)/, "/");
 
@@ -78,12 +82,28 @@ export default function ShopSidebar() {
             <Store className="w-5 h-5" style={{ color: accentColor }} />
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-bold text-[#1a1a1a] truncate">
-              {shop?.shop_name || "Your Shop"}
-            </h2>
-            <p className="text-[10px] text-[#8a8280] uppercase tracking-wider font-medium">
-              Shop Manager
-            </p>
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-sm font-bold text-[#1a1a1a] truncate">
+                {shop?.shop_name || "Your Shop"}
+              </h2>
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <p className="text-[10px] text-[#8a8280] uppercase tracking-wider font-medium">
+                Shop Manager
+              </p>
+              {shop?.plan_tier && shop.plan_tier !== "starter" && (
+                <span
+                  className={clsx(
+                    "text-[9px] font-bold uppercase tracking-wider px-1.5 py-px rounded-sm",
+                    shop.plan_tier === "business"
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-[#8E7A6B]/10 text-[#8E7A6B]",
+                  )}
+                >
+                  {shop.plan_tier}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -100,18 +120,38 @@ export default function ShopSidebar() {
           )}
           <span className="text-[#e8e6e3]">&middot;</span>
           <button
+            disabled={billingLoading}
             onClick={async () => {
-              const res = await fetch("/api/dealer/portal", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ origin: window.location.origin }),
-              });
-              const data = await res.json();
-              if (data.url) window.location.href = data.url;
+              setBillingLoading(true);
+              try {
+                const res = await fetch("/api/dealer/portal", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ origin: window.location.origin }),
+                });
+                const data = await res.json();
+                if (data.url) {
+                  window.location.href = data.url;
+                } else {
+                  toast.error("Could not open billing portal", {
+                    description: data.error || "Please try again later.",
+                  });
+                  setBillingLoading(false);
+                }
+              } catch {
+                toast.error("Network error", {
+                  description: "Could not reach the server. Please try again.",
+                });
+                setBillingLoading(false);
+              }
             }}
-            className="inline-flex items-center gap-1 text-[10px] font-medium text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
+            className="inline-flex items-center gap-1 text-[10px] font-medium text-[#6b6560] hover:text-[#1a1a1a] transition-colors disabled:opacity-50"
           >
-            <CreditCard className="w-3 h-3" />
+            {billingLoading ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <CreditCard className="w-3 h-3" />
+            )}
             Billing
           </button>
         </div>

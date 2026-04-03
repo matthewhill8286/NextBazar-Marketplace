@@ -17,6 +17,7 @@ import {
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import type { SellerTier } from "@/lib/pricing-config";
 
 export type BrandingState = {
   shopName: string;
@@ -35,6 +36,7 @@ type Props = {
   bannerUploading: boolean;
   /** When true the slug is already persisted and should not change. */
   slugLocked?: boolean;
+  planTier?: SellerTier;
   onChange: <K extends keyof BrandingState>(
     key: K,
     value: BrandingState[K],
@@ -43,6 +45,23 @@ type Props = {
   onBannerRemoveAction: () => void;
   onSaveAction: () => void;
 };
+
+/** Display label for the seller tier badge. */
+function tierBadgeLabel(tier: SellerTier): string {
+  switch (tier) {
+    case "business":
+      return "Verified Business Seller";
+    case "pro":
+      return "Verified Pro Seller";
+    default:
+      return "Seller";
+  }
+}
+
+/** Short label for the stats bar. */
+function tierStatusLabel(tier: SellerTier): string {
+  return tier === "business" ? "BUSINESS" : tier === "pro" ? "PRO" : "FREE";
+}
 
 function darkenHex(hex: string): string {
   if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) return "#4338ca";
@@ -71,6 +90,7 @@ export default function BrandingForm({
   saving,
   bannerUploading,
   slugLocked = false,
+  planTier = "pro",
   onChange,
   onBannerUploadAction,
   onBannerRemoveAction,
@@ -261,11 +281,13 @@ export default function BrandingForm({
                     <span
                       className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-white text-[10px] font-semibold w-fit"
                       style={{
-                        background: `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
+                        background: planTier === "business"
+                          ? "linear-gradient(135deg, #b45309, #92400e)"
+                          : `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
                       }}
                     >
                       <ShieldCheck className="w-3 h-3" />
-                      Verified Pro Seller
+                      {tierBadgeLabel(planTier)}
                     </span>
                   </div>
 
@@ -319,9 +341,9 @@ export default function BrandingForm({
                     <div className="text-lg font-bold text-[#1a1a1a] flex items-center justify-center gap-1">
                       <ShieldCheck
                         className="w-4 h-4"
-                        style={{ color: accentColor }}
+                        style={{ color: planTier === "business" ? "#b45309" : accentColor }}
                       />
-                      PRO
+                      {tierStatusLabel(planTier)}
                     </div>
                     <div className="text-[10px] text-[#6b6560] mt-0.5 font-medium">
                       Seller Status

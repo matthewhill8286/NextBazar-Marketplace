@@ -10,3 +10,12 @@ import { revalidateTag } from "next/cache";
 export async function revalidateListings() {
   revalidateTag("listings", "max");
 }
+
+/**
+ * Server action to bust the dealer shop cache.
+ * Call after saving branding, changing plan tier, or any dealer_shops update
+ * so the public /shop/[slug] page reflects changes immediately.
+ */
+export async function revalidateShop() {
+  revalidateTag("dealer_shops", "max");
+}

@@ -24,6 +24,8 @@ import { toast } from "sonner";
 import { Link, useRouter } from "@/i18n/navigation";
 
 import { revalidateListings } from "@/app/actions/revalidate";
+import type { SellerTier } from "@/lib/pricing-config";
+import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/client";
 import CSVImport, { detectShopType } from "./csv-import";
 import type { ListingRow } from "./types";
@@ -42,6 +44,7 @@ type SortDir = "asc" | "desc";
 
 type Props = {
   listings: ListingRow[];
+  planTier?: SellerTier;
   editBaseHref?: string;
   /** Href for the "Add Inventory" / "New Listing" button */
   newListingHref?: string;
@@ -186,6 +189,7 @@ function Checkbox({
 
 export default function InventoryTab({
   listings,
+  planTier = "starter",
   editBaseHref = "/dashboard/edit",
   newListingHref = "/post",
   newListingLabel = "New Listing",
@@ -193,6 +197,7 @@ export default function InventoryTab({
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
+  const limits = getPlanLimits(planTier);
   const shopType = useMemo(() => detectShopType(listings), [listings]);
   const [showImport, setShowImport] = useState(false);
   const [page, setPage] = useState(1);
@@ -432,13 +437,15 @@ export default function InventoryTab({
           All Listings ({listings.length})
         </h3>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowImport(true)}
-            className="inline-flex items-center gap-1.5 bg-[#faf9f7] text-[#666] border border-[#e8e6e3] px-4 py-2.5 text-sm font-semibold hover:bg-[#f0eeeb] transition-colors"
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-            Import CSV
-          </button>
+          {limits.csvImport && (
+            <button
+              onClick={() => setShowImport(true)}
+              className="inline-flex items-center gap-1.5 bg-[#faf9f7] text-[#666] border border-[#e8e6e3] px-4 py-2.5 text-sm font-semibold hover:bg-[#f0eeeb] transition-colors"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              Import CSV
+            </button>
+          )}
           <Link
             href={newListingHref}
             className="inline-flex items-center gap-1.5 bg-[#8E7A6B] text-white px-4 py-2.5 text-sm font-semibold hover:bg-[#7A6657] transition-colors shadow-sm shadow-[#8E7A6B]/15"
@@ -732,9 +739,11 @@ export default function InventoryTab({
                   />
                 </button>
               </th>
-              <th className={`text-right ${thBase} hidden md:table-cell`}>
-                Stock
-              </th>
+              {limits.stockManagement && (
+                <th className={`text-right ${thBase} hidden md:table-cell`}>
+                  Stock
+                </th>
+              )}
               <th className={`text-right ${thBase} hidden lg:table-cell`}>
                 <button
                   onClick={() => toggleSort("created_at")}
@@ -813,13 +822,15 @@ export default function InventoryTab({
                   <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
                     {l.favorite_count}
                   </td>
-                  <td className="px-4 py-3 text-right hidden md:table-cell">
-                    {l.quantity != null ? (
-                      <StockBadge quantity={l.quantity} threshold={l.low_stock_threshold ?? 3} listingId={l.id} onUpdated={onRefresh} />
-                    ) : (
-                      <span className="text-[#8a8280] text-xs">—</span>
-                    )}
-                  </td>
+                  {limits.stockManagement && (
+                    <td className="px-4 py-3 text-right hidden md:table-cell">
+                      {l.quantity != null ? (
+                        <StockBadge quantity={l.quantity} threshold={l.low_stock_threshold ?? 3} listingId={l.id} onUpdated={onRefresh} />
+                      ) : (
+                        <span className="text-[#8a8280] text-xs">—</span>
+                      )}
+                    </td>
+                  )}
                   <td className="px-4 py-3 text-right text-[#6b6560] text-xs hidden lg:table-cell">
                     {timeAgo(l.created_at)}
                   </td>

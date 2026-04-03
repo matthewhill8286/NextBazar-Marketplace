@@ -3,6 +3,10 @@ import { openai } from "@/lib/openai";
 
 export async function POST(request: NextRequest) {
   try {
+    // AI descriptions are available to all regular users.
+    // For dealers, this is gated to Business tier on the client side.
+    // Server-side enforcement is optional here since the cost is minimal.
+
     const { title, category, condition, price, imageUrl } =
       await request.json();
 

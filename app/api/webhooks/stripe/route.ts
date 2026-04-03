@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 
@@ -76,6 +77,8 @@ export async function POST(request: NextRequest) {
     // ─── Dealer subscription checkout ──────────────────────────────────────
     if (session.metadata?.type === "dealer_subscription") {
       const userId = session.metadata.user_id;
+      const planTier = session.metadata.plan_tier || "pro";
+      const billingInterval = session.metadata.billing_interval || "monthly";
       const customerId =
         typeof session.customer === "string"
           ? session.customer
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
           : session.subscription?.id;
 
       if (userId && customerId) {
-        // Upsert dealer_shops row
+        // Upsert dealer_shops row with plan tier info
         const { error: shopError } = await supabaseAdmin
           .from("dealer_shops")
           .upsert(
@@ -97,12 +100,14 @@ export async function POST(request: NextRequest) {
               stripe_customer_id: customerId,
               stripe_subscription_id: subscriptionId ?? null,
               plan_status: "active",
+              plan_tier: planTier,
+              billing_interval: billingInterval,
               plan_started_at: new Date().toISOString(),
             },
             { onConflict: "user_id" },
           );
 
-        // Flip is_pro_seller on profile
+        // Flip is_pro_seller on profile (any paid plan counts as "pro")
         const { error: profileError } = await supabaseAdmin
           .from("profiles")
           .update({ is_pro_seller: true })
@@ -112,6 +117,9 @@ export async function POST(request: NextRequest) {
           console.error("Failed to upsert dealer shop:", shopError);
         if (profileError)
           console.error("Failed to update dealer profile:", profileError);
+
+        // Bust public shop page cache
+        revalidateTag("dealer_shops", "max");
       }
     }
   }
@@ -128,24 +136,43 @@ export async function POST(request: NextRequest) {
       const isActive =
         subscription.status === "active" || subscription.status === "trialing";
 
+      // Build the update payload — always update status + expiry
+      const updatePayload: Record<string, unknown> = {
+        plan_status: isActive
+          ? "active"
+          : subscription.status === "past_due"
+            ? "past_due"
+            : "cancelled",
+        plan_expires_at: subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : null,
+      };
+
+      // If the subscription metadata has tier info, update it (handles upgrades)
+      if (subscription.metadata?.plan_tier) {
+        updatePayload.plan_tier = subscription.metadata.plan_tier;
+      }
+      if (subscription.metadata?.billing_interval) {
+        updatePayload.billing_interval = subscription.metadata.billing_interval;
+      }
+
+      // On cancellation, revert to starter tier
+      if (!isActive && subscription.status !== "past_due") {
+        updatePayload.plan_tier = "starter";
+      }
+
       await supabaseAdmin
         .from("dealer_shops")
-        .update({
-          plan_status: isActive
-            ? "active"
-            : subscription.status === "past_due"
-              ? "past_due"
-              : "cancelled",
-          plan_expires_at: subscription.current_period_end
-            ? new Date(subscription.current_period_end * 1000).toISOString()
-            : null,
-        })
+        .update(updatePayload)
         .eq("user_id", userId);
 
       await supabaseAdmin
         .from("profiles")
         .update({ is_pro_seller: isActive })
         .eq("id", userId);
+
+      // Bust public shop page cache
+      revalidateTag("dealer_shops", "max");
     }
   }
 

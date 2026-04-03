@@ -6,6 +6,8 @@ import { ErrorBanner } from "@/app/components/ui";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
+import { getPlanLimits } from "@/lib/plan-limits";
+import type { SellerTier } from "@/lib/pricing-config";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
 import PostStep1 from "./post-step-1";
@@ -82,6 +84,8 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
     selectedCategory?.slug === VEHICLES_CATEGORY_SLUG && !isParts;
 
   const { userId: authUserId } = useAuth();
+  const [planTier, setPlanTier] = useState<SellerTier>("starter");
+  const limits = getPlanLimits(planTier);
 
   useEffect(() => {
     if (!authUserId) return;
@@ -95,6 +99,17 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
       .then(({ data: profile }) => {
         if (profile?.phone) {
           setFormData((prev) => ({ ...prev, contact_phone: profile.phone }));
+        }
+      });
+    // Fetch dealer plan tier if applicable
+    supabase
+      .from("dealer_shops")
+      .select("plan_tier, plan_status")
+      .eq("user_id", authUserId)
+      .single()
+      .then(({ data: shop }) => {
+        if (shop?.plan_status === "active" && shop.plan_tier) {
+          setPlanTier(shop.plan_tier as SellerTier);
         }
       });
   }, [authUserId, supabase]);
@@ -235,6 +250,22 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
       return;
     }
 
+    // Check active listing limit for the user's plan tier
+    if (limits.activeListings !== "unlimited") {
+      const { count } = await supabase
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("status", "active");
+      if ((count ?? 0) >= limits.activeListings) {
+        setError(
+          `You've reached your limit of ${limits.activeListings} active listings on the ${limits.tierLabel} plan. Upgrade to list more.`,
+        );
+        setLoading(false);
+        return;
+      }
+    }
+
     const pendingUploads = images.some((img) => img.uploading);
     if (pendingUploads) {
       setError("Please wait for all images to finish uploading.");
@@ -353,6 +384,7 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           visibleSubcategories={visibleSubcategories}
           aiLoading={aiLoading}
           aiFilled={aiFilled}
+          maxImages={limits.imagesPerListing}
           onImagesChangeAction={handleImagesChange}
           onAiAutofillAction={handleAiAutofill}
           onUpdateAction={update}

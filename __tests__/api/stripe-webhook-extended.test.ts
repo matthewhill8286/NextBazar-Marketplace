@@ -1,7 +1,7 @@
 /**
  * Extended stripe webhook tests — covers dealer subscription logic,
- * boosted_until for urgent promotions, and subscription lifecycle events
- * that the original stripe-webhook.test.ts does not cover.
+ * boosted_until for urgent promotions, subscription lifecycle events,
+ * and multi-tier plan_tier / billing_interval metadata handling.
  */
 
 import { NextRequest } from "next/server";
@@ -31,6 +31,10 @@ vi.mock("@supabase/supabase-js", () => ({
   createClient: vi.fn(() => ({
     from: mockFrom,
   })),
+}));
+
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -108,6 +112,8 @@ describe("Stripe webhook — dealer subscription checkout", () => {
         metadata: {
           type: "dealer_subscription",
           user_id: "user-abc-123",
+          plan_tier: "pro",
+          billing_interval: "monthly",
         },
         customer: "cus_test123",
         subscription: "sub_test456",
@@ -127,6 +133,64 @@ describe("Stripe webhook — dealer subscription checkout", () => {
     expect(upsertArg.shop_name).toBe("My Shop");
   });
 
+  it("stores plan_tier from metadata", async () => {
+    await POST(makeWebhookRequest(dealerCheckoutEvent));
+
+    const upsertArg = mockUpsert.mock.calls[0][0];
+    expect(upsertArg.plan_tier).toBe("pro");
+  });
+
+  it("stores billing_interval from metadata", async () => {
+    await POST(makeWebhookRequest(dealerCheckoutEvent));
+
+    const upsertArg = mockUpsert.mock.calls[0][0];
+    expect(upsertArg.billing_interval).toBe("monthly");
+  });
+
+  it("stores business tier from metadata", async () => {
+    const bizEvent = {
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          metadata: {
+            type: "dealer_subscription",
+            user_id: "user-biz-789",
+            plan_tier: "business",
+            billing_interval: "yearly",
+          },
+          customer: "cus_biz",
+          subscription: "sub_biz",
+        },
+      },
+    };
+    await POST(makeWebhookRequest(bizEvent));
+
+    const upsertArg = mockUpsert.mock.calls[0][0];
+    expect(upsertArg.plan_tier).toBe("business");
+    expect(upsertArg.billing_interval).toBe("yearly");
+  });
+
+  it("defaults plan_tier to 'pro' when metadata missing", async () => {
+    const legacyEvent = {
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          metadata: {
+            type: "dealer_subscription",
+            user_id: "user-legacy",
+          },
+          customer: "cus_legacy",
+          subscription: "sub_legacy",
+        },
+      },
+    };
+    await POST(makeWebhookRequest(legacyEvent));
+
+    const upsertArg = mockUpsert.mock.calls[0][0];
+    expect(upsertArg.plan_tier).toBe("pro");
+    expect(upsertArg.billing_interval).toBe("monthly");
+  });
+
   it("updates profile is_pro_seller to true", async () => {
     await POST(makeWebhookRequest(dealerCheckoutEvent));
 
@@ -144,6 +208,8 @@ describe("Stripe webhook — dealer subscription checkout", () => {
           metadata: {
             type: "dealer_subscription",
             user_id: "user-xyz",
+            plan_tier: "pro",
+            billing_interval: "monthly",
           },
           customer: { id: "cus_obj123" },
           subscription: { id: "sub_obj456" },
@@ -162,6 +228,7 @@ describe("Stripe webhook — subscription lifecycle events", () => {
   const makeSubscriptionEvent = (
     type: string,
     status: string,
+    metadata: Record<string, string> = {},
     periodEnd?: number,
   ) => ({
     type,
@@ -170,6 +237,7 @@ describe("Stripe webhook — subscription lifecycle events", () => {
         metadata: {
           type: "dealer_subscription",
           user_id: "user-sub-123",
+          ...metadata,
         },
         status,
         current_period_end: periodEnd ?? Math.floor(Date.now() / 1000) + 86400,
@@ -234,5 +302,58 @@ describe("Stripe webhook — subscription lifecycle events", () => {
     );
     expect(profileUpdate).toBeDefined();
     expect(profileUpdate![0].is_pro_seller).toBe(false);
+  });
+
+  it("updates plan_tier from subscription metadata on upgrade", async () => {
+    const event = makeSubscriptionEvent(
+      "customer.subscription.updated",
+      "active",
+      { plan_tier: "business", billing_interval: "yearly" },
+    );
+    await POST(makeWebhookRequest(event));
+
+    const updateArg = mockUpdate.mock.calls[0][0];
+    expect(updateArg.plan_tier).toBe("business");
+    expect(updateArg.billing_interval).toBe("yearly");
+  });
+
+  it("reverts plan_tier to starter on cancellation", async () => {
+    const event = makeSubscriptionEvent(
+      "customer.subscription.deleted",
+      "canceled",
+      { plan_tier: "pro" },
+    );
+    await POST(makeWebhookRequest(event));
+
+    const updateArg = mockUpdate.mock.calls[0][0];
+    expect(updateArg.plan_tier).toBe("starter");
+  });
+
+  it("does NOT revert plan_tier on past_due (grace period)", async () => {
+    const event = makeSubscriptionEvent(
+      "customer.subscription.updated",
+      "past_due",
+      { plan_tier: "business" },
+    );
+    await POST(makeWebhookRequest(event));
+
+    const updateArg = mockUpdate.mock.calls[0][0];
+    expect(updateArg.plan_tier).toBe("business");
+  });
+
+  it("sets plan_expires_at from current_period_end", async () => {
+    const futureTimestamp = Math.floor(Date.now() / 1000) + 2592000; // +30 days
+    const event = makeSubscriptionEvent(
+      "customer.subscription.updated",
+      "active",
+      {},
+      futureTimestamp,
+    );
+    await POST(makeWebhookRequest(event));
+
+    const updateArg = mockUpdate.mock.calls[0][0];
+    expect(updateArg.plan_expires_at).toBeDefined();
+    const expiresDate = new Date(updateArg.plan_expires_at);
+    expect(expiresDate.getTime()).toBeGreaterThan(Date.now());
   });
 });

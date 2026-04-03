@@ -40,6 +40,15 @@ export default function ShopOnboardingClient({
         const data = await res.json();
 
         if (data.status === "activated" || data.status === "already_active") {
+          // If this is an upgrade (shop already exists), redirect to dashboard
+          // instead of showing the onboarding wizard again.
+          if (wizardProps.shopName && wizardProps.shopName !== "My Shop") {
+            toast.success("Plan upgraded!", {
+              description: "Your new plan is now active.",
+            });
+            router.push("/dashboard?upgraded=true");
+            return;
+          }
           setVerified(true);
           toast.success("Payment confirmed!", {
             description: "Let's set up your shop.",

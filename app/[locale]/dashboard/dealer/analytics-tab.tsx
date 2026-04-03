@@ -13,15 +13,33 @@ import {
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import type { SellerTier } from "@/lib/pricing-config";
+import { getPlanLimits } from "@/lib/plan-limits";
+import UpgradeGate from "@/app/components/upgrade-gate";
 import type { ListingRow } from "./types";
 
 type Props = {
   listings: ListingRow[];
+  planTier?: SellerTier;
 };
 
 type Period = "7d" | "30d" | "all";
 
-export default function AnalyticsTab({ listings }: Props) {
+export default function AnalyticsTab({ listings, planTier = "starter" }: Props) {
+  const limits = getPlanLimits(planTier);
+
+  if (!limits.analytics) {
+    return (
+      <UpgradeGate
+        feature="Analytics Dashboard"
+        currentPlan={limits.tierLabel}
+        requiredPlan="Pro"
+        allowed={false}
+      >
+        <div />
+      </UpgradeGate>
+    );
+  }
   const [period] = useState<Period>("all");
 
   // ─── Aggregate stats ──────────────────────────────────────────────────

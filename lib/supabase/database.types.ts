@@ -123,6 +123,7 @@ export type Database = {
         Row: {
           accent_color: string | null;
           banner_url: string | null;
+          billing_interval: string;
           created_at: string;
           custom_domain: string | null;
           description: string | null;
@@ -133,6 +134,7 @@ export type Database = {
           plan_expires_at: string | null;
           plan_started_at: string | null;
           plan_status: string;
+          plan_tier: string;
           shop_name: string;
           slug: string;
           stripe_customer_id: string | null;
@@ -145,6 +147,7 @@ export type Database = {
         Insert: {
           accent_color?: string | null;
           banner_url?: string | null;
+          billing_interval?: string;
           created_at?: string;
           custom_domain?: string | null;
           description?: string | null;
@@ -155,6 +158,7 @@ export type Database = {
           plan_expires_at?: string | null;
           plan_started_at?: string | null;
           plan_status?: string;
+          plan_tier?: string;
           shop_name: string;
           slug: string;
           stripe_customer_id?: string | null;
@@ -167,6 +171,7 @@ export type Database = {
         Update: {
           accent_color?: string | null;
           banner_url?: string | null;
+          billing_interval?: string;
           created_at?: string;
           custom_domain?: string | null;
           description?: string | null;
@@ -177,6 +182,7 @@ export type Database = {
           plan_expires_at?: string | null;
           plan_started_at?: string | null;
           plan_status?: string;
+          plan_tier?: string;
           shop_name?: string;
           slug?: string;
           stripe_customer_id?: string | null;

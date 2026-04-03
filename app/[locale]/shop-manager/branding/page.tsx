@@ -2,8 +2,10 @@
 
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { revalidateShop } from "@/app/actions/revalidate";
 import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import type { SellerTier } from "@/lib/pricing-config";
 import BrandingForm, {
   type BrandingState,
 } from "../../dashboard/dealer/branding-form";
@@ -62,6 +64,8 @@ export default function ShopBrandingPage() {
       toast.error("Failed to save changes", { description: error.message });
     } else {
       toast.success("Shop branding updated");
+      // Bust the public shop page cache so changes appear immediately
+      await revalidateShop();
       refresh();
       router.refresh();
     }
@@ -92,6 +96,7 @@ export default function ShopBrandingPage() {
         .eq("id", shop.id);
 
       setBranding((prev) => ({ ...prev, bannerUrl: urlWithCacheBust }));
+      await revalidateShop();
       toast.success("Banner uploaded");
     } catch {
       toast.error("Banner upload failed");
@@ -106,6 +111,7 @@ export default function ShopBrandingPage() {
       .update({ banner_url: null })
       .eq("id", shop.id);
     setBranding((prev) => ({ ...prev, bannerUrl: "" }));
+    await revalidateShop();
     toast.success("Banner removed");
   }
 
@@ -115,6 +121,7 @@ export default function ShopBrandingPage() {
       saving={saving}
       bannerUploading={bannerUploading}
       slugLocked={!!shop?.slug}
+      planTier={(shop?.plan_tier as SellerTier) || "pro"}
       onChange={handleBrandingChange}
       onBannerUploadAction={handleBannerUpload}
       onBannerRemoveAction={handleBannerRemove}

@@ -86,12 +86,22 @@ export default function ShopClient({
   const [sort, setSort] = useState<SortOption>("newest");
   const [copied, setCopied] = useState(false);
 
+  const planTier = (shop.plan_tier as "starter" | "pro" | "business") || "pro";
+  const isBusiness = planTier === "business";
+
   const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);
   const gradientStart = isValidHex ? accentColor : "#8E7A6B";
   const gradientEnd = isValidHex
     ? adjustBrightness(accentColor, -25)
     : "#7A6657";
+
+  const badgeLabel = isBusiness ? "Verified Business Seller" : "Verified Pro Seller";
+  const badgeGradient = isBusiness
+    ? "linear-gradient(135deg, #b45309, #92400e)"
+    : `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`;
+  const statusLabel = isBusiness ? "BUSINESS" : "PRO";
+  const statusColor = isBusiness ? "#b45309" : gradientStart;
   const accentRgb = isValidHex ? hexToRgb(accentColor) : "142, 122, 107";
 
   const memberSince = useMemo(() => {
@@ -228,12 +238,10 @@ export default function ShopClient({
                   {profile?.verified && (
                     <span
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-xs font-semibold w-fit"
-                      style={{
-                        background: `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`,
-                      }}
+                      style={{ background: badgeGradient }}
                     >
                       <ShieldCheck className="w-3.5 h-3.5" />
-                      Verified Pro Seller
+                      {badgeLabel}
                     </span>
                   )}
                 </div>
@@ -369,9 +377,9 @@ export default function ShopClient({
                 <div className="text-xl md:text-2xl font-bold text-[#1a1a1a] flex items-center justify-center gap-1">
                   <ShieldCheck
                     className="w-5 h-5"
-                    style={{ color: gradientStart }}
+                    style={{ color: statusColor }}
                   />
-                  PRO
+                  {statusLabel}
                 </div>
                 <div className="text-[11px] md:text-xs text-[#6b6560] mt-0.5 font-medium">
                   Seller Status

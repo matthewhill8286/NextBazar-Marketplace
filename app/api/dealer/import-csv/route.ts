@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -96,16 +97,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Verify Pro Seller status
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("is_pro_seller")
-      .eq("id", user.id)
+    // Verify Business tier (CSV import is Business-only)
+    const { data: shop } = await supabase
+      .from("dealer_shops")
+      .select("plan_tier, plan_status")
+      .eq("user_id", user.id)
       .single();
 
-    if (!profile?.is_pro_seller) {
+    const limits = getPlanLimits(shop?.plan_tier ?? "starter");
+
+    if (!shop || shop.plan_status !== "active" || !limits.csvImport) {
       return NextResponse.json(
-        { error: "Only Pro Sellers can bulk import listings" },
+        { error: "CSV import requires a Business plan" },
         { status: 403 },
       );
     }

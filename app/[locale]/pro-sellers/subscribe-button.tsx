@@ -4,16 +4,23 @@ import { ArrowRight, CreditCard, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
+import type { SellerTier } from "@/lib/pricing-config";
 
 type Props = {
   label: string;
   /** "primary" = taupe bg, "white" = white bg (for use on dark sections) */
   variant?: "primary" | "white";
+  /** Which seller plan tier to subscribe to (default: "pro") */
+  tier?: SellerTier;
+  /** Billing cycle (default: "monthly") */
+  billing?: "monthly" | "yearly";
 };
 
 export default function DealersSubscribeButton({
   label,
   variant = "primary",
+  tier = "pro",
+  billing = "monthly",
 }: Props) {
   const router = useRouter();
   const { userId } = useAuth();
@@ -31,7 +38,11 @@ export default function DealersSubscribeButton({
       const res = await fetch("/api/dealer/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ origin: window.location.origin }),
+        body: JSON.stringify({
+          origin: window.location.origin,
+          tier,
+          billing,
+        }),
       });
       const { url, error } = await res.json();
       if (url) {
