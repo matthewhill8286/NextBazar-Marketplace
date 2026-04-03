@@ -132,7 +132,8 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         ].map((item) => {
           const isActive =
             pathname === item.href ||
-            (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            (item.href !== "/dashboard" &&
+              pathname.startsWith(item.href + "/"));
           return (
             <Link
               key={item.href}

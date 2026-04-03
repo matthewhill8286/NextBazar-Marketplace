@@ -1,11 +1,13 @@
 import Stripe from "stripe";
 import { getPricingMap } from "@/lib/supabase/queries";
+import type { SellerTier } from "@/lib/pricing-config";
+import { SELLER_PLANS } from "@/lib/pricing-config";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
 });
 
-// ─── DB-driven pricing helpers ──────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────
 
 export type PromotionType = "featured" | "urgent";
 
@@ -17,13 +19,21 @@ export type PromotionPriceInfo = {
   duration: number; // days
 };
 
-export type DealerPlanInfo = {
+export type SellerPlanInfo = {
   priceId: string;
+  dbKey: string;
   name: string;
   description: string;
   amount: number; // cents
   interval: "month" | "year";
+  tier: SellerTier;
+  billingCycle: "monthly" | "yearly";
 };
+
+// Keep the old type for backward compat with /api/pricing consumers
+export type DealerPlanInfo = SellerPlanInfo;
+
+// ─── Promotion helpers ─────────────────────────────────────────────────────
 
 /** Fetch promotion prices from the DB pricing table. */
 export async function getPromotionPrices(): Promise<
@@ -54,23 +64,64 @@ export async function getPromotionPrices(): Promise<
   };
 }
 
-/** Fetch dealer plan pricing from the DB pricing table. */
-export async function getDealerPlan(): Promise<DealerPlanInfo> {
+// ─── Seller plan helpers ───────────────────────────────────────────────────
+
+/**
+ * Resolve a specific seller plan from the DB pricing table.
+ * @param tier     - "starter" | "pro" | "business"
+ * @param billing  - "monthly" | "yearly"
+ */
+export async function getSellerPlan(
+  tier: SellerTier = "pro",
+  billing: "monthly" | "yearly" = "monthly",
+): Promise<SellerPlanInfo> {
+  const config = SELLER_PLANS.find((p) => p.key === tier);
+  if (!config) throw new Error(`Unknown seller tier: ${tier}`);
+
+  const dbKey = billing === "monthly" ? config.dbKeyMonthly : config.dbKeyYearly;
   const map = await getPricingMap();
-  // biome-ignore lint/complexity/useLiteralKeys: this is fine
-  const dealer = map["dealer_pro"];
+  const row = map[dbKey];
+
+  const stripeInterval: "month" | "year" =
+    billing === "yearly" ? "year" : "month";
+  const amount =
+    row?.amount ?? (billing === "monthly" ? config.monthlyAmount : config.yearlyAmount);
 
   return {
-    priceId:
-      dealer?.stripe_price_id ?? process.env.STRIPE_DEALER_PRICE_ID ?? "",
-    name: dealer?.name ?? "Dealer Pro",
-    description:
-      dealer?.description ??
-      "Unlimited listings, branded shop page, analytics & inventory tools",
-    amount: dealer?.amount ?? 3500,
-    interval: (dealer?.interval as "month" | "year") ?? "month",
+    priceId: row?.stripe_price_id ?? "",
+    dbKey,
+    name: row?.name ?? config.name,
+    description: row?.description ?? config.tagline,
+    amount,
+    interval: stripeInterval,
+    tier,
+    billingCycle: billing,
   };
 }
+
+/** Backward-compat alias — returns the Pro monthly plan. */
+export async function getDealerPlan(): Promise<DealerPlanInfo> {
+  return getSellerPlan("pro", "monthly");
+}
+
+/**
+ * Fetch ALL active seller plans from the DB for the pricing page.
+ * Returns an array with monthly + yearly variants for Pro and Business.
+ */
+export async function getAllSellerPlans(): Promise<SellerPlanInfo[]> {
+  const tiers: SellerTier[] = ["pro", "business"];
+  const cycles: ("monthly" | "yearly")[] = ["monthly", "yearly"];
+  const plans: SellerPlanInfo[] = [];
+
+  for (const tier of tiers) {
+    for (const cycle of cycles) {
+      plans.push(await getSellerPlan(tier, cycle));
+    }
+  }
+  return plans;
+}
+
+// ─── Formatting ────────────────────────────────────────────────────────────
 
 /** Format cents to display string, e.g. 999 → "€9.99" */
 export function formatPrice(amountCents: number, currency = "EUR"): string {
@@ -87,16 +138,27 @@ export function formatPrice(amountCents: number, currency = "EUR"): string {
 
 // ─── Serializable pricing for client components ─────────────────────────────
 
+export type ClientSellerPlan = {
+  tier: SellerTier;
+  name: string;
+  price: string;
+  amount: number;
+  interval: string;
+  billingCycle: "monthly" | "yearly";
+};
+
 export type ClientPricing = {
   featured: { price: string; amount: number; duration: number; name: string };
   urgent: { price: string; amount: number; duration: number; name: string };
   dealer: { price: string; amount: number; interval: string; name: string };
+  sellerPlans: ClientSellerPlan[];
 };
 
 /** Fetch all pricing and return a serializable object for client components. */
 export async function getClientPricing(): Promise<ClientPricing> {
   const promos = await getPromotionPrices();
   const dealer = await getDealerPlan();
+  const allPlans = await getAllSellerPlans();
 
   return {
     featured: {
@@ -117,5 +179,13 @@ export async function getClientPricing(): Promise<ClientPricing> {
       interval: dealer.interval,
       name: dealer.name,
     },
+    sellerPlans: allPlans.map((p) => ({
+      tier: p.tier,
+      name: p.name,
+      price: formatPrice(p.amount),
+      amount: p.amount,
+      interval: p.interval,
+      billingCycle: p.billingCycle,
+    })),
   };
 }

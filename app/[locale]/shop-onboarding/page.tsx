@@ -42,10 +42,17 @@ export default async function ShopOnboardingPage({
   ]);
 
   const isActive = shop?.plan_status === "active";
+  const hasConfiguredShop = !!shop?.shop_name;
 
   // If no active plan and no Stripe session to verify, send back to /pro-sellers
   if (!isActive && !stripeSessionId) {
     redirect("/pro-sellers");
+  }
+
+  // If the user already has a configured shop (upgrading from free/pro to
+  // business), skip onboarding entirely and go to the dashboard.
+  if (hasConfiguredShop && isActive) {
+    redirect("/dashboard?upgraded=true");
   }
 
   const wizardProps = {

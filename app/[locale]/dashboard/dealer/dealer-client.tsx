@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowUpRight,
   BarChart2,
   CreditCard,
   DollarSign,
@@ -15,8 +16,11 @@ import {
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { revalidateShop } from "@/app/actions/revalidate";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { ClientPricing } from "@/lib/stripe";
+import type { SellerTier } from "@/lib/pricing-config";
+import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
 import AnalyticsTab from "./analytics-tab";
@@ -70,8 +74,10 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   const [subscribing, setSubscribing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [verifying, setVerifying] = useState(false);
-  const [dealerPrice, setDealerPrice] = useState("€25");
-  const [dealerInterval, setDealerInterval] = useState("month");
+
+  // Plan awareness
+  const planTier = (shop?.plan_tier as SellerTier) || "starter";
+  const limits = getPlanLimits(planTier);
 
   // Branding form state
   const [branding, setBranding] = useState<BrandingState>({
@@ -93,31 +99,35 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   );
 
   const isActive = shop?.plan_status === "active";
+  const isPaid = isActive && (planTier === "pro" || planTier === "business");
 
   // ─── Counts for tab badges ──────────────────────────────────────────
   const pendingOffersBadge = ""; // loaded dynamically in OffersTab
   const unreadMsgBadge = ""; // loaded dynamically in MessagesTab
   const soldCount = listings.filter((l) => l.status === "sold").length;
 
-  // ─── Fetch pricing from DB ──────────────────────────────────────────
-  useEffect(() => {
-    fetch("/api/pricing")
-      .then((r) => r.json())
-      .then((p: ClientPricing) => {
-        if (p?.dealer) {
-          setDealerPrice(p.dealer.price);
-          setDealerInterval(p.dealer.interval);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
   // ─── Post-checkout verification ─────────────────────────────────────
+  // Show upgrade success toast when redirected back after plan change
+  useEffect(() => {
+    if (searchParams.get("upgraded") === "true") {
+      toast.success("Plan upgraded!", {
+        description: `You're now on the ${limits.tierLabel} plan.`,
+      });
+      // Clean up query param without a full reload
+      const url = new URL(window.location.href);
+      url.searchParams.delete("upgraded");
+      url.searchParams.delete("session_id");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
+  }, [searchParams, limits.tierLabel]);
+
   useEffect(() => {
     const isSetup = searchParams.get("setup") === "true";
     const sessionId = searchParams.get("session_id");
 
-    if (isSetup && sessionId && !shop?.plan_status) {
+    const isUpgrade = searchParams.get("upgraded") === "true";
+
+    if ((isSetup || isUpgrade) && sessionId) {
       setVerifying(true);
       fetch("/api/dealer/verify-session", {
         method: "POST",
@@ -138,13 +148,17 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   }, [searchParams, shop?.plan_status, router]);
 
   // ─── Actions ────────────────────────────────────────────────────────
-  async function handleSubscribe() {
+  async function handleSubscribe(tier: SellerTier, billing: "monthly" | "yearly") {
     setSubscribing(true);
     try {
       const res = await fetch("/api/dealer/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ origin: window.location.origin }),
+        body: JSON.stringify({
+          origin: window.location.origin,
+          tier,
+          billing,
+        }),
       });
       const data = await res.json();
       if (data.url) window.location.href = data.url;
@@ -154,13 +168,25 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   }
 
   async function handleManageBilling() {
-    const res = await fetch("/api/dealer/portal", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ origin: window.location.origin }),
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
+    try {
+      const res = await fetch("/api/dealer/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origin: window.location.origin }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error("Could not open billing portal", {
+          description: data.error || "Please try again later.",
+        });
+      }
+    } catch {
+      toast.error("Network error", {
+        description: "Could not reach the server. Please try again.",
+      });
+    }
   }
 
   async function handleSaveBranding() {
@@ -178,6 +204,7 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
         instagram: branding.instagram || null,
       })
       .eq("id", shop.id);
+    await revalidateShop();
     setSaving(false);
     router.refresh();
   }
@@ -185,11 +212,9 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   // ─── Conditional renders ───────────────────────────────────────────
   if (verifying) return <VerifyingSpinner />;
 
-  if (!isActive) {
+  if (!isPaid) {
     return (
       <ProSellerCTA
-        dealerPrice={dealerPrice}
-        dealerInterval={dealerInterval}
         subscribing={subscribing}
         onSubscribeAction={handleSubscribe}
       />
@@ -214,16 +239,30 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
             />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
-              {branding.shopName || "Your Shop"}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl md:text-2xl font-bold text-[#1a1a1a]">
+                {branding.shopName || "Your Shop"}
+              </h1>
+              <span className="text-[10px] font-bold tracking-[0.1em] uppercase bg-[#8E7A6B]/10 text-[#8E7A6B] px-2 py-0.5">
+                {limits.tierLabel}
+              </span>
+            </div>
             <p className="text-sm text-[#6b6560]">
-              Pro Seller CMS &mdash; manage your brand, inventory, sales &amp;
-              analytics
+              {limits.tierLabel} Seller CMS &mdash; manage your brand, inventory,
+              sales &amp; analytics
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {planTier !== "business" && (
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-800 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 transition-colors"
+            >
+              <ArrowUpRight className="w-3.5 h-3.5" />
+              Upgrade
+            </Link>
+          )}
           <Link
             href={`/shop/${branding.slug}`}
             className="inline-flex items-center gap-1.5 text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] px-3 py-2 hover:bg-[#f0eeeb] transition-colors"
@@ -240,6 +279,25 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
           </button>
         </div>
       </div>
+
+      {/* Plan limits bar */}
+      {limits.activeListings !== "unlimited" && (
+        <div className="bg-amber-50 border border-amber-200 px-4 py-2.5 flex items-center justify-between text-sm">
+          <span className="text-amber-800">
+            <strong>
+              {listings.filter((l) => l.status === "active").length}
+            </strong>{" "}
+            / {limits.activeListings} active listings used
+          </span>
+          <Link
+            href="/pricing"
+            className="text-amber-700 font-medium hover:text-amber-900 flex items-center gap-1"
+          >
+            Upgrade for unlimited
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
 
       {/* Tabs — scrollable on mobile */}
       <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
@@ -277,7 +335,9 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
         <OverviewTab listings={listings} slug={branding.slug} />
       )}
 
-      {tab === "inventory" && <InventoryTab listings={listings} />}
+      {tab === "inventory" && (
+        <InventoryTab listings={listings} planTier={planTier} />
+      )}
 
       {tab === "sales" && <SalesTab listings={listings} />}
 
@@ -285,13 +345,16 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
 
       {tab === "messages" && <MessagesTab />}
 
-      {tab === "analytics" && <AnalyticsTab listings={listings} />}
+      {tab === "analytics" && (
+        <AnalyticsTab listings={listings} planTier={planTier} />
+      )}
 
       {tab === "branding" && (
         <BrandingForm
           state={branding}
           saving={saving}
           bannerUploading={false}
+          planTier={planTier}
           onChange={handleBrandingChange}
           onBannerUploadAction={() => {}}
           onBannerRemoveAction={() => {}}

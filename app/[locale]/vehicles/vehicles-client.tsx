@@ -362,6 +362,11 @@ export default function VehiclesClient({
           />
         )}
 
+        {/* ── Price Insights ──────────────────────────────────────────── */}
+        {showVehicleFeatures && allDisplayListings.length > 0 && (
+          <PriceInsights listings={allDisplayListings} />
+        )}
+
         {/* ── Featured Listings ────────────────────────────────────────── */}
         {displayFeatured.length > 0 && (
           <section className="mb-12">
@@ -406,11 +411,6 @@ export default function VehiclesClient({
               })}
             </div>
           </section>
-        )}
-
-        {/* ── Price Insights (new) ───────────────────────────────────── */}
-        {showVehicleFeatures && allDisplayListings.length > 0 && (
-          <PriceInsights listings={allDisplayListings} />
         )}
 
         {/* ── Listings by Location ─────────────────────────────────────── */}

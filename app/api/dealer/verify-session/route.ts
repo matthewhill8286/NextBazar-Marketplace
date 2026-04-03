@@ -70,6 +70,10 @@ export async function POST(request: NextRequest) {
         ? session.subscription
         : ((session.subscription as { id: string } | null)?.id ?? null);
 
+    // Extract plan tier + billing from session metadata
+    const planTier = session.metadata?.plan_tier || "pro";
+    const billingInterval = session.metadata?.billing_interval || "monthly";
+
     // Check if shop already exists (webhook might have already handled it)
     const { data: existingShop } = await supabaseAdmin
       .from("dealer_shops")
@@ -93,6 +97,8 @@ export async function POST(request: NextRequest) {
           stripe_customer_id: customerId,
           stripe_subscription_id: subscriptionId,
           plan_status: "active",
+          plan_tier: planTier,
+          billing_interval: billingInterval,
           plan_started_at: new Date().toISOString(),
         },
         { onConflict: "user_id" },
@@ -116,7 +122,7 @@ export async function POST(request: NextRequest) {
       console.error("verify-session: Failed to update profile:", profileError);
     }
 
-    return NextResponse.json({ status: "activated" });
+    return NextResponse.json({ status: "activated", plan_tier: planTier });
   } catch (err: unknown) {
     console.error("verify-session error:", err);
     return NextResponse.json(

@@ -21,6 +21,7 @@ type Props = {
   visibleSubcategories: Subcategory[];
   aiLoading: boolean;
   aiFilled: boolean;
+  maxImages?: number;
   onImagesChangeAction: (imgs: UploadedImage[]) => void;
   onAiAutofillAction: () => void;
   onUpdateAction: (key: string, value: string) => void;
@@ -36,6 +37,7 @@ export default function PostStep1({
   visibleSubcategories,
   aiLoading,
   aiFilled,
+  maxImages,
   onImagesChangeAction,
   onAiAutofillAction,
   onUpdateAction,
@@ -61,6 +63,7 @@ export default function PostStep1({
           userId={userId}
           images={images}
           onChangeAction={onImagesChangeAction}
+          {...(maxImages ? { maxImages } : {})}
         />
       ) : (
         <div className="border-2 border-dashed border-[#e8e6e3] p-8 text-center bg-white">
