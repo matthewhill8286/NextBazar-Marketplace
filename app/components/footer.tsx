@@ -160,6 +160,14 @@ export default function Footer() {
                   {t("safetyTips")}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/pricing"
+                  className="hover:text-white transition-colors"
+                >
+                  Pricing
+                </Link>
+              </li>
               {FEATURE_FLAGS.DEALERS_PAGE && (
                 <li>
                   <Link

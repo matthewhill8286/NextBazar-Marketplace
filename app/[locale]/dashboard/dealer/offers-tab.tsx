@@ -17,7 +17,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { OfferRow } from "./types";
 import { OFFER_STATUS_BADGE } from "./types";
 
-type OfferFilter = "all" | "pending" | "accepted" | "rejected" | "countered" | "expired";
+type OfferFilter = "all" | "pending" | "accepted" | "declined" | "countered" | "expired";
 
 export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) {
   const { userId } = useAuth();
@@ -76,7 +76,7 @@ export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) 
     setActionLoadingId(offerId);
     await supabase
       .from("offers")
-      .update({ status: "rejected", responded_at: new Date().toISOString() })
+      .update({ status: "declined", responded_at: new Date().toISOString() })
       .eq("id", offerId);
     await loadOffers();
     setActionLoadingId(null);
@@ -170,7 +170,7 @@ export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) 
             { key: "pending", label: `Pending (${pendingCount})` },
             { key: "accepted", label: "Accepted" },
             { key: "countered", label: "Countered" },
-            { key: "rejected", label: "Rejected" },
+            { key: "declined", label: "Declined" },
             { key: "expired", label: "Expired" },
           ] as const
         ).map((f) => (
