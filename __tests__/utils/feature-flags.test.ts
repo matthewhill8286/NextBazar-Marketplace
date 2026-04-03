@@ -25,8 +25,8 @@ describe("FEATURE_FLAGS", () => {
     expect(FEATURE_FLAGS.DEALERS_PAGE).toBe(true);
   });
 
-  it("has LANGUAGE_SWITCHER disabled", () => {
-    expect(FEATURE_FLAGS.LANGUAGE_SWITCHER).toBe(false);
+  it("has LANGUAGE_SWITCHER enabled", () => {
+    expect(FEATURE_FLAGS.LANGUAGE_SWITCHER).toBe(true);
   });
 
   it("has CRYPTO_PAYMENTS disabled", () => {
