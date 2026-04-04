@@ -20,15 +20,20 @@ export default function Footer() {
             >
               Stay in the loop
             </h3>
-            <p className="text-[11px] text-white/40 tracking-wide">
+            <p className="text-[11px] text-white/60 tracking-wide">
               New listings, deals, and marketplace updates.
             </p>
           </div>
           <div className="flex gap-0 w-full md:w-auto">
+            <label htmlFor="footer-newsletter" className="sr-only">
+              Email address for newsletter
+            </label>
             <input
+              id="footer-newsletter"
               type="email"
               placeholder="Your email"
-              className="bg-white/5 border border-white/10 text-white text-sm px-5 py-3 w-full md:w-72 placeholder:text-white/30 outline-none focus:border-white/30 transition-colors"
+              aria-label="Email address for newsletter"
+              className="bg-white/5 border border-white/10 text-white text-sm px-5 py-3 w-full md:w-72 placeholder:text-white/40 outline-none focus-visible:border-white/40 focus-visible:ring-2 focus-visible:ring-white/10 transition-colors"
             />
             <button className="bg-white text-[#1a1a1a] px-6 py-3 text-[10px] font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] transition-colors shrink-0">
               Subscribe

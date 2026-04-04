@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { AuthIllustration } from "@/app/components/illustrations";
 import { Link } from "@/i18n/navigation";
+import { buildAlternates } from "@/lib/seo";
 import { getTranslator } from "@/lib/translations";
 import SignupForm from "./signup-form";
+
+export const metadata: Metadata = {
+  title: "Sign Up",
+  description:
+    "Create your free NextBazar account. Buy, sell, and connect with trusted sellers across Cyprus.",
+  alternates: buildAlternates("/auth/signup"),
+};
 
 export default async function SignupPage({
   params,

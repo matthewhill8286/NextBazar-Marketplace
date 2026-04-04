@@ -52,7 +52,10 @@ function makeWebhookRequest(event: object, sig = "test-sig"): NextRequest {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  delete process.env.STRIPE_WEBHOOK_SECRET;
+  // Webhook secret must be set — handler rejects unsigned payloads
+  process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+  // By default, constructEvent returns the raw parsed event
+  mockConstructEvent.mockImplementation((body: string) => JSON.parse(body));
 
   // Default chain: from() → update()/upsert() → eq() resolves
   mockFrom.mockImplementation(() => ({

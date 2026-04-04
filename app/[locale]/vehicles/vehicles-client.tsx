@@ -335,6 +335,18 @@ export default function VehiclesClient({
                   </span>{" "}
                   Business sellers
                 </div>
+                {tabStats.avgPrice > 0 && (
+                  <>
+                    <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+                    <div className="flex items-center gap-2 text-[#666]">
+                      <TrendingUp className="w-4 h-4 text-[#8a8280]" />
+                      {t("avgPrice")}{" "}
+                      <span className="font-semibold text-[#1a1a1a]">
+                        &euro;{tabStats.avgPrice.toLocaleString()}
+                      </span>
+                    </div>
+                  </>
+                )}
               </>
             ) : (
               <>

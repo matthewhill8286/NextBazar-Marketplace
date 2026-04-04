@@ -11,7 +11,13 @@ export async function proxy(request: NextRequest) {
 
   // Skip locale routing for API routes and static assets
   const isApi = pathname.startsWith("/api");
-  const isStatic = /\.(svg|png|jpg|jpeg|gif|webp|ico|css|js)$/.test(pathname);
+  const isStatic =
+    /\.(svg|png|jpg|jpeg|gif|webp|ico|css|js|webmanifest)$/.test(pathname);
+
+  // Let Next.js handle the manifest route directly — no middleware processing
+  if (pathname === "/manifest.webmanifest") {
+    return NextResponse.next();
+  }
 
   // Run next-intl middleware first to resolve locale headers & redirects
   let intlResponse: NextResponse | undefined;
@@ -63,27 +69,46 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getUser();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   // Strip locale prefix to check the actual route
   const localePattern = /^\/(en|el|ru)(\/|$)/;
   const strippedPath = pathname.replace(localePattern, "/");
 
-  if (
-    !user &&
-    (strippedPath.startsWith("/post") ||
-      strippedPath.startsWith("/messages") ||
-      strippedPath.startsWith("/dashboard"))
-  ) {
-    const url = request.nextUrl.clone();
-    const locale = pathname.match(localePattern)?.[1] ?? "en";
-    url.pathname = `/${locale}/auth/login`;
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
+  // Only call getUser() when we actually need auth (protected routes).
+  // This avoids a blocking Supabase round-trip on every public page load.
+  const needsAuth =
+    strippedPath.startsWith("/post") ||
+    strippedPath.startsWith("/messages") ||
+    strippedPath.startsWith("/dashboard") ||
+    strippedPath.startsWith("/shop-manager") ||
+    strippedPath.startsWith("/shop-onboarding");
+
+  if (needsAuth) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (
+      !user &&
+      (strippedPath.startsWith("/post") ||
+        strippedPath.startsWith("/messages") ||
+        strippedPath.startsWith("/dashboard"))
+    ) {
+      const url = request.nextUrl.clone();
+      const locale = pathname.match(localePattern)?.[1] ?? "en";
+      url.pathname = `/${locale}/auth/login`;
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
+    }
+  } else {
+    // For public routes, still refresh the session cookie (non-blocking for
+    // the page render since middleware runs before the page), but only if
+    // there's already a session cookie present.
+    const hasSession = request.cookies
+      .getAll()
+      .some((c) => c.name.startsWith("sb-"));
+    if (hasSession) {
+      await supabase.auth.getUser();
+    }
   }
 
   return supabaseResponse;
@@ -91,6 +116,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

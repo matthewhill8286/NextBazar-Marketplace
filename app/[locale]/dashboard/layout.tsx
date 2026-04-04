@@ -7,7 +7,12 @@ import SidebarServer from "./sidebar-server";
 import SidebarSkeleton from "./sidebar-skeleton";
 
 export const metadata: Metadata = {
-  title: "Dashboard — NextBazar",
+  title: {
+    default: "Dashboard",
+    template: "%s — Dashboard | NextBazar",
+  },
+  description: "Manage your NextBazar listings, messages, and account settings.",
+  robots: { index: false, follow: false },
 };
 
 export default async function DashboardLayout({

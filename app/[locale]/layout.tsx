@@ -4,11 +4,15 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { type ReactNode, Suspense } from "react";
 import { Toaster } from "sonner";
+import Analytics from "@/app/components/analytics";
 import CompareBar from "@/app/components/compare-bar";
+import CookieBanner from "@/app/components/cookie-banner";
 import Footer from "@/app/components/footer";
+import JsonLd from "@/app/components/json-ld";
 import Navbar from "@/app/components/navbar";
 import RealtimeToasts from "@/app/components/realtime-toasts";
 import { routing } from "@/i18n/routing";
+import { organizationJsonLd } from "@/lib/seo";
 import { AuthProvider } from "@/lib/auth-context";
 import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
@@ -23,8 +27,14 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nextbazar.com";
+
 export const metadata: Metadata = {
-  title: "NextBazar — Buy & Sell Anything in Cyprus",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "NextBazar — Buy & Sell Anything in Cyprus",
+    template: "%s | NextBazar",
+  },
   description:
     "The smarter marketplace. AI-powered search, instant messaging, and trusted sellers. Buy and sell vehicles, property, electronics, and more.",
   icons: {
@@ -44,6 +54,35 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "NextBazar",
+  },
+  openGraph: {
+    siteName: "NextBazar",
+    type: "website",
+    locale: "en_CY",
+    images: [
+      {
+        url: `${BASE_URL}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "NextBazar — Cyprus Marketplace",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [`${BASE_URL}/og-image.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    languages: {
+      en: `${BASE_URL}/en`,
+      el: `${BASE_URL}/el`,
+      ru: `${BASE_URL}/ru`,
+      "x-default": `${BASE_URL}/en`,
+    },
   },
 };
 
@@ -72,15 +111,25 @@ export default async function LocaleLayout({
     <Suspense>
       <html lang={locale} className={`h-full antialiased ${playfair.variable}`}>
         <body className="min-h-full flex flex-col bg-[#faf9f7]">
+          {/* Skip-to-content link — visible only on keyboard focus */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#8E7A6B] focus:text-white focus:text-sm focus:font-semibold focus:shadow-lg"
+          >
+            Skip to main content
+          </a>
+          <JsonLd data={organizationJsonLd()} />
           <NextIntlClientProvider locale={locale} messages={messages}>
             <AuthProvider>
               <SavedProvider>
                 <CompareProvider>
                   <Navbar />
-                  <main className="flex-1">{children}</main>
+                  <main id="main-content" className="flex-1">{children}</main>
                   <Footer />
                   <CompareBar />
                   <RealtimeToasts />
+                  <CookieBanner />
+                  <Analytics />
                   <Toaster
                     position="top-right"
                     visibleToasts={4}

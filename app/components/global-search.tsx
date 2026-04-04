@@ -293,6 +293,7 @@ export default function GlobalSearch() {
           {query ? (
             <button
               type="button"
+              aria-label="Clear search"
               onClick={() => {
                 setQuery("");
                 setResults([]);
@@ -336,6 +337,7 @@ export default function GlobalSearch() {
                     </button>
                     <button
                       type="button"
+                      aria-label={`Remove "${term}" from recent searches`}
                       onClick={() => removeRecent(term)}
                       className="p-1 text-[#8a8280] hover:text-[#666] opacity-0 group-hover:opacity-100 transition-all shrink-0"
                     >

@@ -73,16 +73,13 @@ export default function AdminReportsPage() {
         return;
       }
 
-      // Simple admin check — only allow specific emails
-      // Replace with your actual admin email(s) or a proper role check
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_pro_seller")
-        .eq("id", user.id)
-        .single();
+      // Admin check — verify user email is in the allow-list
+      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
+        .split(",")
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
 
-      // TODO: replace this with a proper admin check once you add an is_admin column
-      if (!profile) {
+      if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
         router.push("/");
         return;
       }
