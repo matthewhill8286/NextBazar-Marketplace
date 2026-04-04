@@ -387,7 +387,7 @@ export async function getCategoryStatsCached(categoryId: string) {
 
 /** Public-safe subset — exclude Stripe secrets. */
 const SHOP_CARD_SELECT =
-  "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, plan_status, created_at";
+  "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, plan_status, plan_tier, created_at";
 
 export type ShopCardRow = {
   id: string;
@@ -399,6 +399,7 @@ export type ShopCardRow = {
   banner_url: string | null;
   accent_color: string | null;
   plan_status: string;
+  plan_tier: string;
   created_at: string;
   listing_count: number;
   profile: {

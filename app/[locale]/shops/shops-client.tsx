@@ -153,7 +153,7 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
 
 /* ── Individual Shop Card ─────────────────────────────────────────────────── */
 
-function ShopCard({ shop, locale }: { shop: ShopCardRow; locale: string }) {
+export function ShopCard({ shop, locale }: { shop: ShopCardRow; locale: string }) {
   const t = useTranslations("shops");
   const accentColor = shop.accent_color || "#8E7A6B";
   const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(accentColor);

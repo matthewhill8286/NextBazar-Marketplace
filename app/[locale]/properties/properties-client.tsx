@@ -7,11 +7,13 @@ import {
   Clock,
   Hammer,
   Key,
+  LandPlot,
   type LucideIcon,
   MapPin,
   Plus,
   Search,
   TrendingUp,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -49,8 +51,8 @@ const TABS: TabConfig[] = [
     label: "Buy",
     icon: Building2,
     description:
-      "Find your dream home — browse apartments, houses, villas, land plots, and commercial properties for sale across Cyprus.",
-    subcategorySlugs: ["for-sale", "commercial", "land"],
+      "Find your dream home — browse apartments, houses, villas, and commercial properties for sale across Cyprus.",
+    subcategorySlugs: ["for-sale", "commercial"],
   },
   {
     key: "rent",
@@ -59,6 +61,14 @@ const TABS: TabConfig[] = [
     description:
       "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets across Cyprus.",
     subcategorySlugs: ["for-rent"],
+  },
+  {
+    key: "land",
+    label: "Land",
+    icon: LandPlot,
+    description:
+      "Browse residential and agricultural land plots across Cyprus — build your dream home or invest in development opportunities.",
+    subcategorySlugs: ["land"],
   },
   {
     key: "new-developments",
@@ -137,6 +147,7 @@ export default function PropertiesClient({
   const t = useTranslations("categoryLanding");
   const [activeTab, setActiveTab] = useState(TABS[0]?.key ?? "");
   const [filters, setFilters] = useState<PropertyFilterState>(EMPTY_FILTERS);
+  const [showInsightsModal, setShowInsightsModal] = useState(false);
 
   const activeTabConfig = TABS.find((tab) => tab.key === activeTab);
 
@@ -230,15 +241,8 @@ export default function PropertiesClient({
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/search?category=${categorySlug}`}
-                className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/90 transition-colors"
-              >
-                <Search className="w-4 h-4" />
-                {t("browseAll", { categoryName: "Properties" })}
-              </Link>
-              <Link
                 href="/post"
-                className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/10 transition-colors"
+                className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 List a Property
@@ -306,26 +310,12 @@ export default function PropertiesClient({
           })}
         </div>
 
-        {/* ── Active Tab Description + Subcategory Pills ──────────────── */}
+        {/* ── Active Tab Description ──────────────────────────────── */}
         {activeTabConfig && (
-          <div className="mb-8">
-            <p className="text-[#6b6560] text-sm mb-4">
+          <div className="mb-6">
+            <p className="text-[#6b6560] text-sm">
               {activeTabConfig.description}
             </p>
-            {tabSubcategories.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tabSubcategories.map((sc) => (
-                  <Link
-                    key={sc.id}
-                    href={`/search?category=${categorySlug}&subcategory=${sc.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-[#faf9f7] text-[#666] border border-[#e8e6e3] hover:bg-[#f0eeeb] hover:border-[#ccc] transition-colors"
-                  >
-                    {sc.name}
-                    <ArrowRight className="w-3 h-3 text-[#8a8280]" />
-                  </Link>
-                ))}
-              </div>
-            )}
           </div>
         )}
 
@@ -390,11 +380,6 @@ export default function PropertiesClient({
               })}
             </div>
           </section>
-        )}
-
-        {/* ── Price Insights ─────────────────────────────────────────── */}
-        {allDisplayListings.length > 0 && (
-          <PropertyPriceInsights listings={allDisplayListings} />
         )}
 
         {/* ── Listings by Location ─────────────────────────────────────── */}
@@ -535,6 +520,56 @@ export default function PropertiesClient({
           </div>
         </section>
       </div>
+
+      {/* ── Floating Price Insights button (bottom-right) ────────────── */}
+      {allDisplayListings.length > 0 && (
+        <>
+          <button
+            onClick={() => setShowInsightsModal(true)}
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#2C2826] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#1a1a1a] transition-colors group"
+            title="Price Insights"
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span className="text-xs font-medium tracking-wide uppercase">
+              Price Insights
+            </span>
+          </button>
+
+          {/* Price Insights Modal */}
+          {showInsightsModal && (
+            <div
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              onClick={(e) => {
+                if (e.target === e.currentTarget)
+                  setShowInsightsModal(false);
+              }}
+            >
+              <div className="bg-white w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                <div className="sticky top-0 bg-white border-b border-[#e8e6e3] px-6 py-4 flex items-center justify-between z-10">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-[#8E7A6B]" />
+                    <h2
+                      className="text-lg font-light text-[#1a1a1a]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Price Insights
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setShowInsightsModal(false)}
+                    className="w-8 h-8 flex items-center justify-center text-[#8a8280] hover:text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-6">
+                  <PropertyPriceInsights listings={allDisplayListings} />
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </>
   );
 }

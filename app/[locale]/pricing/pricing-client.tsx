@@ -2,17 +2,24 @@
 
 import {
   ArrowRight,
+  BarChart2,
+  Bell,
   Check,
+  CheckCircle,
   Crown,
+  MessageCircle,
   Package,
   Rocket,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Star,
+  Tag,
   Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
+import { PRO_SELLER_FEATURE_GROUPS } from "@/app/[locale]/dashboard/dealer/pro-seller-features";
 import {
   BOOST_PACKAGES,
   BUYER_PLANS,
@@ -20,6 +27,9 @@ import {
   formatEur,
   yearlySavings,
 } from "@/lib/pricing-config";
+import PlanSelector from "./plan-selector";
+import PromoCodeInput from "./promo-code-input";
+import DealersSubscribeButton from "./subscribe-button";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -34,6 +44,87 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: "buyers", label: "Buyer+", icon: ShoppingBag },
 ];
 
+// ─── Seller features for grid ───────────────────────────────────────────────
+
+const SELLER_FEATURES = [
+  {
+    icon: Package,
+    title: "Unlimited listings",
+    desc: "List your entire inventory with no cap. Manage everything from one dashboard.",
+  },
+  {
+    icon: Rocket,
+    title: "Free Boosts every month",
+    desc: "Promote listings to the top of search results — Pro gets 3/mo, Business gets 10/mo.",
+  },
+  {
+    icon: BarChart2,
+    title: "Analytics dashboard",
+    desc: "Track views, saves, messages, and performance per listing. Know exactly what's working.",
+  },
+  {
+    icon: Tag,
+    title: "Branded shop page",
+    desc: "Your own custom URL, logo, banner, and accent colour — a professional storefront that builds trust.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Quick-reply templates",
+    desc: "Pre-written message templates so you can respond to buyers in seconds.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Verified dealer badge",
+    desc: "A verified badge on your profile and every listing builds buyer trust. Business plan exclusive.",
+  },
+  {
+    icon: Bell,
+    title: "Stock management & alerts",
+    desc: "Track inventory levels and get alerts when stock is low. Business plan exclusive.",
+  },
+  {
+    icon: Zap,
+    title: "AI listing descriptions",
+    desc: "Generate compelling, SEO-optimised descriptions for your listings with one click. Business plan exclusive.",
+  },
+];
+
+const COMPARISON_ROWS = [
+  { label: "Active listings", values: ["10", "Unlimited", "Unlimited"] },
+  { label: "Images per listing", values: ["2", "10", "20 + video"] },
+  { label: "Free Boosts / month", values: ["—", "3", "10"] },
+  { label: "Branded shop page", values: ["Basic", "Full", "Full"] },
+  { label: "Analytics", values: ["—", "✓", "Advanced"] },
+  { label: "CSV bulk import", values: ["—", "—", "✓"] },
+  { label: "Stock management", values: ["—", "—", "✓"] },
+  { label: "AI descriptions", values: ["—", "—", "✓"] },
+  { label: "Team members", values: ["1", "1", "Up to 5"] },
+  { label: "Support", values: ["Community", "Priority", "Dedicated"] },
+];
+
+const TESTIMONIALS = [
+  {
+    name: "Stavros P.",
+    role: "Used car seller, Limassol",
+    quote:
+      "Since upgrading to Pro our enquiries doubled within the first month. The analytics alone are worth it.",
+    initials: "SP",
+  },
+  {
+    name: "Maria K.",
+    role: "Electronics reseller, Nicosia",
+    quote:
+      "The branded shop page gives me a professional presence. Buyers trust me more and I close deals faster.",
+    initials: "MK",
+  },
+];
+
+const TIER_ICONS = {
+  starter: Star,
+  pro: Crown,
+  business: Sparkles,
+};
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export default function PricingClient() {
@@ -43,18 +134,39 @@ export default function PricingClient() {
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}
-      <section className="bg-[#1a1a1a] text-white py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="bg-white border-b border-[#e8e6e3]">
+        <div className="max-w-5xl mx-auto px-6 py-24 md:py-28 text-center">
+          <div className="w-14 h-14 bg-[#faf9f7] flex items-center justify-center mx-auto mb-6">
+            <Crown className="w-6 h-6 text-[#8E7A6B]" />
+          </div>
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
+            Pricing
+          </p>
           <h1
-            className="text-4xl md:text-5xl font-light mb-4"
+            className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-6 leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Simple, transparent pricing
           </h1>
-          <p className="text-lg text-white/70 max-w-2xl mx-auto">
+          <p className="text-lg text-[#6b6560] max-w-2xl mx-auto mb-6 leading-relaxed">
             Whether you&apos;re buying, selling, or running a dealership —
-            there&apos;s a plan that fits. No hidden fees.
+            there&apos;s a plan that fits. No hidden fees. Every paid plan
+            includes a 14-day money-back guarantee.
           </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-[#8a8280]">
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              No setup fees
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              Cancel anytime
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+              Secure Stripe payments
+            </span>
+          </div>
         </div>
       </section>
 
@@ -83,9 +195,7 @@ export default function PricingClient() {
 
       {/* Content area */}
       <div className="max-w-6xl mx-auto px-4 py-12">
-        {tab === "sellers" && (
-          <SellerSection billing={billing} onBillingChange={setBilling} />
-        )}
+        {tab === "sellers" && <SellerSection />}
         {tab === "boosts" && <BoostSection />}
         {tab === "buyers" && (
           <BuyerSection billing={billing} onBillingChange={setBilling} />
@@ -167,205 +277,222 @@ function BillingToggle({
   );
 }
 
-// ─── Seller Plans Section ───────────────────────────────────────────────────
+// ─── Seller Plans Section (merged from /pro-sellers) ────────────────────────
 
-function SellerSection({
-  billing,
-  onBillingChange,
-}: {
-  billing: BillingCycle;
-  onBillingChange: (b: BillingCycle) => void;
-}) {
+function SellerSection() {
   return (
     <div>
-      <div className="text-center mb-6">
+      {/* Plan cards with Stripe Checkout integration */}
+      <section className="max-w-5xl mx-auto -mt-2">
+        <PlanSelector />
+      </section>
+
+      {/* Promo code */}
+      <section className="max-w-md mx-auto py-8 text-center">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 border-t border-[#e8e6e3]" />
+          <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#8a8280]">
+            Have a promo code?
+          </span>
+          <div className="flex-1 border-t border-[#e8e6e3]" />
+        </div>
+        <PromoCodeInput />
+      </section>
+
+      {/* Features grid */}
+      <section className="max-w-5xl mx-auto py-16">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          What You Get
+        </p>
         <h2
-          className="text-2xl font-light text-[#1a1a1a] mb-2"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
-          Seller Plans
+          Built for serious sellers
         </h2>
-        <p className="text-[#6b6560]">
-          Tools to list, manage, and grow your sales on NextBazar
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e8e6e3]">
+          {SELLER_FEATURES.map((f) => (
+            <div key={f.title} className="bg-white p-7">
+              <div className="w-10 h-10 bg-[#faf9f7] flex items-center justify-center mb-4">
+                <f.icon className="w-5 h-5 text-[#8E7A6B]" />
+              </div>
+              <h3
+                className="font-light text-[#1a1a1a] mb-2"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {f.title}
+              </h3>
+              <p className="text-xs text-[#6b6560] leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Comparison table */}
+      <section className="max-w-4xl mx-auto pb-16">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          Compare Plans
         </p>
-      </div>
-
-      <BillingToggle billing={billing} onChange={onBillingChange} />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {SELLER_PLANS.map((plan) => {
-          const price =
-            billing === "monthly" ? plan.monthlyAmount : plan.yearlyMonthly;
-          const savings = yearlySavings(plan.monthlyAmount, plan.yearlyAmount);
-
-          return (
-            <div
-              key={plan.key}
-              className={`relative bg-white border p-6 flex flex-col ${
-                plan.popular
-                  ? "border-[#8E7A6B] shadow-lg shadow-[#8E7A6B]/10 scale-[1.02]"
-                  : "border-[#e8e6e3]"
-              }`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#8E7A6B] text-white text-[10px] font-bold tracking-[0.15em] uppercase px-4 py-1">
-                  Most Popular
-                </div>
-              )}
-
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold text-[#1a1a1a]">
-                  {plan.name}
-                </h3>
-                <p className="text-sm text-[#8a8280] mt-0.5">{plan.tagline}</p>
-              </div>
-
-              <div className="mb-6">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-[#1a1a1a]">
-                    {formatEur(price)}
-                  </span>
-                  {price > 0 && (
-                    <span className="text-sm text-[#8a8280]">/mo</span>
-                  )}
-                </div>
-                {billing === "yearly" && savings > 0 && (
-                  <p className="text-xs text-emerald-600 font-medium mt-1">
-                    Save {savings}% with yearly billing
-                  </p>
-                )}
-                {billing === "yearly" && plan.yearlyAmount > 0 && (
-                  <p className="text-xs text-[#8a8280] mt-0.5">
-                    {formatEur(plan.yearlyAmount)} billed annually
-                  </p>
-                )}
-              </div>
-
-              <ul className="space-y-2.5 mb-8 flex-1">
-                {plan.features.map((f) => (
-                  <li
-                    key={f}
-                    className="flex items-start gap-2 text-sm text-[#444]"
+        <h2
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-10"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Find the right fit
+        </h2>
+        <div className="bg-white border border-[#e8e6e3] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#e8e6e3]">
+                  <th className="text-left px-6 py-3 text-[#8a8280] font-medium w-1/4">
+                    Feature
+                  </th>
+                  {SELLER_PLANS.map((p) => {
+                    const Icon =
+                      TIER_ICONS[p.key as keyof typeof TIER_ICONS];
+                    return (
+                      <th
+                        key={p.key}
+                        className={`text-center px-4 py-3 font-medium ${
+                          p.popular ? "text-[#8E7A6B]" : "text-[#1a1a1a]"
+                        }`}
+                      >
+                        <span className="flex items-center justify-center gap-1.5">
+                          <Icon className="w-3.5 h-3.5" />
+                          {p.name}
+                        </span>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARISON_ROWS.map((row) => (
+                  <tr
+                    key={row.label}
+                    className="border-b border-[#e8e6e3] last:border-0"
                   >
-                    <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                    {f}
+                    <td className="px-6 py-3 text-[#444]">{row.label}</td>
+                    {row.values.map((v, i) => (
+                      <td
+                        key={i}
+                        className="text-center px-4 py-3 text-[#666]"
+                      >
+                        {v === "✓" ? (
+                          <Check className="w-4 h-4 text-emerald-500 mx-auto" />
+                        ) : v === "—" ? (
+                          <span className="text-[#ccc]">—</span>
+                        ) : (
+                          v
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Feature groups — detailed breakdown */}
+      <section className="max-w-5xl mx-auto pb-16">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          Full Breakdown
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Everything included with Pro
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3]">
+          {PRO_SELLER_FEATURE_GROUPS.map((group) => (
+            <div key={group.heading} className="bg-white p-8">
+              <h3
+                className="text-lg font-light text-[#1a1a1a] mb-5"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                {group.heading}
+              </h3>
+              <ul className="space-y-3">
+                {group.items.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm">
+                    <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#8E7A6B]" />
+                    <span className="text-[#666]">{item}</span>
                   </li>
                 ))}
               </ul>
-
-              <Link
-                href={plan.key === "starter" ? "/post" : "/pro-sellers"}
-                className={`block text-center py-3 text-sm font-semibold transition-colors ${
-                  plan.popular
-                    ? "bg-[#8E7A6B] text-white hover:bg-[#7A6657]"
-                    : plan.key === "starter"
-                      ? "bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#e8e6e3]"
-                      : "bg-[#1a1a1a] text-white hover:bg-[#333]"
-                }`}
-              >
-                {plan.key === "starter" ? (
-                  "Start for free"
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    Get {plan.name}
-                    <ArrowRight className="w-4 h-4" />
-                  </span>
-                )}
-              </Link>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      </section>
 
-      {/* Comparison */}
-      <div className="mt-12 bg-white border border-[#e8e6e3] overflow-hidden">
-        <div className="px-6 py-4 bg-[#faf9f7] border-b border-[#e8e6e3]">
-          <h3 className="font-semibold text-[#1a1a1a]">Compare plans</h3>
+      {/* Testimonials */}
+      <section className="max-w-5xl mx-auto pb-16">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+          What Sellers Say
+        </p>
+        <h2
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Trusted by local sellers
+        </h2>
+        <div className="grid md:grid-cols-2 gap-px bg-[#e8e6e3]">
+          {TESTIMONIALS.map((t) => (
+            <div key={t.name} className="bg-white p-8">
+              <p
+                className="text-[#666] text-lg leading-relaxed mb-8 font-light italic"
+                style={{ fontFamily: "'Playfair Display', serif" }}
+              >
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-sm">
+                  {t.initials}
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-[#1a1a1a]">
+                    {t.name}
+                  </div>
+                  <div className="text-xs text-[#6b6560]">{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#e8e6e3]">
-                <th className="text-left px-6 py-3 text-[#8a8280] font-medium w-1/4">
-                  Feature
-                </th>
-                {SELLER_PLANS.map((p) => (
-                  <th
-                    key={p.key}
-                    className={`text-center px-4 py-3 font-medium ${
-                      p.popular ? "text-[#8E7A6B]" : "text-[#1a1a1a]"
-                    }`}
-                  >
-                    {p.name}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                {
-                  label: "Active listings",
-                  values: ["10", "Unlimited", "Unlimited"],
-                },
-                {
-                  label: "Images per listing",
-                  values: ["2", "10", "20 + video"],
-                },
-                {
-                  label: "Free Boosts / month",
-                  values: ["—", "3", "10"],
-                },
-                {
-                  label: "Branded shop page",
-                  values: ["Basic", "Full", "Full"],
-                },
-                {
-                  label: "Analytics",
-                  values: ["—", "✓", "Advanced"],
-                },
-                {
-                  label: "CSV bulk import",
-                  values: ["—", "—", "✓"],
-                },
-                {
-                  label: "Stock management",
-                  values: ["—", "—", "✓"],
-                },
-                {
-                  label: "AI descriptions",
-                  values: ["—", "—", "✓"],
-                },
-                {
-                  label: "Team members",
-                  values: ["1", "1", "Up to 5"],
-                },
-                {
-                  label: "Support",
-                  values: ["Community", "Priority", "Dedicated"],
-                },
-              ].map((row) => (
-                <tr
-                  key={row.label}
-                  className="border-b border-[#e8e6e3] last:border-0"
-                >
-                  <td className="px-6 py-3 text-[#444]">{row.label}</td>
-                  {row.values.map((v, i) => (
-                    <td key={i} className="text-center px-4 py-3 text-[#666]">
-                      {v === "✓" ? (
-                        <Check className="w-4 h-4 text-emerald-500 mx-auto" />
-                      ) : v === "—" ? (
-                        <span className="text-[#ccc]">—</span>
-                      ) : (
-                        v
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="bg-[#2C2826] py-20">
+        <div className="max-w-xl mx-auto px-6 text-center text-white">
+          <h2
+            className="text-2xl md:text-3xl font-light mb-4"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Ready to grow?
+          </h2>
+          <p className="text-white/50 mb-10">
+            Join hundreds of sellers already growing their business on
+            NextBazar. Start with Pro or go all-in with Business.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <DealersSubscribeButton
+              label="Get Pro — €29/mo"
+              variant="white"
+              tier="pro"
+              billing="monthly"
+            />
+            <DealersSubscribeButton
+              label="Get Business — €89/mo"
+              variant="white"
+              tier="business"
+              billing="monthly"
+            />
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
@@ -467,12 +594,12 @@ function BoostSection() {
             Upgrade your seller plan and save on promotion costs.
           </p>
         </div>
-        <button
-          onClick={() => {}}
+        <Link
+          href="/pricing"
           className="text-sm font-medium text-[#8E7A6B] hover:text-[#7A6657] flex items-center gap-1"
         >
           View seller plans <ArrowRight className="w-3.5 h-3.5" />
-        </button>
+        </Link>
       </div>
     </div>
   );

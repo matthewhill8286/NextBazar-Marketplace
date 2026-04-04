@@ -95,10 +95,10 @@ export default function ShopOnboardingClient({
           </h2>
           <p className="text-sm text-[#6b6560]">{error}</p>
           <button
-            onClick={() => router.push("/pro-sellers")}
+            onClick={() => router.push("/pricing")}
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors"
           >
-            Back to Pro Sellers
+            Back to Pricing
           </button>
         </div>
       </div>
