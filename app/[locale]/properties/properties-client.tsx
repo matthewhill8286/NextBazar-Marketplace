@@ -28,7 +28,6 @@ import PropertyFilters, {
   applyPropertyFilters,
   type PropertyFilterState,
 } from "./property-filters";
-import PropertyComparePanel from "./property-compare-panel";
 import PropertyPriceInsights, {
   getPropertyDealRating,
   PROPERTY_DEAL_CONFIG,
@@ -325,13 +324,6 @@ export default function PropertiesClient({
           filters={filters}
           onFiltersChange={setFilters}
           resultCount={allDisplayListings.length}
-        />
-
-        {/* ── Property Compare Panel ─────────────────────────────────── */}
-        <PropertyComparePanel
-          enrichedItems={
-            allTabListings as unknown as Record<string, unknown>[]
-          }
         />
 
         {/* ── Featured Listings ────────────────────────────────────────── */}

@@ -37,7 +37,6 @@ import VehicleFilters, {
   applyVehicleFilters,
   type VehicleFilterState,
 } from "./vehicle-filters";
-import VehicleComparePanel from "./vehicle-compare-panel";
 import PriceInsights, { getDealRating, DEAL_CONFIG } from "./price-insights";
 
 // ─── Tab config ─────────────────────────────────────────────────────────────
@@ -411,15 +410,6 @@ export default function VehiclesClient({
             filters={filters}
             onFiltersChange={setFilters}
             resultCount={allDisplayListings.length}
-          />
-        )}
-
-        {/* ── Vehicle Compare Panel ──────────────────────────────────── */}
-        {showVehicleFeatures && !isDealerTab && (
-          <VehicleComparePanel
-            enrichedItems={
-              allTabListings as unknown as Record<string, unknown>[]
-            }
           />
         )}
 
