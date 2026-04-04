@@ -76,8 +76,10 @@ const urgentSessionEvent = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  // By default, no webhook secret → constructEvent is NOT called (raw JSON parse)
-  delete process.env.STRIPE_WEBHOOK_SECRET;
+  // Webhook secret must be set — handler rejects unsigned payloads
+  process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
+  // By default, constructEvent returns the raw parsed event
+  mockConstructEvent.mockImplementation((body: string) => JSON.parse(body));
   mockUpdate.mockReturnValue({ eq: mockEq });
   mockEq.mockResolvedValue({ error: null });
 });

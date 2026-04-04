@@ -1,17 +1,27 @@
 "use client";
 
 import { Gift, Loader2, Ticket } from "lucide-react";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 export default function PromoCodeInput() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { userId } = useAuth();
   const [promoCode, setPromoCode] = useState("");
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState("");
   const [promoSuccess, setPromoSuccess] = useState(false);
+
+  // Pre-fill promo code from URL (e.g. after returning from signup)
+  useEffect(() => {
+    const code = searchParams.get("promo");
+    if (code && !promoCode) {
+      setPromoCode(code.toUpperCase());
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleRedeem() {
     if (!promoCode.trim()) return;

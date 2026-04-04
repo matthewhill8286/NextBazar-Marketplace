@@ -14,19 +14,30 @@ export async function POST(request: NextRequest) {
   const body = await request.text();
   const sig = request.headers.get("stripe-signature");
 
-  // biome-ignore lint/suspicious/noImplicitAnyLet: don't know
+  // biome-ignore lint/suspicious/noImplicitAnyLet: Stripe event type
   let event;
   try {
-    // If we have a webhook secret, verify the signature
-    if (process.env.STRIPE_WEBHOOK_SECRET && sig) {
-      event = stripe.webhooks.constructEvent(
-        body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET,
+    const secret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    // In production, ALWAYS verify the signature. Reject if secret is missing.
+    if (!secret) {
+      console.error(
+        "STRIPE_WEBHOOK_SECRET is not set — rejecting webhook payload.",
       );
-    } else {
-      event = JSON.parse(body);
+      return NextResponse.json(
+        { error: "Webhook secret not configured" },
+        { status: 500 },
+      );
     }
+
+    if (!sig) {
+      return NextResponse.json(
+        { error: "Missing stripe-signature header" },
+        { status: 400 },
+      );
+    }
+
+    event = stripe.webhooks.constructEvent(body, sig, secret);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Webhook signature verification failed:", message);

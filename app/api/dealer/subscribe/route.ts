@@ -3,6 +3,8 @@ import { getSellerPlan, stripe } from "@/lib/stripe";
 import type { SellerTier } from "@/lib/pricing-config";
 import { createClient } from "@/lib/supabase/server";
 
+// Only seller tiers are allowed — Buyer+ plans are not yet launched.
+// This prevents API-level activation of buyer plans even if the UI is manipulated.
 const VALID_TIERS: SellerTier[] = ["pro", "business"];
 const VALID_BILLING = ["monthly", "yearly"] as const;
 

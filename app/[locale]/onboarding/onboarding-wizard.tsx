@@ -29,7 +29,7 @@ type FullLocation = Database["public"]["Tables"]["locations"]["Row"];
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type Step = 1 | 2 | 3 | 4;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 interface Props {
   userId: string;
@@ -300,8 +300,8 @@ export default function OnboardingWizard({
       }
     }
 
-    router.push("/");
-    router.refresh();
+    setSaving(false);
+    setStep(5);
   }
 
   // ─── Navigation ────────────────────────────────────────────────────────────
@@ -319,6 +319,7 @@ export default function OnboardingWizard({
   return (
     <div className="min-h-[70vh]">
       {/* Step indicator + progress bar */}
+      {step < 5 && (
       <div className="max-w-2xl mx-auto px-4 pt-8">
         <p className="text-xs text-[#8a8280] font-medium text-right mb-2">
           Step {step} of 4
@@ -334,6 +335,7 @@ export default function OnboardingWizard({
           ))}
         </div>
       </div>
+      )}
 
       {/* Content */}
       <div className="max-w-2xl mx-auto px-4 py-8">
@@ -681,7 +683,77 @@ export default function OnboardingWizard({
           </div>
         )}
 
+        {/* ── Step 5: Success + Upsell ────────────────────────────────────── */}
+        {step === 5 && (
+          <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm text-center">
+            <div className="w-16 h-16 bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h2
+              className="text-2xl font-light text-[#1a1a1a] mb-2"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              You&apos;re all set!
+            </h2>
+            <p className="text-[#6b6560] text-sm mb-8 max-w-sm mx-auto">
+              Your profile is live. Start browsing listings or post your first
+              item to sell.
+            </p>
+
+            {/* Upsell CTA */}
+            <div className="bg-gradient-to-br from-[#faf9f7] to-[#f0eeeb] border border-[#e8e6e3] p-6 mb-6">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Sparkles className="w-4 h-4 text-[#8E7A6B]" />
+                <span className="text-xs font-semibold tracking-[0.15em] uppercase text-[#8E7A6B]">
+                  Go Pro
+                </span>
+              </div>
+              <p className="text-[#1a1a1a] font-semibold mb-1">
+                Ready to sell more?
+              </p>
+              <p className="text-[#6b6560] text-sm mb-4 max-w-xs mx-auto">
+                You&apos;re on Starter (5 listings). Upgrade to Pro for 50
+                listings, analytics, and your own branded shop page.
+              </p>
+              <button
+                type="button"
+                onClick={() => router.push("/pricing")}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors shadow-sm"
+              >
+                View Plans — from €29/mo
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Primary actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  router.push("/");
+                  router.refresh();
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 border border-[#e8e6e3] text-[#1a1a1a] font-semibold text-sm hover:bg-[#faf9f7] transition-colors"
+              >
+                Browse Listings
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  router.push("/post");
+                  router.refresh();
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a1a] text-white font-semibold text-sm hover:bg-[#333] transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                Post Your First Listing
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ── Navigation buttons ──────────────────────────────────────────── */}
+        {step < 5 && (
         <div className="flex items-center justify-between mt-8">
           {/* Back */}
           {step > 1 ? (
@@ -752,6 +824,7 @@ export default function OnboardingWizard({
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

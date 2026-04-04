@@ -4,7 +4,9 @@ import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import JsonLd from "@/app/components/json-ld";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { BASE_URL, buildAlternates, localBusinessJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import type { Tables } from "@/lib/supabase/database.types";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import { createClient } from "@/lib/supabase/server";
@@ -65,6 +67,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
         `Browse ${shop.shop_name}'s listings on NextBazar marketplace.`,
       images: shop.banner_url ? [{ url: shop.banner_url }] : [],
     },
+    alternates: buildAlternates(`/shop/${slug}`),
   };
 }
 
@@ -129,7 +132,25 @@ export default async function ShopPage(props: PageProps) {
       .single(),
   ]);
 
+  const shopUrl = `${BASE_URL}/en/shop/${slug}`;
+
   return (
+    <>
+    <JsonLd
+      data={localBusinessJsonLd({
+        name: shop.shop_name,
+        description: shop.description || undefined,
+        url: shopUrl,
+        image: shop.banner_url || undefined,
+      })}
+    />
+    <JsonLd
+      data={breadcrumbJsonLd([
+        { name: "Home", url: BASE_URL },
+        { name: "Shops", url: `${BASE_URL}/en/shops` },
+        { name: shop.shop_name, url: shopUrl },
+      ])}
+    />
     <ShopClient
       shop={shop}
       listings={(listings ?? []) as unknown as ListingCardRow[]}
@@ -146,5 +167,6 @@ export default async function ShopPage(props: PageProps) {
           : null
       }
     />
+    </>
   );
 }

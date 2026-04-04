@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AuthIllustration } from "@/app/components/illustrations";
 import { Link } from "@/i18n/navigation";
+import { buildAlternates } from "@/lib/seo";
 import { getTranslator } from "@/lib/translations";
 import LoginForm from "./login-form";
+
+export const metadata: Metadata = {
+  title: "Log In",
+  description:
+    "Log in to your NextBazar account to buy, sell, and message sellers across Cyprus.",
+  alternates: buildAlternates("/auth/login"),
+};
 
 export default async function LoginPage({
   params,
