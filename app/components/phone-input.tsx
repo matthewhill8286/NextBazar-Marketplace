@@ -165,7 +165,8 @@ export default function PhoneInput({
           value={localNumber}
           onChange={handleNumberChange}
           placeholder={placeholder}
-          className="flex-1 px-3 py-3 text-sm outline-none bg-transparent min-w-0 rounded-r-xl"
+          aria-label="Phone number"
+          className="flex-1 px-3 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/20 bg-transparent min-w-0 rounded-r-xl"
         />
       </div>
 

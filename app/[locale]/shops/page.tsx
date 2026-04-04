@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { buildAlternates } from "@/lib/seo";
 import { getActiveShopsCached } from "@/lib/supabase/queries";
 import ShopsClient from "./shops-client";
 
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
     description:
       "Discover verified dealer shops on NextBazar — Cyprus's smartest marketplace.",
   },
+  alternates: buildAlternates("/shops"),
 };
 
 export default async function ShopsPage() {

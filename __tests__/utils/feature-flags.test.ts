@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import {
+  FEATURE_FLAGS,
+  SOFT_LAUNCH_CATEGORY_SLUGS,
+} from "@/lib/feature-flags";
 
 describe("FEATURE_FLAGS", () => {
   it("exports an object with all expected flag keys", () => {
@@ -9,6 +12,7 @@ describe("FEATURE_FLAGS", () => {
     expect(keys).toContain("DEALERS_PAGE");
     expect(keys).toContain("DEALERS");
     expect(keys).toContain("REPORTS");
+    expect(keys).toContain("SOFT_LAUNCH_CATEGORIES");
   });
 
   it("has all values as booleans", () => {
@@ -37,9 +41,25 @@ describe("FEATURE_FLAGS", () => {
     expect(FEATURE_FLAGS.REPORTS).toBe(false);
   });
 
+  it("has SOFT_LAUNCH_CATEGORIES enabled", () => {
+    expect(FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES).toBe(true);
+  });
+
   it("is readonly (const assertion)", () => {
     // TypeScript enforces this at compile time; at runtime we verify
     // the object shape is stable
-    expect(Object.keys(FEATURE_FLAGS).length).toBe(5);
+    expect(Object.keys(FEATURE_FLAGS).length).toBe(6);
+  });
+});
+
+describe("SOFT_LAUNCH_CATEGORY_SLUGS", () => {
+  it("contains vehicles and property", () => {
+    expect(SOFT_LAUNCH_CATEGORY_SLUGS.has("vehicles")).toBe(true);
+    expect(SOFT_LAUNCH_CATEGORY_SLUGS.has("property")).toBe(true);
+  });
+
+  it("does not contain non-launch categories", () => {
+    expect(SOFT_LAUNCH_CATEGORY_SLUGS.has("electronics")).toBe(false);
+    expect(SOFT_LAUNCH_CATEGORY_SLUGS.has("furniture")).toBe(false);
   });
 });

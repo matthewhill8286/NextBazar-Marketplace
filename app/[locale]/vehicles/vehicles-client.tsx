@@ -5,20 +5,28 @@ import {
   BarChart3,
   Bike,
   Car,
+  Check,
   Clock,
   Cog,
+  Crown,
   type LucideIcon,
   MapPin,
+  MessageCircle,
   Plus,
   Search,
+  Shield,
+  ShieldCheck,
+  Sparkles,
   Store,
   TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
+import { ShopCard } from "@/app/[locale]/shops/shops-client";
 import { Link } from "@/i18n/navigation";
+import type { ShopCardRow } from "@/lib/supabase/queries";
 import type {
   ListingCardRow,
   Subcategory,
@@ -79,7 +87,7 @@ const TABS: TabConfig[] = [
       "Shop directly from trusted Pro Sellers — browse their full inventory, compare prices, and get exclusive deals.",
     subcategorySlugs: [],
     filterByDealer: true,
-    showVehicleFeatures: true,
+    showVehicleFeatures: false,
   },
 ];
 
@@ -124,6 +132,7 @@ type Props = {
   subcategories: Subcategory[];
   featuredListings: ListingCardRow[];
   recentListings: ListingCardRow[];
+  categoryShops?: ShopCardRow[];
 };
 
 const EMPTY_FILTERS: VehicleFilterState = {
@@ -147,16 +156,33 @@ export default function VehiclesClient({
   subcategories,
   featuredListings,
   recentListings,
+  categoryShops = [],
 }: Props) {
   const t = useTranslations("categoryLanding");
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState(TABS[0]?.key ?? "");
   const [filters, setFilters] = useState<VehicleFilterState>(EMPTY_FILTERS);
 
   const activeTabConfig = TABS.find((tab) => tab.key === activeTab);
   const showVehicleFeatures = activeTabConfig?.showVehicleFeatures ?? false;
+  const isDealerTab = activeTabConfig?.filterByDealer ?? false;
 
   const tabSubcategories = subcategories.filter((sc) =>
     activeTabConfig?.subcategorySlugs.includes(sc.slug),
+  );
+
+  // Split shops by tier for display
+  const businessShops = useMemo(
+    () => categoryShops.filter((s) => s.plan_tier === "business"),
+    [categoryShops],
+  );
+  const proShops = useMemo(
+    () => categoryShops.filter((s) => s.plan_tier === "pro"),
+    [categoryShops],
+  );
+  const topShops = useMemo(
+    () => categoryShops.slice(0, 4),
+    [categoryShops],
   );
 
   // Filter by tab first
@@ -171,11 +197,17 @@ export default function VehiclesClient({
 
   // Then apply vehicle-specific filters
   const displayFeatured = useMemo(
-    () => (showVehicleFeatures ? applyVehicleFilters(tabFeatured, filters) : tabFeatured),
+    () =>
+      showVehicleFeatures
+        ? applyVehicleFilters(tabFeatured, filters)
+        : tabFeatured,
     [tabFeatured, filters, showVehicleFeatures],
   );
   const displayRecent = useMemo(
-    () => (showVehicleFeatures ? applyVehicleFilters(tabRecent, filters) : tabRecent),
+    () =>
+      showVehicleFeatures
+        ? applyVehicleFilters(tabRecent, filters)
+        : tabRecent,
     [tabRecent, filters, showVehicleFeatures],
   );
 
@@ -192,10 +224,24 @@ export default function VehiclesClient({
     return Array.from(uniqueMap.values());
   }, [displayFeatured, displayRecent]);
 
-  // Stats
+  // Stats — context-aware
   const now = Date.now();
   const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
   const tabStats = useMemo(() => {
+    if (isDealerTab) {
+      const totalDealerListings = categoryShops.reduce(
+        (sum, s) => sum + s.listing_count,
+        0,
+      );
+      return {
+        total: categoryShops.length,
+        newThisWeek: categoryShops.filter(
+          (s) => now - new Date(s.created_at).getTime() < oneWeekMs,
+        ).length,
+        avgPrice: 0,
+        totalDealerListings,
+      };
+    }
     const unique = allDisplayListings;
     return {
       total: unique.length,
@@ -205,20 +251,19 @@ export default function VehiclesClient({
       avgPrice:
         unique.length > 0
           ? Math.round(
-              unique.reduce((sum, l) => sum + (l.price ?? 0), 0) / unique.length,
+              unique.reduce((sum, l) => sum + (l.price ?? 0), 0) /
+                unique.length,
             )
           : 0,
+      totalDealerListings: 0,
     };
-  }, [allDisplayListings, now, oneWeekMs]);
+  }, [allDisplayListings, isDealerTab, categoryShops, now, oneWeekMs]);
 
   // Reset filters on tab change
-  const handleTabChange = useCallback(
-    (key: string) => {
-      setActiveTab(key);
-      setFilters(EMPTY_FILTERS);
-    },
-    [],
-  );
+  const handleTabChange = useCallback((key: string) => {
+    setActiveTab(key);
+    setFilters(EMPTY_FILTERS);
+  }, []);
 
   const heroImage = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/vehicle-hero.jpg`;
   const categorySlug = category.slug;
@@ -264,35 +309,65 @@ export default function VehiclesClient({
         </div>
       </section>
 
-      {/* ── Stats Bar ─────────────────────────────────────────────────── */}
+      {/* ── Stats Bar (context-aware) ────────────────────────────────── */}
       <section className="bg-white border-b border-[#e8e6e3]">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm">
-            <div className="flex items-center gap-2 text-[#666]">
-              <BarChart3 className="w-4 h-4 text-[#8a8280]" />
-              <span className="font-semibold text-[#1a1a1a]">
-                {tabStats.total.toLocaleString()}
-              </span>{" "}
-              {t("listingsAvailable")}
-            </div>
-            <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
-            <div className="flex items-center gap-2 text-[#666]">
-              <Clock className="w-4 h-4 text-[#8a8280]" />
-              <span className="font-semibold text-[#1a1a1a]">
-                {tabStats.newThisWeek.toLocaleString()}
-              </span>{" "}
-              {t("newThisWeek")}
-            </div>
-            {tabStats.avgPrice > 0 && (
+            {isDealerTab ? (
               <>
+                <div className="flex items-center gap-2 text-[#666]">
+                  <Store className="w-4 h-4 text-[#8a8280]" />
+                  <span className="font-semibold text-[#1a1a1a]">
+                    {tabStats.total}
+                  </span>{" "}
+                  verified showrooms
+                </div>
                 <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
                 <div className="flex items-center gap-2 text-[#666]">
-                  <TrendingUp className="w-4 h-4 text-[#8a8280]" />
-                  {t("avgPrice")}{" "}
+                  <BarChart3 className="w-4 h-4 text-[#8a8280]" />
                   <span className="font-semibold text-[#1a1a1a]">
-                    €{tabStats.avgPrice.toLocaleString()}
-                  </span>
+                    {tabStats.totalDealerListings.toLocaleString()}
+                  </span>{" "}
+                  {t("listingsAvailable")}
                 </div>
+                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+                <div className="flex items-center gap-2 text-[#666]">
+                  <Crown className="w-4 h-4 text-amber-500" />
+                  <span className="font-semibold text-[#1a1a1a]">
+                    {businessShops.length}
+                  </span>{" "}
+                  Business sellers
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 text-[#666]">
+                  <BarChart3 className="w-4 h-4 text-[#8a8280]" />
+                  <span className="font-semibold text-[#1a1a1a]">
+                    {tabStats.total.toLocaleString()}
+                  </span>{" "}
+                  {t("listingsAvailable")}
+                </div>
+                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+                <div className="flex items-center gap-2 text-[#666]">
+                  <Clock className="w-4 h-4 text-[#8a8280]" />
+                  <span className="font-semibold text-[#1a1a1a]">
+                    {tabStats.newThisWeek.toLocaleString()}
+                  </span>{" "}
+                  {t("newThisWeek")}
+                </div>
+                {tabStats.avgPrice > 0 && (
+                  <>
+                    <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+                    <div className="flex items-center gap-2 text-[#666]">
+                      <TrendingUp className="w-4 h-4 text-[#8a8280]" />
+                      {t("avgPrice")}{" "}
+                      <span className="font-semibold text-[#1a1a1a]">
+                        &euro;{tabStats.avgPrice.toLocaleString()}
+                      </span>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -345,8 +420,8 @@ export default function VehiclesClient({
           </div>
         )}
 
-        {/* ── Vehicle Filters (new) ──────────────────────────────────── */}
-        {showVehicleFeatures && (
+        {/* ── Vehicle Filters ────────────────────────────────────────── */}
+        {showVehicleFeatures && !isDealerTab && (
           <VehicleFilters
             listings={allTabListings}
             filters={filters}
@@ -355,20 +430,235 @@ export default function VehiclesClient({
           />
         )}
 
-        {/* ── Vehicle Compare Panel (new) ────────────────────────────── */}
-        {showVehicleFeatures && (
+        {/* ── Vehicle Compare Panel ──────────────────────────────────── */}
+        {showVehicleFeatures && !isDealerTab && (
           <VehicleComparePanel
-            enrichedItems={allTabListings as unknown as Record<string, unknown>[]}
+            enrichedItems={
+              allTabListings as unknown as Record<string, unknown>[]
+            }
           />
         )}
 
-        {/* ── Price Insights ──────────────────────────────────────────── */}
-        {showVehicleFeatures && allDisplayListings.length > 0 && (
+        {/* ── Price Insights ─────────────────────────────────────────── */}
+        {showVehicleFeatures && !isDealerTab && allDisplayListings.length > 0 && (
           <PriceInsights listings={allDisplayListings} />
         )}
 
+        {/* ── Featured Pro Sellers strip (on listing tabs, not dealer tab) */}
+        {!isDealerTab && topShops.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center w-8 h-8 bg-amber-50">
+                  <Crown className="w-4 h-4 text-amber-600" />
+                </div>
+                <div>
+                  <h2
+                    className="text-lg font-light text-[#1a1a1a]"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    Trusted Dealerships
+                  </h2>
+                  <p className="text-xs text-[#8a8280]">
+                    Verified Pro Sellers with vehicle inventory
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleTabChange("dealers")}
+                className="text-sm font-medium text-[#1a1a1a] hover:text-[#8E7A6B] flex items-center gap-1 transition-colors"
+              >
+                View all showrooms <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {topShops.map((shop) => (
+                <Link
+                  key={shop.id}
+                  href={`/shop/${shop.slug}`}
+                  className="group flex items-center gap-3 p-3 bg-white border border-[#e8e6e3] hover:border-[#ccc] hover:shadow-sm transition-all"
+                >
+                  <div className="shrink-0 w-10 h-10 overflow-hidden bg-[#f0eeeb]">
+                    {shop.logo_url ? (
+                      <Image
+                        src={shop.logo_url}
+                        alt={shop.shop_name}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#8E7A6B] text-xs font-bold">
+                        {shop.shop_name
+                          .split(" ")
+                          .slice(0, 2)
+                          .map((w) => w[0])
+                          .join("")
+                          .toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
+                        {shop.shop_name}
+                      </span>
+                      {shop.plan_tier === "business" && (
+                        <Crown className="w-3 h-3 text-amber-500 shrink-0" />
+                      )}
+                      {shop.plan_tier === "pro" && (
+                        <Shield className="w-3 h-3 text-[#666] shrink-0" />
+                      )}
+                    </div>
+                    <span className="text-[11px] text-[#8a8280]">
+                      {shop.listing_count} listings
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {/* ── DEALER TAB CONTENT ─────────────────────────────────────── */}
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {isDealerTab && (
+          <>
+            {/* ── Why buy from Pro Sellers? ──────────────────────────── */}
+            <section className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] border border-[#e8e6e3]">
+              <div className="flex items-center gap-2 mb-5">
+                <Sparkles className="w-4 h-4 text-[#8E7A6B]" />
+                <h3 className="text-sm font-semibold text-[#1a1a1a] tracking-wide uppercase">
+                  Why buy from Pro Sellers?
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    icon: ShieldCheck,
+                    title: "Verified Identity",
+                    desc: "Every Pro Seller is identity-verified and vetted before joining.",
+                  },
+                  {
+                    icon: Check,
+                    title: "Quality Guaranteed",
+                    desc: "Listings are reviewed for accuracy, photos, and fair pricing.",
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: "Direct Messaging",
+                    desc: "Chat directly with the dealership — fast responses guaranteed.",
+                  },
+                  {
+                    icon: Shield,
+                    title: "Buyer Protection",
+                    desc: "Transactions with Pro Sellers include NextBazar buyer protection.",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="flex gap-3">
+                    <div className="shrink-0 w-8 h-8 flex items-center justify-center bg-white border border-[#e8e6e3]">
+                      <item.icon className="w-4 h-4 text-[#8E7A6B]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1a1a1a] mb-0.5">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-[#6b6560] leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* ── Business Tier Showrooms ────────────────────────────── */}
+            {businessShops.length > 0 && (
+              <section className="mb-10">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="flex items-center justify-center w-8 h-8 bg-amber-50">
+                    <Crown className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <h2
+                      className="text-lg font-light text-[#1a1a1a]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Business Showrooms
+                    </h2>
+                    <p className="text-xs text-[#8a8280]">
+                      Premium dealerships with the largest inventories
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {businessShops.map((shop) => (
+                    <ShopCard key={shop.id} shop={shop} locale={locale} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ── Pro Tier Showrooms ─────────────────────────────────── */}
+            {proShops.length > 0 && (
+              <section className="mb-10">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
+                    <Shield className="w-4 h-4 text-[#6b6560]" />
+                  </div>
+                  <div>
+                    <h2
+                      className="text-lg font-light text-[#1a1a1a]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Pro Showrooms
+                    </h2>
+                    <p className="text-xs text-[#8a8280]">
+                      Verified professional sellers
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {proShops.map((shop) => (
+                    <ShopCard key={shop.id} shop={shop} locale={locale} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ── Empty state ────────────────────────────────────────── */}
+            {categoryShops.length === 0 && (
+              <section className="mb-12">
+                <div className="text-center py-16 text-[#8a8280]">
+                  <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
+                    <Store className="w-7 h-7 text-[#8E7A6B]" />
+                  </div>
+                  <p className="text-lg font-medium mb-1 text-[#1a1a1a]">
+                    No showrooms yet
+                  </p>
+                  <p className="text-sm max-w-sm mx-auto">
+                    Dealerships in this category will appear here.{" "}
+                    <Link
+                      href="/pricing"
+                      className="text-[#1a1a1a] font-medium hover:underline"
+                    >
+                      Become a Pro Seller
+                    </Link>{" "}
+                    to get listed.
+                  </p>
+                </div>
+              </section>
+            )}
+          </>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {/* ── LISTING TAB CONTENT ────────────────────────────────────── */}
+        {/* ══════════════════════════════════════════════════════════════ */}
+
         {/* ── Featured Listings ────────────────────────────────────────── */}
-        {displayFeatured.length > 0 && (
+        {!isDealerTab && displayFeatured.length > 0 && (
           <section className="mb-12">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -378,7 +668,9 @@ export default function VehiclesClient({
                 >
                   {t("featured", { categoryName: "Vehicles" })}
                 </h2>
-                <p className="text-sm text-[#8a8280] mt-0.5">{t("promoted")}</p>
+                <p className="text-sm text-[#8a8280] mt-0.5">
+                  {t("promoted")}
+                </p>
               </div>
               <Link
                 href={`/search?category=${categorySlug}&sort=promoted`}
@@ -394,17 +686,19 @@ export default function VehiclesClient({
                   : null;
                 return (
                   <div key={listing.id} className="relative">
-                    {deal && DEAL_CONFIG[deal] && (() => {
-                      const DealIcon = DEAL_CONFIG[deal].icon;
-                      return (
-                        <div
-                          className={`absolute top-3 left-3 z-20 ${DEAL_CONFIG[deal].bg} ${DEAL_CONFIG[deal].color} text-[9px] font-semibold px-2.5 py-1 tracking-[0.15em] uppercase flex items-center gap-1`}
-                        >
-                          <DealIcon className="w-3 h-3" />
-                          {DEAL_CONFIG[deal].label}
-                        </div>
-                      );
-                    })()}
+                    {deal &&
+                      DEAL_CONFIG[deal] &&
+                      (() => {
+                        const DealIcon = DEAL_CONFIG[deal].icon;
+                        return (
+                          <div
+                            className={`absolute top-3 left-3 z-20 ${DEAL_CONFIG[deal].bg} ${DEAL_CONFIG[deal].color} text-[9px] font-semibold px-2.5 py-1 tracking-[0.15em] uppercase flex items-center gap-1`}
+                          >
+                            <DealIcon className="w-3 h-3" />
+                            {DEAL_CONFIG[deal].label}
+                          </div>
+                        );
+                      })()}
                     <ListingCard listing={listing} />
                   </div>
                 );
@@ -414,124 +708,165 @@ export default function VehiclesClient({
         )}
 
         {/* ── Listings by Location ─────────────────────────────────────── */}
-        {(() => {
-          const byLocation = new Map<
-            string,
-            { slug: string; listings: ListingCardRow[] }
-          >();
-          for (const listing of displayRecent) {
-            const locName = listing.locations?.name ?? "Other";
-            const locSlug = listing.locations?.slug ?? "";
-            if (!byLocation.has(locName)) {
-              byLocation.set(locName, { slug: locSlug, listings: [] });
+        {!isDealerTab &&
+          (() => {
+            const byLocation = new Map<
+              string,
+              { slug: string; listings: ListingCardRow[] }
+            >();
+            for (const listing of displayRecent) {
+              const locName = listing.locations?.name ?? "Other";
+              const locSlug = listing.locations?.slug ?? "";
+              if (!byLocation.has(locName)) {
+                byLocation.set(locName, { slug: locSlug, listings: [] });
+              }
+              byLocation.get(locName)!.listings.push(listing);
             }
-            byLocation.get(locName)!.listings.push(listing);
-          }
 
-          const locationGroups = Array.from(byLocation.entries()).sort(
-            (a, b) => b[1].listings.length - a[1].listings.length,
-          );
-
-          if (locationGroups.length === 0) {
-            return (
-              <section className="mb-12">
-                <div className="text-center py-16 text-[#8a8280]">
-                  <p className="text-lg font-medium mb-1">
-                    {t("noListings", {
-                      category: activeTabConfig?.label.toLowerCase() ?? "",
-                    })}
-                  </p>
-                  <p className="text-sm">
-                    {t("beFirst")}{" "}
-                    <Link
-                      href="/post"
-                      className="text-[#1a1a1a] font-medium hover:underline"
-                    >
-                      {t("postAListing")}
-                    </Link>{" "}
-                    {t("differentTab")}
-                  </p>
-                </div>
-              </section>
+            const locationGroups = Array.from(byLocation.entries()).sort(
+              (a, b) => b[1].listings.length - a[1].listings.length,
             );
-          }
 
-          return locationGroups.map(
-            ([locName, { slug: locSlug, listings }]) => (
-              <section key={locName} className="mb-10">
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-                      <MapPin className="w-4 h-4 text-[#6b6560]" />
-                    </div>
-                    <div>
-                      <h2
-                        className="text-lg font-light text-[#1a1a1a]"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
+            if (locationGroups.length === 0) {
+              return (
+                <section className="mb-12">
+                  <div className="text-center py-16 text-[#8a8280]">
+                    <p className="text-lg font-medium mb-1">
+                      {t("noListings", {
+                        category:
+                          activeTabConfig?.label.toLowerCase() ?? "",
+                      })}
+                    </p>
+                    <p className="text-sm">
+                      {t("beFirst")}{" "}
+                      <Link
+                        href="/post"
+                        className="text-[#1a1a1a] font-medium hover:underline"
                       >
-                        {locName}
-                      </h2>
-                      <p className="text-xs text-[#8a8280]">
-                        {t("locationListings", { count: listings.length })}
-                      </p>
-                    </div>
+                        {t("postAListing")}
+                      </Link>{" "}
+                      {t("differentTab")}
+                    </p>
                   </div>
-                  <Link
-                    href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
-                    className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
-                  >
-                    {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {listings.slice(0, 4).map((listing) => {
-                    const deal = showVehicleFeatures
-                      ? getDealRating(listing, allTabListings)
-                      : null;
-                    return (
-                      <div key={listing.id} className="relative">
-                        {deal && deal !== "fair" && DEAL_CONFIG[deal] && (() => {
-                          const DealIcon = DEAL_CONFIG[deal].icon;
-                          return (
-                            <div
-                              className={`absolute top-3 left-3 z-20 ${DEAL_CONFIG[deal].bg} ${DEAL_CONFIG[deal].color} text-[9px] font-semibold px-2.5 py-1 tracking-[0.15em] uppercase flex items-center gap-1`}
-                            >
-                              <DealIcon className="w-3 h-3" />
-                              {DEAL_CONFIG[deal].label}
-                            </div>
-                          );
-                        })()}
-                        <ListingCard listing={listing} />
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            ),
-          );
-        })()}
+                </section>
+              );
+            }
 
-        {/* ── CTA Banner ──────────────────────────────────────────────── */}
+            return locationGroups.map(
+              ([locName, { slug: locSlug, listings }]) => (
+                <section key={locName} className="mb-10">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
+                        <MapPin className="w-4 h-4 text-[#6b6560]" />
+                      </div>
+                      <div>
+                        <h2
+                          className="text-lg font-light text-[#1a1a1a]"
+                          style={{ fontFamily: "'Playfair Display', serif" }}
+                        >
+                          {locName}
+                        </h2>
+                        <p className="text-xs text-[#8a8280]">
+                          {t("locationListings", {
+                            count: listings.length,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
+                      className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
+                    >
+                      {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {listings.slice(0, 4).map((listing) => {
+                      const deal = showVehicleFeatures
+                        ? getDealRating(listing, allTabListings)
+                        : null;
+                      return (
+                        <div key={listing.id} className="relative">
+                          {deal &&
+                            deal !== "fair" &&
+                            DEAL_CONFIG[deal] &&
+                            (() => {
+                              const DealIcon = DEAL_CONFIG[deal].icon;
+                              return (
+                                <div
+                                  className={`absolute top-3 left-3 z-20 ${DEAL_CONFIG[deal].bg} ${DEAL_CONFIG[deal].color} text-[9px] font-semibold px-2.5 py-1 tracking-[0.15em] uppercase flex items-center gap-1`}
+                                >
+                                  <DealIcon className="w-3 h-3" />
+                                  {DEAL_CONFIG[deal].label}
+                                </div>
+                              );
+                            })()}
+                          <ListingCard listing={listing} />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              ),
+            );
+          })()}
+
+        {/* ── CTA Banner (context-aware) ─────────────────────────────── */}
         <section className="relative overflow-hidden p-8 md:p-12 text-white text-center">
           <Image src={heroImage} alt="" fill className="object-cover" />
           <div className="absolute inset-0 bg-[#2C2826]/65" />
           <div className="relative">
-            <h3
-              className="text-2xl md:text-3xl font-light mb-3"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              {t("readyToList", { category: "vehicle" })}
-            </h3>
-            <p className="text-white/50 mb-8 max-w-lg mx-auto">
-              {t("readyDesc")}
-            </p>
-            <Link
-              href="/post"
-              className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/90 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              List a Vehicle
-            </Link>
+            {isDealerTab ? (
+              <>
+                <h3
+                  className="text-2xl md:text-3xl font-light mb-3"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  Grow your dealership on NextBazar
+                </h3>
+                <p className="text-white/50 mb-8 max-w-lg mx-auto">
+                  Join {categoryShops.length > 0 ? categoryShops.length : ""}{" "}
+                  trusted sellers. Get a branded showroom, priority placement,
+                  and reach thousands of buyers across Cyprus.
+                </p>
+                <div className="flex flex-wrap justify-center gap-3">
+                  <Link
+                    href="/pricing"
+                    className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/90 transition-colors"
+                  >
+                    <Crown className="w-4 h-4" />
+                    View Pro Seller Plans
+                  </Link>
+                  <Link
+                    href="/post"
+                    className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/10 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    List a Vehicle
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3
+                  className="text-2xl md:text-3xl font-light mb-3"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
+                  {t("readyToList", { category: "vehicle" })}
+                </h3>
+                <p className="text-white/50 mb-8 max-w-lg mx-auto">
+                  {t("readyDesc")}
+                </p>
+                <Link
+                  href="/post"
+                  className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-white/90 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  List a Vehicle
+                </Link>
+              </>
+            )}
           </div>
         </section>
       </div>

@@ -283,12 +283,26 @@ function ShopManagerInner({ children }: { children: React.ReactNode }) {
                     <p className="text-sm font-semibold text-red-800 mb-1">
                       Are you sure you want to close your shop?
                     </p>
-                    <ul className="text-xs text-red-700 space-y-1 mt-2">
-                      <li>&bull; Your shop page will no longer be visible</li>
+                    <p className="text-xs text-red-700 mt-1 mb-2">
+                      You will be downgraded to the free Starter plan (max 5
+                      listings, no shop page). Here&apos;s what you&apos;ll lose:
+                    </p>
+                    <ul className="text-xs text-red-700 space-y-1">
+                      <li>&bull; Your branded shop page will be hidden</li>
                       <li>&bull; All active listings will be set to inactive</li>
+                      <li>
+                        &bull; Shop analytics and priority placement will stop
+                      </li>
                       {shop?.stripe_subscription_id && (
                         <li>
                           &bull; Your Stripe subscription will be cancelled
+                          immediately
+                        </li>
+                      )}
+                      {shop?.plan_tier === "business" && (
+                        <li>
+                          &bull; Unlimited listings and Business features will be
+                          removed
                         </li>
                       )}
                       <li>

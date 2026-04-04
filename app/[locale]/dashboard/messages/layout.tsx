@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Messages | NextBazar",
+  title: "Messages",
   description:
     "View and manage your conversations with buyers and sellers on NextBazar.",
 };

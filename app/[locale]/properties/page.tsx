@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   getCategoryBySlugCached,
   getCategoryListingsCached,
+  getShopsByCategoryCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import PropertiesClient from "./properties-client";
@@ -19,10 +20,11 @@ export default async function PropertiesPage() {
       <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
     );
 
-  const [subcategories, featured, recent] = await Promise.all([
+  const [subcategories, featured, recent, categoryShops] = await Promise.all([
     getSubcategoriesCached(),
     getCategoryListingsCached(category.id, { promoted: true, limit: 24 }),
     getCategoryListingsCached(category.id, { limit: 48 }),
+    getShopsByCategoryCached(category.id),
   ]);
 
   // Only subcategories belonging to this category
@@ -36,6 +38,7 @@ export default async function PropertiesPage() {
       subcategories={propertySubcategories}
       featuredListings={featured}
       recentListings={recent}
+      categoryShops={categoryShops}
     />
   );
 }

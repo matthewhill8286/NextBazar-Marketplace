@@ -308,10 +308,9 @@ export function ContactButtons({
 
   // Use shop accent color for the primary CTA when available
   const brandColor = accentColor || "#8E7A6B";
-  // FIXME: add this to the code
-  // const brandColorDark = accentColor
-  //   ? `color-mix(in srgb, ${accentColor} 85%, black)`
-  //   : "#4338ca";
+  const brandColorDark = accentColor
+    ? `color-mix(in srgb, ${accentColor} 85%, black)`
+    : "#7A6657";
 
   return (
     <div className="space-y-2.5">
