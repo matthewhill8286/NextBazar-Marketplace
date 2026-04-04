@@ -57,6 +57,7 @@ const STEP_TITLES: Record<Step, string> = {
   2: "Social Links",
   3: "Your Location",
   4: "First Listing",
+  5: "All Done",
 };
 
 const STEP_DESCRIPTIONS: Record<Step, string> = {
@@ -64,6 +65,7 @@ const STEP_DESCRIPTIONS: Record<Step, string> = {
   2: "Help people find you on social media",
   3: "Show listings near you by default",
   4: "Post your first item and start selling",
+  5: "Your account is ready to go",
 };
 
 // ─── Main Component ──────────────────────────────────────────────────────────

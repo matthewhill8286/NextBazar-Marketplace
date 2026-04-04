@@ -140,7 +140,8 @@ export async function POST(request: NextRequest) {
     event.type === "customer.subscription.updated" ||
     event.type === "customer.subscription.deleted"
   ) {
-    const subscription = event.data.object;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const subscription = event.data.object as any;
     const userId = subscription.metadata?.user_id;
 
     if (userId && subscription.metadata?.type === "dealer_subscription") {

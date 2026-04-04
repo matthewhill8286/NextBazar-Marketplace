@@ -46,6 +46,8 @@ module.exports = withSentryConfig(withBundleAnalyzer(withNextIntl(nextConfig)), 
   disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
   // Hides source maps from users
   hideSourceMaps: true,
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
+  // Tree-shake Sentry logger statements to reduce bundle size
+  webpack: {
+    treeshakeRemoveLogs: true,
+  },
 });

@@ -76,7 +76,7 @@ export default function ForgotPasswordForm() {
 
   return (
     <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm">
-      {error && <ErrorBanner message={error} className="mb-4" />}
+      {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
