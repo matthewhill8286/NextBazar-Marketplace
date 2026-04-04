@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   getCategoryBySlugCached,
   getCategoryListingsCached,
+  getShopsByCategoryCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import VehiclesClient from "./vehicles-client";
@@ -19,10 +20,11 @@ export default async function VehiclesPage() {
       <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
     );
 
-  const [subcategories, featured, recent] = await Promise.all([
+  const [subcategories, featured, recent, categoryShops] = await Promise.all([
     getSubcategoriesCached(),
     getCategoryListingsCached(category.id, { promoted: true, limit: 24 }),
     getCategoryListingsCached(category.id, { limit: 48 }),
+    getShopsByCategoryCached(category.id),
   ]);
 
   const vehicleSubcategories = subcategories.filter(
@@ -35,6 +37,7 @@ export default async function VehiclesPage() {
       subcategories={vehicleSubcategories}
       featuredListings={featured}
       recentListings={recent}
+      categoryShops={categoryShops}
     />
   );
 }

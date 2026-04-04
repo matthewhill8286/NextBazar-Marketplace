@@ -508,6 +508,48 @@ export async function getFeaturedShopsCached(
     .slice(0, limit);
 }
 
+/**
+ * Fetch active shops that have at least one active listing in the given category.
+ * Sorted by tier (business → pro → starter), then by listing count desc.
+ */
+export async function getShopsByCategoryCached(
+  categoryId: string,
+): Promise<ShopCardRow[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("shops", "listings");
+
+  const sb = publicClient();
+
+  // Get user_ids that have active listings in this category
+  const { data: categoryListings } = await sb
+    .from("listings")
+    .select("user_id")
+    .eq("category_id", categoryId)
+    .eq("status", "active");
+
+  if (!categoryListings || categoryListings.length === 0) return [];
+
+  const categoryUserIds = [
+    ...new Set(categoryListings.map((l) => l.user_id)),
+  ];
+
+  // Get all active shops, then filter to those with listings in the category
+  const allShops = await getActiveShopsCached();
+  const filtered = allShops.filter((shop) =>
+    categoryUserIds.includes(shop.user_id),
+  );
+
+  // Sort by tier then listing count
+  const tierRank = { business: 0, pro: 1, starter: 2 } as const;
+  const rank = (t: string) => tierRank[t as keyof typeof tierRank] ?? 2;
+  return filtered.sort(
+    (a, b) =>
+      rank(a.plan_tier) - rank(b.plan_tier) ||
+      b.listing_count - a.listing_count,
+  );
+}
+
 // ─── Non-cached helpers (used server-side with auth context) ─────────────────
 
 export async function getCategories() {
