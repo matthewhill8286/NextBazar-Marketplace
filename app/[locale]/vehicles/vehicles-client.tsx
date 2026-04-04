@@ -640,7 +640,7 @@ export default function VehiclesClient({
                   <p className="text-sm max-w-sm mx-auto">
                     Dealerships in this category will appear here.{" "}
                     <Link
-                      href="/post"
+                      href="/pricing"
                       className="text-[#1a1a1a] font-medium hover:underline"
                     >
                       Become a Pro Seller

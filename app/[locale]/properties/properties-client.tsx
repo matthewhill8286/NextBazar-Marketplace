@@ -625,7 +625,7 @@ export default function PropertiesClient({
                   <p className="text-sm max-w-sm mx-auto">
                     Property agencies in this category will appear here.{" "}
                     <Link
-                      href="/post"
+                      href="/pricing"
                       className="text-[#1a1a1a] font-medium hover:underline"
                     >
                       Become a Pro Seller
