@@ -19,4 +19,22 @@ export const FEATURE_FLAGS = {
 
   /** Reports queue & dashboard — hide until full CRUD reports management is built. */
   REPORTS: false,
+
+  /**
+   * Soft-launch category filter — when enabled, only the categories whose
+   * slugs are listed in SOFT_LAUNCH_CATEGORY_SLUGS will be shown across the
+   * site (homepage grid, search sidebar, post form, onboarding, etc.).
+   *
+   * Flip to `false` when you're ready to open all categories.
+   */
+  SOFT_LAUNCH_CATEGORIES: true,
 } as const;
+
+/**
+ * Category slugs visible during the soft-launch phase.
+ * Only meaningful when FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES is `true`.
+ */
+export const SOFT_LAUNCH_CATEGORY_SLUGS: ReadonlySet<string> = new Set([
+  "vehicles",
+  "property",
+]);

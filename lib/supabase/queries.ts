@@ -1,5 +1,9 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cacheLife, cacheTag } from "next/cache";
+import {
+  FEATURE_FLAGS,
+  SOFT_LAUNCH_CATEGORY_SLUGS,
+} from "@/lib/feature-flags";
 import { CARD_SELECT } from "./constants";
 import { createClient } from "./server";
 import type {
@@ -29,10 +33,13 @@ export async function getCategoriesCached(): Promise<Category[]> {
   cacheLife("reference");
   cacheTag("categories");
 
-  const { data } = await publicClient()
-    .from("categories")
-    .select("*")
-    .order("sort_order");
+  let q = publicClient().from("categories").select("*");
+
+  if (FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES) {
+    q = q.in("slug", [...SOFT_LAUNCH_CATEGORY_SLUGS]);
+  }
+
+  const { data } = await q.order("sort_order");
   return (data ?? []) as Category[];
 }
 
@@ -40,6 +47,19 @@ export async function getSubcategoriesCached(): Promise<Subcategory[]> {
   "use cache";
   cacheLife("reference");
   cacheTag("subcategories");
+
+  if (FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES) {
+    // Fetch only subcategories whose parent category is in the allowed set
+    const allowedCategories = await getCategoriesCached();
+    const allowedCategoryIds = allowedCategories.map((c) => c.id);
+
+    const { data } = await publicClient()
+      .from("subcategories")
+      .select("id, category_id, name, slug")
+      .in("category_id", allowedCategoryIds)
+      .order("sort_order");
+    return (data ?? []) as Subcategory[];
+  }
 
   const { data } = await publicClient()
     .from("subcategories")
@@ -387,7 +407,7 @@ export async function getCategoryStatsCached(categoryId: string) {
 
 /** Public-safe subset — exclude Stripe secrets. */
 const SHOP_CARD_SELECT =
-  "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, plan_status, created_at";
+  "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, plan_status, plan_tier, created_at";
 
 export type ShopCardRow = {
   id: string;
@@ -399,6 +419,7 @@ export type ShopCardRow = {
   banner_url: string | null;
   accent_color: string | null;
   plan_status: string;
+  plan_tier: "starter" | "pro" | "business";
   created_at: string;
   listing_count: number;
   profile: {
@@ -475,9 +496,15 @@ export async function getFeaturedShopsCached(
   cacheTag("shops", "listings");
 
   const allShops = await getActiveShopsCached();
-  // Sort by listing count desc, take top N
+  const tierRank = { business: 0, pro: 1, starter: 2 } as const;
+  const rank = (t: string) => tierRank[t as keyof typeof tierRank] ?? 2;
+  // Sort by tier (business first), then listing count desc, take top N
   return [...allShops]
-    .sort((a, b) => b.listing_count - a.listing_count)
+    .sort(
+      (a, b) =>
+        rank(a.plan_tier) - rank(b.plan_tier) ||
+        b.listing_count - a.listing_count,
+    )
     .slice(0, limit);
 }
 
@@ -485,10 +512,13 @@ export async function getFeaturedShopsCached(
 
 export async function getCategories() {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .order("sort_order");
+  let q = supabase.from("categories").select("*");
+
+  if (FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES) {
+    q = q.in("slug", [...SOFT_LAUNCH_CATEGORY_SLUGS]);
+  }
+
+  const { data, error } = await q.order("sort_order");
   if (error) throw error;
   return data;
 }

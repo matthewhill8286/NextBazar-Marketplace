@@ -1,6 +1,14 @@
 "use client";
 
-import { ArrowRight, Check, Package, Search, Store } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Crown,
+  Package,
+  Search,
+  Shield,
+  Store,
+} from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
@@ -52,18 +60,32 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
       );
     }
 
+    // Tier priority: business > pro > starter
+    const tierRank = { business: 0, pro: 1, starter: 2 } as const;
+    const getTierRank = (tier: string) =>
+      tierRank[tier as keyof typeof tierRank] ?? 2;
+
     switch (sort) {
       case "listings":
-        result.sort((a, b) => b.listing_count - a.listing_count);
+        result.sort(
+          (a, b) =>
+            getTierRank(a.plan_tier) - getTierRank(b.plan_tier) ||
+            b.listing_count - a.listing_count,
+        );
         break;
       case "newest":
         result.sort(
           (a, b) =>
+            getTierRank(a.plan_tier) - getTierRank(b.plan_tier) ||
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
         );
         break;
       case "name":
-        result.sort((a, b) => a.shop_name.localeCompare(b.shop_name));
+        result.sort(
+          (a, b) =>
+            getTierRank(a.plan_tier) - getTierRank(b.plan_tier) ||
+            a.shop_name.localeCompare(b.shop_name),
+        );
         break;
     }
 
@@ -189,8 +211,20 @@ function ShopCard({ shop, locale }: { shop: ShopCardRow; locale: string }) {
           />
         )}
 
-        {/* Listing count badge on banner */}
-        <div className="absolute top-3 right-3">
+        {/* Badges on banner */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          {shop.plan_tier === "business" && (
+            <span className="inline-flex items-center gap-1 bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-semibold uppercase tracking-wider px-2 py-1 shadow-sm">
+              <Crown className="w-3 h-3" />
+              Business
+            </span>
+          )}
+          {shop.plan_tier === "pro" && (
+            <span className="inline-flex items-center gap-1 bg-[#1a1a1a]/80 backdrop-blur-sm text-white text-[10px] font-semibold uppercase tracking-wider px-2 py-1 shadow-sm">
+              <Shield className="w-3 h-3" />
+              Pro
+            </span>
+          )}
           <span className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-[#666] text-xs font-medium px-2.5 py-1 shadow-sm">
             <Package className="w-3 h-3" />
             {shop.listing_count}
@@ -356,9 +390,23 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 text-[11px] text-[#8a8280] font-medium">
-          <Package className="w-3 h-3" />
-          {t("listingCount", { count: shop.listing_count })}
+        <div className="flex items-center gap-2 text-[11px] text-[#8a8280] font-medium">
+          <span className="flex items-center gap-1">
+            <Package className="w-3 h-3" />
+            {t("listingCount", { count: shop.listing_count })}
+          </span>
+          {shop.plan_tier === "business" && (
+            <span className="inline-flex items-center gap-0.5 text-amber-600 font-semibold uppercase tracking-wider text-[9px]">
+              <Crown className="w-2.5 h-2.5" />
+              Business
+            </span>
+          )}
+          {shop.plan_tier === "pro" && (
+            <span className="inline-flex items-center gap-0.5 text-[#666] font-semibold uppercase tracking-wider text-[9px]">
+              <Shield className="w-2.5 h-2.5" />
+              Pro
+            </span>
+          )}
         </div>
       </div>
     </Link>
