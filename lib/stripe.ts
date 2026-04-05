@@ -1,7 +1,7 @@
 import Stripe from "stripe";
-import { getPricingMap } from "@/lib/supabase/queries";
 import type { SellerTier } from "@/lib/pricing-config";
 import { SELLER_PLANS } from "@/lib/pricing-config";
+import { getPricingMap } from "@/lib/supabase/queries";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
@@ -78,14 +78,16 @@ export async function getSellerPlan(
   const config = SELLER_PLANS.find((p) => p.key === tier);
   if (!config) throw new Error(`Unknown seller tier: ${tier}`);
 
-  const dbKey = billing === "monthly" ? config.dbKeyMonthly : config.dbKeyYearly;
+  const dbKey =
+    billing === "monthly" ? config.dbKeyMonthly : config.dbKeyYearly;
   const map = await getPricingMap();
   const row = map[dbKey];
 
   const stripeInterval: "month" | "year" =
     billing === "yearly" ? "year" : "month";
   const amount =
-    row?.amount ?? (billing === "monthly" ? config.monthlyAmount : config.yearlyAmount);
+    row?.amount ??
+    (billing === "monthly" ? config.monthlyAmount : config.yearlyAmount);
 
   return {
     priceId: row?.stripe_price_id ?? "",

@@ -1,6 +1,5 @@
 /**
- * The Shop CMS has moved to /shop-manager.
- * This layout is now a pass-through — the page.tsx handles the redirect.
+ * @deprecated — Legacy shop layout. Pages redirect to /dashboard/*.
  */
 export default function ShopLegacyLayout({
   children,

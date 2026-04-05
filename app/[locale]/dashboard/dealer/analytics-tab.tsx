@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Link } from "@/i18n/navigation";
-import type { SellerTier } from "@/lib/pricing-config";
-import { getPlanLimits } from "@/lib/plan-limits";
 import UpgradeGate from "@/app/components/upgrade-gate";
+import { Link } from "@/i18n/navigation";
+import { getPlanLimits } from "@/lib/plan-limits";
+import type { SellerTier } from "@/lib/pricing-config";
 import type { ListingRow } from "./types";
 
 type Props = {
@@ -25,21 +25,11 @@ type Props = {
 
 type Period = "7d" | "30d" | "all";
 
-export default function AnalyticsTab({ listings, planTier = "starter" }: Props) {
+export default function AnalyticsTab({
+  listings,
+  planTier = "starter",
+}: Props) {
   const limits = getPlanLimits(planTier);
-
-  if (!limits.analytics) {
-    return (
-      <UpgradeGate
-        feature="Analytics Dashboard"
-        currentPlan={limits.tierLabel}
-        requiredPlan="Pro"
-        allowed={false}
-      >
-        <div />
-      </UpgradeGate>
-    );
-  }
   const [period] = useState<Period>("all");
 
   // ─── Aggregate stats ──────────────────────────────────────────────────
@@ -86,7 +76,12 @@ export default function AnalyticsTab({ listings, planTier = "starter" }: Props) 
     >();
     for (const l of listings) {
       const cat = l.categories?.name ?? "Uncategorized";
-      const existing = map.get(cat) ?? { name: cat, count: 0, views: 0, saves: 0 };
+      const existing = map.get(cat) ?? {
+        name: cat,
+        count: 0,
+        views: 0,
+        saves: 0,
+      };
       existing.count++;
       existing.views += l.view_count;
       existing.saves += l.favorite_count;
@@ -126,8 +121,7 @@ export default function AnalyticsTab({ listings, planTier = "starter" }: Props) 
     },
     {
       label: "Other",
-      count:
-        listings.length - activeCount - soldCount - draftCount,
+      count: listings.length - activeCount - soldCount - draftCount,
       color: "bg-[#e8e6e3]",
       pct:
         listings.length > 0
@@ -140,11 +134,22 @@ export default function AnalyticsTab({ listings, planTier = "starter" }: Props) 
     },
   ];
 
+  if (!limits.analytics) {
+    return (
+      <UpgradeGate
+        feature="Analytics Dashboard"
+        currentPlan={limits.tierLabel}
+        requiredPlan="Pro"
+        allowed={false}
+      >
+        <div />
+      </UpgradeGate>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-[#1a1a1a]">
-        Shop Analytics
-      </h3>
+      <h3 className="text-lg font-semibold text-[#1a1a1a]">Shop Analytics</h3>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -225,10 +230,7 @@ export default function AnalyticsTab({ listings, planTier = "starter" }: Props) 
 
           <div className="grid grid-cols-2 gap-2">
             {statusDistribution.map((s) => (
-              <div
-                key={s.label}
-                className="flex items-center gap-2 text-xs"
-              >
+              <div key={s.label} className="flex items-center gap-2 text-xs">
                 <div className={`w-2.5 h-2.5 ${s.color}`} />
                 <span className="text-[#6b6560]">{s.label}</span>
                 <span className="font-semibold text-[#1a1a1a] ml-auto">
@@ -249,9 +251,7 @@ export default function AnalyticsTab({ listings, planTier = "starter" }: Props) 
           <div className="space-y-3">
             {categoryStats.map((cat) => {
               const pct =
-                listings.length > 0
-                  ? (cat.count / listings.length) * 100
-                  : 0;
+                listings.length > 0 ? (cat.count / listings.length) * 100 : 0;
               return (
                 <div key={cat.name}>
                   <div className="flex items-center justify-between text-xs mb-1">

@@ -25,8 +25,8 @@ import {
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
-import ListingCard from "@/app/components/listing-card";
 import { ShopCard } from "@/app/[locale]/shops/shops-client";
+import ListingCard from "@/app/components/listing-card";
 import { Link } from "@/i18n/navigation";
 import type { ShopCardRow } from "@/lib/supabase/queries";
 import type {
@@ -185,10 +185,7 @@ export default function PropertiesClient({
     () => categoryShops.filter((s) => s.plan_tier === "pro"),
     [categoryShops],
   );
-  const topShops = useMemo(
-    () => categoryShops.slice(0, 4),
-    [categoryShops],
-  );
+  const topShops = useMemo(() => categoryShops.slice(0, 4), [categoryShops]);
 
   // Filter by tab first
   const tabFeatured = useMemo(
@@ -202,7 +199,8 @@ export default function PropertiesClient({
 
   // Then apply property-specific filters
   const displayFeatured = useMemo(
-    () => (isDealerTab ? tabFeatured : applyPropertyFilters(tabFeatured, filters)),
+    () =>
+      isDealerTab ? tabFeatured : applyPropertyFilters(tabFeatured, filters),
     [tabFeatured, filters, isDealerTab],
   );
   const displayRecent = useMemo(
@@ -286,8 +284,8 @@ export default function PropertiesClient({
             </h1>
             <p className="text-white/50 text-lg md:text-xl mb-10 max-w-2xl leading-relaxed">
               Whether you&apos;re buying your first home, looking for a rental,
-              or investing in new developments — discover thousands of properties
-              across the island.
+              or investing in new developments — discover thousands of
+              properties across the island.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
@@ -420,9 +418,7 @@ export default function PropertiesClient({
                 >
                   {t("featured", { categoryName: "Properties" })}
                 </h2>
-                <p className="text-sm text-[#8a8280] mt-0.5">
-                  {t("promoted")}
-                </p>
+                <p className="text-sm text-[#8a8280] mt-0.5">{t("promoted")}</p>
               </div>
               <Link
                 href={`/search?category=${categorySlug}&sort=promoted`}
@@ -483,8 +479,7 @@ export default function PropertiesClient({
                   <div className="text-center py-16 text-[#8a8280]">
                     <p className="text-lg font-medium mb-1">
                       {t("noListings", {
-                        category:
-                          activeTabConfig?.label.toLowerCase() ?? "",
+                        category: activeTabConfig?.label.toLowerCase() ?? "",
                       })}
                     </p>
                     <p className="text-sm">
@@ -530,8 +525,7 @@ export default function PropertiesClient({
                       href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
                       className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
                     >
-                      {t("viewAll")}{" "}
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -546,8 +540,7 @@ export default function PropertiesClient({
                             deal !== "fair" &&
                             PROPERTY_DEAL_CONFIG[deal] &&
                             (() => {
-                              const DealIcon =
-                                PROPERTY_DEAL_CONFIG[deal].icon;
+                              const DealIcon = PROPERTY_DEAL_CONFIG[deal].icon;
                               return (
                                 <div
                                   className={`absolute top-3 left-3 z-20 ${PROPERTY_DEAL_CONFIG[deal].bg} ${PROPERTY_DEAL_CONFIG[deal].color} text-[9px] font-semibold px-2.5 py-1 tracking-[0.15em] uppercase flex items-center gap-1`}
@@ -582,8 +575,9 @@ export default function PropertiesClient({
                 </h3>
                 <p className="text-white/50 mb-8 max-w-lg mx-auto">
                   Join {categoryShops.length > 0 ? categoryShops.length : ""}{" "}
-                  trusted agencies. Get a branded storefront, priority placement,
-                  and reach thousands of buyers and renters across Cyprus.
+                  trusted agencies. Get a branded storefront, priority
+                  placement, and reach thousands of buyers and renters across
+                  Cyprus.
                 </p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <Link
@@ -645,8 +639,7 @@ export default function PropertiesClient({
             <div
               className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
               onClick={(e) => {
-                if (e.target === e.currentTarget)
-                  setShowInsightsModal(false);
+                if (e.target === e.currentTarget) setShowInsightsModal(false);
               }}
             >
               <div className="bg-white w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-4 duration-200">

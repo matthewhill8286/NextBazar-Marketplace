@@ -25,7 +25,8 @@ export default function Analytics() {
       setAllowed(true);
     }
     window.addEventListener("cookie-consent-granted", onConsent);
-    return () => window.removeEventListener("cookie-consent-granted", onConsent);
+    return () =>
+      window.removeEventListener("cookie-consent-granted", onConsent);
   }, []);
 
   if (!GA_ID || !allowed) return null;

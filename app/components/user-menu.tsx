@@ -171,12 +171,12 @@ export default function UserMenu() {
             )}
             {user.is_pro_seller && FEATURE_FLAGS.DEALERS && (
               <Link
-                href="/shop-manager"
+                href="/dashboard"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
               >
                 <Store className="w-4 h-4 text-[#8E7A6B]" />
-                Shop Manager
+                My Shop
               </Link>
             )}
             <Link

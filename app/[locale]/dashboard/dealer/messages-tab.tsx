@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Clock,
-  Loader2,
-  MessageCircle,
-  Pin,
-  Search,
-} from "lucide-react";
+import { Clock, Loader2, MessageCircle, Pin, Search } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -14,7 +8,11 @@ import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import type { ConversationRow } from "./types";
 
-export default function MessagesTab({ shopMode = false }: { shopMode?: boolean }) {
+export default function MessagesTab({
+  shopMode = false,
+}: {
+  shopMode?: boolean;
+}) {
   const { userId } = useAuth();
   const supabase = createClient();
 
@@ -53,10 +51,7 @@ export default function MessagesTab({ shopMode = false }: { shopMode?: boolean }
     );
   }, [conversations, search]);
 
-  const unreadCount = conversations.reduce(
-    (s, c) => s + c.seller_unread,
-    0,
-  );
+  const unreadCount = conversations.reduce((s, c) => s + c.seller_unread, 0);
   const pinnedCount = conversations.filter((c) => c.is_pinned).length;
 
   // ─── Group: pinned first, then sorted by recency ──────────────────────
@@ -103,7 +98,7 @@ export default function MessagesTab({ shopMode = false }: { shopMode?: boolean }
           )}
         </h3>
         <Link
-          href={shopMode ? "/shop-manager/messages" : "/messages"}
+          href={shopMode ? "/dashboard/messages" : "/dashboard/messages"}
           className="text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657] transition-colors"
         >
           {shopMode ? "View all" : "Open full inbox"} &rarr;
@@ -146,7 +141,12 @@ export default function MessagesTab({ shopMode = false }: { shopMode?: boolean }
 
         {/* Recent */}
         {grouped.unpinned.map((c) => (
-          <ConversationItem key={c.id} conversation={c} timeAgo={timeAgo} shopMode={shopMode} />
+          <ConversationItem
+            key={c.id}
+            conversation={c}
+            timeAgo={timeAgo}
+            shopMode={shopMode}
+          />
         ))}
 
         {filtered.length === 0 && (
@@ -177,7 +177,9 @@ function ConversationItem({
 }) {
   return (
     <Link
-      href={shopMode ? `/shop-manager/messages/${c.id}` : `/messages/${c.id}`}
+      href={
+        shopMode ? `/dashboard/messages/${c.id}` : `/dashboard/messages/${c.id}`
+      }
       className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors group"
     >
       {/* Buyer avatar */}

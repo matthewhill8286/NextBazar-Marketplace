@@ -9,8 +9,8 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import { getAttr } from "@/app/helpers/get-attr";
+import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 // ─── Filter option constants ────────────────────────────────────────────────
 
@@ -141,10 +141,18 @@ export function applyPropertyFilters(
 
     // Area (sqm)
     const area = parseInt(getAttr(l, "area_sqm"), 10);
-    if (filters.areaMin && !isNaN(area) && area < parseInt(filters.areaMin, 10)) {
+    if (
+      filters.areaMin &&
+      !isNaN(area) &&
+      area < parseInt(filters.areaMin, 10)
+    ) {
       return false;
     }
-    if (filters.areaMax && !isNaN(area) && area > parseInt(filters.areaMax, 10)) {
+    if (
+      filters.areaMax &&
+      !isNaN(area) &&
+      area > parseInt(filters.areaMax, 10)
+    ) {
       return false;
     }
 

@@ -17,8 +17,7 @@ type UserShopState = {
  * Lightweight hook that checks whether the current user owns an active
  * dealer shop.  Result is cached for the lifetime of the component.
  *
- * Use this in the navbar to decide whether messages / notifications
- * should route to `/shop-manager/…` or `/dashboard/…`.
+ * Use this in the navbar to decide whether to show shop-specific features.
  */
 export function useUserShop(): UserShopState {
   const { userId } = useAuth();

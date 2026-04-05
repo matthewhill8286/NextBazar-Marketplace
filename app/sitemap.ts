@@ -1,5 +1,5 @@
-import type { MetadataRoute } from "next";
 import { createClient } from "@supabase/supabase-js";
+import type { MetadataRoute } from "next";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://nextbazar.com";
 const LOCALES = ["en", "el", "ru"] as const;

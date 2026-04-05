@@ -268,12 +268,6 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
             Track performance across all your listings.
           </p>
         </div>
-        <Link
-          href="/post"
-          className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#8E7A6B] text-white text-sm font-medium uppercase tracking-[0.15em] hover:bg-[#7A6657] transition-colors"
-        >
-          + New Listing
-        </Link>
       </div>
 
       {listings.length === 0 ? (

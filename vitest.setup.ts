@@ -31,7 +31,8 @@ vi.mock("next-intl", () => ({
     dateTime: (d: Date) => d.toISOString(),
     relativeTime: (d: Date) => "",
   }),
-  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  NextIntlClientProvider: ({ children }: { children: React.ReactNode }) =>
+    children,
 }));
 
 vi.mock("@/i18n/navigation", async () => {

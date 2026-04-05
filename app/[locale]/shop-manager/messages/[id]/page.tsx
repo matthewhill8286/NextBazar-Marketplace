@@ -1,8 +1,6 @@
-import ChatThread from "@/app/[locale]/messages/[id]/chat-thread";
+import { redirect } from "next/navigation";
 
-export default async function ShopManagerChatPage(
-  props: PageProps<"/[locale]/shop-manager/messages/[id]">,
-) {
+export default async function R(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
-  return <ChatThread conversationId={id} backHref="/shop-manager/messages" embedded />;
+  redirect(`/dashboard/messages/${id}`);
 }

@@ -42,7 +42,7 @@ export default function ChatThread({
 }: {
   conversationId: string;
   backHref?: string;
-  /** When true, removes fixed viewport height so the thread fits inside a parent layout (e.g. shop-manager). */
+  /** When true, removes fixed viewport height so the thread fits inside a parent layout (e.g. dashboard). */
   embedded?: boolean;
 }) {
   const router = useRouter();
@@ -140,10 +140,7 @@ export default function ChatThread({
           .eq("plan_status", "active")
           .single();
 
-        if (
-          shop?.plan_tier === "pro" ||
-          shop?.plan_tier === "business"
-        ) {
+        if (shop?.plan_tier === "pro" || shop?.plan_tier === "business") {
           const { data: templates } = await supabase
             .from("quick_reply_templates")
             .select("id, label, content")
@@ -488,7 +485,11 @@ export default function ChatThread({
   return (
     <div
       className="mx-auto flex flex-col"
-      style={embedded ? { height: "70vh", minHeight: 400 } : { height: "calc(100vh - 80px)" }}
+      style={
+        embedded
+          ? { height: "70vh", minHeight: 400 }
+          : { height: "calc(100vh - 80px)" }
+      }
     >
       {/* Header */}
       <div className="bg-white border-b border-[#e8e6e3] px-4 py-3 flex items-center gap-3 shrink-0">
@@ -617,7 +618,10 @@ export default function ChatThread({
       )}
 
       {/* Messages */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-1"
+      >
         {messages.length === 0 && (
           <div className="text-center py-12 text-[#8a8280] text-sm">
             Start the conversation by sending a message

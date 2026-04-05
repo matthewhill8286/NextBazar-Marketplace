@@ -526,7 +526,9 @@ export default function PostStep2({
               min="1"
               className={INPUT_CLASSES}
               value={formData.low_stock_threshold}
-              onChange={(e) => onUpdateAction("low_stock_threshold", e.target.value)}
+              onChange={(e) =>
+                onUpdateAction("low_stock_threshold", e.target.value)
+              }
             />
             <p className="text-[10px] text-[#8a8280] mt-1">
               Get notified when stock drops to this level

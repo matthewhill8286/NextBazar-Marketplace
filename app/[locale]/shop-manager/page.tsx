@@ -1,9 +1,4 @@
-"use client";
-
-import OverviewTab from "../dashboard/dealer/overview-tab";
-import { useShopCMS } from "./shop-context";
-
-export default function ShopManagerOverview() {
-  const { shop, listings } = useShopCMS();
-  return <OverviewTab listings={listings} slug={shop?.slug ?? ""} shopMode />;
+import { redirect } from "next/navigation";
+export default function ShopManagerRedirect() {
+  redirect("/dashboard");
 }

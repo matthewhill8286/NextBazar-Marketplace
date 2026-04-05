@@ -10,9 +10,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useMemo } from "react";
+import { getAttr } from "@/app/helpers/get-attr";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
-import {getAttr} from "@/app/helpers/get-attr";
-
 
 type MakeStats = {
   make: string;
@@ -79,8 +78,7 @@ export function getDealRating(
 
   if (sameMakePrices.length < 2) return null;
 
-  const avg =
-    sameMakePrices.reduce((a, b) => a + b, 0) / sameMakePrices.length;
+  const avg = sameMakePrices.reduce((a, b) => a + b, 0) / sameMakePrices.length;
   const ratio = listing.price / avg;
 
   if (ratio <= 0.8) return "great";
@@ -235,7 +233,8 @@ export default function PriceInsights({ listings }: Props) {
             Price Range
           </p>
           <p className="text-sm font-medium text-[#1a1a1a]">
-            €{overallStats.min.toLocaleString()} — €{overallStats.max.toLocaleString()}
+            €{overallStats.min.toLocaleString()} — €
+            {overallStats.max.toLocaleString()}
           </p>
         </div>
         <div className="bg-white border border-[#e8e6e3] p-4">
@@ -246,9 +245,13 @@ export default function PriceInsights({ listings }: Props) {
             </p>
           </div>
           <p className="text-sm font-medium text-[#1a1a1a]">
-            <span className="text-emerald-700">{overallStats.greatDeals} great</span>
+            <span className="text-emerald-700">
+              {overallStats.greatDeals} great
+            </span>
             {" · "}
-            <span className="text-green-700">{overallStats.goodDeals} good</span>
+            <span className="text-green-700">
+              {overallStats.goodDeals} good
+            </span>
           </p>
         </div>
       </div>

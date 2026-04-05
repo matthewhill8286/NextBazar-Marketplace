@@ -6,8 +6,8 @@ import {
   getShopsByCategoryCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
-import PropertiesClient from "./properties-client";
 import PropertiesLoading from "./loading";
+import PropertiesClient from "./properties-client";
 
 export const metadata: Metadata = {
   title: "Properties for Sale & Rent in Cyprus — NextBazar",

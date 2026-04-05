@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
-import { Link } from "@/i18n/navigation";
 import JsonLd from "@/app/components/json-ld";
+import { Link } from "@/i18n/navigation";
 import { buildAlternates, faqJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ const FAQS = [
       {
         question: "How do I contact a seller?",
         answer:
-          "Click the \"Message Seller\" button on any listing to start a real-time conversation. You'll need a free NextBazar account to send messages.",
+          'Click the "Message Seller" button on any listing to start a real-time conversation. You\'ll need a free NextBazar account to send messages.',
       },
       {
         question: "How do I know a seller is trustworthy?",
@@ -48,7 +48,7 @@ const FAQS = [
       {
         question: "How do I list an item for sale?",
         answer:
-          "Click \"Post Listing\" in the navigation bar, fill in the details (title, description, photos, price, category), and publish. Your listing will be live within seconds.",
+          'Click "Post Listing" in the navigation bar, fill in the details (title, description, photos, price, category), and publish. Your listing will be live within seconds.',
       },
       {
         question: "What are the seller plans?",
@@ -73,12 +73,12 @@ const FAQS = [
       {
         question: "How do I create an account?",
         answer:
-          "Click \"Sign Up\" and register with your email address. You can also sign in with Google for a faster setup. Verification email will be sent to confirm your account.",
+          'Click "Sign Up" and register with your email address. You can also sign in with Google for a faster setup. Verification email will be sent to confirm your account.',
       },
       {
         question: "I forgot my password. What do I do?",
         answer:
-          "Go to the login page and click \"Forgot password?\" to receive a password reset link via email. The link is valid for 24 hours.",
+          'Go to the login page and click "Forgot password?" to receive a password reset link via email. The link is valid for 24 hours.',
       },
       {
         question: "How do I report a suspicious listing?",
@@ -150,10 +150,7 @@ export default function FaqPage() {
               </h2>
               <div className="space-y-0 divide-y divide-[#e8e6e3]">
                 {section.items.map((faq) => (
-                  <details
-                    key={faq.question}
-                    className="group py-4"
-                  >
+                  <details key={faq.question} className="group py-4">
                     <summary className="flex items-center justify-between cursor-pointer list-none text-[#1a1a1a] font-medium hover:text-[#8E7A6B] transition-colors">
                       <span className="pr-4">{faq.question}</span>
                       <ChevronDown className="w-5 h-5 text-[#8a8280] shrink-0 transition-transform group-open:rotate-180" />

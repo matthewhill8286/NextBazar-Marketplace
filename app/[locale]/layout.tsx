@@ -12,10 +12,10 @@ import JsonLd from "@/app/components/json-ld";
 import Navbar from "@/app/components/navbar";
 import RealtimeToasts from "@/app/components/realtime-toasts";
 import { routing } from "@/i18n/routing";
-import { organizationJsonLd } from "@/lib/seo";
 import { AuthProvider } from "@/lib/auth-context";
 import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
+import { organizationJsonLd } from "@/lib/seo";
 
 type Messages = Record<string, unknown>;
 
@@ -124,7 +124,9 @@ export default async function LocaleLayout({
               <SavedProvider>
                 <CompareProvider>
                   <Navbar />
-                  <main id="main-content" className="flex-1">{children}</main>
+                  <main id="main-content" className="flex-1">
+                    {children}
+                  </main>
                   <Footer />
                   <CompareBar />
                   <RealtimeToasts />

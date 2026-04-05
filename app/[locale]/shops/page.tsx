@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { buildAlternates } from "@/lib/seo";
 import { getActiveShopsCached } from "@/lib/supabase/queries";
-import ShopsClient from "./shops-client";
 import ShopsLoading from "./loading";
+import ShopsClient from "./shops-client";
 
 export const metadata: Metadata = {
   title: "Browse Shops | NextBazar",

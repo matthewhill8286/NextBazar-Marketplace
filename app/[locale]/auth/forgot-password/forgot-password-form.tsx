@@ -94,7 +94,6 @@ export default function ForgotPasswordForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoFocus
               placeholder="you@example.com"
               className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] text-sm focus:outline-none focus:border-[#8E7A6B] transition-colors"
             />

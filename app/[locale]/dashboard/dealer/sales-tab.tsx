@@ -140,7 +140,8 @@ export default function SalesTab({ listings, shopMode = false }: Props) {
             <TrendingUp className="w-[18px] h-[18px] text-blue-600" />
           </div>
           <div className="text-2xl font-bold text-[#1a1a1a]">
-            &euro;{avgPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+            &euro;
+            {avgPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </div>
           <div className="text-xs text-[#6b6560] mt-1">Avg. Sale Price</div>
         </div>
@@ -197,7 +198,11 @@ export default function SalesTab({ listings, shopMode = false }: Props) {
                 >
                   <td className="px-4 py-3">
                     <Link
-                      href={shopMode ? `/shop-manager/edit/${l.id}` : `/listing/${l.slug}`}
+                      href={
+                        shopMode
+                          ? `/dashboard/edit/${l.id}`
+                          : `/listing/${l.slug}`
+                      }
                       className="flex items-center gap-3 group"
                     >
                       <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
@@ -228,13 +233,14 @@ export default function SalesTab({ listings, shopMode = false }: Props) {
                     {l.message_count}
                   </td>
                   <td className="px-4 py-3 text-right text-[#6b6560] text-xs hidden lg:table-cell">
-                    {new Date(
-                      l.updated_at ?? l.created_at,
-                    ).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {new Date(l.updated_at ?? l.created_at).toLocaleDateString(
+                      "en-GB",
+                      {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )}
                   </td>
                 </tr>
               ))}

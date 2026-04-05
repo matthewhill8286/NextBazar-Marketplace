@@ -271,7 +271,11 @@
       "settings": "Settings",
       "reportsQueue": "Reports Queue",
       "myShop": "My Shop",
-      "becomeProSeller": "Become a Pro Seller"
+      "becomeProSeller": "Become a Pro Seller",
+      "inventory": "Inventory",
+      "sales": "Sales",
+      "branding": "Branding",
+      "plan": "Plan & Billing"
     },
     "proSeller": "Pro Seller",
     "stats": {
@@ -558,6 +562,10 @@
   "settings": {
     "title": "Settings",
     "profile": "Profile",
+    "profilePhoto": "Profile Photo",
+    "photoFormats": "JPG, PNG or WebP. Max 2 MB.",
+    "uploadPhoto": "Upload Photo",
+    "changePhoto": "Change Photo",
     "displayName": "Display Name",
     "bio": "Bio",
     "phone": "Phone Number",

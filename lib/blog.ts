@@ -11,8 +11,8 @@
  */
 
 import fs from "fs";
-import path from "path";
 import matter from "gray-matter";
+import path from "path";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
@@ -43,7 +43,9 @@ export function getAllPosts(): Omit<BlogPost, "content">[] {
       slug,
       title: data.title || slug,
       description: data.description || "",
-      date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+      date: data.date
+        ? new Date(data.date).toISOString()
+        : new Date().toISOString(),
       author: data.author || "NextBazar Team",
       tags: data.tags || [],
       image: data.image || undefined,
@@ -68,7 +70,9 @@ export function getPostBySlug(slug: string): BlogPost | null {
         slug,
         title: data.title || slug,
         description: data.description || "",
-        date: data.date ? new Date(data.date).toISOString() : new Date().toISOString(),
+        date: data.date
+          ? new Date(data.date).toISOString()
+          : new Date().toISOString(),
         author: data.author || "NextBazar Team",
         tags: data.tags || [],
         image: data.image || undefined,

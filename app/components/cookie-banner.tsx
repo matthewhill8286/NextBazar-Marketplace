@@ -57,7 +57,8 @@ export default function CookieBanner() {
           <Cookie className="w-5 h-5 text-[#8E7A6B] flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
             <p className="text-sm text-[#1a1a1a] leading-relaxed mb-1">
-              We use cookies to improve your experience and analyse site traffic.
+              We use cookies to improve your experience and analyse site
+              traffic.
             </p>
             <p className="text-xs text-[#6b6560] mb-4">
               Essential cookies are always active.{" "}

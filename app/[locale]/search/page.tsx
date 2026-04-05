@@ -6,8 +6,8 @@ import {
   getLocationsCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
-import SearchClient from "./search-client";
 import SearchLoading from "./loading";
+import SearchClient from "./search-client";
 
 export const metadata: Metadata = {
   title: "Search Listings — NextBazar",

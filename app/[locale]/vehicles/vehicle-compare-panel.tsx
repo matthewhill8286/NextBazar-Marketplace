@@ -10,10 +10,10 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import { getAttr } from "@/app/helpers/get-attr";
+import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/lib/compare-context";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
-import { Link } from "@/i18n/navigation";
-import { getAttr } from "@/app/helpers/get-attr";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 function formatPrice(price: number | null, currency: string): string {
@@ -97,7 +97,12 @@ export default function VehicleComparePanel({ enrichedItems }: Props) {
 
       <div className="bg-white border border-[#e8e6e3] overflow-hidden">
         {/* Header row with vehicle images + names */}
-        <div className="grid" style={{ gridTemplateColumns: `160px repeat(${compareData.length}, 1fr)` }}>
+        <div
+          className="grid"
+          style={{
+            gridTemplateColumns: `160px repeat(${compareData.length}, 1fr)`,
+          }}
+        >
           <div className="p-4 bg-[#faf9f7] border-r border-[#e8e6e3]" />
           {compareData.map((item) => (
             <div
@@ -142,9 +147,10 @@ export default function VehicleComparePanel({ enrichedItems }: Props) {
           const values = compareData.map((item) => {
             const val = getAttr(item as ListingCardRow, spec.key);
             if (val === "—") return val;
-            const formatted = spec.key === "mileage" && val !== "—"
-              ? parseInt(val, 10).toLocaleString()
-              : val.charAt(0).toUpperCase() + val.slice(1);
+            const formatted =
+              spec.key === "mileage" && val !== "—"
+                ? parseInt(val, 10).toLocaleString()
+                : val.charAt(0).toUpperCase() + val.slice(1);
             return formatted + (spec.suffix && val !== "—" ? spec.suffix : "");
           });
 
@@ -176,10 +182,14 @@ export default function VehicleComparePanel({ enrichedItems }: Props) {
             <div
               key={spec.key}
               className={`grid border-t border-[#e8e6e3] ${idx % 2 === 0 ? "bg-white" : "bg-[#faf9f7]/50"}`}
-              style={{ gridTemplateColumns: `160px repeat(${compareData.length}, 1fr)` }}
+              style={{
+                gridTemplateColumns: `160px repeat(${compareData.length}, 1fr)`,
+              }}
             >
               <div className="p-3 pr-4 border-r border-[#e8e6e3] flex items-center gap-2">
-                {spec.icon && <spec.icon className="w-3.5 h-3.5 text-[#8a8280]" />}
+                {spec.icon && (
+                  <spec.icon className="w-3.5 h-3.5 text-[#8a8280]" />
+                )}
                 <span className="text-xs font-medium text-[#8a8280] tracking-wide uppercase">
                   {spec.label}
                 </span>

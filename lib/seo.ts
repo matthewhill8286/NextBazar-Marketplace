@@ -70,8 +70,7 @@ export function productJsonLd(input: ProductJsonLdInput) {
         "@type": "Offer",
         priceCurrency: input.currency || "EUR",
         ...(input.price != null && { price: input.price }),
-        availability:
-          "https://schema.org/InStock",
+        availability: "https://schema.org/InStock",
         seller: {
           "@type": "Person",
           name: input.seller,
@@ -109,9 +108,7 @@ export function localBusinessJsonLd(input: LocalBusinessJsonLdInput) {
   };
 }
 
-export function breadcrumbJsonLd(
-  items: { name: string; url: string }[],
-) {
+export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -124,9 +121,7 @@ export function breadcrumbJsonLd(
   };
 }
 
-export function faqJsonLd(
-  items: { question: string; answer: string }[],
-) {
+export function faqJsonLd(items: { question: string; answer: string }[]) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

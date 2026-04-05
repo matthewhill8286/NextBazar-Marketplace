@@ -96,7 +96,9 @@ export default function ShopClient({
     ? adjustBrightness(accentColor, -25)
     : "#7A6657";
 
-  const badgeLabel = isBusiness ? "Verified Business Seller" : "Verified Pro Seller";
+  const badgeLabel = isBusiness
+    ? "Verified Business Seller"
+    : "Verified Pro Seller";
   const badgeGradient = isBusiness
     ? "linear-gradient(135deg, #b45309, #92400e)"
     : `linear-gradient(135deg, ${gradientStart}, ${gradientEnd})`;

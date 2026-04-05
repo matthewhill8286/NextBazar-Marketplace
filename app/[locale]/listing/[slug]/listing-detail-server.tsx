@@ -103,12 +103,8 @@ export default async function ListingDetailServer({
         : [];
 
   // Pro/Business enhanced template
-  const planLimits = shopInfo
-    ? getPlanLimits(shopInfo.plan_tier)
-    : null;
-  const isEnhanced = planLimits
-    ? planLimits.brandedShop
-    : false;
+  const planLimits = shopInfo ? getPlanLimits(shopInfo.plan_tier) : null;
+  const isEnhanced = planLimits ? planLimits.brandedShop : false;
 
   const conditionLabel = (c: string | null): string => {
     if (!c) return "\u2014";
@@ -555,7 +551,11 @@ export default async function ListingDetailServer({
                   />
                   <span
                     className="text-xs font-semibold tracking-wide uppercase"
-                    style={accentColor ? { color: accentColor } : { color: "#8E7A6B" }}
+                    style={
+                      accentColor
+                        ? { color: accentColor }
+                        : { color: "#8E7A6B" }
+                    }
                   >
                     {shopInfo.shop_name}
                   </span>

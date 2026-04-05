@@ -25,19 +25,19 @@ import {
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
-import ListingCard from "@/app/components/listing-card";
 import { ShopCard } from "@/app/[locale]/shops/shops-client";
+import ListingCard from "@/app/components/listing-card";
 import { Link } from "@/i18n/navigation";
 import type { ShopCardRow } from "@/lib/supabase/queries";
 import type {
   ListingCardRow,
   Subcategory,
 } from "@/lib/supabase/supabase.types";
+import PriceInsights, { DEAL_CONFIG, getDealRating } from "./price-insights";
 import VehicleFilters, {
   applyVehicleFilters,
   type VehicleFilterState,
 } from "./vehicle-filters";
-import PriceInsights, { getDealRating, DEAL_CONFIG } from "./price-insights";
 
 // ─── Tab config ─────────────────────────────────────────────────────────────
 
@@ -177,10 +177,6 @@ export default function VehiclesClient({
   const showVehicleFeatures = activeTabConfig?.showVehicleFeatures ?? false;
   const isDealerTab = activeTabConfig?.filterByDealer ?? false;
 
-  const tabSubcategories = subcategories.filter((sc) =>
-    activeTabConfig?.subcategorySlugs.includes(sc.slug),
-  );
-
   // Split shops by tier
   const businessShops = useMemo(
     () => categoryShops.filter((s) => s.plan_tier === "business"),
@@ -197,6 +193,7 @@ export default function VehiclesClient({
     () => filterListings(featuredListings, activeTabConfig, subcategories),
     [featuredListings, activeTabConfig, subcategories],
   );
+
   const tabRecent = useMemo(
     () => filterListings(recentListings, activeTabConfig, subcategories),
     [recentListings, activeTabConfig, subcategories],
@@ -210,11 +207,10 @@ export default function VehiclesClient({
         : tabFeatured,
     [tabFeatured, filters, showVehicleFeatures],
   );
+
   const displayRecent = useMemo(
     () =>
-      showVehicleFeatures
-        ? applyVehicleFilters(tabRecent, filters)
-        : tabRecent,
+      showVehicleFeatures ? applyVehicleFilters(tabRecent, filters) : tabRecent,
     [tabRecent, filters, showVehicleFeatures],
   );
 
@@ -649,9 +645,7 @@ export default function VehiclesClient({
                 >
                   {t("featured", { categoryName: "Vehicles" })}
                 </h2>
-                <p className="text-sm text-[#8a8280] mt-0.5">
-                  {t("promoted")}
-                </p>
+                <p className="text-sm text-[#8a8280] mt-0.5">{t("promoted")}</p>
               </div>
               <Link
                 href={`/search?category=${categorySlug}&sort=promoted`}
@@ -714,8 +708,7 @@ export default function VehiclesClient({
                   <div className="text-center py-16 text-[#8a8280]">
                     <p className="text-lg font-medium mb-1">
                       {t("noListings", {
-                        category:
-                          activeTabConfig?.label.toLowerCase() ?? "",
+                        category: activeTabConfig?.label.toLowerCase() ?? "",
                       })}
                     </p>
                     <p className="text-sm">

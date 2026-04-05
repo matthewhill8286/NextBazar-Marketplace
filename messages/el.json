@@ -271,7 +271,11 @@
       "settings": "Ρυθμίσεις",
       "reportsQueue": "Ουρά Αναφορών",
       "myShop": "Το Κατάστημά μου",
-      "becomeProSeller": "Γίνε Επαγγελματίας Πωλητής"
+      "becomeProSeller": "Γίνε Επαγγελματίας Πωλητής",
+      "inventory": "Απόθεμα",
+      "sales": "Πωλήσεις",
+      "branding": "Εμφάνιση",
+      "plan": "Πλάνο & Χρεώσεις"
     },
     "proSeller": "Επαγγελματίας Πωλητής",
     "stats": {
@@ -558,6 +562,10 @@
   "settings": {
     "title": "Ρυθμίσεις",
     "profile": "Προφίλ",
+    "profilePhoto": "Φωτογραφία Προφίλ",
+    "photoFormats": "JPG, PNG ή WebP. Μέγιστο 2 MB.",
+    "uploadPhoto": "Ανέβασμα Φωτογραφίας",
+    "changePhoto": "Αλλαγή Φωτογραφίας",
     "displayName": "Εμφανιζόμενο Όνομα",
     "bio": "Βιογραφικό",
     "phone": "Τηλέφωνο",

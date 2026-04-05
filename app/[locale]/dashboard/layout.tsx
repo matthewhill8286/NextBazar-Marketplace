@@ -11,7 +11,8 @@ export const metadata: Metadata = {
     default: "Dashboard",
     template: "%s — Dashboard | NextBazar",
   },
-  description: "Manage your NextBazar listings, messages, and account settings.",
+  description:
+    "Manage your NextBazar listings, messages, and account settings.",
   robots: { index: false, follow: false },
 };
 

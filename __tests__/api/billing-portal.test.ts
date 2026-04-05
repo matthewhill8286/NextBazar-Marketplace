@@ -151,7 +151,7 @@ describe("POST /api/dealer/portal", () => {
     await POST(makeRequest({ origin: "https://nextbazar.com" }));
     expect(mockPortalCreate).toHaveBeenCalledWith({
       customer: "cus_xyz789",
-      return_url: "https://nextbazar.com/shop-manager",
+      return_url: "https://nextbazar.com/dashboard",
     });
   });
 
