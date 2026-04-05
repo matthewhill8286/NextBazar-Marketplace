@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import {
   getCategoryBySlugCached,
   getCategoryListingsCached,
@@ -6,6 +7,7 @@ import {
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import PropertiesClient from "./properties-client";
+import PropertiesLoading from "./loading";
 
 export const metadata: Metadata = {
   title: "Properties for Sale & Rent in Cyprus — NextBazar",
@@ -13,7 +15,11 @@ export const metadata: Metadata = {
     "Browse houses, apartments, land, and commercial properties for sale and rent across Cyprus. New developments, existing builds, and rental listings.",
 };
 
-export default async function PropertiesPage() {
+/**
+ * Async server component that fetches all data then renders PropertiesClient.
+ * Wrapped in Suspense so the shell + loading skeleton ship immediately.
+ */
+async function PropertiesContent() {
   const category = await getCategoryBySlugCached("property");
   if (!category)
     return (
@@ -27,7 +33,6 @@ export default async function PropertiesPage() {
     getShopsByCategoryCached(category.id),
   ]);
 
-  // Only subcategories belonging to this category
   const propertySubcategories = subcategories.filter(
     (sc) => sc.category_id === category.id,
   );
@@ -40,5 +45,13 @@ export default async function PropertiesPage() {
       recentListings={recent}
       categoryShops={categoryShops}
     />
+  );
+}
+
+export default function PropertiesPage() {
+  return (
+    <Suspense fallback={<PropertiesLoading />}>
+      <PropertiesContent />
+    </Suspense>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import {
   getCategoryBySlugCached,
   getCategoryListingsCached,
@@ -6,6 +7,7 @@ import {
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import VehiclesClient from "./vehicles-client";
+import VehiclesLoading from "./loading";
 
 export const metadata: Metadata = {
   title: "Cars & Vehicles for Sale in Cyprus — NextBazar",
@@ -13,7 +15,11 @@ export const metadata: Metadata = {
     "Browse new and used cars, motorcycles, and commercial vehicles from private sellers and Pro Sellers across Cyprus.",
 };
 
-export default async function VehiclesPage() {
+/**
+ * Async server component that fetches all data then renders VehiclesClient.
+ * Wrapped in Suspense so the shell + loading skeleton ship immediately.
+ */
+async function VehiclesContent() {
   const category = await getCategoryBySlugCached("vehicles");
   if (!category)
     return (
@@ -39,5 +45,13 @@ export default async function VehiclesPage() {
       recentListings={recent}
       categoryShops={categoryShops}
     />
+  );
+}
+
+export default function VehiclesPage() {
+  return (
+    <Suspense fallback={<VehiclesLoading />}>
+      <VehiclesContent />
+    </Suspense>
   );
 }

@@ -3,6 +3,7 @@ import { Store } from "lucide-react";
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Link } from "@/i18n/navigation";
 import JsonLd from "@/app/components/json-ld";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
@@ -12,6 +13,7 @@ import { CARD_SELECT } from "@/lib/supabase/selects";
 import { createClient } from "@/lib/supabase/server";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import ShopClient from "./shop-client";
+import ShopLoading from "./loading";
 
 /** Public-safe subset — exclude Stripe secrets. */
 const SHOP_SELECT =
@@ -71,10 +73,73 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   };
 }
 
+/**
+ * Async component that fetches listings + profile and renders ShopClient.
+ * Wrapped in Suspense by the page component for instant shell delivery.
+ */
+async function ShopContent({ shop, slug }: { shop: DealerShop; slug: string }) {
+  const supabase = await createClient();
+
+  const [{ data: listings }, { data: profile }] = await Promise.all([
+    supabase
+      .from("listings")
+      .select(CARD_SELECT)
+      .eq("user_id", shop.user_id)
+      .eq("status", "active")
+      .order("is_promoted", { ascending: false })
+      .order("created_at", { ascending: false }),
+
+    supabase
+      .from("profiles")
+      .select(
+        "id, display_name, avatar_url, verified, is_pro_seller, created_at",
+      )
+      .eq("id", shop.user_id)
+      .single(),
+  ]);
+
+  const shopUrl = `${BASE_URL}/en/shop/${slug}`;
+
+  return (
+    <>
+      <JsonLd
+        data={localBusinessJsonLd({
+          name: shop.shop_name,
+          description: shop.description || undefined,
+          url: shopUrl,
+          image: shop.banner_url || undefined,
+        })}
+      />
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", url: BASE_URL },
+          { name: "Shops", url: `${BASE_URL}/en/shops` },
+          { name: shop.shop_name, url: shopUrl },
+        ])}
+      />
+      <ShopClient
+        shop={shop}
+        listings={(listings ?? []) as unknown as ListingCardRow[]}
+        profile={
+          profile
+            ? {
+                id: profile.id,
+                display_name: profile.display_name,
+                avatar_url: profile.avatar_url,
+                verified: profile.verified,
+                is_pro_seller: profile.is_pro_seller,
+                created_at: profile.created_at,
+              }
+            : null
+        }
+      />
+    </>
+  );
+}
+
 export default async function ShopPage(props: PageProps) {
   if (!FEATURE_FLAGS.DEALERS) notFound();
   const { slug } = await props.params;
-  const supabase = await createClient();
 
   // Reuses the same cache entry as generateMetadata — no duplicate DB call
   const shop = await getShopBySlugCached(slug);
@@ -113,60 +178,9 @@ export default async function ShopPage(props: PageProps) {
     notFound();
   }
 
-  // Step 2: Fetch listings + profile in parallel (needs user_id from shop)
-  const [{ data: listings }, { data: profile }] = await Promise.all([
-    supabase
-      .from("listings")
-      .select(CARD_SELECT)
-      .eq("user_id", shop.user_id)
-      .eq("status", "active")
-      .order("is_promoted", { ascending: false })
-      .order("created_at", { ascending: false }),
-
-    supabase
-      .from("profiles")
-      .select(
-        "id, display_name, avatar_url, verified, is_pro_seller, created_at",
-      )
-      .eq("id", shop.user_id)
-      .single(),
-  ]);
-
-  const shopUrl = `${BASE_URL}/en/shop/${slug}`;
-
   return (
-    <>
-    <JsonLd
-      data={localBusinessJsonLd({
-        name: shop.shop_name,
-        description: shop.description || undefined,
-        url: shopUrl,
-        image: shop.banner_url || undefined,
-      })}
-    />
-    <JsonLd
-      data={breadcrumbJsonLd([
-        { name: "Home", url: BASE_URL },
-        { name: "Shops", url: `${BASE_URL}/en/shops` },
-        { name: shop.shop_name, url: shopUrl },
-      ])}
-    />
-    <ShopClient
-      shop={shop}
-      listings={(listings ?? []) as unknown as ListingCardRow[]}
-      profile={
-        profile
-          ? {
-              id: profile.id,
-              display_name: profile.display_name,
-              avatar_url: profile.avatar_url,
-              verified: profile.verified,
-              is_pro_seller: profile.is_pro_seller,
-              created_at: profile.created_at,
-            }
-          : null
-      }
-    />
-    </>
+    <Suspense fallback={<ShopLoading />}>
+      <ShopContent shop={shop} slug={slug} />
+    </Suspense>
   );
 }
