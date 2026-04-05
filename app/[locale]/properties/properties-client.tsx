@@ -28,12 +28,11 @@ import { useCallback, useMemo, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
 import { ShopCard } from "@/app/[locale]/shops/shops-client";
 import { Link } from "@/i18n/navigation";
-import { useCategoryData } from "@/lib/hooks/use-category-data";
+import type { ShopCardRow } from "@/lib/supabase/queries";
 import type {
   ListingCardRow,
   Subcategory,
 } from "@/lib/supabase/supabase.types";
-import PropertiesLoading from "./loading";
 import PropertyFilters, {
   applyPropertyFilters,
   type PropertyFilterState,
@@ -132,6 +131,16 @@ function filterListings(
   );
 }
 
+// ─── Props ──────────────────────────────────────────────────────────────────
+
+type Props = {
+  category: { id: string; name: string; slug: string; icon: string | null };
+  subcategories: Subcategory[];
+  featuredListings: ListingCardRow[];
+  recentListings: ListingCardRow[];
+  categoryShops?: ShopCardRow[];
+};
+
 const EMPTY_FILTERS: PropertyFilterState = {
   search: "",
   propertyType: "",
@@ -147,15 +156,13 @@ const EMPTY_FILTERS: PropertyFilterState = {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export default function PropertiesClient() {
-  const {
-    category,
-    subcategories,
-    featuredListings,
-    recentListings,
-    categoryShops,
-    loading: dataLoading,
-  } = useCategoryData("property");
+export default function PropertiesClient({
+  category,
+  subcategories,
+  featuredListings,
+  recentListings,
+  categoryShops = [],
+}: Props) {
   const t = useTranslations("categoryLanding");
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState(TABS[0]?.key ?? "");
@@ -164,6 +171,10 @@ export default function PropertiesClient() {
 
   const activeTabConfig = TABS.find((tab) => tab.key === activeTab);
   const isDealerTab = activeTabConfig?.filterByDealer ?? false;
+
+  const tabSubcategories = subcategories.filter((sc) =>
+    activeTabConfig?.subcategorySlugs.includes(sc.slug),
+  );
 
   // Split shops by tier for display
   const businessShops = useMemo(
@@ -252,16 +263,6 @@ export default function PropertiesClient() {
     setActiveTab(key);
     setFilters(EMPTY_FILTERS);
   }, []);
-
-  // ── Early returns AFTER all hooks ──────────────────────────────────────────
-  if (dataLoading) return <PropertiesLoading />;
-
-  if (!category) {
-    return (
-      <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
-    );
-  }
-
 
   const heroImage = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/property-hero.jpg`;
   const categorySlug = category.slug;

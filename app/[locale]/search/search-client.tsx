@@ -45,7 +45,17 @@ import type {
   Subcategory,
 } from "@/lib/supabase/supabase.types";
 
-export default function SearchClient() {
+type Props = {
+  initialCategories?: Category[];
+  initialSubcategories?: Subcategory[];
+  initialLocations?: Location[];
+};
+
+export default function SearchClient({
+  initialCategories = [],
+  initialSubcategories = [],
+  initialLocations = [],
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("search");
@@ -77,31 +87,9 @@ export default function SearchClient() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [listings, setListings] = useState<SearchListing[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
-
-  // Fetch reference data client-side on mount
-  useEffect(() => {
-    async function fetchReferenceData() {
-      const [catRes, subRes, locRes] = await Promise.all([
-        supabase.from("categories").select("*").order("sort_order"),
-        supabase
-          .from("subcategories")
-          .select("id, category_id, name, slug, sort_order")
-          .order("sort_order"),
-        supabase
-          .from("locations")
-          .select("id, name, slug")
-          .order("sort_order"),
-      ]);
-      setCategories((catRes.data ?? []) as Category[]);
-      setSubcategories((subRes.data ?? []) as Subcategory[]);
-      setLocations((locRes.data ?? []) as Location[]);
-    }
-    fetchReferenceData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [categories] = useState<Category[]>(initialCategories);
+  const [subcategories] = useState<Subcategory[]>(initialSubcategories);
+  const [locations] = useState<Location[]>(initialLocations);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalHits, setTotalHits] = useState(0);
