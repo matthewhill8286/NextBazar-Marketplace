@@ -92,16 +92,21 @@ describe("POST /api/webhooks/stripe", () => {
     expect(body.received).toBe(true);
   });
 
-  it("updates listing with is_promoted and promoted_until for 'featured'", async () => {
+  it("updates listing with is_promoted, promoted_until, and promoted_at for 'featured'", async () => {
     await POST(makeWebhookRequest(featuredSessionEvent));
 
     expect(mockUpdate).toHaveBeenCalledOnce();
     const updateArg = mockUpdate.mock.calls[0][0];
     expect(updateArg.is_promoted).toBe(true);
     expect(updateArg.promoted_until).toBeDefined();
+    expect(updateArg.promoted_at).toBeDefined();
     // promoted_until should be a future ISO date string
     expect(new Date(updateArg.promoted_until).getTime()).toBeGreaterThan(
       Date.now(),
+    );
+    // promoted_at should be roughly now
+    expect(new Date(updateArg.promoted_at).getTime()).toBeLessThanOrEqual(
+      Date.now() + 1000,
     );
   });
 
@@ -110,12 +115,13 @@ describe("POST /api/webhooks/stripe", () => {
     expect(mockEq).toHaveBeenCalledWith("id", "listing-1");
   });
 
-  it("updates listing with is_urgent for 'urgent' promotion", async () => {
+  it("updates listing with is_urgent and promoted_at for 'urgent' promotion", async () => {
     await POST(makeWebhookRequest(urgentSessionEvent));
 
     expect(mockUpdate).toHaveBeenCalledOnce();
     const updateArg = mockUpdate.mock.calls[0][0];
     expect(updateArg.is_urgent).toBe(true);
+    expect(updateArg.promoted_at).toBeDefined();
     // urgent doesn't set a promoted_until date
     expect(updateArg.promoted_until).toBeUndefined();
   });
