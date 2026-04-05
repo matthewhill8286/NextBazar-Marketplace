@@ -28,7 +28,7 @@ import { useCallback, useMemo, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
 import { ShopCard } from "@/app/[locale]/shops/shops-client";
 import { Link } from "@/i18n/navigation";
-import type { ShopCardRow } from "@/lib/supabase/queries";
+import { useCategoryData } from "@/lib/hooks/use-category-data";
 import type {
   ListingCardRow,
   Subcategory,
@@ -37,6 +37,7 @@ import VehicleFilters, {
   applyVehicleFilters,
   type VehicleFilterState,
 } from "./vehicle-filters";
+import VehiclesLoading from "./loading";
 import PriceInsights, { getDealRating, DEAL_CONFIG } from "./price-insights";
 
 // ─── Tab config ─────────────────────────────────────────────────────────────
@@ -134,16 +135,6 @@ function filterListings(
   );
 }
 
-// ─── Props ──────────────────────────────────────────────────────────────────
-
-type Props = {
-  category: { id: string; name: string; slug: string; icon: string | null };
-  subcategories: Subcategory[];
-  featuredListings: ListingCardRow[];
-  recentListings: ListingCardRow[];
-  categoryShops?: ShopCardRow[];
-};
-
 const EMPTY_FILTERS: VehicleFilterState = {
   search: "",
   make: "",
@@ -160,13 +151,16 @@ const EMPTY_FILTERS: VehicleFilterState = {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export default function VehiclesClient({
-  category,
-  subcategories,
-  featuredListings,
-  recentListings,
-  categoryShops = [],
-}: Props) {
+export default function VehiclesClient() {
+  const {
+    category,
+    subcategories,
+    featuredListings,
+    recentListings,
+    categoryShops: categoryShopsRaw,
+    loading: dataLoading,
+  } = useCategoryData("vehicles");
+  const categoryShops = categoryShopsRaw;
   const t = useTranslations("categoryLanding");
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState(TABS[0]?.key ?? "");
@@ -176,10 +170,6 @@ export default function VehiclesClient({
   const activeTabConfig = TABS.find((tab) => tab.key === activeTab);
   const showVehicleFeatures = activeTabConfig?.showVehicleFeatures ?? false;
   const isDealerTab = activeTabConfig?.filterByDealer ?? false;
-
-  const tabSubcategories = subcategories.filter((sc) =>
-    activeTabConfig?.subcategorySlugs.includes(sc.slug),
-  );
 
   // Split shops by tier
   const businessShops = useMemo(
@@ -269,6 +259,16 @@ export default function VehiclesClient({
     setFilters(EMPTY_FILTERS);
   }, []);
 
+  // ── Early returns AFTER all hooks ──────────────────────────────────────────
+  if (dataLoading) return <VehiclesLoading />;
+  if (!category)
+    return (
+      <div className="p-20 text-center text-[#8a8280]">Category not found.</div>
+    );
+
+  const tabSubcategories = subcategories.filter((sc) =>
+    activeTabConfig?.subcategorySlugs.includes(sc.slug),
+  );
   const heroImage = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/listings/heroes/vehicle-hero.jpg`;
   const categorySlug = category.slug;
 
