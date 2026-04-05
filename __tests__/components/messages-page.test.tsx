@@ -69,14 +69,29 @@ const selectMock = vi.fn().mockReturnValue({
   }),
 });
 
+// Chain mock that supports .eq().eq().single() — used by dealer_shops query
+const makeChainMock = (resolvedData: unknown = null) => {
+  const single = vi.fn().mockResolvedValue({ data: resolvedData });
+  const eq2 = vi.fn().mockReturnValue({ single });
+  const eq1 = vi.fn().mockReturnValue({ eq: eq2 });
+  return { eq: eq1 };
+};
+
 vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
     auth: { getUser: mockGetUser },
-    from: () => ({
-      select: selectMock,
-      update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({}) }),
-      delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({}) }),
-    }),
+    from: (table: string) => {
+      if (table === "dealer_shops") {
+        return {
+          select: vi.fn().mockReturnValue(makeChainMock(null)),
+        };
+      }
+      return {
+        select: selectMock,
+        update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({}) }),
+        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({}) }),
+      };
+    },
     channel: mockChannel,
     removeChannel: vi.fn(),
   }),

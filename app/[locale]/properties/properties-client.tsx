@@ -9,6 +9,7 @@ import {
   Crown,
   Hammer,
   Key,
+  LandPlot,
   type LucideIcon,
   MapPin,
   MessageCircle,
@@ -19,6 +20,7 @@ import {
   Sparkles,
   Store,
   TrendingUp,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
@@ -35,7 +37,6 @@ import PropertyFilters, {
   applyPropertyFilters,
   type PropertyFilterState,
 } from "./property-filters";
-import PropertyComparePanel from "./property-compare-panel";
 import PropertyPriceInsights, {
   getPropertyDealRating,
   PROPERTY_DEAL_CONFIG,
@@ -58,8 +59,8 @@ const TABS: TabConfig[] = [
     label: "Buy",
     icon: Building2,
     description:
-      "Find your dream home — browse apartments, houses, villas, land plots, and commercial properties for sale across Cyprus.",
-    subcategorySlugs: ["for-sale", "commercial", "land"],
+      "Find your dream home — browse apartments, houses, villas, and commercial properties for sale across Cyprus.",
+    subcategorySlugs: ["for-sale", "commercial"],
   },
   {
     key: "rent",
@@ -68,6 +69,14 @@ const TABS: TabConfig[] = [
     description:
       "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets across Cyprus.",
     subcategorySlugs: ["for-rent"],
+  },
+  {
+    key: "land",
+    label: "Land",
+    icon: LandPlot,
+    description:
+      "Browse residential and agricultural land plots across Cyprus — build your dream home or invest in development opportunities.",
+    subcategorySlugs: ["land"],
   },
   {
     key: "new-developments",
@@ -158,6 +167,7 @@ export default function PropertiesClient({
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState(TABS[0]?.key ?? "");
   const [filters, setFilters] = useState<PropertyFilterState>(EMPTY_FILTERS);
+  const [showInsightsModal, setShowInsightsModal] = useState(false);
 
   const activeTabConfig = TABS.find((tab) => tab.key === activeTab);
   const isDealerTab = activeTabConfig?.filterByDealer ?? false;
@@ -281,15 +291,8 @@ export default function PropertiesClient({
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
-                href={`/search?category=${categorySlug}`}
-                className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/90 transition-colors"
-              >
-                <Search className="w-4 h-4" />
-                {t("browseAll", { categoryName: "Properties" })}
-              </Link>
-              <Link
                 href="/post"
-                className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/10 transition-colors"
+                className="inline-flex items-center gap-2 bg-white text-[#1a1a1a] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-white/90 transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 List a Property
@@ -387,26 +390,12 @@ export default function PropertiesClient({
           })}
         </div>
 
-        {/* ── Active Tab Description + Subcategory Pills ──────────────── */}
+        {/* ── Active Tab Description ──────────────────────────────── */}
         {activeTabConfig && (
-          <div className="mb-8">
-            <p className="text-[#6b6560] text-sm mb-4">
+          <div className="mb-6">
+            <p className="text-[#6b6560] text-sm">
               {activeTabConfig.description}
             </p>
-            {tabSubcategories.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tabSubcategories.map((sc) => (
-                  <Link
-                    key={sc.id}
-                    href={`/search?category=${categorySlug}&subcategory=${sc.slug}`}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-[#faf9f7] text-[#666] border border-[#e8e6e3] hover:bg-[#f0eeeb] hover:border-[#ccc] transition-colors"
-                  >
-                    {sc.name}
-                    <ArrowRight className="w-3 h-3 text-[#8a8280]" />
-                  </Link>
-                ))}
-              </div>
-            )}
           </div>
         )}
 
@@ -419,228 +408,6 @@ export default function PropertiesClient({
             resultCount={allDisplayListings.length}
           />
         )}
-
-        {/* ── Property Compare Panel ─────────────────────────────────── */}
-        {!isDealerTab && (
-          <PropertyComparePanel
-            enrichedItems={
-              allTabListings as unknown as Record<string, unknown>[]
-            }
-          />
-        )}
-
-        {/* ── Featured Pro Sellers strip (on listing tabs, not dealer tab) */}
-        {!isDealerTab && topShops.length > 0 && (
-          <section className="mb-10">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center w-8 h-8 bg-amber-50">
-                  <Crown className="w-4 h-4 text-amber-600" />
-                </div>
-                <div>
-                  <h2
-                    className="text-lg font-light text-[#1a1a1a]"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
-                  >
-                    Trusted Agencies
-                  </h2>
-                  <p className="text-xs text-[#8a8280]">
-                    Verified Pro Sellers with property listings
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => handleTabChange("dealers")}
-                className="text-sm font-medium text-[#1a1a1a] hover:text-[#8E7A6B] flex items-center gap-1 transition-colors"
-              >
-                View all agencies <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              {topShops.map((shop) => (
-                <Link
-                  key={shop.id}
-                  href={`/shop/${shop.slug}`}
-                  className="group flex items-center gap-3 p-3 bg-white border border-[#e8e6e3] hover:border-[#ccc] hover:shadow-sm transition-all"
-                >
-                  <div className="shrink-0 w-10 h-10 overflow-hidden bg-[#f0eeeb]">
-                    {shop.logo_url ? (
-                      <Image
-                        src={shop.logo_url}
-                        alt={shop.shop_name}
-                        width={40}
-                        height={40}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[#8E7A6B] text-xs font-bold">
-                        {shop.shop_name
-                          .split(" ")
-                          .slice(0, 2)
-                          .map((w) => w[0])
-                          .join("")
-                          .toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
-                        {shop.shop_name}
-                      </span>
-                      {shop.plan_tier === "business" && (
-                        <Crown className="w-3 h-3 text-amber-500 shrink-0" />
-                      )}
-                      {shop.plan_tier === "pro" && (
-                        <Shield className="w-3 h-3 text-[#666] shrink-0" />
-                      )}
-                    </div>
-                    <span className="text-[11px] text-[#8a8280]">
-                      {shop.listing_count} listings
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ══════════════════════════════════════════════════════════════ */}
-        {/* ── DEALER TAB CONTENT ─────────────────────────────────────── */}
-        {/* ══════════════════════════════════════════════════════════════ */}
-        {isDealerTab && (
-          <>
-            {/* ── Why buy from Pro Sellers? ──────────────────────────── */}
-            <section className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] border border-[#e8e6e3]">
-              <div className="flex items-center gap-2 mb-5">
-                <Sparkles className="w-4 h-4 text-[#8E7A6B]" />
-                <h3 className="text-sm font-semibold text-[#1a1a1a] tracking-wide uppercase">
-                  Why buy from Pro Sellers?
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                  {
-                    icon: ShieldCheck,
-                    title: "Licensed Agencies",
-                    desc: "Every Pro Seller is a verified, licensed real estate professional.",
-                  },
-                  {
-                    icon: Check,
-                    title: "Accurate Listings",
-                    desc: "Properties are reviewed for accurate photos, pricing, and descriptions.",
-                  },
-                  {
-                    icon: MessageCircle,
-                    title: "Direct Contact",
-                    desc: "Message agencies directly — schedule viewings and get fast responses.",
-                  },
-                  {
-                    icon: Shield,
-                    title: "Buyer Protection",
-                    desc: "Transactions with Pro Sellers include NextBazar buyer protection.",
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="flex gap-3">
-                    <div className="shrink-0 w-8 h-8 flex items-center justify-center bg-white border border-[#e8e6e3]">
-                      <item.icon className="w-4 h-4 text-[#8E7A6B]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#1a1a1a] mb-0.5">
-                        {item.title}
-                      </p>
-                      <p className="text-xs text-[#6b6560] leading-relaxed">
-                        {item.desc}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* ── Business Tier Agencies ─────────────────────────────── */}
-            {businessShops.length > 0 && (
-              <section className="mb-10">
-                <div className="flex items-center gap-2.5 mb-5">
-                  <div className="flex items-center justify-center w-8 h-8 bg-amber-50">
-                    <Crown className="w-4 h-4 text-amber-600" />
-                  </div>
-                  <div>
-                    <h2
-                      className="text-lg font-light text-[#1a1a1a]"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                      Business Agencies
-                    </h2>
-                    <p className="text-xs text-[#8a8280]">
-                      Premium agencies with the largest portfolios
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {businessShops.map((shop) => (
-                    <ShopCard key={shop.id} shop={shop} locale={locale} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* ── Pro Tier Agencies ──────────────────────────────────── */}
-            {proShops.length > 0 && (
-              <section className="mb-10">
-                <div className="flex items-center gap-2.5 mb-5">
-                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-                    <Shield className="w-4 h-4 text-[#6b6560]" />
-                  </div>
-                  <div>
-                    <h2
-                      className="text-lg font-light text-[#1a1a1a]"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                      Pro Agencies
-                    </h2>
-                    <p className="text-xs text-[#8a8280]">
-                      Verified professional agencies
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {proShops.map((shop) => (
-                    <ShopCard key={shop.id} shop={shop} locale={locale} />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* ── Empty state ────────────────────────────────────────── */}
-            {categoryShops.length === 0 && (
-              <section className="mb-12">
-                <div className="text-center py-16 text-[#8a8280]">
-                  <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
-                    <Store className="w-7 h-7 text-[#8E7A6B]" />
-                  </div>
-                  <p className="text-lg font-medium mb-1 text-[#1a1a1a]">
-                    No agencies yet
-                  </p>
-                  <p className="text-sm max-w-sm mx-auto">
-                    Property agencies in this category will appear here.{" "}
-                    <Link
-                      href="/pricing"
-                      className="text-[#1a1a1a] font-medium hover:underline"
-                    >
-                      Become a Pro Seller
-                    </Link>{" "}
-                    to get listed.
-                  </p>
-                </div>
-              </section>
-            )}
-          </>
-        )}
-
-        {/* ══════════════════════════════════════════════════════════════ */}
-        {/* ── LISTING TAB CONTENT ────────────────────────────────────── */}
-        {/* ══════════════════════════════════════════════════════════════ */}
 
         {/* ── Featured Listings ────────────────────────────────────────── */}
         {!isDealerTab && displayFeatured.length > 0 && (
@@ -688,11 +455,6 @@ export default function PropertiesClient({
               })}
             </div>
           </section>
-        )}
-
-        {/* ── Price Insights ─────────────────────────────────────────── */}
-        {!isDealerTab && allDisplayListings.length > 0 && (
-          <PropertyPriceInsights listings={allDisplayListings} />
         )}
 
         {/* ── Listings by Location ─────────────────────────────────────── */}
@@ -863,6 +625,56 @@ export default function PropertiesClient({
           </div>
         </section>
       </div>
+
+      {/* ── Floating Price Insights button (bottom-right) ────────────── */}
+      {allDisplayListings.length > 0 && (
+        <>
+          <button
+            onClick={() => setShowInsightsModal(true)}
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#2C2826] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#1a1a1a] transition-colors group"
+            title="Price Insights"
+          >
+            <TrendingUp className="w-4 h-4" />
+            <span className="text-xs font-medium tracking-wide uppercase">
+              Price Insights
+            </span>
+          </button>
+
+          {/* Price Insights Modal */}
+          {showInsightsModal && (
+            <div
+              className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              onClick={(e) => {
+                if (e.target === e.currentTarget)
+                  setShowInsightsModal(false);
+              }}
+            >
+              <div className="bg-white w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                <div className="sticky top-0 bg-white border-b border-[#e8e6e3] px-6 py-4 flex items-center justify-between z-10">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-[#8E7A6B]" />
+                    <h2
+                      className="text-lg font-light text-[#1a1a1a]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Price Insights
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setShowInsightsModal(false)}
+                    className="w-8 h-8 flex items-center justify-center text-[#8a8280] hover:text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-6">
+                  <PropertyPriceInsights listings={allDisplayListings} />
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </>
   );
 }

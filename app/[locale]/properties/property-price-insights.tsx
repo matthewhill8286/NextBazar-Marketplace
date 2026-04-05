@@ -2,15 +2,13 @@
 
 import {
   ArrowDown,
-  BarChart3,
-  ChevronDown,
   MapPin,
   Minus,
   Sparkles,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import { getAttr } from "@/app/helpers/get-attr";
 
@@ -216,39 +214,15 @@ export default function PropertyPriceInsights({ listings }: Props) {
     };
   }, [listings]);
 
-  const [isOpen, setIsOpen] = useState(false);
-
   if (!overallStats || locationStats.length === 0) return null;
 
   const topLocations = locationStats.slice(0, 6);
 
   return (
     <section className="mb-10">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2.5 mb-5 w-full text-left group cursor-pointer"
-      >
-        <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-          <BarChart3 className="w-4 h-4 text-[#6b6560]" />
-        </div>
-        <div className="flex-1">
-          <h2
-            className="text-lg font-light text-[#1a1a1a]"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            Price Insights
-          </h2>
-          <p className="text-xs text-[#8a8280]">
-            Market overview based on {overallStats.total} priced listings
-          </p>
-        </div>
-        <ChevronDown
-          className={`w-5 h-5 text-[#8a8280] transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {isOpen && <>
+      <p className="text-xs text-[#8a8280] mb-5">
+        Market overview based on {overallStats.total} priced listings
+      </p>
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         <div className="bg-white border border-[#e8e6e3] p-4">
@@ -361,7 +335,6 @@ export default function PropertyPriceInsights({ listings }: Props) {
           </div>
         </div>
       )}
-      </>}
     </section>
   );
 }

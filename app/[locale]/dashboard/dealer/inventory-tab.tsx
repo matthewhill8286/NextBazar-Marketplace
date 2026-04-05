@@ -12,11 +12,14 @@ import {
   Edit3,
   FileSpreadsheet,
   Loader2,
+  Megaphone,
   Minus,
   Plus,
   ShoppingBag,
+  Sparkles,
   Trash2,
   X,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
@@ -45,6 +48,8 @@ type SortDir = "asc" | "desc";
 type Props = {
   listings: ListingRow[];
   planTier?: SellerTier;
+  /** ISO date string — start of the current billing cycle for boost counting */
+  planStartedAt?: string | null;
   editBaseHref?: string;
   /** Href for the "Add Inventory" / "New Listing" button */
   newListingHref?: string;
@@ -187,9 +192,122 @@ function Checkbox({
   );
 }
 
+// ── Promo usage bar ────────────────────────────────────────────────────────
+function PromoUsageBar({
+  listings,
+  boostsPerMonth,
+  tier,
+  tierLabel,
+  planStartedAt,
+}: {
+  listings: ListingRow[];
+  boostsPerMonth: number;
+  tier: string;
+  tierLabel: string;
+  planStartedAt?: string | null;
+}) {
+  // Count boosts used in the current billing cycle
+  const cycleBoosts = useMemo(() => {
+    if (!planStartedAt) {
+      // Fallback: count currently promoted
+      return listings.filter((l) => l.is_promoted).length;
+    }
+    const cycleStart = new Date(planStartedAt).getTime();
+    return listings.filter(
+      (l) => l.promoted_at && new Date(l.promoted_at).getTime() >= cycleStart,
+    ).length;
+  }, [listings, planStartedAt]);
+
+  const activePromos = cycleBoosts;
+  const used = Math.min(activePromos, boostsPerMonth);
+  const remaining = Math.max(boostsPerMonth - activePromos, 0);
+  const pct = Math.round((used / boostsPerMonth) * 100);
+
+  return (
+    <div className="bg-white border border-[#e8e6e3] p-4">
+      <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-amber-50 rounded">
+            <Zap className="w-4 h-4 text-amber-600" />
+          </div>
+          <div>
+            <span className="text-sm font-semibold text-[#1a1a1a]">
+              Promoted Listings
+            </span>
+            <span className="text-[10px] font-medium text-[#8a8280] ml-2 uppercase tracking-wider">
+              {tierLabel} Plan
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-right">
+            <span className="text-lg font-bold text-[#1a1a1a]">{activePromos}</span>
+            <span className="text-sm text-[#8a8280]"> / {boostsPerMonth}</span>
+          </div>
+          {remaining > 0 && (
+            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full">
+              {remaining} left
+            </span>
+          )}
+          {remaining === 0 && (
+            <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
+              All used
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-2 bg-[#f0eeeb] rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${
+            pct >= 100
+              ? "bg-amber-500"
+              : pct >= 70
+                ? "bg-amber-400"
+                : "bg-emerald-500"
+          }`}
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
+      </div>
+
+      {/* Promo listing chips */}
+      {activePromos > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 mt-3">
+          <Megaphone className="w-3 h-3 text-[#8a8280] shrink-0" />
+          {listings
+            .filter((l) => l.is_promoted)
+            .slice(0, 5)
+            .map((l) => (
+              <span
+                key={l.id}
+                className="inline-flex items-center gap-1 text-[10px] font-medium bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full truncate max-w-[160px]"
+              >
+                <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                {l.title}
+              </span>
+            ))}
+          {activePromos > 5 && (
+            <span className="text-[10px] text-[#8a8280] font-medium">
+              +{activePromos - 5} more
+            </span>
+          )}
+        </div>
+      )}
+
+      {activePromos === 0 && (
+        <p className="text-xs text-[#8a8280] mt-2">
+          Promote your listings to get more visibility. You have {boostsPerMonth} free boosts this month.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function InventoryTab({
   listings,
   planTier = "starter",
+  planStartedAt,
   editBaseHref = "/dashboard/edit",
   newListingHref = "/post",
   newListingLabel = "New Listing",
@@ -458,6 +576,17 @@ export default function InventoryTab({
 
       {/* CSV Import Modal */}
       {showImport && <CSVImport onClose={handleImportClose} shopType={shopType} />}
+
+      {/* Promo usage widget — Pro & Business tiers */}
+      {limits.freeBoostsPerMonth > 0 && (
+        <PromoUsageBar
+          listings={listings}
+          boostsPerMonth={limits.freeBoostsPerMonth}
+          tier={limits.tier}
+          tierLabel={limits.tierLabel}
+          planStartedAt={planStartedAt}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
@@ -842,6 +971,14 @@ export default function InventoryTab({
                       >
                         <Edit3 className="w-3 h-3" /> Edit
                       </Link>
+                      {l.status === "active" && !l.is_promoted && (
+                        <Link
+                          href={`/promote/${l.id}`}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 transition-colors"
+                        >
+                          <Zap className="w-3 h-3" /> Boost
+                        </Link>
+                      )}
                       {l.status !== "removed" && (
                         <button
                           onClick={() => setDeleteIds([l.id])}

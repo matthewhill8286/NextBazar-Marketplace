@@ -22,6 +22,8 @@ import CategoryIcon, {
 import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { CONDITION_LABELS } from "@/lib/format-helpers";
+import { getPlanLimits } from "@/lib/plan-limits";
+import type { SellerShopInfo } from "@/lib/supabase/queries";
 import type {
   ListingCardRow,
   ListingDetailRow,
@@ -67,6 +69,7 @@ type Props = {
   related: ListingCardRow[];
   accentColor: string | null;
   shopSlug: string | null;
+  shopInfo?: SellerShopInfo | null;
 };
 
 // ─── Server Component ─────────────────────────────────────────────────────────
@@ -76,6 +79,7 @@ export default async function ListingDetailServer({
   listing,
   accentColor,
   shopSlug,
+  shopInfo,
 }: Props) {
   const [t, tCommon] = await Promise.all([
     getTranslator(locale, "listing"),
@@ -97,6 +101,14 @@ export default async function ListingDetailServer({
       : listing.primary_image_url
         ? [{ url: listing.primary_image_url, sort_order: 0 }]
         : [];
+
+  // Pro/Business enhanced template
+  const planLimits = shopInfo
+    ? getPlanLimits(shopInfo.plan_tier)
+    : null;
+  const isEnhanced = planLimits
+    ? planLimits.brandedShop
+    : false;
 
   const conditionLabel = (c: string | null): string => {
     if (!c) return "\u2014";
@@ -510,97 +522,199 @@ export default async function ListingDetailServer({
           {/* RIGHT COLUMN */}
           <div className="space-y-4">
             {/* Seller card */}
-            <div className="bg-white p-6 border border-[#e8e6e3]">
-              <div className="flex items-center gap-3.5 mb-5">
-                <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
-                  {profile?.avatar_url ? (
-                    <Image
-                      src={profile.avatar_url}
-                      alt={profile?.display_name || "Seller"}
-                      width={56}
-                      height={56}
-                      priority
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    (profile?.display_name || "U")[0].toUpperCase()
-                  )}
+            <div
+              className={`bg-white border overflow-hidden ${
+                isEnhanced
+                  ? "border-[#e8e6e3] border-t-[3px]"
+                  : "border-[#e8e6e3]"
+              }`}
+              style={
+                isEnhanced && accentColor
+                  ? { borderTopColor: accentColor }
+                  : isEnhanced
+                    ? { borderTopColor: "#8E7A6B" }
+                    : undefined
+              }
+            >
+              {/* Enhanced: Shop logo banner */}
+              {isEnhanced && shopInfo?.logo_url && (
+                <div
+                  className="flex items-center gap-3 px-6 py-3"
+                  style={{
+                    backgroundColor: accentColor
+                      ? `${accentColor}10`
+                      : "#faf9f7",
+                  }}
+                >
+                  <Image
+                    src={shopInfo.logo_url}
+                    alt={shopInfo.shop_name}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 object-cover"
+                  />
+                  <span
+                    className="text-xs font-semibold tracking-wide uppercase"
+                    style={accentColor ? { color: accentColor } : { color: "#8E7A6B" }}
+                  >
+                    {shopInfo.shop_name}
+                  </span>
                 </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <Link
-                      href={
-                        shopSlug
-                          ? `/shop/${shopSlug}`
-                          : `/profile/${listing.user_id}`
-                      }
-                      className="font-medium text-[#1a1a1a] truncate transition-colors hover:text-[#666]"
-                      style={
-                        accentColor
-                          ? {
-                              ["--seller-accent" as string]: accentColor,
-                            }
-                          : undefined
-                      }
-                    >
-                      {profile?.display_name || "Seller"}
-                    </Link>
-                    {profile?.verified && (
-                      <Shield
-                        className="w-4 h-4 shrink-0"
+              )}
+
+              <div className="p-6">
+                <div className="flex items-center gap-3.5 mb-5">
+                  <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
+                    {profile?.avatar_url ? (
+                      <Image
+                        src={profile.avatar_url}
+                        alt={profile?.display_name || "Seller"}
+                        width={56}
+                        height={56}
+                        priority
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      (profile?.display_name || "U")[0].toUpperCase()
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        href={
+                          shopSlug
+                            ? `/shop/${shopSlug}`
+                            : `/profile/${listing.user_id}`
+                        }
+                        className="font-medium text-[#1a1a1a] truncate transition-colors hover:text-[#666]"
                         style={
                           accentColor
-                            ? { color: accentColor }
-                            : { color: "#1a1a1a" }
+                            ? {
+                                ["--seller-accent" as string]: accentColor,
+                              }
+                            : undefined
                         }
-                      />
-                    )}
-                    {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
-                      <span className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase bg-red-50 text-red-600 border border-red-100">
-                        PRO
+                      >
+                        {profile?.display_name || "Seller"}
+                      </Link>
+                      {profile?.verified && (
+                        <Shield
+                          className="w-4 h-4 shrink-0"
+                          style={
+                            accentColor
+                              ? { color: accentColor }
+                              : { color: "#1a1a1a" }
+                          }
+                        />
+                      )}
+                      {FEATURE_FLAGS.DEALERS && profile?.is_pro_seller && (
+                        <span
+                          className="text-[9px] font-medium px-1.5 py-0.5 shrink-0 tracking-[0.15em] uppercase border"
+                          style={
+                            accentColor
+                              ? {
+                                  backgroundColor: `${accentColor}10`,
+                                  color: accentColor,
+                                  borderColor: `${accentColor}30`,
+                                }
+                              : {
+                                  backgroundColor: "#f5f0eb",
+                                  color: "#8E7A6B",
+                                  borderColor: "#e0d6cc",
+                                }
+                          }
+                        >
+                          PRO
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <Star
+                          key={i}
+                          className="w-3.5 h-3.5"
+                          fill={
+                            i <= Math.round(sellerRating) ? "#f59e0b" : "none"
+                          }
+                          stroke="#f59e0b"
+                        />
+                      ))}
+                      <span className="text-xs text-[#6b6560] ml-1">
+                        {sellerRating} ({sellerReviews})
                       </span>
-                    )}
+                    </div>
+                    <p className="text-[11px] text-[#8a8280] mt-0.5">
+                      {t("memberSince")} {sellerYear}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <Star
-                        key={i}
-                        className="w-3.5 h-3.5"
-                        fill={
-                          i <= Math.round(sellerRating) ? "#f59e0b" : "none"
-                        }
-                        stroke="#f59e0b"
-                      />
-                    ))}
-                    <span className="text-xs text-[#6b6560] ml-1">
-                      {sellerRating} ({sellerReviews})
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#8a8280] mt-0.5">
-                    {t("memberSince")} {sellerYear}
-                  </p>
                 </div>
-              </div>
 
-              {/* ContactButtons + Offer section + realtime + view tracking */}
-              <ListingInteractions
-                listing={listing}
-                accentColor={accentColor}
-                shopSlug={shopSlug}
-              />
+                {/* Enhanced: Shop description */}
+                {isEnhanced && shopInfo?.description && (
+                  <p className="text-xs text-[#6b6560] leading-relaxed mb-4 line-clamp-3">
+                    {shopInfo.description}
+                  </p>
+                )}
 
-              <div className="mt-4 pt-4 border-t border-[#e8e6e3] text-center">
-                <Link
-                  href={
-                    shopSlug
-                      ? `/shop/${shopSlug}`
-                      : `/profile/${listing.user_id}`
-                  }
-                  className="text-sm font-medium hover:underline text-[#1a1a1a]"
-                  style={accentColor ? { color: accentColor } : undefined}
-                >
-                  {shopSlug ? t("visitShop") : t("viewSellerProfile")}
-                </Link>
+                {/* ContactButtons + Offer section + realtime + view tracking */}
+                <ListingInteractions
+                  listing={listing}
+                  accentColor={accentColor}
+                  shopSlug={shopSlug}
+                />
+
+                {/* Enhanced: Social links */}
+                {isEnhanced &&
+                  (shopInfo?.website ||
+                    shopInfo?.facebook ||
+                    shopInfo?.instagram) && (
+                    <div className="mt-4 pt-4 border-t border-[#e8e6e3] flex items-center gap-3">
+                      {shopInfo.website && (
+                        <a
+                          href={shopInfo.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#8a8280] hover:text-[#1a1a1a] transition-colors"
+                        >
+                          Website
+                        </a>
+                      )}
+                      {shopInfo.facebook && (
+                        <a
+                          href={`https://facebook.com/${shopInfo.facebook}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#8a8280] hover:text-[#1a1a1a] transition-colors"
+                        >
+                          Facebook
+                        </a>
+                      )}
+                      {shopInfo.instagram && (
+                        <a
+                          href={`https://instagram.com/${shopInfo.instagram}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#8a8280] hover:text-[#1a1a1a] transition-colors"
+                        >
+                          Instagram
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                <div className="mt-4 pt-4 border-t border-[#e8e6e3] text-center">
+                  <Link
+                    href={
+                      shopSlug
+                        ? `/shop/${shopSlug}`
+                        : `/profile/${listing.user_id}`
+                    }
+                    className="text-sm font-medium hover:underline text-[#1a1a1a]"
+                    style={accentColor ? { color: accentColor } : undefined}
+                  >
+                    {shopSlug ? t("visitShop") : t("viewSellerProfile")}
+                  </Link>
+                </div>
               </div>
             </div>
 

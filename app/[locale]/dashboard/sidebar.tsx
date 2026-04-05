@@ -168,7 +168,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
             </Link>
           ) : (
             <Link
-              href="/pro-sellers"
+              href="/pricing"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors mt-1 border border-dashed",
                 "text-[#6b6560] border-[#e8e6e3] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",

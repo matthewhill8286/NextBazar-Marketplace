@@ -9,6 +9,13 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "AI features are not configured. Please set OPENAI_API_KEY." },
+        { status: 503 },
+      );
+    }
+
     const { title, categoryId, condition } = await request.json();
 
     if (!title) {

@@ -176,7 +176,7 @@ export default function Footer() {
               {FEATURE_FLAGS.DEALERS_PAGE && (
                 <li>
                   <Link
-                    href="/pro-sellers"
+                    href="/pricing"
                     className="hover:text-white transition-colors"
                   >
                     {t("forDealers")}

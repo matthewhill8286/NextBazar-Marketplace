@@ -36,6 +36,7 @@ type Props = {
   pricingLoading: boolean;
   selectedPriceKey: "low" | "suggested" | "high" | null;
   descLoading: boolean;
+  canUseAiDescriptions: boolean;
   isVehicle: boolean;
   vehicleAttrs: VehicleAttributes;
   onUpdateAction: (key: string, value: string) => void;
@@ -84,6 +85,7 @@ export default function PostStep2({
   pricingLoading,
   selectedPriceKey,
   descLoading,
+  canUseAiDescriptions,
   isVehicle,
   vehicleAttrs,
   onUpdateAction,
@@ -113,24 +115,34 @@ export default function PostStep2({
           <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
             {t("step2.descriptionLabel")}
           </label>
-          <button
-            type="button"
-            onClick={onAiDescriptionAction}
-            disabled={descLoading || !formData.title}
-            className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
-          >
-            {descLoading ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
+          {canUseAiDescriptions ? (
+            <button
+              type="button"
+              onClick={onAiDescriptionAction}
+              disabled={descLoading || !formData.title}
+              className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
+            >
+              {descLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <PenLine className="w-3 h-3" />
+              )}
+              {descLoading ? t("step2.writing") : t("step2.writeWithAi")}
+              {!descLoading && (
+                <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                  Beta
+                </span>
+              )}
+            </button>
+          ) : (
+            <span className="flex items-center gap-1.5 text-xs text-[#8a8280]">
               <PenLine className="w-3 h-3" />
-            )}
-            {descLoading ? t("step2.writing") : t("step2.writeWithAi")}
-            {!descLoading && (
-              <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
-                Beta
+              {t("step2.writeWithAi")}
+              <span className="text-[9px] bg-[#f0eeeb] text-[#8a8280] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                Business
               </span>
-            )}
-          </button>
+            </span>
+          )}
         </div>
         <textarea
           className={`${INPUT_CLASSES} h-32 resize-none`}
@@ -389,26 +401,36 @@ export default function PostStep2({
             <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
               {t("step2.priceLabel")}
             </label>
-            <button
-              type="button"
-              onClick={onAiPricingAction}
-              disabled={pricingLoading || !formData.title}
-              className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
-            >
-              {pricingLoading ? (
-                <Loader2 className="w-3 h-3 animate-spin" />
-              ) : (
+            {canUseAiDescriptions ? (
+              <button
+                type="button"
+                onClick={onAiPricingAction}
+                disabled={pricingLoading || !formData.title}
+                className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
+              >
+                {pricingLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : (
+                  <BarChart3 className="w-3 h-3" />
+                )}
+                {pricingLoading
+                  ? t("step2.analyzing")
+                  : t("step2.getPricingGuide")}
+                {!pricingLoading && (
+                  <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                    Beta
+                  </span>
+                )}
+              </button>
+            ) : (
+              <span className="flex items-center gap-1.5 text-xs text-[#8a8280]">
                 <BarChart3 className="w-3 h-3" />
-              )}
-              {pricingLoading
-                ? t("step2.analyzing")
-                : t("step2.getPricingGuide")}
-              {!pricingLoading && (
-                <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
-                  Beta
+                {t("step2.getPricingGuide")}
+                <span className="text-[9px] bg-[#f0eeeb] text-[#8a8280] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                  Business
                 </span>
-              )}
-            </button>
+              </span>
+            )}
           </div>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8a8280] font-medium">

@@ -9,6 +9,13 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "AI features are not configured. Please add your OpenAI API key." },
+        { status: 503 },
+      );
+    }
+
     const { imageUrl } = await request.json();
     if (!imageUrl) {
       return NextResponse.json({ error: "Missing imageUrl" }, { status: 400 });

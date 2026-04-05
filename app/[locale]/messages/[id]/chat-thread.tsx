@@ -5,6 +5,7 @@ import {
   CheckCircle,
   ExternalLink,
   Loader2,
+  MessageSquareText,
   MoreHorizontal,
   Pin,
   PinOff,
@@ -68,6 +69,11 @@ export default function ChatThread({
   const [offerOpen, setOfferOpen] = useState(false);
   const [offerPrice, setOfferPrice] = useState("");
   const [sendingOffer, setSendingOffer] = useState(false);
+  // Quick reply templates (Pro/Business sellers)
+  const [quickReplies, setQuickReplies] = useState<
+    { id: string; label: string; content: string }[]
+  >([]);
+  const [quickRepliesOpen, setQuickRepliesOpen] = useState(false);
 
   // Load conversation & messages
   useEffect(() => {
@@ -124,6 +130,28 @@ export default function ChatThread({
         .from("conversations")
         .update(isSeller ? { seller_unread: 0 } : { buyer_unread: 0 })
         .eq("id", conversationId);
+
+      // Load quick-reply templates if user is a Pro/Business seller
+      if (isSeller) {
+        const { data: shop } = await supabase
+          .from("dealer_shops")
+          .select("plan_tier")
+          .eq("user_id", user.id)
+          .eq("plan_status", "active")
+          .single();
+
+        if (
+          shop?.plan_tier === "pro" ||
+          shop?.plan_tier === "business"
+        ) {
+          const { data: templates } = await supabase
+            .from("quick_reply_templates")
+            .select("id, label, content")
+            .or(`is_preset.eq.true,user_id.eq.${user.id}`)
+            .order("sort_order", { ascending: true });
+          if (templates) setQuickReplies(templates);
+        }
+      }
 
       setLoading(false);
     }
@@ -793,6 +821,39 @@ export default function ChatThread({
           >
             <X className="w-3.5 h-3.5" />
           </button>
+        </div>
+      )}
+
+      {/* Quick Reply Templates */}
+      {quickReplies.length > 0 && (
+        <div className="bg-white border-t border-[#e8e6e3] px-4 pt-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setQuickRepliesOpen(!quickRepliesOpen)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#8a8280] hover:text-[#1a1a1a] transition-colors mb-1"
+          >
+            <MessageSquareText className="w-3.5 h-3.5" />
+            Quick replies
+          </button>
+          {quickRepliesOpen && (
+            <div className="flex flex-wrap gap-1.5 pb-2">
+              {quickReplies.map((qr) => (
+                <button
+                  key={qr.id}
+                  type="button"
+                  onClick={() => {
+                    setNewMessage(qr.content);
+                    setQuickRepliesOpen(false);
+                    inputRef.current?.focus();
+                  }}
+                  className="px-3 py-1.5 text-xs font-medium bg-[#faf9f7] text-[#666] border border-[#e8e6e3] hover:bg-[#f0eeeb] hover:border-[#ccc] transition-colors"
+                  title={qr.content}
+                >
+                  {qr.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

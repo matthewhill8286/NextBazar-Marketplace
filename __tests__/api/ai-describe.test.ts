@@ -30,6 +30,8 @@ function makeRequest(body: object): NextRequest {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // The route early-returns 503 if OPENAI_API_KEY is not set
+  process.env.OPENAI_API_KEY = "sk-test-key";
   mockCreate.mockResolvedValue({
     choices: [{ message: { content: "A great listing description." } }],
   });
