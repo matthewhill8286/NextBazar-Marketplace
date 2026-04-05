@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { buildAlternates } from "@/lib/seo";
 import { getActiveShopsCached } from "@/lib/supabase/queries";
 import ShopsClient from "./shops-client";
+import ShopsLoading from "./loading";
 
 export const metadata: Metadata = {
   title: "Browse Shops | NextBazar",
@@ -17,9 +19,17 @@ export const metadata: Metadata = {
   alternates: buildAlternates("/shops"),
 };
 
-export default async function ShopsPage() {
-  if (!FEATURE_FLAGS.DEALERS) notFound();
+async function ShopsContent() {
   const shops = await getActiveShopsCached();
-
   return <ShopsClient shops={shops} />;
+}
+
+export default function ShopsPage() {
+  if (!FEATURE_FLAGS.DEALERS) notFound();
+
+  return (
+    <Suspense fallback={<ShopsLoading />}>
+      <ShopsContent />
+    </Suspense>
+  );
 }

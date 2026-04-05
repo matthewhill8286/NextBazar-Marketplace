@@ -36,35 +36,33 @@ export async function GET(req: NextRequest) {
 
   const supabase = getSupabase();
 
-  // ── Resolve slugs → IDs once, reused by all query branches ───────────────
-  let categoryId: string | null = null;
-  let subcategoryId: string | null = null;
-  let locationId: string | null = null;
-
-  if (category) {
-    const { data } = await supabase
-      .from("categories")
-      .select("id")
-      .eq("slug", category)
-      .single();
-    categoryId = data?.id ?? null;
-  }
-  if (subcategory) {
-    const { data } = await supabase
-      .from("subcategories")
-      .select("id")
-      .eq("slug", subcategory)
-      .single();
-    subcategoryId = data?.id ?? null;
-  }
-  if (location) {
-    const { data } = await supabase
-      .from("locations")
-      .select("id")
-      .eq("slug", location)
-      .single();
-    locationId = data?.id ?? null;
-  }
+  // ── Resolve slugs → IDs in parallel, reused by all query branches ────────
+  const [categoryId, subcategoryId, locationId] = await Promise.all([
+    category
+      ? supabase
+          .from("categories")
+          .select("id")
+          .eq("slug", category)
+          .single()
+          .then(({ data }) => data?.id ?? null)
+      : null,
+    subcategory
+      ? supabase
+          .from("subcategories")
+          .select("id")
+          .eq("slug", subcategory)
+          .single()
+          .then(({ data }) => data?.id ?? null)
+      : null,
+    location
+      ? supabase
+          .from("locations")
+          .select("id")
+          .eq("slug", location)
+          .single()
+          .then(({ data }) => data?.id ?? null)
+      : null,
+  ]);
 
   // ── Semantic search (query provided) ──────────────────────────────────────
   if (q) {

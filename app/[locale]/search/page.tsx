@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { buildAlternates } from "@/lib/seo";
 import {
   getCategoriesCached,
@@ -6,6 +7,7 @@ import {
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import SearchClient from "./search-client";
+import SearchLoading from "./loading";
 
 export const metadata: Metadata = {
   title: "Search Listings — NextBazar",
@@ -13,7 +15,11 @@ export const metadata: Metadata = {
   alternates: buildAlternates("/search"),
 };
 
-export default async function SearchPage() {
+/**
+ * Async server component that fetches reference data then renders SearchClient.
+ * Wrapped in Suspense so the shell ships immediately.
+ */
+async function SearchContent() {
   const [categories, subcategories, locations] = await Promise.all([
     getCategoriesCached(),
     getSubcategoriesCached(),
@@ -26,5 +32,13 @@ export default async function SearchPage() {
       initialSubcategories={subcategories}
       initialLocations={locations}
     />
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchLoading />}>
+      <SearchContent />
+    </Suspense>
   );
 }
