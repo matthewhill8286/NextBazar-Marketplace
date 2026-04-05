@@ -18,13 +18,13 @@ import {
   Zap,
 } from "lucide-react";
 import { useState } from "react";
-import { Link } from "@/i18n/navigation";
 import { PRO_SELLER_FEATURE_GROUPS } from "@/app/[locale]/dashboard/dealer/pro-seller-features";
+import { Link } from "@/i18n/navigation";
 import {
   BOOST_PACKAGES,
   BUYER_PLANS,
-  SELLER_PLANS,
   formatEur,
+  SELLER_PLANS,
   yearlySavings,
 } from "@/lib/pricing-config";
 import PlanSelector from "./plan-selector";
@@ -348,8 +348,7 @@ function SellerSection() {
                     Feature
                   </th>
                   {SELLER_PLANS.map((p) => {
-                    const Icon =
-                      TIER_ICONS[p.key as keyof typeof TIER_ICONS];
+                    const Icon = TIER_ICONS[p.key as keyof typeof TIER_ICONS];
                     return (
                       <th
                         key={p.key}
@@ -374,10 +373,7 @@ function SellerSection() {
                   >
                     <td className="px-6 py-3 text-[#444]">{row.label}</td>
                     {row.values.map((v, i) => (
-                      <td
-                        key={i}
-                        className="text-center px-4 py-3 text-[#666]"
-                      >
+                      <td key={i} className="text-center px-4 py-3 text-[#666]">
                         {v === "✓" ? (
                           <Check className="w-4 h-4 text-emerald-500 mx-auto" />
                         ) : v === "—" ? (

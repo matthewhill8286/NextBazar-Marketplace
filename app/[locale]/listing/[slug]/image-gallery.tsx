@@ -224,7 +224,10 @@ export default function ImageGallery({
     return (
       <>
         <div className="relative rounded-xl overflow-hidden">
-          <div className="grid grid-cols-2 gap-1 max-h-[520px]" style={{ aspectRatio: "16/9" }}>
+          <div
+            className="grid grid-cols-2 gap-1 max-h-[520px]"
+            style={{ aspectRatio: "16/9" }}
+          >
             <MediaCell
               item={media[0]}
               idx={0}
@@ -262,7 +265,10 @@ export default function ImageGallery({
     return (
       <>
         <div className="relative rounded-xl overflow-hidden">
-          <div className="grid grid-cols-2 gap-1 max-h-[520px]" style={{ aspectRatio: "16/9" }}>
+          <div
+            className="grid grid-cols-2 gap-1 max-h-[520px]"
+            style={{ aspectRatio: "16/9" }}
+          >
             <MediaCell
               item={media[0]}
               idx={0}
@@ -306,7 +312,10 @@ export default function ImageGallery({
     return (
       <>
         <div className="relative rounded-xl overflow-hidden">
-          <div className="grid grid-cols-4 grid-rows-2 gap-1 max-h-[520px]" style={{ aspectRatio: "16/9" }}>
+          <div
+            className="grid grid-cols-4 grid-rows-2 gap-1 max-h-[520px]"
+            style={{ aspectRatio: "16/9" }}
+          >
             <MediaCell
               item={media[0]}
               idx={0}
@@ -320,12 +329,7 @@ export default function ImageGallery({
               className="col-span-2 rounded-tr-xl"
               sizes="25vw"
             />
-            <MediaCell
-              item={media[2]}
-              idx={2}
-              className=""
-              sizes="25vw"
-            />
+            <MediaCell item={media[2]} idx={2} className="" sizes="25vw" />
             <MediaCell
               item={media[3]}
               idx={3}

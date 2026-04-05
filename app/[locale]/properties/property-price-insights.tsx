@@ -9,8 +9,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useMemo } from "react";
-import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import { getAttr } from "@/app/helpers/get-attr";
+import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -81,8 +81,7 @@ export function getPropertyDealRating(
 
   if (sameLocPrices.length < 2) return null;
 
-  const avg =
-    sameLocPrices.reduce((a, b) => a + b, 0) / sameLocPrices.length;
+  const avg = sameLocPrices.reduce((a, b) => a + b, 0) / sameLocPrices.length;
   const ratio = listing.price / avg;
 
   if (ratio <= 0.75) return "great";
@@ -305,8 +304,7 @@ export default function PropertyPriceInsights({ listings }: Props) {
                     {stat.location}
                   </p>
                   <p className="text-[10px] text-[#8a8280]">
-                    {stat.count}{" "}
-                    {stat.count === 1 ? "listing" : "listings"}
+                    {stat.count} {stat.count === 1 ? "listing" : "listings"}
                   </p>
                 </div>
                 <div className="flex-1 min-w-0">

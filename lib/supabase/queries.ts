@@ -1,9 +1,6 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cacheLife, cacheTag } from "next/cache";
-import {
-  FEATURE_FLAGS,
-  SOFT_LAUNCH_CATEGORY_SLUGS,
-} from "@/lib/feature-flags";
+import { FEATURE_FLAGS, SOFT_LAUNCH_CATEGORY_SLUGS } from "@/lib/feature-flags";
 import { CARD_SELECT } from "./constants";
 import { createClient } from "./server";
 import type {
@@ -562,9 +559,7 @@ export async function getShopsByCategoryCached(
 
   if (!categoryListings || categoryListings.length === 0) return [];
 
-  const categoryUserIds = [
-    ...new Set(categoryListings.map((l) => l.user_id)),
-  ];
+  const categoryUserIds = [...new Set(categoryListings.map((l) => l.user_id))];
 
   // Get all active shops, then filter to those with listings in the category
   const allShops = await getActiveShopsCached();

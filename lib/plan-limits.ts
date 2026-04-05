@@ -36,9 +36,9 @@ export type PlanLimits = {
  * Falls back to "starter" if an unknown tier is provided.
  */
 export function getPlanLimits(tier: string): PlanLimits {
-  const safeTier = (["starter", "pro", "business"].includes(tier)
-    ? tier
-    : "starter") as SellerTier;
+  const safeTier = (
+    ["starter", "pro", "business"].includes(tier) ? tier : "starter"
+  ) as SellerTier;
 
   const plan = SELLER_PLANS.find((p) => p.key === safeTier)!;
 

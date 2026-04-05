@@ -278,9 +278,7 @@ export default function QuickReplyManager() {
               <div className="flex justify-end">
                 <button
                   onClick={handleSave}
-                  disabled={
-                    saving || !formLabel.trim() || !formContent.trim()
-                  }
+                  disabled={saving || !formLabel.trim() || !formContent.trim()}
                   className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium bg-[#8E7A6B] text-white hover:bg-[#7A6657] transition-colors disabled:opacity-50"
                 >
                   {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}

@@ -177,7 +177,7 @@ export const BOOST_PACKAGES: BoostPackage[] = [
     perks: [
       "Pinned to top of category for 7 days",
       "Featured badge on listing",
-      "Shown in \"Featured\" sections",
+      'Shown in "Featured" sections',
       "2× more views on average",
     ],
   },

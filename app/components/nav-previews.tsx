@@ -180,7 +180,9 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
           return (
             <Link
               key={c.id}
-              href={shopMode ? `/shop-manager/messages` : `/dashboard/messages/${c.id}`}
+              href={
+                shopMode ? `/dashboard/messages` : `/dashboard/messages/${c.id}`
+              }
               className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors"
             >
               <div className="w-10 h-10 rounded-full bg-[#f0eeeb] flex items-center justify-center text-[#666] text-sm font-bold shrink-0 overflow-hidden">
@@ -214,7 +216,7 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
         })}
       </div>
       <Link
-        href={shopMode ? "/shop-manager/messages" : "/dashboard/messages"}
+        href="/dashboard/messages"
         className="block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 border-t border-[#e8e6e3] hover:bg-[#faf9f7] transition-colors"
       >
         View all messages →
@@ -351,7 +353,11 @@ const NOTIF_ICONS: Record<string, string> = {
   listing_expired: "⌛",
 };
 
-export function NotificationsPreview({ shopMode = false }: { shopMode?: boolean }) {
+export function NotificationsPreview({
+  shopMode = false,
+}: {
+  shopMode?: boolean;
+}) {
   const { userId } = useCurrentUser();
   const [notifs, setNotifs] = useState<NotificationPreview[]>([]);
   const [loading, setLoading] = useState(true);
@@ -417,17 +423,8 @@ export function NotificationsPreview({ shopMode = false }: { shopMode?: boolean 
     <>
       <div className="divide-y divide-[#e8e6e3]">
         {notifs.map((n) => {
-          // Rewrite dashboard links to shop-manager when in shop mode
-          let href = n.link;
-          if (href && shopMode) {
-            href = href
-              .replace(/^\/dashboard\/offers/, "/shop-manager/offers")
-              .replace(/^\/dashboard\/messages/, "/shop-manager/messages")
-              .replace(/^\/dashboard\/notifications/, "/shop-manager/notifications")
-              .replace(/^\/dashboard/, "/shop-manager");
-          }
-          const Wrapper = href ? Link : "div";
-          const wrapperProps = href ? { href } : {};
+          const Wrapper = n.link ? Link : "div";
+          const wrapperProps = n.link ? { href: n.link } : {};
           return (
             <Wrapper
               key={n.id}
@@ -477,7 +474,7 @@ export function NotificationsPreview({ shopMode = false }: { shopMode?: boolean 
           </button>
         )}
         <Link
-          href={shopMode ? "/shop-manager/notifications" : "/dashboard/notifications"}
+          href="/dashboard/notifications"
           className={`flex-1 block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 hover:bg-[#faf9f7] transition-colors ${notifs.some((n) => !n.read) ? "border-l border-[#e8e6e3]" : ""}`}
         >
           View all notifications →

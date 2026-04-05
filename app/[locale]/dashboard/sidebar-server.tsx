@@ -15,11 +15,11 @@ export default async function SidebarServer({
 }) {
   const supabase = await createClient();
 
-  const [{ data: prof }] = await Promise.all([
+  const [{ data: prof }, { data: shop }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", userId).single(),
     supabase
       .from("dealer_shops")
-      .select("plan_status")
+      .select("plan_status, plan_tier")
       .eq("user_id", userId)
       .single(),
   ]);
@@ -30,6 +30,7 @@ export default async function SidebarServer({
     avatar_url: prof?.avatar_url || null,
     verified: prof?.verified || false,
     is_pro_seller: prof?.is_pro_seller || false,
+    plan_tier: shop?.plan_tier || null,
   };
 
   const isAdmin = ADMIN_EMAILS.includes(prof?.email || "");

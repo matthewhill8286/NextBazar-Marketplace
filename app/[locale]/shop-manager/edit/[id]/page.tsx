@@ -1,8 +1,6 @@
-import EditWrapper from "../../../dashboard/edit/[id]/edit-wrapper";
+import { redirect } from "next/navigation";
 
-export default async function ShopManagerEditPage(
-  props: PageProps<"/[locale]/shop-manager/edit/[id]">,
-) {
+export default async function R(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
-  return <EditWrapper listingId={id} backHref="/shop-manager/inventory" />;
+  redirect(`/dashboard/edit/${id}`);
 }

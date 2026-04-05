@@ -59,12 +59,10 @@ function GateCard({
       <div className="w-12 h-12 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
         <Lock className="w-5 h-5 text-[#8E7A6B]" />
       </div>
-      <h3 className="text-lg font-semibold text-[#1a1a1a] mb-2">
-        {feature}
-      </h3>
+      <h3 className="text-lg font-semibold text-[#1a1a1a] mb-2">{feature}</h3>
       <p className="text-sm text-[#6b6560] mb-5">
-        Upgrade to {requiredPlan} to unlock this feature and take your
-        selling to the next level.
+        Upgrade to {requiredPlan} to unlock this feature and take your selling
+        to the next level.
       </p>
       <Link
         href="/pricing"

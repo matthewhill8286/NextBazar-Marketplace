@@ -322,21 +322,21 @@ export default function OnboardingWizard({
     <div className="min-h-[70vh]">
       {/* Step indicator + progress bar */}
       {step < 5 && (
-      <div className="max-w-2xl mx-auto px-4 pt-8">
-        <p className="text-xs text-[#8a8280] font-medium text-right mb-2">
-          Step {step} of 4
-        </p>
-        <div className="flex gap-2">
-          {([1, 2, 3, 4] as Step[]).map((s) => (
-            <div
-              key={s}
-              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                s <= step ? "bg-[#f0eeeb]0" : "bg-[#e8e6e3]"
-              }`}
-            />
-          ))}
+        <div className="max-w-2xl mx-auto px-4 pt-8">
+          <p className="text-xs text-[#8a8280] font-medium text-right mb-2">
+            Step {step} of 4
+          </p>
+          <div className="flex gap-2">
+            {([1, 2, 3, 4] as Step[]).map((s) => (
+              <div
+                key={s}
+                className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
+                  s <= step ? "bg-[#f0eeeb]0" : "bg-[#e8e6e3]"
+                }`}
+              />
+            ))}
+          </div>
         </div>
-      </div>
       )}
 
       {/* Content */}
@@ -756,76 +756,76 @@ export default function OnboardingWizard({
 
         {/* ── Navigation buttons ──────────────────────────────────────────── */}
         {step < 5 && (
-        <div className="flex items-center justify-between mt-8">
-          {/* Back */}
-          {step > 1 ? (
-            <button
-              type="button"
-              onClick={back}
-              className="text-sm text-[#6b6560] hover:text-[#666] font-medium transition-colors"
-            >
-              Back
-            </button>
-          ) : (
-            <div />
-          )}
-
-          {/* Forward */}
-          <div className="flex items-center gap-3">
-            {/* Skip on steps 2, 3, and 4 */}
-            {step >= 2 && step <= 3 && (
+          <div className="flex items-center justify-between mt-8">
+            {/* Back */}
+            {step > 1 ? (
               <button
                 type="button"
-                onClick={next}
-                className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
+                onClick={back}
+                className="text-sm text-[#6b6560] hover:text-[#666] font-medium transition-colors"
               >
-                Skip <ChevronRight className="w-3 h-3" />
-              </button>
-            )}
-
-            {step < 4 ? (
-              <button
-                type="button"
-                onClick={next}
-                disabled={step === 1 && !displayName.trim()}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-[#8E7A6B]/15"
-              >
-                Continue
-                <ArrowRight className="w-4 h-4" />
+                Back
               </button>
             ) : (
-              <div className="flex items-center gap-3">
-                {/* Skip listing */}
+              <div />
+            )}
+
+            {/* Forward */}
+            <div className="flex items-center gap-3">
+              {/* Skip on steps 2, 3, and 4 */}
+              {step >= 2 && step <= 3 && (
                 <button
                   type="button"
-                  onClick={() => finishOnboarding(true)}
-                  disabled={saving}
+                  onClick={next}
                   className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
                 >
-                  <SkipForward className="w-3.5 h-3.5" />
-                  Skip for now
+                  Skip <ChevronRight className="w-3 h-3" />
                 </button>
+              )}
 
-                {/* Post listing + finish */}
+              {step < 4 ? (
                 <button
                   type="button"
-                  onClick={() => finishOnboarding(false)}
-                  disabled={
-                    saving || !listingTitle.trim() || !listingCategoryId
-                  }
+                  onClick={next}
+                  disabled={step === 1 && !displayName.trim()}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-[#8E7A6B]/15"
                 >
-                  {saving ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4" />
-                  )}
-                  Post &amp; Finish
+                  Continue
+                  <ArrowRight className="w-4 h-4" />
                 </button>
-              </div>
-            )}
+              ) : (
+                <div className="flex items-center gap-3">
+                  {/* Skip listing */}
+                  <button
+                    type="button"
+                    onClick={() => finishOnboarding(true)}
+                    disabled={saving}
+                    className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors flex items-center gap-1"
+                  >
+                    <SkipForward className="w-3.5 h-3.5" />
+                    Skip for now
+                  </button>
+
+                  {/* Post listing + finish */}
+                  <button
+                    type="button"
+                    onClick={() => finishOnboarding(false)}
+                    disabled={
+                      saving || !listingTitle.trim() || !listingCategoryId
+                    }
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-[#8E7A6B] text-white font-semibold text-sm hover:bg-[#7A6657] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm shadow-[#8E7A6B]/15"
+                  >
+                    {saving ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    Post &amp; Finish
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
         )}
       </div>
     </div>

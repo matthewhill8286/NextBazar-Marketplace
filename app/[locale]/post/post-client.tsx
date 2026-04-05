@@ -305,10 +305,12 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
         image_count: uploadedUrls.length,
         video_url: video?.url || null,
         ...(attributes ? { attributes } : {}),
-        ...(formData.quantity ? {
-          quantity: Number(formData.quantity),
-          low_stock_threshold: Number(formData.low_stock_threshold) || 3,
-        } : {}),
+        ...(formData.quantity
+          ? {
+              quantity: Number(formData.quantity),
+              low_stock_threshold: Number(formData.low_stock_threshold) || 3,
+            }
+          : {}),
       })
       .select("id, slug")
       .single();

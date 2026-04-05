@@ -9,8 +9,8 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 import { getAttr } from "@/app/helpers/get-attr";
+import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 // ─── Filter option constants ────────────────────────────────────────────────
 
@@ -101,50 +101,85 @@ export function applyVehicleFilters(
     }
 
     // Make
-    if (filters.make && getAttr(l, "make").toLowerCase() !== filters.make.toLowerCase()) {
+    if (
+      filters.make &&
+      getAttr(l, "make").toLowerCase() !== filters.make.toLowerCase()
+    ) {
       return false;
     }
 
     // Model
-    if (filters.model && getAttr(l, "model").toLowerCase() !== filters.model.toLowerCase()) {
+    if (
+      filters.model &&
+      getAttr(l, "model").toLowerCase() !== filters.model.toLowerCase()
+    ) {
       return false;
     }
 
     // Year range
     const year = parseInt(getAttr(l, "year"), 10);
-    if (filters.yearMin && !Number.isNaN(year) && year < parseInt(filters.yearMin, 10)) {
+    if (
+      filters.yearMin &&
+      !Number.isNaN(year) &&
+      year < parseInt(filters.yearMin, 10)
+    ) {
       return false;
     }
-    if (filters.yearMax && !Number.isNaN(year) && year > parseInt(filters.yearMax, 10)) {
+    if (
+      filters.yearMax &&
+      !Number.isNaN(year) &&
+      year > parseInt(filters.yearMax, 10)
+    ) {
       return false;
     }
 
     // Price range
-    if (filters.priceMin && l.price !== null && l.price < parseInt(filters.priceMin, 10)) {
+    if (
+      filters.priceMin &&
+      l.price !== null &&
+      l.price < parseInt(filters.priceMin, 10)
+    ) {
       return false;
     }
-    if (filters.priceMax && l.price !== null && l.price > parseInt(filters.priceMax, 10)) {
+    if (
+      filters.priceMax &&
+      l.price !== null &&
+      l.price > parseInt(filters.priceMax, 10)
+    ) {
       return false;
     }
 
     // Mileage
     const mileage = parseInt(getAttr(l, "mileage"), 10);
-    if (filters.mileageMax && !Number.isNaN(mileage) && mileage > parseInt(filters.mileageMax, 10)) {
+    if (
+      filters.mileageMax &&
+      !Number.isNaN(mileage) &&
+      mileage > parseInt(filters.mileageMax, 10)
+    ) {
       return false;
     }
 
     // Fuel type
-    if (filters.fuelType && getAttr(l, "fuel_type").toLowerCase() !== filters.fuelType) {
+    if (
+      filters.fuelType &&
+      getAttr(l, "fuel_type").toLowerCase() !== filters.fuelType
+    ) {
       return false;
     }
 
     // Transmission
-    if (filters.transmission && getAttr(l, "transmission").toLowerCase() !== filters.transmission) {
+    if (
+      filters.transmission &&
+      getAttr(l, "transmission").toLowerCase() !== filters.transmission
+    ) {
       return false;
     }
 
     // Body type
-    if (filters.bodyType && getAttr(l, "body_type").toLowerCase() !== filters.bodyType) {
+    if (
+      filters.bodyType &&
+      getAttr(l, "body_type").toLowerCase() !== filters.bodyType
+    ) {
       return false;
     }
 
@@ -432,7 +467,9 @@ export default function VehicleFilters({
             <div className="flex items-center gap-2 text-sm text-[#8a8280]">
               <Filter className="w-3.5 h-3.5" />
               <span>
-                <span className="font-semibold text-[#1a1a1a]">{resultCount}</span>{" "}
+                <span className="font-semibold text-[#1a1a1a]">
+                  {resultCount}
+                </span>{" "}
                 {resultCount === 1 ? "vehicle" : "vehicles"} found
               </span>
             </div>

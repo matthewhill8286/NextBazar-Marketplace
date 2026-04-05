@@ -18,7 +18,11 @@ type Props = {
   shopMode?: boolean;
 };
 
-export default function OverviewTab({ listings, slug, shopMode = false }: Props) {
+export default function OverviewTab({
+  listings,
+  slug,
+  shopMode = false,
+}: Props) {
   const activeListings = listings.filter((l) => l.status === "active");
   const totalViews = listings.reduce((s, l) => s + l.view_count, 0);
   const totalFavorites = listings.reduce((s, l) => s + l.favorite_count, 0);
@@ -91,7 +95,9 @@ export default function OverviewTab({ listings, slug, shopMode = false }: Props)
             .map((l, i) => (
               <Link
                 key={l.id}
-                href={shopMode ? `/shop-manager/edit/${l.id}` : `/listing/${l.slug}`}
+                href={
+                  shopMode ? `/dashboard/edit/${l.id}` : `/listing/${l.slug}`
+                }
                 className="flex items-center gap-3 p-2.5 -mx-2 hover:bg-[#faf9f7] transition-colors group"
               >
                 <span className="text-xs font-semibold text-[#8a8280] w-5 text-center">

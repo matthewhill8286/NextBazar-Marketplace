@@ -12,10 +12,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  FEATURE_FLAGS,
-  SOFT_LAUNCH_CATEGORY_SLUGS,
-} from "@/lib/feature-flags";
+import { FEATURE_FLAGS, SOFT_LAUNCH_CATEGORY_SLUGS } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/client";
 import type {
   Category,

@@ -1,9 +1,5 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import SalesTab from "../../dashboard/dealer/sales-tab";
-import { useShopCMS } from "../shop-context";
-
-export default function ShopSalesPage() {
-  const { listings } = useShopCMS();
-  return <SalesTab listings={listings} shopMode />;
+export default function R() {
+  redirect("/dashboard/sales");
 }

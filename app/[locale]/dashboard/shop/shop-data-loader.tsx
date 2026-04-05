@@ -1,4 +1,4 @@
 /**
- * @deprecated — Moved to /shop-manager/shop-data-loader.tsx
+ * @deprecated — Now lives at /dashboard/shop-data-loader.tsx
  */
-export { default } from "../../shop-manager/shop-data-loader";
+export { default } from "../shop-data-loader";

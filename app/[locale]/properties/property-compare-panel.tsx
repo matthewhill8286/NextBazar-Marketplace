@@ -11,11 +11,11 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import { getAttr } from "@/app/helpers/get-attr";
+import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/lib/compare-context";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
-import { getAttr } from "@/app/helpers/get-attr";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
-import { Link } from "@/i18n/navigation";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -182,10 +182,7 @@ export default function PropertyComparePanel({ enrichedItems }: Props) {
         {/* Spec rows */}
         {SPEC_ROWS.map((spec, idx) => {
           const values = compareData.map((item) => {
-            const val = getAttr(
-              item as unknown as ListingCardRow,
-              spec.key,
-            );
+            const val = getAttr(item as unknown as ListingCardRow, spec.key);
             if (!val) return "—";
             const formatted =
               spec.key === "area_sqm" && val !== "—"
@@ -196,31 +193,22 @@ export default function PropertyComparePanel({ enrichedItems }: Props) {
 
           // Highlight best values
           const numericValues = compareData.map((item) => {
-            const raw = getAttr(
-              item as unknown as ListingCardRow,
-              spec.key,
-            );
+            const raw = getAttr(item as unknown as ListingCardRow, spec.key);
             return parseInt(raw, 10);
           });
 
           let bestIndex = -1;
           if (spec.key === "area_sqm") {
             // Bigger is better
-            const max = Math.max(
-              ...numericValues.filter((v) => !isNaN(v)),
-            );
+            const max = Math.max(...numericValues.filter((v) => !isNaN(v)));
             if (!isNaN(max)) bestIndex = numericValues.indexOf(max);
           } else if (spec.key === "bedrooms" || spec.key === "bathrooms") {
             // More is better
-            const max = Math.max(
-              ...numericValues.filter((v) => !isNaN(v)),
-            );
+            const max = Math.max(...numericValues.filter((v) => !isNaN(v)));
             if (!isNaN(max)) bestIndex = numericValues.indexOf(max);
           } else if (spec.key === "year_built") {
             // Newer is better
-            const max = Math.max(
-              ...numericValues.filter((v) => !isNaN(v)),
-            );
+            const max = Math.max(...numericValues.filter((v) => !isNaN(v)));
             if (!isNaN(max)) bestIndex = numericValues.indexOf(max);
           }
 

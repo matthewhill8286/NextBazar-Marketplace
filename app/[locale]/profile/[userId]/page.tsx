@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
-import ProfileClient from "./profile-client";
 import ProfileLoading from "./loading";
+import ProfileClient from "./profile-client";
 
 /**
  * Async component that fetches all profile data and renders ProfileClient.

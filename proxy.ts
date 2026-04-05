@@ -11,8 +11,9 @@ export async function proxy(request: NextRequest) {
 
   // Skip locale routing for API routes and static assets
   const isApi = pathname.startsWith("/api");
-  const isStatic =
-    /\.(svg|png|jpg|jpeg|gif|webp|ico|css|js|webmanifest)$/.test(pathname);
+  const isStatic = /\.(svg|png|jpg|jpeg|gif|webp|ico|css|js|webmanifest)$/.test(
+    pathname,
+  );
 
   // Let Next.js handle the manifest route directly — no middleware processing
   if (pathname === "/manifest.webmanifest") {
@@ -79,7 +80,6 @@ export async function proxy(request: NextRequest) {
     strippedPath.startsWith("/post") ||
     strippedPath.startsWith("/messages") ||
     strippedPath.startsWith("/dashboard") ||
-    strippedPath.startsWith("/shop-manager") ||
     strippedPath.startsWith("/shop-onboarding");
 
   if (needsAuth) {

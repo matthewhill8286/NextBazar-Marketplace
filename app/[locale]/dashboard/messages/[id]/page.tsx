@@ -4,5 +4,7 @@ export default async function DashboardChatPage(
   props: PageProps<"/[locale]/dashboard/messages/[id]">,
 ) {
   const { id } = await props.params;
-  return <ChatThread conversationId={id} />;
+  return (
+    <ChatThread conversationId={id} backHref="/dashboard/messages" embedded />
+  );
 }

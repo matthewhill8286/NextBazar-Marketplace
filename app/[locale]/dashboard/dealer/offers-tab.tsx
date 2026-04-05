@@ -17,9 +17,19 @@ import { createClient } from "@/lib/supabase/client";
 import type { OfferRow } from "./types";
 import { OFFER_STATUS_BADGE } from "./types";
 
-type OfferFilter = "all" | "pending" | "accepted" | "declined" | "countered" | "expired";
+type OfferFilter =
+  | "all"
+  | "pending"
+  | "accepted"
+  | "declined"
+  | "countered"
+  | "expired";
 
-export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) {
+export default function OffersTab({
+  shopMode = false,
+}: {
+  shopMode?: boolean;
+}) {
   const { userId } = useAuth();
   const supabase = createClient();
 
@@ -138,9 +148,7 @@ export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) 
           <div className="text-2xl font-bold text-[#1a1a1a]">
             &euro;{totalOfferValue.toLocaleString()}
           </div>
-          <div className="text-xs text-[#6b6560] mt-1">
-            Pending Offer Value
-          </div>
+          <div className="text-xs text-[#6b6560] mt-1">Pending Offer Value</div>
         </div>
         <div className="bg-white border border-[#e8e6e3] p-5">
           <div className="w-9 h-9 bg-emerald-50 flex items-center justify-center mb-3">
@@ -336,9 +344,7 @@ export default function OffersTab({ shopMode = false }: { shopMode?: boolean }) 
                           value={counterOffer.amount}
                           onChange={(e) =>
                             setCounterOffer((prev) =>
-                              prev
-                                ? { ...prev, amount: e.target.value }
-                                : null,
+                              prev ? { ...prev, amount: e.target.value } : null,
                             )
                           }
                           placeholder={String(offer.listing?.price ?? "")}

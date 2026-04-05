@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import JsonLd from "@/app/components/json-ld";
 import { routing } from "@/i18n/routing";
-import { BASE_URL, buildAlternates, productJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import {
+  BASE_URL,
+  breadcrumbJsonLd,
+  buildAlternates,
+  productJsonLd,
+} from "@/lib/seo";
 import {
   getListingBySlugCached,
   getPopularListingSlugs,
@@ -105,7 +110,12 @@ async function ListingJsonLd({ slug }: { slug: string }) {
         data={breadcrumbJsonLd([
           { name: "Home", url: BASE_URL },
           ...(category
-            ? [{ name: category.name, url: `${BASE_URL}/en/search?category=${category.slug}` }]
+            ? [
+                {
+                  name: category.name,
+                  url: `${BASE_URL}/en/search?category=${category.slug}`,
+                },
+              ]
             : []),
           { name: listing.title, url },
         ])}

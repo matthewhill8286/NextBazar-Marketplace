@@ -18,9 +18,7 @@ export default function PromoCodeInput() {
 
     // If not logged in, redirect to signup first
     if (!userId) {
-      router.push(
-        `/auth/signup?redirect=/pricing&promo=${promoCode.trim()}`,
-      );
+      router.push(`/auth/signup?redirect=/pricing&promo=${promoCode.trim()}`);
       return;
     }
 

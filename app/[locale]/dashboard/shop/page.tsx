@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
 /**
- * Legacy shop dashboard route — redirects to the standalone Shop Manager.
+ * Legacy shop dashboard route — redirects to the dashboard.
  */
 export default function ShopPageRedirect() {
-  redirect("/shop-manager");
+  redirect("/dashboard");
 }

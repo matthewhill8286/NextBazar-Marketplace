@@ -271,7 +271,11 @@
       "settings": "Настройки",
       "reportsQueue": "Очередь жалоб",
       "myShop": "Мой магазин",
-      "becomeProSeller": "Стать продавцом"
+      "becomeProSeller": "Стать продавцом",
+      "inventory": "Инвентарь",
+      "sales": "Продажи",
+      "branding": "Оформление",
+      "plan": "Тариф и оплата"
     },
     "proSeller": "Продавец",
     "stats": {
@@ -558,6 +562,10 @@
   "settings": {
     "title": "Настройки",
     "profile": "Профиль",
+    "profilePhoto": "Фото профиля",
+    "photoFormats": "JPG, PNG или WebP. Максимум 2 МБ.",
+    "uploadPhoto": "Загрузить фото",
+    "changePhoto": "Сменить фото",
     "displayName": "Отображаемое имя",
     "bio": "О себе",
     "phone": "Номер телефона",

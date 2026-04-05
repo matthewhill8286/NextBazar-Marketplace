@@ -357,7 +357,7 @@ export default function ShopOnboardingWizard({
               Add Your First Listing
             </Link>
             <Link
-              href="/shop-manager"
+              href="/dashboard"
               className="inline-flex items-center gap-2 border border-[#e8e6e3] text-[#666] text-xs font-medium tracking-[0.15em] uppercase px-7 py-3.5 hover:bg-[#f0eeeb] transition-colors"
             >
               <Palette className="w-4 h-4" />
@@ -803,7 +803,7 @@ export default function ShopOnboardingWizard({
           <button
             type="button"
             onClick={() => {
-              router.push("/shop-manager");
+              router.push("/dashboard");
               router.refresh();
             }}
             className="text-sm text-[#8a8280] hover:text-[#666] font-medium transition-colors"

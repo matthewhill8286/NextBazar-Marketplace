@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getSellerPlan, stripe } from "@/lib/stripe";
 import type { SellerTier } from "@/lib/pricing-config";
+import { getSellerPlan, stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 const VALID_TIERS: SellerTier[] = ["pro", "business"];
@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
 
     if (!newTier || !VALID_TIERS.includes(newTier)) {
       return NextResponse.json(
-        { error: `Invalid tier: ${newTier}. Must be one of: ${VALID_TIERS.join(", ")}` },
+        {
+          error: `Invalid tier: ${newTier}. Must be one of: ${VALID_TIERS.join(", ")}`,
+        },
         { status: 400 },
       );
     }
@@ -60,7 +62,10 @@ export async function POST(request: NextRequest) {
 
     // Don't allow changing to the same tier + billing
     const effectiveBilling = billing || shop.billing_interval || "monthly";
-    if (shop.plan_tier === newTier && shop.billing_interval === effectiveBilling) {
+    if (
+      shop.plan_tier === newTier &&
+      shop.billing_interval === effectiveBilling
+    ) {
       return NextResponse.json(
         { error: "You're already on this plan." },
         { status: 400 },
@@ -106,7 +111,9 @@ export async function POST(request: NextRequest) {
     // - Downgrading → apply at end of billing period
     const isUpgrade =
       (newTier === "business" && shop.plan_tier === "pro") ||
-      (effectiveBilling === "yearly" && shop.billing_interval === "monthly" && newTier === shop.plan_tier);
+      (effectiveBilling === "yearly" &&
+        shop.billing_interval === "monthly" &&
+        newTier === shop.plan_tier);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updatedSubscription = (await stripe.subscriptions.update(
@@ -150,17 +157,15 @@ export async function POST(request: NextRequest) {
       success: true,
       newTier,
       billing: effectiveBilling,
-      message:
-        isUpgrade
-          ? `Upgraded to ${targetPlan.name}! Changes are effective immediately.`
-          : `Changed to ${targetPlan.name}. Your plan will adjust at the next billing cycle.`,
+      message: isUpgrade
+        ? `Upgraded to ${targetPlan.name}! Changes are effective immediately.`
+        : `Changed to ${targetPlan.name}. Your plan will adjust at the next billing cycle.`,
     });
   } catch (err: unknown) {
     console.error("Change plan error:", err);
     return NextResponse.json(
       {
-        error:
-          err instanceof Error ? err.message : "Failed to change plan",
+        error: err instanceof Error ? err.message : "Failed to change plan",
       },
       { status: 500 },
     );

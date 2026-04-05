@@ -24,11 +24,10 @@ import {
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Link, useRouter } from "@/i18n/navigation";
-
 import { revalidateListings } from "@/app/actions/revalidate";
-import type { SellerTier } from "@/lib/pricing-config";
+import { Link, useRouter } from "@/i18n/navigation";
 import { getPlanLimits } from "@/lib/plan-limits";
+import type { SellerTier } from "@/lib/pricing-config";
 import { createClient } from "@/lib/supabase/client";
 import CSVImport, { detectShopType } from "./csv-import";
 import type { ListingRow } from "./types";
@@ -103,10 +102,13 @@ function StockBadge({
 
   async function save() {
     const num = parseInt(value, 10);
-    if (isNaN(num) || num < 0) return;
+    if (Number.isNaN(num) || num < 0) return;
     setSaving(true);
     const supabase = createClient();
-    await supabase.from("listings").update({ quantity: num }).eq("id", listingId);
+    await supabase
+      .from("listings")
+      .update({ quantity: num })
+      .eq("id", listingId);
     setSaving(false);
     setEditing(false);
     onUpdated?.();
@@ -120,36 +122,49 @@ function StockBadge({
           min="0"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") save();
+            if (e.key === "Escape") setEditing(false);
+          }}
           className="w-14 text-xs text-right border border-[#8E7A6B] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#8E7A6B]"
-          autoFocus
           disabled={saving}
         />
-        <button onClick={save} disabled={saving} className="text-emerald-600 hover:text-emerald-700">
+        <button
+          onClick={save}
+          disabled={saving}
+          className="text-emerald-600 hover:text-emerald-700"
+        >
           <Check className="w-3 h-3" />
         </button>
-        <button onClick={() => setEditing(false)} className="text-[#8a8280] hover:text-[#1a1a1a]">
+        <button
+          onClick={() => setEditing(false)}
+          className="text-[#8a8280] hover:text-[#1a1a1a]"
+        >
           <X className="w-3 h-3" />
         </button>
       </div>
     );
   }
 
-  const badge = quantity === 0 ? (
-    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600">
-      Out of stock
-    </span>
-  ) : quantity <= threshold ? (
-    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
-      {quantity} left
-    </span>
-  ) : (
-    <span className="text-xs text-[#6b6560]">{quantity}</span>
-  );
+  const badge =
+    quantity === 0 ? (
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600">
+        Out of stock
+      </span>
+    ) : quantity <= threshold ? (
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+        {quantity} left
+      </span>
+    ) : (
+      <span className="text-xs text-[#6b6560]">{quantity}</span>
+    );
 
   return (
     <button
-      onClick={() => { setValue(String(quantity)); setEditing(true); }}
+      onClick={() => {
+        setValue(String(quantity));
+        setEditing(true);
+      }}
       className="hover:opacity-70 transition-opacity cursor-pointer"
       title="Click to edit stock"
     >
@@ -206,17 +221,10 @@ function PromoUsageBar({
   tierLabel: string;
   planStartedAt?: string | null;
 }) {
-  // Count boosts used in the current billing cycle
+  // Count boosts used — currently promoted listings
   const cycleBoosts = useMemo(() => {
-    if (!planStartedAt) {
-      // Fallback: count currently promoted
-      return listings.filter((l) => l.is_promoted).length;
-    }
-    const cycleStart = new Date(planStartedAt).getTime();
-    return listings.filter(
-      (l) => l.promoted_at && new Date(l.promoted_at).getTime() >= cycleStart,
-    ).length;
-  }, [listings, planStartedAt]);
+    return listings.filter((l) => l.is_promoted).length;
+  }, [listings]);
 
   const activePromos = cycleBoosts;
   const used = Math.min(activePromos, boostsPerMonth);
@@ -241,7 +249,9 @@ function PromoUsageBar({
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <span className="text-lg font-bold text-[#1a1a1a]">{activePromos}</span>
+            <span className="text-lg font-bold text-[#1a1a1a]">
+              {activePromos}
+            </span>
             <span className="text-sm text-[#8a8280]"> / {boostsPerMonth}</span>
           </div>
           {remaining > 0 && (
@@ -297,7 +307,8 @@ function PromoUsageBar({
 
       {activePromos === 0 && (
         <p className="text-xs text-[#8a8280] mt-2">
-          Promote your listings to get more visibility. You have {boostsPerMonth} free boosts this month.
+          Promote your listings to get more visibility. You have{" "}
+          {boostsPerMonth} free boosts this month.
         </p>
       )}
     </div>
@@ -358,8 +369,7 @@ export default function InventoryTab({
           break;
         case "created_at":
           cmp =
-            new Date(a.created_at).getTime() -
-            new Date(b.created_at).getTime();
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
           break;
       }
       return sortDir === "asc" ? cmp : -cmp;
@@ -391,7 +401,8 @@ export default function InventoryTab({
     () => pageIds.filter((id) => selected.has(id)).length,
     [pageIds, selected],
   );
-  const allPageSelected = pageIds.length > 0 && pageSelectedCount === pageIds.length;
+  const allPageSelected =
+    pageIds.length > 0 && pageSelectedCount === pageIds.length;
   const somePageSelected = pageSelectedCount > 0 && !allPageSelected;
 
   const toggleRow = useCallback((id: string) => {
@@ -408,10 +419,14 @@ export default function InventoryTab({
       const next = new Set(prev);
       if (allPageSelected) {
         // Deselect all on current page
-        pageIds.forEach((id) => next.delete(id));
+        pageIds.forEach((id) => {
+          next.delete(id);
+        });
       } else {
         // Select all on current page
-        pageIds.forEach((id) => next.add(id));
+        pageIds.forEach((id) => {
+          next.add(id);
+        });
       }
       return next;
     });
@@ -431,7 +446,10 @@ export default function InventoryTab({
     [listings, selected],
   );
   const selectedActivatable = useMemo(
-    () => selectedListings.filter((l) => l.status === "draft" || l.status === "paused"),
+    () =>
+      selectedListings.filter(
+        (l) => l.status === "draft" || l.status === "paused",
+      ),
     [selectedListings],
   );
   const selectedPausable = useMemo(
@@ -495,7 +513,10 @@ export default function InventoryTab({
       if (mode === "soft") {
         const results = await Promise.all(
           deleteIds.map((id) =>
-            supabase.from("listings").update({ status: "removed" }).eq("id", id),
+            supabase
+              .from("listings")
+              .update({ status: "removed" })
+              .eq("id", id),
           ),
         );
         const errors = results.filter((r) => r.error);
@@ -542,6 +563,68 @@ export default function InventoryTab({
   );
 
   const isBusy = bulkAction !== null;
+
+  // ── Bulk boost ───────────────────────────────────────────────────────────
+  const activeBoostCount = useMemo(
+    () => listings.filter((l) => l.is_promoted).length,
+    [listings],
+  );
+  const boostsRemaining = Math.max(
+    limits.freeBoostsPerMonth - activeBoostCount,
+    0,
+  );
+
+  // Boostable = active, not already promoted
+  const selectedBoostable = useMemo(
+    () =>
+      selectedListings.filter((l) => l.status === "active" && !l.is_promoted),
+    [selectedListings],
+  );
+  const allBoostable = useMemo(
+    () => listings.filter((l) => l.status === "active" && !l.is_promoted),
+    [listings],
+  );
+
+  async function handleBulkBoost(ids: string[]) {
+    if (ids.length === 0) return;
+    const toBoost = ids.slice(0, boostsRemaining);
+    if (toBoost.length === 0) {
+      toast.error("No free boosts remaining this month");
+      return;
+    }
+    setBulkAction("boost");
+    try {
+      const until = new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000,
+      ).toISOString();
+      const results = await Promise.all(
+        toBoost.map((id) =>
+          supabase
+            .from("listings")
+            .update({ is_promoted: true, promoted_until: until })
+            .eq("id", id),
+        ),
+      );
+      const errors = results.filter((r) => r.error);
+      if (errors.length > 0) {
+        toast.error(`Failed to boost ${errors.length} listing(s)`, {
+          description: errors[0].error?.message ?? "Please try again.",
+        });
+      } else {
+        toast.success(
+          `${toBoost.length} listing${toBoost.length !== 1 ? "s" : ""} boosted for 7 days!`,
+        );
+      }
+      setSelected(new Set());
+      await revalidateListings();
+      if (onRefresh) await onRefresh();
+      router.refresh();
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setBulkAction(null);
+    }
+  }
   const hasSelection = selected.size > 0;
 
   const thBase = "px-4 py-3 font-medium text-[#6b6560] select-none";
@@ -575,7 +658,9 @@ export default function InventoryTab({
       </div>
 
       {/* CSV Import Modal */}
-      {showImport && <CSVImport onClose={handleImportClose} shopType={shopType} />}
+      {showImport && (
+        <CSVImport onClose={handleImportClose} shopType={shopType} />
+      )}
 
       {/* Promo usage widget — Pro & Business tiers */}
       {limits.freeBoostsPerMonth > 0 && (
@@ -598,10 +683,12 @@ export default function InventoryTab({
               </div>
               <div>
                 <h3 className="text-base font-semibold text-[#1a1a1a]">
-                  Delete {deleteIds.length} listing{deleteIds.length !== 1 ? "s" : ""}?
+                  Delete {deleteIds.length} listing
+                  {deleteIds.length !== 1 ? "s" : ""}?
                 </h3>
                 <p className="text-xs text-[#8a8280] mt-0.5">
-                  Choose how to handle {deleteIds.length === 1 ? "this listing" : "these listings"}.
+                  Choose how to handle{" "}
+                  {deleteIds.length === 1 ? "this listing" : "these listings"}.
                 </p>
               </div>
             </div>
@@ -622,7 +709,8 @@ export default function InventoryTab({
                   )}
                 </div>
                 <p className="text-xs text-[#8a8280] mt-0.5">
-                  Hidden from buyers but kept in your records. You can restore {deleteIds.length === 1 ? "it" : "them"} later.
+                  Hidden from buyers but kept in your records. You can restore{" "}
+                  {deleteIds.length === 1 ? "it" : "them"} later.
                 </p>
               </button>
 
@@ -641,7 +729,8 @@ export default function InventoryTab({
                   )}
                 </div>
                 <p className="text-xs text-red-400 mt-0.5">
-                  Permanently erased — listing data and images cannot be recovered.
+                  Permanently erased — listing data and images cannot be
+                  recovered.
                 </p>
               </button>
             </div>
@@ -722,11 +811,36 @@ export default function InventoryTab({
             )}
           </button>
 
+          {/* Boost selected */}
+          {limits.freeBoostsPerMonth > 0 && (
+            <button
+              onClick={() =>
+                handleBulkBoost(selectedBoostable.map((l) => l.id))
+              }
+              disabled={
+                selectedBoostable.length === 0 ||
+                boostsRemaining === 0 ||
+                isBusy
+              }
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {bulkAction === "boost" ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Zap className="w-3 h-3" />
+              )}
+              Boost
+              {selectedBoostable.length > 0 && (
+                <span className="bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                  {Math.min(selectedBoostable.length, boostsRemaining)}
+                </span>
+              )}
+            </button>
+          )}
+
           {/* Delete selected */}
           <button
-            onClick={() =>
-              setDeleteIds(selectedDeletable.map((l) => l.id))
-            }
+            onClick={() => setDeleteIds(selectedDeletable.map((l) => l.id))}
             disabled={selectedDeletable.length === 0 || isBusy}
             className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
@@ -759,14 +873,13 @@ export default function InventoryTab({
           <button
             onClick={() =>
               bulkUpdateStatus(
-                listings
-                  .filter((l) => l.status === "draft")
-                  .map((l) => l.id),
+                listings.filter((l) => l.status === "draft").map((l) => l.id),
                 "active",
               )
             }
             disabled={
-              listings.filter((l) => l.status === "draft").length === 0 || isBusy
+              listings.filter((l) => l.status === "draft").length === 0 ||
+              isBusy
             }
             className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
@@ -783,14 +896,13 @@ export default function InventoryTab({
           <button
             onClick={() =>
               bulkUpdateStatus(
-                listings
-                  .filter((l) => l.status === "active")
-                  .map((l) => l.id),
+                listings.filter((l) => l.status === "active").map((l) => l.id),
                 "paused",
               )
             }
             disabled={
-              listings.filter((l) => l.status === "active").length === 0 || isBusy
+              listings.filter((l) => l.status === "active").length === 0 ||
+              isBusy
             }
             className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
@@ -804,12 +916,33 @@ export default function InventoryTab({
               </span>
             )}
           </button>
+          {limits.freeBoostsPerMonth > 0 && (
+            <button
+              onClick={() => handleBulkBoost(allBoostable.map((l) => l.id))}
+              disabled={
+                allBoostable.length === 0 || boostsRemaining === 0 || isBusy
+              }
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              {bulkAction === "boost" ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Zap className="w-3 h-3" />
+              )}
+              Boost All Active
+              {allBoostable.length > 0 && (
+                <span className="bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+                  {Math.min(allBoostable.length, boostsRemaining)}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       )}
 
       {/* Listings table */}
-      <div className="bg-white border border-[#e8e6e3] overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white border border-[#e8e6e3] overflow-x-auto">
+        <table className="w-full text-sm min-w-0">
           <thead>
             <tr className="border-b border-[#e8e6e3] bg-[#faf9f7]/50">
               <th className="w-10 px-4 py-3">
@@ -821,19 +954,13 @@ export default function InventoryTab({
                 />
               </th>
               <th className={`text-left ${thBase}`}>
-                <button
-                  onClick={() => toggleSort("title")}
-                  className={thBtn}
-                >
+                <button onClick={() => toggleSort("title")} className={thBtn}>
                   Listing
                   <SortIcon active={sortKey === "title"} dir={sortDir} />
                 </button>
               </th>
               <th className={`text-left ${thBase}`}>
-                <button
-                  onClick={() => toggleSort("status")}
-                  className={thBtn}
-                >
+                <button onClick={() => toggleSort("status")} className={thBtn}>
                   Status
                   <SortIcon active={sortKey === "status"} dir={sortDir} />
                 </button>
@@ -879,10 +1006,7 @@ export default function InventoryTab({
                   className={`${thBtn} ml-auto`}
                 >
                   Added
-                  <SortIcon
-                    active={sortKey === "created_at"}
-                    dir={sortDir}
-                  />
+                  <SortIcon active={sortKey === "created_at"} dir={sortDir} />
                 </button>
               </th>
               <th className={`text-right ${thBase}`}>Actions</th>
@@ -895,9 +1019,7 @@ export default function InventoryTab({
                 <tr
                   key={l.id}
                   className={`transition-colors ${
-                    isSelected
-                      ? "bg-[#8E7A6B]/[0.04]"
-                      : "hover:bg-[#faf9f7]/50"
+                    isSelected ? "bg-[#8E7A6B]/[0.04]" : "hover:bg-[#faf9f7]/50"
                   }`}
                 >
                   <td className="w-10 px-4 py-3">
@@ -954,7 +1076,12 @@ export default function InventoryTab({
                   {limits.stockManagement && (
                     <td className="px-4 py-3 text-right hidden md:table-cell">
                       {l.quantity != null ? (
-                        <StockBadge quantity={l.quantity} threshold={l.low_stock_threshold ?? 3} listingId={l.id} onUpdated={onRefresh} />
+                        <StockBadge
+                          quantity={l.quantity}
+                          threshold={l.low_stock_threshold ?? 3}
+                          listingId={l.id}
+                          onUpdated={onRefresh}
+                        />
                       ) : (
                         <span className="text-[#8a8280] text-xs">—</span>
                       )}
@@ -963,30 +1090,28 @@ export default function InventoryTab({
                   <td className="px-4 py-3 text-right text-[#6b6560] text-xs hidden lg:table-cell">
                     {timeAgo(l.created_at)}
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="inline-flex items-center gap-3">
+                  <td className="px-3 py-3 text-right whitespace-nowrap">
+                    <div className="inline-flex items-center gap-1.5">
+                      {l.is_promoted && (
+                        <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-1">
+                          <Sparkles className="w-2.5 h-2.5" /> BOOSTED
+                        </span>
+                      )}
                       <Link
                         href={`${editBaseHref}/${l.id}`}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657]"
+                        className="p-1.5 text-[#8E7A6B] hover:text-[#7A6657] hover:bg-[#f0eeeb] transition-colors"
+                        title="Edit listing"
                       >
-                        <Edit3 className="w-3 h-3" /> Edit
+                        <Edit3 className="w-3.5 h-3.5" />
                       </Link>
-                      {l.status === "active" && !l.is_promoted && (
-                        <Link
-                          href={`/promote/${l.id}`}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 hover:text-amber-700 transition-colors"
-                        >
-                          <Zap className="w-3 h-3" /> Boost
-                        </Link>
-                      )}
                       {l.status !== "removed" && (
                         <button
                           onClick={() => setDeleteIds([l.id])}
                           disabled={isBusy}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-[#8a8280] hover:text-red-600 disabled:opacity-40 transition-colors"
-                          aria-label={`Delete ${l.title}`}
+                          className="p-1.5 text-[#8a8280] hover:text-red-600 hover:bg-red-50 disabled:opacity-40 transition-colors"
+                          title={`Delete ${l.title}`}
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       )}
                     </div>
@@ -1001,7 +1126,10 @@ export default function InventoryTab({
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
             <p className="font-medium">No listings yet</p>
             <p className="text-xs mt-1">
-              <Link href={newListingHref} className="text-[#8E7A6B] hover:underline">
+              <Link
+                href={newListingHref}
+                className="text-[#8E7A6B] hover:underline"
+              >
                 Create your first listing
               </Link>
             </p>
@@ -1073,10 +1201,7 @@ export default function InventoryTab({
                 }, [])
                 .map((item, i) =>
                   item === "ellipsis" ? (
-                    <span
-                      key={`e${i}`}
-                      className="px-1 text-xs text-[#8a8280]"
-                    >
+                    <span key={`e${i}`} className="px-1 text-xs text-[#8a8280]">
                       &hellip;
                     </span>
                   ) : (

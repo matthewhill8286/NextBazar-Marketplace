@@ -1,4 +1,6 @@
 /**
- * @deprecated — Moved to /shop-manager/shop-sidebar.tsx
+ * @deprecated — Shop manager merged into dashboard. This file is no longer needed.
  */
-export { default } from "../../shop-manager/shop-sidebar";
+export default function DeprecatedShopSidebar() {
+  return null;
+}

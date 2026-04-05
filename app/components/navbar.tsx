@@ -133,7 +133,7 @@ export default function Navbar() {
 
           {userId && (
             <NavPreviewWrapper
-              href={hasShop ? "/shop-manager/messages" : "/dashboard/messages"}
+              href="/dashboard/messages"
               badge={unreadCount}
               badgeColor="bg-[#8E7A6B]"
               label="Messages"
@@ -157,7 +157,7 @@ export default function Navbar() {
 
           {userId && (
             <NavPreviewWrapper
-              href={hasShop ? "/shop-manager/notifications" : "/dashboard/notifications"}
+              href="/dashboard/notifications"
               badge={notifCount}
               badgeColor="bg-[#8E7A6B]"
               label="Notifications"

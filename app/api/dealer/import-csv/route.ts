@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/server";
 
@@ -117,10 +117,7 @@ export async function POST(req: NextRequest) {
     const rows: ImportRow[] = body.rows;
 
     if (!Array.isArray(rows) || rows.length === 0) {
-      return NextResponse.json(
-        { error: "No rows provided" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "No rows provided" }, { status: 400 });
     }
 
     if (rows.length > 200) {
@@ -195,8 +192,7 @@ export async function POST(req: NextRequest) {
       let locationId: string | null = null;
       if (row.location_slug) {
         const locKey = row.location_slug.toLowerCase().trim();
-        locationId =
-          locMap.get(locKey) ?? locNameMap.get(locKey) ?? null;
+        locationId = locMap.get(locKey) ?? locNameMap.get(locKey) ?? null;
       }
 
       // Build insert payload
@@ -221,7 +217,9 @@ export async function POST(req: NextRequest) {
           ? { attributes: row.attributes }
           : {}),
         ...(row.quantity != null ? { quantity: row.quantity } : {}),
-        ...(row.low_stock_threshold != null ? { low_stock_threshold: row.low_stock_threshold } : {}),
+        ...(row.low_stock_threshold != null
+          ? { low_stock_threshold: row.low_stock_threshold }
+          : {}),
       };
 
       const { data, error } = await supabase

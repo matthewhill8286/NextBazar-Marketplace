@@ -4,16 +4,21 @@ import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Link } from "@/i18n/navigation";
 import JsonLd from "@/app/components/json-ld";
+import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
-import { BASE_URL, buildAlternates, localBusinessJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import {
+  BASE_URL,
+  breadcrumbJsonLd,
+  buildAlternates,
+  localBusinessJsonLd,
+} from "@/lib/seo";
 import type { Tables } from "@/lib/supabase/database.types";
 import { CARD_SELECT } from "@/lib/supabase/selects";
 import { createClient } from "@/lib/supabase/server";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
-import ShopClient from "./shop-client";
 import ShopLoading from "./loading";
+import ShopClient from "./shop-client";
 
 /** Public-safe subset — exclude Stripe secrets. */
 const SHOP_SELECT =

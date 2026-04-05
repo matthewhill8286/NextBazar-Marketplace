@@ -2,13 +2,14 @@
 
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import { DashboardProvider } from "./dashboard-context";
+import ShopDataLoader from "./shop-data-loader";
 
 /**
  * Thin client wrapper — receives server-fetched data via props and
  * provides it to child pages through DashboardContext.
  *
- * All heavy data fetching now happens server-side in layout.tsx
- * (via DashboardDataProvider), so there is no loading state here.
+ * For Pro Sellers, also wraps with ShopDataLoader so the shop context
+ * (inventory, analytics, offers, branding) is available on Pro Seller pages.
  */
 export default function DashboardShell({
   listings,
@@ -23,7 +24,7 @@ export default function DashboardShell({
 }) {
   return (
     <DashboardProvider value={{ listings, isDealer, isProSeller }}>
-      {children}
+      {isProSeller ? <ShopDataLoader>{children}</ShopDataLoader> : children}
     </DashboardProvider>
   );
 }

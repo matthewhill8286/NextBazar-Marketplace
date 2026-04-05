@@ -60,12 +60,25 @@ const ALL_COLUMNS = [
 const COLUMN_KEYS = ALL_COLUMNS.map((c) => c.key);
 
 const VEHICLE_ATTR_KEYS = [
-  "make", "model", "year", "mileage", "fuel_type", "transmission",
-  "body_type", "color", "engine_size", "doors", "drive_type",
+  "make",
+  "model",
+  "year",
+  "mileage",
+  "fuel_type",
+  "transmission",
+  "body_type",
+  "color",
+  "engine_size",
+  "doors",
+  "drive_type",
 ];
 
 const PROPERTY_ATTR_KEYS = [
-  "property_type", "bedrooms", "bathrooms", "area_sqm", "furnishing",
+  "property_type",
+  "bedrooms",
+  "bathrooms",
+  "area_sqm",
+  "furnishing",
 ];
 
 const ALL_ATTR_KEYS = [...VEHICLE_ATTR_KEYS, ...PROPERTY_ATTR_KEYS];
@@ -73,16 +86,84 @@ const ALL_ATTR_KEYS = [...VEHICLE_ATTR_KEYS, ...PROPERTY_ATTR_KEYS];
 // ─── Smart column matching aliases ─────────────────────────────────────────
 
 const COLUMN_ALIASES: Record<string, string[]> = {
-  title: ["title", "name", "listing_title", "listing_name", "product", "product_name", "item", "headline", "ad_title"],
-  description: ["description", "desc", "details", "body", "text", "about", "summary", "listing_description"],
-  price: ["price", "cost", "amount", "asking_price", "list_price", "sale_price", "value"],
-  price_type: ["price_type", "pricing", "pricing_type", "type_of_price", "negotiable"],
+  title: [
+    "title",
+    "name",
+    "listing_title",
+    "listing_name",
+    "product",
+    "product_name",
+    "item",
+    "headline",
+    "ad_title",
+  ],
+  description: [
+    "description",
+    "desc",
+    "details",
+    "body",
+    "text",
+    "about",
+    "summary",
+    "listing_description",
+  ],
+  price: [
+    "price",
+    "cost",
+    "amount",
+    "asking_price",
+    "list_price",
+    "sale_price",
+    "value",
+  ],
+  price_type: [
+    "price_type",
+    "pricing",
+    "pricing_type",
+    "type_of_price",
+    "negotiable",
+  ],
   condition: ["condition", "state", "quality", "item_condition"],
-  category: ["category", "cat", "type", "listing_type", "product_type", "main_category"],
+  category: [
+    "category",
+    "cat",
+    "type",
+    "listing_type",
+    "product_type",
+    "main_category",
+  ],
   subcategory: ["subcategory", "sub_category", "subcat", "sub", "sub_type"],
-  location: ["location", "city", "area", "region", "district", "town", "place", "address"],
-  contact_phone: ["contact_phone", "phone", "tel", "telephone", "mobile", "cell", "phone_number", "contact"],
-  image_url: ["image_url", "image", "photo", "photo_url", "picture", "img", "img_url", "thumbnail", "main_image"],
+  location: [
+    "location",
+    "city",
+    "area",
+    "region",
+    "district",
+    "town",
+    "place",
+    "address",
+  ],
+  contact_phone: [
+    "contact_phone",
+    "phone",
+    "tel",
+    "telephone",
+    "mobile",
+    "cell",
+    "phone_number",
+    "contact",
+  ],
+  image_url: [
+    "image_url",
+    "image",
+    "photo",
+    "photo_url",
+    "picture",
+    "img",
+    "img_url",
+    "thumbnail",
+    "main_image",
+  ],
   make: ["make", "brand", "manufacturer"],
   model: ["model", "model_name"],
   year: ["year", "model_year", "yr", "registration_year"],
@@ -91,16 +172,39 @@ const COLUMN_ALIASES: Record<string, string[]> = {
   transmission: ["transmission", "gearbox", "gear", "trans"],
   body_type: ["body_type", "body", "body_style", "car_type", "vehicle_type"],
   color: ["color", "colour", "exterior_color", "paint"],
-  engine_size: ["engine_size", "engine", "cc", "displacement", "liters", "litres", "capacity"],
+  engine_size: [
+    "engine_size",
+    "engine",
+    "cc",
+    "displacement",
+    "liters",
+    "litres",
+    "capacity",
+  ],
   doors: ["doors", "num_doors", "door_count"],
   drive_type: ["drive_type", "drivetrain", "drive", "wheel_drive"],
   property_type: ["property_type", "property", "prop_type"],
   bedrooms: ["bedrooms", "beds", "bed", "num_bedrooms", "rooms"],
   bathrooms: ["bathrooms", "baths", "bath", "num_bathrooms"],
-  area_sqm: ["area_sqm", "area", "sqm", "size", "square_meters", "floor_area", "sq_ft", "sqft"],
+  area_sqm: [
+    "area_sqm",
+    "area",
+    "sqm",
+    "size",
+    "square_meters",
+    "floor_area",
+    "sq_ft",
+    "sqft",
+  ],
   furnishing: ["furnishing", "furnished", "furniture"],
   quantity: ["quantity", "qty", "stock", "in_stock", "stock_count", "units"],
-  low_stock_threshold: ["low_stock_threshold", "low_stock", "reorder_level", "min_stock", "alert_at"],
+  low_stock_threshold: [
+    "low_stock_threshold",
+    "low_stock",
+    "reorder_level",
+    "min_stock",
+    "alert_at",
+  ],
 };
 
 /** Build a reverse lookup: alias → canonical column key */
@@ -121,12 +225,19 @@ const ALIAS_MAP = buildAliasMap();
  * Returns the canonical key or null if no match.
  */
 function matchColumnHeader(raw: string): string | null {
-  const normalized = raw.trim().toLowerCase().replace(/[\s\-]+/g, "_").replace(/[^a-z0-9_]/g, "");
+  const normalized = raw
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_")
+    .replace(/[^a-z0-9_]/g, "");
   // Exact alias match
   if (ALIAS_MAP.has(normalized)) return ALIAS_MAP.get(normalized)!;
   // Partial match: check if any alias is contained in the header or vice versa
   for (const [alias, canonical] of ALIAS_MAP.entries()) {
-    if (alias.length >= 3 && (normalized.includes(alias) || alias.includes(normalized))) {
+    if (
+      alias.length >= 3 &&
+      (normalized.includes(alias) || alias.includes(normalized))
+    ) {
       return canonical;
     }
   }
@@ -205,23 +316,29 @@ function parseLine(line: string): string[] {
 
 // ─── XLSX Parsing ──────────────────────────────────────────────────────────
 
-async function parseXLSX(buffer: ArrayBuffer): Promise<{ headers: string[]; rows: ParsedRow[] }> {
+async function parseXLSX(
+  buffer: ArrayBuffer,
+): Promise<{ headers: string[]; rows: ParsedRow[] }> {
   const XLSX = (await import("xlsx")).default;
   const workbook = XLSX.read(buffer, { type: "array" });
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
-  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" });
+  const jsonData = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+    defval: "",
+  });
 
   if (jsonData.length === 0) return { headers: [], rows: [] };
 
   const headers = Object.keys(jsonData[0]);
-  const rows: ParsedRow[] = jsonData.map((row) => {
-    const parsed: ParsedRow = {};
-    headers.forEach((h) => {
-      parsed[h] = String(row[h] ?? "").trim();
-    });
-    return parsed;
-  }).filter((row) => Object.values(row).some((v) => v.length > 0));
+  const rows: ParsedRow[] = jsonData
+    .map((row) => {
+      const parsed: ParsedRow = {};
+      headers.forEach((h) => {
+        parsed[h] = String(row[h] ?? "").trim();
+      });
+      return parsed;
+    })
+    .filter((row) => Object.values(row).some((v) => v.length > 0));
 
   return { headers, rows };
 }
@@ -229,13 +346,42 @@ async function parseXLSX(buffer: ArrayBuffer): Promise<{ headers: string[]; rows
 // ─── Template generation ───────────────────────────────────────────────────
 
 function generateTemplate(type: "vehicles" | "properties" | "general"): string {
-  const base = ["title", "description", "price", "price_type", "condition", "category", "subcategory", "location", "contact_phone", "image_url"];
+  const base = [
+    "title",
+    "description",
+    "price",
+    "price_type",
+    "condition",
+    "category",
+    "subcategory",
+    "location",
+    "contact_phone",
+    "image_url",
+  ];
 
   let extra: string[] = [];
   if (type === "vehicles") {
-    extra = ["make", "model", "year", "mileage", "fuel_type", "transmission", "body_type", "color", "engine_size", "doors", "drive_type"];
+    extra = [
+      "make",
+      "model",
+      "year",
+      "mileage",
+      "fuel_type",
+      "transmission",
+      "body_type",
+      "color",
+      "engine_size",
+      "doors",
+      "drive_type",
+    ];
   } else if (type === "properties") {
-    extra = ["property_type", "bedrooms", "bathrooms", "area_sqm", "furnishing"];
+    extra = [
+      "property_type",
+      "bedrooms",
+      "bathrooms",
+      "area_sqm",
+      "furnishing",
+    ];
   }
 
   const headers = [...base, ...extra];
@@ -316,8 +462,16 @@ export type ShopType = "vehicles" | "properties" | "general";
 /** Return columns relevant to the detected shop type (always includes base) */
 function getContextColumns(shopType: ShopType) {
   const BASE_KEYS = new Set([
-    "title", "description", "price", "price_type", "condition",
-    "category", "subcategory", "location", "contact_phone", "image_url",
+    "title",
+    "description",
+    "price",
+    "price_type",
+    "condition",
+    "category",
+    "subcategory",
+    "location",
+    "contact_phone",
+    "image_url",
   ]);
   const VEHICLE_KEYS = new Set(VEHICLE_ATTR_KEYS);
   const PROPERTY_KEYS = new Set(PROPERTY_ATTR_KEYS);
@@ -362,7 +516,12 @@ type Props = {
 
 export default function CSVImport({ onClose, shopType = "general" }: Props) {
   const router = useRouter();
-  const { categories, subcategories, locations, loading: refLoading } = useReferenceData();
+  const {
+    categories,
+    subcategories,
+    locations,
+    loading: refLoading,
+  } = useReferenceData();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [phase, setPhase] = useState<Phase>("upload");
@@ -549,7 +708,9 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
 
       // Check if all required columns are mapped — skip to preview
       const mappedKeys = new Set(Object.values(mapping));
-      const allRequiredMapped = REQUIRED_COLUMNS.every((r) => mappedKeys.has(r));
+      const allRequiredMapped = REQUIRED_COLUMNS.every((r) =>
+        mappedKeys.has(r),
+      );
 
       if (allRequiredMapped) {
         // Run validation and go straight to preview
@@ -664,7 +825,11 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
             error: data.error || "Unknown error",
           },
         ]);
-        setImportSummary({ total: payload.length, created: 0, errors: payload.length });
+        setImportSummary({
+          total: payload.length,
+          created: 0,
+          errors: payload.length,
+        });
       } else {
         setResults(data.results);
         setImportSummary(data.summary);
@@ -679,7 +844,11 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
           error: "Failed to connect to server",
         },
       ]);
-      setImportSummary({ total: payload.length, created: 0, errors: payload.length });
+      setImportSummary({
+        total: payload.length,
+        created: 0,
+        errors: payload.length,
+      });
     }
 
     setImporting(false);
@@ -713,7 +882,13 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                 Import Inventory
               </h2>
               <p className="text-xs text-[#8a8280]">
-                Bulk-import {shopType === "vehicles" ? "vehicle" : shopType === "properties" ? "property" : ""} listings from CSV or Excel
+                Bulk-import{" "}
+                {shopType === "vehicles"
+                  ? "vehicle"
+                  : shopType === "properties"
+                    ? "property"
+                    : ""}{" "}
+                listings from CSV or Excel
               </p>
             </div>
           </div>
@@ -778,10 +953,10 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {[
-                      { type: "vehicles" as const, label: "Vehicles" },
-                      { type: "properties" as const, label: "Properties" },
-                      { type: "general" as const, label: "General" },
-                    ]
+                    { type: "vehicles" as const, label: "Vehicles" },
+                    { type: "properties" as const, label: "Properties" },
+                    { type: "general" as const, label: "General" },
+                  ]
                     .sort((a, b) => {
                       // Put the matching shop type first
                       if (a.type === shopType) return -1;
@@ -832,7 +1007,9 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                 >
                   <Upload
                     className={`w-8 h-8 mx-auto mb-3 transition-colors ${
-                      dragActive ? "text-[#8E7A6B]" : "text-[#8a8280] group-hover:text-[#8E7A6B]"
+                      dragActive
+                        ? "text-[#8E7A6B]"
+                        : "text-[#8a8280] group-hover:text-[#8E7A6B]"
                     }`}
                   />
                   <p className="text-sm font-medium text-[#1a1a1a] mb-1">
@@ -841,7 +1018,8 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                       : "Drop your file here, or click to browse"}
                   </p>
                   <p className="text-xs text-[#8a8280]">
-                    Supports <strong>.csv</strong> and <strong>.xlsx</strong> files — up to 200 listings
+                    Supports <strong>.csv</strong> and <strong>.xlsx</strong>{" "}
+                    files — up to 200 listings
                   </p>
                   <input
                     ref={fileRef}
@@ -861,20 +1039,21 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                 <div className="flex items-start gap-2.5">
                   <AlertCircle className="w-4 h-4 text-[#8a8280] mt-0.5 shrink-0" />
                   <div className="text-xs text-[#6b6560] space-y-1">
-                    <p className="font-medium text-[#1a1a1a]">
-                      Import tips
-                    </p>
+                    <p className="font-medium text-[#1a1a1a]">Import tips</p>
                     <p>
                       Required columns: <strong>title</strong> and{" "}
-                      <strong>category</strong> (slug, e.g. &quot;vehicles&quot;, &quot;property&quot;).
-                      Column headers are auto-matched — no need for exact names.
+                      <strong>category</strong> (slug, e.g.
+                      &quot;vehicles&quot;, &quot;property&quot;). Column
+                      headers are auto-matched — no need for exact names.
                     </p>
                     <p>
-                      <strong>Image URLs</strong>: Add an &quot;image_url&quot; column with direct links to images.
-                      They&apos;ll be downloaded and attached to each listing automatically.
+                      <strong>Image URLs</strong>: Add an &quot;image_url&quot;
+                      column with direct links to images. They&apos;ll be
+                      downloaded and attached to each listing automatically.
                     </p>
                     <p>
-                      All imported listings start as <strong>drafts</strong> — activate them from your inventory after review.
+                      All imported listings start as <strong>drafts</strong> —
+                      activate them from your inventory after review.
                     </p>
                   </div>
                 </div>
@@ -893,14 +1072,16 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                   </h3>
                 </div>
                 <p className="text-xs text-[#8a8280]">
-                  We auto-matched what we could. Review and adjust the mapping below. Columns mapped to &quot;Skip&quot; will be ignored.
+                  We auto-matched what we could. Review and adjust the mapping
+                  below. Columns mapped to &quot;Skip&quot; will be ignored.
                 </p>
               </div>
 
               {!hasRequiredMapped && (
                 <div className="bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
-                  Please map at least <strong>Title</strong> and <strong>Category</strong> to continue.
+                  Please map at least <strong>Title</strong> and{" "}
+                  <strong>Category</strong> to continue.
                 </div>
               )}
 
@@ -1020,7 +1201,8 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                       {aiEnhancing ? (
                         <>
                           <Loader2 className="w-3 h-3 animate-spin" />
-                          Writing descriptions ({aiEnhancedCount}/{rowsMissingDescription.length})
+                          Writing descriptions ({aiEnhancedCount}/
+                          {rowsMissingDescription.length})
                         </>
                       ) : (
                         <>
@@ -1064,17 +1246,19 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                       <th className="px-3 py-2 text-left font-medium text-[#8a8280] w-14">
                         Status
                       </th>
-                      {Object.values(columnMapping).slice(0, 7).map((key) => {
-                        const col = ALL_COLUMNS.find((c) => c.key === key);
-                        return (
-                          <th
-                            key={key}
-                            className="px-3 py-2 text-left font-medium text-[#6b6560] max-w-[150px]"
-                          >
-                            {col?.label ?? key}
-                          </th>
-                        );
-                      })}
+                      {Object.values(columnMapping)
+                        .slice(0, 7)
+                        .map((key) => {
+                          const col = ALL_COLUMNS.find((c) => c.key === key);
+                          return (
+                            <th
+                              key={key}
+                              className="px-3 py-2 text-left font-medium text-[#6b6560] max-w-[150px]"
+                            >
+                              {col?.label ?? key}
+                            </th>
+                          );
+                        })}
                       {Object.values(columnMapping).length > 7 && (
                         <th className="px-3 py-2 text-left font-medium text-[#8a8280]">
                           +{Object.values(columnMapping).length - 7} more
@@ -1087,9 +1271,7 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                       <tr
                         key={row.index}
                         className={
-                          row.valid
-                            ? "hover:bg-[#faf9f7]/50"
-                            : "bg-red-50/30"
+                          row.valid ? "hover:bg-[#faf9f7]/50" : "bg-red-50/30"
                         }
                       >
                         <td className="px-3 py-2 text-[#8a8280]">
@@ -1107,29 +1289,29 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                             </span>
                           )}
                         </td>
-                        {Object.values(columnMapping).slice(0, 7).map((key) => (
-                          <td
-                            key={key}
-                            className="px-3 py-2 text-[#1a1a1a] max-w-[150px] truncate"
-                          >
-                            {key === "image_url" && row.data[key] ? (
-                              <span className="inline-flex items-center gap-1 text-blue-600">
-                                <ImageIcon className="w-3 h-3" />
-                                <span className="truncate max-w-[100px]">
-                                  {row.data[key]}
+                        {Object.values(columnMapping)
+                          .slice(0, 7)
+                          .map((key) => (
+                            <td
+                              key={key}
+                              className="px-3 py-2 text-[#1a1a1a] max-w-[150px] truncate"
+                            >
+                              {key === "image_url" && row.data[key] ? (
+                                <span className="inline-flex items-center gap-1 text-blue-600">
+                                  <ImageIcon className="w-3 h-3" />
+                                  <span className="truncate max-w-[100px]">
+                                    {row.data[key]}
+                                  </span>
                                 </span>
-                              </span>
-                            ) : (
-                              row.data[key] || (
-                                <span className="text-[#ccc]">—</span>
-                              )
-                            )}
-                          </td>
-                        ))}
+                              ) : (
+                                row.data[key] || (
+                                  <span className="text-[#ccc]">—</span>
+                                )
+                              )}
+                            </td>
+                          ))}
                         {Object.values(columnMapping).length > 7 && (
-                          <td className="px-3 py-2 text-[#8a8280]">
-                            ...
-                          </td>
+                          <td className="px-3 py-2 text-[#8a8280]">...</td>
                         )}
                       </tr>
                     ))}
@@ -1146,7 +1328,8 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
               {errorCount > 0 && (
                 <div className="bg-red-50 border border-red-100 p-3">
                   <p className="text-xs font-medium text-red-700 mb-2">
-                    {errorCount} row{errorCount > 1 ? "s" : ""} with errors (will be skipped):
+                    {errorCount} row{errorCount > 1 ? "s" : ""} with errors
+                    (will be skipped):
                   </p>
                   <div className="space-y-1 max-h-32 overflow-y-auto">
                     {validatedRows
@@ -1199,7 +1382,8 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                     />
                   </div>
                   <p className="text-[10px] text-[#8a8280] pb-2 flex-1">
-                    Set a default stock quantity for all imported listings. Leave blank to skip stock tracking.
+                    Set a default stock quantity for all imported listings.
+                    Leave blank to skip stock tracking.
                   </p>
                 </div>
               </div>
@@ -1268,7 +1452,9 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                 </p>
                 {importSummary.created > 0 && (
                   <p className="text-xs text-[#8a8280] mt-2">
-                    All imported listings are saved as <strong>drafts</strong>. Use &quot;Activate All Drafts&quot; in your inventory to make them live.
+                    All imported listings are saved as <strong>drafts</strong>.
+                    Use &quot;Activate All Drafts&quot; in your inventory to
+                    make them live.
                   </p>
                 )}
               </div>
@@ -1296,13 +1482,9 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                     {results.map((r, i) => (
                       <tr
                         key={i}
-                        className={
-                          r.status === "created" ? "" : "bg-red-50/30"
-                        }
+                        className={r.status === "created" ? "" : "bg-red-50/30"}
                       >
-                        <td className="px-3 py-2 text-[#8a8280]">
-                          {r.row}
-                        </td>
+                        <td className="px-3 py-2 text-[#8a8280]">{r.row}</td>
                         <td className="px-3 py-2 text-[#1a1a1a] font-medium truncate max-w-[200px]">
                           {r.title}
                         </td>
@@ -1319,8 +1501,8 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
                         </td>
                         <td className="px-3 py-2 text-[#8a8280]">
                           {r.status === "created"
-                            ? r.slug ?? ""
-                            : r.error ?? ""}
+                            ? (r.slug ?? "")
+                            : (r.error ?? "")}
                         </td>
                       </tr>
                     ))}
@@ -1362,18 +1544,20 @@ export default function CSVImport({ onClose, shopType = "general" }: Props) {
             </button>
           )}
 
-          {phase === "results" && importSummary && importSummary.created > 0 && (
-            <button
-              onClick={() => {
-                onClose();
-                router.refresh();
-              }}
-              className="inline-flex items-center gap-2 bg-[#8E7A6B] text-white px-6 py-2.5 text-sm font-semibold hover:bg-[#7A6657] transition-colors shadow-sm shadow-[#8E7A6B]/15"
-            >
-              <Check className="w-4 h-4" />
-              Done — View Inventory
-            </button>
-          )}
+          {phase === "results" &&
+            importSummary &&
+            importSummary.created > 0 && (
+              <button
+                onClick={() => {
+                  onClose();
+                  router.refresh();
+                }}
+                className="inline-flex items-center gap-2 bg-[#8E7A6B] text-white px-6 py-2.5 text-sm font-semibold hover:bg-[#7A6657] transition-colors shadow-sm shadow-[#8E7A6B]/15"
+              >
+                <Check className="w-4 h-4" />
+                Done — View Inventory
+              </button>
+            )}
         </div>
       </div>
     </div>

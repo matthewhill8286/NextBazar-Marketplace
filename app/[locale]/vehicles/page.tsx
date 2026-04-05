@@ -6,8 +6,8 @@ import {
   getShopsByCategoryCached,
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
-import VehiclesClient from "./vehicles-client";
 import VehiclesLoading from "./loading";
+import VehiclesClient from "./vehicles-client";
 
 export const metadata: Metadata = {
   title: "Cars & Vehicles for Sale in Cyprus — NextBazar",

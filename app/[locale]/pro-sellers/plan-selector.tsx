@@ -11,12 +11,8 @@ import {
 import { useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
-import {
-  SELLER_PLANS,
-  formatEur,
-  yearlySavings,
-} from "@/lib/pricing-config";
 import type { SellerTier } from "@/lib/pricing-config";
+import { formatEur, SELLER_PLANS, yearlySavings } from "@/lib/pricing-config";
 
 type BillingCycle = "monthly" | "yearly";
 

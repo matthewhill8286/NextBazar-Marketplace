@@ -19,8 +19,8 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { revalidateShop } from "@/app/actions/revalidate";
 import { Link, useRouter } from "@/i18n/navigation";
-import type { SellerTier } from "@/lib/pricing-config";
 import { getPlanLimits } from "@/lib/plan-limits";
+import type { SellerTier } from "@/lib/pricing-config";
 import { createClient } from "@/lib/supabase/client";
 import type { Tables } from "@/lib/supabase/database.types";
 import AnalyticsTab from "./analytics-tab";
@@ -148,7 +148,10 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
   }, [searchParams, shop?.plan_status, router]);
 
   // ─── Actions ────────────────────────────────────────────────────────
-  async function handleSubscribe(tier: SellerTier, billing: "monthly" | "yearly") {
+  async function handleSubscribe(
+    tier: SellerTier,
+    billing: "monthly" | "yearly",
+  ) {
     setSubscribing(true);
     try {
       const res = await fetch("/api/dealer/subscribe", {
@@ -248,8 +251,8 @@ export default function DealerDashboardClient({ shop, listings }: Props) {
               </span>
             </div>
             <p className="text-sm text-[#6b6560]">
-              {limits.tierLabel} Seller CMS &mdash; manage your brand, inventory,
-              sales &amp; analytics
+              {limits.tierLabel} Seller CMS &mdash; manage your brand,
+              inventory, sales &amp; analytics
             </p>
           </div>
         </div>

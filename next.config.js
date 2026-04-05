@@ -35,19 +35,22 @@ const nextConfig = {
   },
 };
 
-module.exports = withSentryConfig(withBundleAnalyzer(withNextIntl(nextConfig)), {
-  // Suppresses source map upload logs during build
-  silent: true,
-  // Upload source maps only when SENTRY_AUTH_TOKEN is available
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  // Only enable source map uploads for production builds with the token
-  disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
-  disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
-  // Hides source maps from users
-  hideSourceMaps: true,
-  // Tree-shake Sentry logger statements to reduce bundle size
-  webpack: {
-    treeshakeRemoveLogs: true,
+module.exports = withSentryConfig(
+  withBundleAnalyzer(withNextIntl(nextConfig)),
+  {
+    // Suppresses source map upload logs during build
+    silent: true,
+    // Upload source maps only when SENTRY_AUTH_TOKEN is available
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    // Only enable source map uploads for production builds with the token
+    disableServerWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+    disableClientWebpackPlugin: !process.env.SENTRY_AUTH_TOKEN,
+    // Hides source maps from users
+    hideSourceMaps: true,
+    // Tree-shake Sentry logger statements to reduce bundle size
+    webpack: {
+      treeshakeRemoveLogs: true,
+    },
   },
-});
+);

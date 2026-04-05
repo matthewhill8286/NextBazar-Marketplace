@@ -7,10 +7,7 @@ export async function POST(request: NextRequest) {
     const { origin } = await request.json();
 
     if (!origin) {
-      return NextResponse.json(
-        { error: "Missing origin" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Missing origin" }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -46,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: shop.stripe_customer_id,
-      return_url: `${origin}/shop-manager`,
+      return_url: `${origin}/dashboard`,
     });
 
     return NextResponse.json({ url: session.url });

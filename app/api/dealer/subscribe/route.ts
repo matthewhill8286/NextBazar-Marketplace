@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getSellerPlan, stripe } from "@/lib/stripe";
 import type { SellerTier } from "@/lib/pricing-config";
+import { getSellerPlan, stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
 
 // Only seller tiers are allowed — Buyer+ plans are not yet launched.
@@ -10,18 +10,16 @@ const VALID_BILLING = ["monthly", "yearly"] as const;
 
 export async function POST(request: NextRequest) {
   try {
-    const {
-      origin,
-      tier = "pro",
-      billing = "monthly",
-    } = await request.json();
+    const { origin, tier = "pro", billing = "monthly" } = await request.json();
 
     if (!origin) {
       return NextResponse.json({ error: "Missing origin" }, { status: 400 });
     }
     if (!VALID_TIERS.includes(tier)) {
       return NextResponse.json(
-        { error: `Invalid tier: ${tier}. Must be one of: ${VALID_TIERS.join(", ")}` },
+        {
+          error: `Invalid tier: ${tier}. Must be one of: ${VALID_TIERS.join(", ")}`,
+        },
         { status: 400 },
       );
     }

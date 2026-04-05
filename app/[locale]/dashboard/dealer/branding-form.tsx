@@ -281,9 +281,10 @@ export default function BrandingForm({
                     <span
                       className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-white text-[10px] font-semibold w-fit"
                       style={{
-                        background: planTier === "business"
-                          ? "linear-gradient(135deg, #b45309, #92400e)"
-                          : `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
+                        background:
+                          planTier === "business"
+                            ? "linear-gradient(135deg, #b45309, #92400e)"
+                            : `linear-gradient(135deg, ${accentColor}, ${darkenHex(accentColor)})`,
                       }}
                     >
                       <ShieldCheck className="w-3 h-3" />
@@ -341,7 +342,10 @@ export default function BrandingForm({
                     <div className="text-lg font-bold text-[#1a1a1a] flex items-center justify-center gap-1">
                       <ShieldCheck
                         className="w-4 h-4"
-                        style={{ color: planTier === "business" ? "#b45309" : accentColor }}
+                        style={{
+                          color:
+                            planTier === "business" ? "#b45309" : accentColor,
+                        }}
                       />
                       {tierStatusLabel(planTier)}
                     </div>

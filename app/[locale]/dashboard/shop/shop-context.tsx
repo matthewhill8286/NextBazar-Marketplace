@@ -1,6 +1,6 @@
 /**
- * @deprecated — Moved to /shop-manager/shop-context.tsx
- * This file exists only for backwards compatibility.
+ * @deprecated — Now lives at /dashboard/shop-context.tsx
  */
-export { useShopCMS, ShopCMSProvider } from "../../shop-manager/shop-context";
-export type { ShopCMSData } from "../../shop-manager/shop-context";
+
+export type { ShopCMSData } from "../shop-context";
+export { ShopCMSProvider, useShopCMS } from "../shop-context";

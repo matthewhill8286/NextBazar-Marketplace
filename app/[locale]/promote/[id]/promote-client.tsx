@@ -1,6 +1,14 @@
 "use client";
 
-import { ArrowLeft, Check, Crown, Loader2, Star, TrendingUp, Zap } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Crown,
+  Loader2,
+  Star,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -84,22 +92,21 @@ export default function PromoteClient({
       }
 
       // Fetch listing and shop tier in parallel
-      const [{ data: listingData }, { data: shopData }] =
-        await Promise.all([
-          supabase
-            .from("listings")
-            .select(
-              "id, title, slug, primary_image_url, price, currency, is_promoted, is_urgent, user_id",
-            )
-            .eq("id", listingId)
-            .single(),
-          supabase
-            .from("dealer_shops")
-            .select("plan_tier, plan_started_at, plan_expires_at")
-            .eq("user_id", user.id)
-            .eq("plan_status", "active")
-            .single(),
-        ]);
+      const [{ data: listingData }, { data: shopData }] = await Promise.all([
+        supabase
+          .from("listings")
+          .select(
+            "id, title, slug, primary_image_url, price, currency, is_promoted, is_urgent, user_id",
+          )
+          .eq("id", listingId)
+          .single(),
+        supabase
+          .from("dealer_shops")
+          .select("plan_tier, plan_started_at, plan_expires_at")
+          .eq("user_id", user.id)
+          .eq("plan_status", "active")
+          .single(),
+      ]);
 
       if (!listingData) {
         router.push("/dashboard/listings");
@@ -109,25 +116,13 @@ export default function PromoteClient({
       setListing(listingData);
       if (shopData?.plan_tier) setPlanTier(shopData.plan_tier);
 
-      // Count boosts used in the current billing cycle only
-      const planStart = shopData?.plan_started_at;
-      if (planStart) {
-        setCycleStart(planStart);
-        const { count } = await supabase
-          .from("listings")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .gte("promoted_at", planStart);
-        setActivePromoCount(count ?? 0);
-      } else {
-        // Fallback: count all currently promoted
-        const { count } = await supabase
-          .from("listings")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("is_promoted", true);
-        setActivePromoCount(count ?? 0);
-      }
+      // Count currently active boosts
+      const { count } = await supabase
+        .from("listings")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_promoted", true);
+      setActivePromoCount(count ?? 0);
 
       setLoading(false);
     }
@@ -141,9 +136,6 @@ export default function PromoteClient({
       const boostType = selected;
       const updates: Record<string, any> = {};
       const now = new Date();
-
-      // Always track when the boost was activated for billing cycle counting
-      updates.promoted_at = now.toISOString();
 
       if (boostType === "featured") {
         const until = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -167,7 +159,7 @@ export default function PromoteClient({
           ? "Listing featured for 7 days!"
           : "Quick boost activated for 3 days!",
       );
-      router.push("/shop-manager/inventory");
+      router.push("/dashboard/inventory");
     } catch {
       toast.error("Failed to activate boost. Please try again.");
     }
@@ -256,10 +248,13 @@ export default function PromoteClient({
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold text-emerald-900">
-              {freeBoostsRemaining} free boost{freeBoostsRemaining !== 1 ? "s" : ""} included with your {limits.tierLabel} plan
+              {freeBoostsRemaining} free boost
+              {freeBoostsRemaining !== 1 ? "s" : ""} included with your{" "}
+              {limits.tierLabel} plan
             </p>
             <p className="text-xs text-emerald-700">
-              You&apos;ve used {activePromoCount} of {freeBoostsTotal} free monthly boosts. Select an option below to activate instantly.
+              You&apos;ve used {activePromoCount} of {freeBoostsTotal} free
+              monthly boosts. Select an option below to activate instantly.
             </p>
           </div>
         </div>
