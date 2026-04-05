@@ -3,9 +3,12 @@ import { openai } from "@/lib/openai";
 
 export async function POST(request: NextRequest) {
   try {
-    // AI descriptions are available to all regular users.
-    // For dealers, this is gated to Business tier on the client side.
-    // Server-side enforcement is optional here since the cost is minimal.
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "AI features are not configured. Please set OPENAI_API_KEY." },
+        { status: 503 },
+      );
+    }
 
     const { title, category, condition, price, imageUrl } =
       await request.json();

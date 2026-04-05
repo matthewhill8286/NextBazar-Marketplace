@@ -244,6 +244,38 @@ export async function getShopAccentColorCached(
   return data?.accent_color ?? null;
 }
 
+// ─── Seller shop details for enhanced listing template ──────────────────────
+
+export type SellerShopInfo = {
+  plan_tier: string;
+  shop_name: string;
+  slug: string;
+  logo_url: string | null;
+  accent_color: string | null;
+  description: string | null;
+  website: string | null;
+  facebook: string | null;
+  instagram: string | null;
+};
+
+export async function getSellerShopInfoCached(
+  userId: string,
+): Promise<SellerShopInfo | null> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("dealer_shops");
+
+  const { data } = await publicClient()
+    .from("dealer_shops")
+    .select(
+      "plan_tier, shop_name, slug, logo_url, accent_color, description, website, facebook, instagram",
+    )
+    .eq("user_id", userId)
+    .eq("plan_status", "active")
+    .single();
+  return (data as SellerShopInfo) ?? null;
+}
+
 // ─── Combined listing detail page data (single waterfall) ────────────────────
 // Fetches listing + related + accent color with only 1 sequential hop
 // (listing first, then related & accent in parallel).

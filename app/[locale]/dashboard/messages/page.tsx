@@ -2,12 +2,14 @@
 
 import {
   AlertTriangle,
+  ArrowRight,
   Loader2,
   MessageCircle,
   MoreHorizontal,
   Pin,
   PinOff,
   Search,
+  Store,
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
@@ -16,6 +18,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { timeAgoCompact } from "@/lib/format-helpers";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { createClient } from "@/lib/supabase/client";
+import QuickReplyManager from "./quick-reply-manager";
 
 type Conversation = {
   id: string;
@@ -52,6 +55,8 @@ export default function MessagesPage() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Conversation | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [sellerTier, setSellerTier] = useState<string | null>(null);
+  const [hasShop, setHasShop] = useState(false);
 
   const loadConversations = useCallback(
     async (uid: string) => {
@@ -85,6 +90,19 @@ export default function MessagesPage() {
       }
       setUserId(user.id);
       await loadConversations(user.id);
+
+      // Check if user has a shop
+      const { data: shop } = await supabase
+        .from("dealer_shops")
+        .select("plan_tier")
+        .eq("user_id", user.id)
+        .eq("plan_status", "active")
+        .single();
+      if (shop?.plan_tier) {
+        setSellerTier(shop.plan_tier);
+        setHasShop(true);
+      }
+
       setLoading(false);
     }
     load();
@@ -205,6 +223,27 @@ export default function MessagesPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
+      )}
+
+      {/* Shop messages banner */}
+      {hasShop && (
+        <Link
+          href="/shop-manager/messages"
+          className="flex items-center justify-between gap-3 mb-4 px-4 py-3 bg-[#f5f0eb] border border-[#e0d6cc] hover:bg-[#ede7df] transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <Store className="w-5 h-5 text-[#8E7A6B]" />
+            <div>
+              <p className="text-sm font-medium text-[#1a1a1a]">
+                Shop Messages
+              </p>
+              <p className="text-xs text-[#6b6560]">
+                Manage buyer enquiries from your shop manager
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="w-4 h-4 text-[#8E7A6B] group-hover:translate-x-0.5 transition-transform" />
+        </Link>
       )}
 
       {filtered.length > 0 ? (

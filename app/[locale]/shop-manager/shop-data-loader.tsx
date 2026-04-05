@@ -14,7 +14,7 @@ type DealerShop = Tables<"dealer_shops">;
 const LISTING_SELECT = `
   id, title, slug, price, currency, status,
   primary_image_url, view_count, favorite_count, message_count,
-  is_promoted, created_at, updated_at,
+  is_promoted, promoted_at, created_at, updated_at,
   category_id, location_id,
   quantity, low_stock_threshold,
   categories(name, slug, icon),

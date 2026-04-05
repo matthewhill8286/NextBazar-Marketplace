@@ -401,6 +401,7 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           pricingLoading={pricingLoading}
           selectedPriceKey={selectedPriceKey}
           descLoading={descLoading}
+          canUseAiDescriptions={limits.aiDescriptions}
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
           onUpdateAction={update}

@@ -3,7 +3,8 @@ import { NotFoundIllustration } from "@/app/components/illustrations";
 import { Link } from "@/i18n/navigation";
 import {
   getListingBySlugCached,
-  getShopAccentColorCached,
+  getSellerShopInfoCached,
+  type SellerShopInfo,
 } from "@/lib/supabase/queries";
 import { getTranslator } from "@/lib/translations";
 import ListingDetailServer from "./listing-detail-server";
@@ -43,9 +44,10 @@ export default async function ListingContent({
       ? listing.profiles
       : null;
   const isPro = profile?.is_pro_seller;
-  const accentColor = isPro
-    ? await getShopAccentColorCached(listing.user_id)
+  const shopInfo = isPro
+    ? await getSellerShopInfoCached(listing.user_id)
     : null;
+  const accentColor = shopInfo?.accent_color ?? null;
 
   const categorySlug =
     listing.categories && !Array.isArray(listing.categories)
@@ -59,7 +61,8 @@ export default async function ListingContent({
         listing={listing}
         related={[]}
         accentColor={accentColor}
-        shopSlug={null}
+        shopSlug={shopInfo?.slug ?? null}
+        shopInfo={shopInfo}
       />
 
       {/* Related listings — stream in separately, below the fold */}

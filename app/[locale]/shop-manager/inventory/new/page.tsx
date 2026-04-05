@@ -18,6 +18,7 @@ import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useReferenceData } from "@/lib/hooks/use-reference-data";
+import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/client";
 import { useShopCMS } from "../../shop-context";
 
@@ -97,8 +98,9 @@ const LABEL =
 export default function NewInventoryPage() {
   const router = useRouter();
   const supabase = createClient();
-  const { userId, refreshListings } = useShopCMS();
+  const { userId, shop, refreshListings } = useShopCMS();
   const { categories, subcategories, locations, loading: refLoading } = useReferenceData();
+  const limits = getPlanLimits(shop?.plan_tier || "starter");
 
   // ── Form state ────────────────────────────────────────────────────────────
   const [formData, setFormData] = useState({
@@ -120,8 +122,9 @@ export default function NewInventoryPage() {
   const [pricingLoading, setPricingLoading] = useState(false);
   const [selectedPriceKey, setSelectedPriceKey] = useState<"low" | "suggested" | "high" | null>(null);
   const [descLoading, setDescLoading] = useState(false);
+  const [autofillLoading, setAutofillLoading] = useState(false);
+  const [autofillDone, setAutofillDone] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const selectedCategory = categories.find((c) => c.id === formData.category_id);
@@ -140,9 +143,66 @@ export default function NewInventoryPage() {
     setImages(newImages);
   }, []);
 
+  // ── AI Autofill from image ────────────────────────────────────────────────
+  async function handleAiAutofill() {
+    const firstUploaded = images.find((img) => img.url && !img.uploading);
+    if (!firstUploaded?.url) {
+      toast.error("Upload a photo first so AI can analyze it.");
+      return;
+    }
+
+    setAutofillLoading(true);
+    try {
+      const res = await fetch("/api/ai/autofill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: firstUploaded.url }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to analyze image");
+      }
+      const data = await res.json();
+
+      setFormData((prev) => ({
+        ...prev,
+        title: data.title || prev.title,
+        description: data.description || prev.description,
+        category_id: data.category_id || prev.category_id,
+        subcategory_id: data.subcategory_id || prev.subcategory_id,
+        condition: data.condition || prev.condition,
+        price: data.suggested_price ? String(data.suggested_price) : prev.price,
+      }));
+
+      // If AI detected vehicle attributes, pre-fill them
+      if (data.vehicle_attributes && typeof data.vehicle_attributes === "object") {
+        setVehicleAttrs((prev) => {
+          const merged = { ...prev };
+          for (const [k, v] of Object.entries(data.vehicle_attributes)) {
+            if (v && typeof v === "string" && k in prev) {
+              (merged as Record<string, string>)[k] = v;
+            }
+          }
+          return merged;
+        });
+      }
+
+      setAutofillDone(true);
+      toast.success("AI auto-filled your listing details!");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "AI autofill failed. Try again.",
+      );
+    }
+    setAutofillLoading(false);
+  }
+
   // ── AI Description ────────────────────────────────────────────────────────
   async function handleAiDescription() {
-    if (!formData.title) return;
+    if (!formData.title) {
+      toast.error("Add a title first so AI can generate a description.");
+      return;
+    }
     setDescLoading(true);
     try {
       const firstImage = images.find((img) => img.url && !img.uploading);
@@ -157,18 +217,29 @@ export default function NewInventoryPage() {
           imageUrl: firstImage?.url || null,
         }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to generate description");
+      }
       const data = await res.json();
-      if (data.description) update("description", data.description);
-    } catch {
-      /* user can write manually */
+      if (data.description) {
+        update("description", data.description);
+        toast.success("AI description generated!");
+      }
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "AI description failed. Try again.",
+      );
     }
     setDescLoading(false);
   }
 
   // ── AI Pricing ────────────────────────────────────────────────────────────
   async function handleAiPricing() {
-    if (!formData.title) return;
+    if (!formData.title) {
+      toast.error("Add a title first so AI can suggest a price.");
+      return;
+    }
     setPricingLoading(true);
     setPricingData(null);
     setSelectedPriceKey(null);
@@ -178,49 +249,52 @@ export default function NewInventoryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: formData.title,
-          category: selectedCategory?.name,
+          categoryId: formData.category_id || null,
           condition: formData.condition,
-          description: formData.description || null,
         }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to generate pricing");
+      }
       const data = await res.json();
       setPricingData(data);
-    } catch {
-      /* silent */
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "AI pricing failed. Try again.",
+      );
     }
     setPricingLoading(false);
   }
 
   // ── Save as draft ─────────────────────────────────────────────────────────
   async function handleSave(status: "draft" | "active") {
-    setError("");
     setSaving(true);
 
     if (!formData.title.trim()) {
-      setError("Please enter a title.");
+      toast.error("Please enter a title.");
       setSaving(false);
       return;
     }
     if (!formData.category_id) {
-      setError("Please select a category.");
+      toast.error("Please select a category.");
       setSaving(false);
       return;
     }
     if (!formData.subcategory_id) {
-      setError("Please select a subcategory.");
+      toast.error("Please select a subcategory.");
       setSaving(false);
       return;
     }
 
     const pendingUploads = images.some((img) => img.uploading);
     if (pendingUploads) {
-      setError("Please wait for all images to finish uploading.");
+      toast.error("Please wait for all images to finish uploading.");
       setSaving(false);
       return;
     }
     if (video?.uploading) {
-      setError("Please wait for your video to finish uploading.");
+      toast.error("Please wait for your video to finish uploading.");
       setSaving(false);
       return;
     }
@@ -256,7 +330,7 @@ export default function NewInventoryPage() {
       .single();
 
     if (insertError) {
-      setError(insertError.message);
+      toast.error(insertError.message);
       setSaving(false);
       return;
     }
@@ -307,19 +381,45 @@ export default function NewInventoryPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3">
-          {error}
-        </div>
-      )}
-
       <div className="bg-white border border-[#e8e6e3] p-6 space-y-6">
         {/* ── Images ───────────────────────────────────────────────────────── */}
         <ImageUpload
           userId={userId}
           images={images}
+          maxImages={limits.imagesPerListing}
           onChangeAction={handleImagesChange}
         />
+
+        {/* ── AI Autofill button ─────────────────────────────────────────── */}
+        {images.some((img) => img.url && !img.uploading) && !autofillDone && (
+          <button
+            type="button"
+            onClick={handleAiAutofill}
+            disabled={autofillLoading}
+            className="w-full bg-[#8E7A6B] text-white py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-all flex items-center justify-center gap-2.5 disabled:opacity-60"
+          >
+            {autofillLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Analyzing your photo…
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Auto-fill details from photo
+                <span className="text-[9px] bg-white/20 px-2 py-0.5 font-medium uppercase tracking-[0.15em]">
+                  Beta
+                </span>
+              </>
+            )}
+          </button>
+        )}
+        {autofillDone && (
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 text-sm px-4 py-2.5 border border-emerald-100">
+            <Sparkles className="w-4 h-4" />
+            AI filled in details — review and adjust as needed
+          </div>
+        )}
 
         {/* ── Video ────────────────────────────────────────────────────────── */}
         <div className="border-2 border-[#e8e6e3] bg-[#f0eeeb]/50 p-5 space-y-3">
@@ -395,21 +495,22 @@ export default function NewInventoryPage() {
             <label className={LABEL}>Description</label>
             <button
               type="button"
-              onClick={handleAiDescription}
-              disabled={descLoading || !formData.title}
+              onClick={() => {
+                if (!formData.title) {
+                  toast.error("Add a title first so AI can generate a description.");
+                  return;
+                }
+                handleAiDescription();
+              }}
+              disabled={descLoading}
               className="flex items-center gap-1.5 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
             >
               {descLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
               ) : (
-                <PenLine className="w-3 h-3" />
+                <Sparkles className="w-3 h-3" />
               )}
               {descLoading ? "Writing..." : "Write with AI"}
-              {!descLoading && (
-                <span className="text-[9px] bg-[#e8e6e3] text-[#7A6657] px-1.5 py-0.5 rounded-full font-semibold uppercase tracking-wider ml-1">
-                  Beta
-                </span>
-              )}
             </button>
           </div>
           <textarea
@@ -610,8 +711,14 @@ export default function NewInventoryPage() {
               <label className={LABEL}>Price</label>
               <button
                 type="button"
-                onClick={handleAiPricing}
-                disabled={pricingLoading || !formData.title}
+                onClick={() => {
+                  if (!formData.title) {
+                    toast.error("Add a title first so AI can analyze pricing.");
+                    return;
+                  }
+                  handleAiPricing();
+                }}
+                disabled={pricingLoading}
                 className="flex items-center gap-1.5 text-xs font-medium text-[#8E7A6B] hover:text-[#7A6657] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
               >
                 {pricingLoading ? (

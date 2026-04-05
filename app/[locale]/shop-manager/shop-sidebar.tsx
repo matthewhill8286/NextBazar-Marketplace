@@ -56,6 +56,11 @@ const NAV_ITEMS = [
     labelKey: "tabBranding",
     icon: Palette,
   },
+  {
+    href: "/shop-manager/plan",
+    labelKey: "tabPlan",
+    icon: CreditCard,
+  },
 ];
 
 export default function ShopSidebar() {

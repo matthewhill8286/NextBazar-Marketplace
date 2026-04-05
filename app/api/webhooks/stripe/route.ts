@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
 
       type ListingUpdate = {
         status: string;
+        promoted_at?: string;
         is_promoted?: boolean;
         promoted_until?: string;
         is_urgent?: boolean;
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
 
       const updateData: ListingUpdate = {
         status: "active",
+        promoted_at: new Date().toISOString(),
       };
 
       if (promotionType === "featured") {
