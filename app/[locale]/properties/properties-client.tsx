@@ -60,7 +60,7 @@ const TABS: TabConfig[] = [
     icon: Building2,
     description:
       "Find your dream home — browse apartments, houses, villas, and commercial properties for sale across Cyprus.",
-    subcategorySlugs: ["for-sale", "commercial"],
+    subcategorySlugs: ["apartments-sale", "houses-sale", "commercial"],
   },
   {
     key: "rent",
@@ -68,7 +68,7 @@ const TABS: TabConfig[] = [
     icon: Key,
     description:
       "Discover long-term and short-term rental properties — apartments, houses, offices, and holiday lets across Cyprus.",
-    subcategorySlugs: ["for-rent"],
+    subcategorySlugs: ["apartments-rent", "houses-rent"],
   },
   {
     key: "land",
@@ -405,6 +405,82 @@ export default function PropertiesClient({
             onFiltersChange={setFilters}
             resultCount={allDisplayListings.length}
           />
+        )}
+
+        {/* ── Trusted Agencies strip (non-dealer tabs) ─────────────────── */}
+        {!isDealerTab && topShops.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex items-center justify-center w-8 h-8 bg-amber-50">
+                  <Crown className="w-4 h-4 text-amber-600" />
+                </div>
+                <div>
+                  <h2
+                    className="text-lg font-light text-[#1a1a1a]"
+                    style={{ fontFamily: "'Playfair Display', serif" }}
+                  >
+                    Trusted Agencies
+                  </h2>
+                  <p className="text-xs text-[#8a8280]">
+                    Verified Pro Sellers with property listings
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleTabChange("dealers")}
+                className="text-sm font-medium text-[#1a1a1a] hover:text-[#8E7A6B] flex items-center gap-1 transition-colors"
+              >
+                View all showrooms <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {topShops.map((shop) => (
+                <Link
+                  key={shop.id}
+                  href={`/shop/${shop.slug}`}
+                  className="group flex items-center gap-3 p-3 bg-white border border-[#e8e6e3] hover:border-[#ccc] hover:shadow-sm transition-all"
+                >
+                  <div className="shrink-0 w-10 h-10 overflow-hidden bg-[#f0eeeb]">
+                    {shop.logo_url ? (
+                      <Image
+                        src={shop.logo_url}
+                        alt={shop.shop_name}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[#8E7A6B] text-xs font-bold">
+                        {shop.shop_name
+                          .split(" ")
+                          .slice(0, 2)
+                          .map((w) => w[0])
+                          .join("")
+                          .toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
+                        {shop.shop_name}
+                      </span>
+                      {shop.plan_tier === "business" && (
+                        <Crown className="w-3 h-3 text-amber-500 shrink-0" />
+                      )}
+                      {shop.plan_tier === "pro" && (
+                        <Shield className="w-3 h-3 text-[#666] shrink-0" />
+                      )}
+                    </div>
+                    <span className="text-[11px] text-[#8a8280]">
+                      {shop.listing_count} listings
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* ── Featured Listings ────────────────────────────────────────── */}

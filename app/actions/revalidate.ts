@@ -17,5 +17,17 @@ export async function revalidateListings() {
  * so the public /shop/[slug] page reflects changes immediately.
  */
 export async function revalidateShop() {
-  revalidateTag("dealer_shops", "max");
+  revalidateTag("shops", "max");
+}
+
+/**
+ * Bust all data caches — useful after seeding or bulk data changes.
+ */
+export async function revalidateAll() {
+  revalidateTag("listings", "max");
+  revalidateTag("shops", "max");
+  revalidateTag("categories", "max");
+  revalidateTag("subcategories", "max");
+  revalidateTag("locations", "max");
+  revalidateTag("reference", "max");
 }
