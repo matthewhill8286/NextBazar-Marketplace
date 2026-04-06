@@ -1,32 +1,36 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import SettingsClient from "./settings-client";
 
 export default function SettingsPage() {
   const supabase = createClient();
+  const { userId } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
+      const { data: user } = await supabase.auth.getUser();
 
       const { data } = await supabase
         .from("profiles")
         .select(
           "id, display_name, username, phone, bio, whatsapp_number, telegram_username, avatar_url",
         )
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
 
       setProfile({
-        id: user.id,
-        email: user.email || "",
+        id: userId,
+        email: user.user?.email || "",
         display_name: data?.display_name || null,
         username: data?.username || null,
         phone: data?.phone || null,
@@ -38,7 +42,7 @@ export default function SettingsPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [userId, supabase]);
 
   if (loading) {
     return (

@@ -74,18 +74,33 @@ export async function proxy(request: NextRequest) {
   const localePattern = /^\/(en|el|ru)(\/|$)/;
   const strippedPath = pathname.replace(localePattern, "/");
 
-  // Only call getUser() when we actually need auth (protected routes).
+  // Only call getUser() when we actually need auth (protected routes + API).
   // This avoids a blocking Supabase round-trip on every public page load.
+  // API routes are included (when a session cookie exists) so the x-user-id
+  // header is available downstream — route handlers can skip their own
+  // getUser() call entirely.
+  const hasSession = request.cookies
+    .getAll()
+    .some((c) => c.name.startsWith("sb-"));
   const needsAuth =
     strippedPath.startsWith("/post") ||
     strippedPath.startsWith("/messages") ||
     strippedPath.startsWith("/dashboard") ||
-    strippedPath.startsWith("/shop-onboarding");
+    strippedPath.startsWith("/shop-onboarding") ||
+    (isApi && hasSession);
 
   if (needsAuth) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+
+    if (user) {
+      // Inject the authenticated user ID into the request so downstream
+      // API routes and server components can read it via `headers()` —
+      // no second getUser() round-trip needed.
+      supabaseResponse.headers.set("x-user-id", user.id);
+      request.headers.set("x-user-id", user.id);
+    }
 
     if (
       !user &&
@@ -99,15 +114,16 @@ export async function proxy(request: NextRequest) {
       url.searchParams.set("redirect", pathname);
       return NextResponse.redirect(url);
     }
-  } else {
+  } else if (hasSession) {
     // For public routes, still refresh the session cookie (non-blocking for
     // the page render since middleware runs before the page), but only if
     // there's already a session cookie present.
-    const hasSession = request.cookies
-      .getAll()
-      .some((c) => c.name.startsWith("sb-"));
-    if (hasSession) {
-      await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      supabaseResponse.headers.set("x-user-id", user.id);
+      request.headers.set("x-user-id", user.id);
     }
   }
 

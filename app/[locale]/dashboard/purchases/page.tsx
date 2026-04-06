@@ -1,25 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import PurchasesClient from "./purchases-client";
 
 export default function PurchasesPage() {
   const supabase = createClient();
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId: authUserId } = useAuth();
   const [purchases, setPurchases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      if (!authUserId) {
         setLoading(false);
         return;
       }
-      setUserId(user.id);
 
       const { data } = await supabase
         .from("offers")
@@ -36,7 +33,7 @@ export default function PurchasesPage() {
           listings(id, title, slug, primary_image_url, price, currency, status, categories(name, slug, icon), locations(name)),
           seller:profiles!offers_seller_id_fkey(id, display_name, avatar_url, verified)
         `)
-        .eq("buyer_id", user.id)
+        .eq("buyer_id", authUserId)
         .eq("status", "accepted")
         .order("responded_at", { ascending: false });
 
@@ -44,7 +41,7 @@ export default function PurchasesPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [authUserId, supabase]);
 
   if (loading) {
     return (
@@ -73,5 +70,5 @@ export default function PurchasesPage() {
     );
   }
 
-  return <PurchasesClient userId={userId || ""} purchases={purchases} />;
+  return <PurchasesClient userId={authUserId || ""} purchases={purchases} />;
 }

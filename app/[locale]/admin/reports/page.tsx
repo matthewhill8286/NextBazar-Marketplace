@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/app/components/ui";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { timeAgo } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
@@ -54,6 +55,7 @@ export default function AdminReportsPage() {
   const router = useRouter();
 
   const supabase = createClient();
+  const { userId } = useAuth();
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("pending");
@@ -65,13 +67,13 @@ export default function AdminReportsPage() {
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      if (!userId) {
         router.push("/auth/login");
         return;
       }
+
+      // Fetch user email for admin check
+      const { data: user } = await supabase.auth.getUser();
 
       // Admin check — verify user email is in the allow-list
       const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
@@ -79,7 +81,7 @@ export default function AdminReportsPage() {
         .map((e) => e.trim().toLowerCase())
         .filter(Boolean);
 
-      if (!user.email || !adminEmails.includes(user.email.toLowerCase())) {
+      if (!user.user?.email || !adminEmails.includes(user.user.email.toLowerCase())) {
         router.push("/");
         return;
       }
@@ -87,7 +89,7 @@ export default function AdminReportsPage() {
       fetchReports();
     }
     load();
-  }, []);
+  }, [userId, router, supabase]);
 
   /* ── Feature-gated: redirect if reports dashboard is not enabled ── */
   if (!FEATURE_FLAGS.REPORTS) {

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
 import { ConfirmDialog } from "@/app/components/ui";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { FALLBACK_LISTING_IMAGE } from "@/lib/constants";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
@@ -33,6 +34,7 @@ function timeAgo(dateStr: string): string {
 export default function SavedPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { userId } = useAuth();
   const {
     savedIds,
     count,
@@ -51,10 +53,8 @@ export default function SavedPage() {
 
   // Auth guard
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.push("/auth/login?redirect=/dashboard/saved");
-    });
-  }, []);
+    if (!userId) router.push("/auth/login?redirect=/dashboard/saved");
+  }, [userId, router]);
 
   // Fetch listing data for any IDs not yet in the map
   useEffect(() => {
@@ -88,10 +88,7 @@ export default function SavedPage() {
 
   async function handleClearAll() {
     setClearing(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    if (!userId) {
       setClearing(false);
       setShowClearConfirm(false);
       return;

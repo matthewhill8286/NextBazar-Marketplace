@@ -2,6 +2,7 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 /**
  * POST /api/dealer/verify-session
@@ -20,13 +21,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Authenticate the requesting user
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
     // Retrieve the Checkout Session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -40,7 +37,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
-    if (session.metadata?.user_id !== user.id) {
+    if (session.metadata?.user_id !== userId) {
       return NextResponse.json(
         { error: "Session does not belong to you" },
         { status: 403 },
@@ -78,7 +75,7 @@ export async function POST(request: NextRequest) {
     const { data: existingShop } = await supabaseAdmin
       .from("dealer_shops")
       .select("id, plan_status")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (existingShop?.plan_status === "active") {
@@ -91,9 +88,9 @@ export async function POST(request: NextRequest) {
       .from("dealer_shops")
       .upsert(
         {
-          user_id: user.id,
+          user_id: userId,
           shop_name: "My Shop",
-          slug: user.id.slice(0, 8),
+          slug: userId.slice(0, 8),
           stripe_customer_id: customerId,
           stripe_subscription_id: subscriptionId,
           plan_status: "active",
@@ -116,7 +113,7 @@ export async function POST(request: NextRequest) {
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
       .update({ is_pro_seller: true })
-      .eq("id", user.id);
+      .eq("id", userId);
 
     if (profileError) {
       console.error("verify-session: Failed to update profile:", profileError);

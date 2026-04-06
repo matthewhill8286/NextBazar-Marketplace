@@ -1,6 +1,6 @@
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const MASTER_PROMO_CODE = "NEXTBAZAR";
 
@@ -33,20 +33,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Authenticate user
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
     // Check if the user already has an active Pro Seller subscription
     const { data: existingShop } = await supabaseAdmin
       .from("dealer_shops")
       .select("plan_status")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (existingShop?.plan_status === "active") {
@@ -65,9 +60,9 @@ export async function POST(request: NextRequest) {
       .from("dealer_shops")
       .upsert(
         {
-          user_id: user.id,
+          user_id: userId,
           shop_name: "My Shop",
-          slug: user.id.slice(0, 8),
+          slug: userId.slice(0, 8),
           plan_status: "active",
           plan_started_at: now.toISOString(),
           plan_expires_at: expiresAt.toISOString(),
@@ -87,7 +82,7 @@ export async function POST(request: NextRequest) {
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
       .update({ is_pro_seller: true })
-      .eq("id", user.id);
+      .eq("id", userId);
 
     if (profileError) {
       console.error("Failed to update dealer profile:", profileError);

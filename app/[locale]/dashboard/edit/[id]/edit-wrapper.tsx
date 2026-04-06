@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import EditClient from "./edit-client";
 
@@ -15,17 +16,14 @@ export default function EditWrapper({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const { userId } = useAuth();
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
+      if (!userId) {
         router.push("/auth/login?redirect=/dashboard");
         return;
       }
@@ -41,7 +39,7 @@ export default function EditWrapper({
         `,
         )
         .eq("id", listingId)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
 
       if (error || !data) {
@@ -59,7 +57,7 @@ export default function EditWrapper({
       setLoading(false);
     }
     load();
-  }, [listingId]);
+  }, [listingId, userId, router, supabase]);
 
   if (loading) {
     return (

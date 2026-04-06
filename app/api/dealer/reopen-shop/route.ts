@@ -1,6 +1,6 @@
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,19 +15,14 @@ const supabaseAdmin = createAdminClient(
  */
 export async function POST(_request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
     const { data: shop } = await supabaseAdmin
       .from("dealer_shops")
       .select("id, plan_status, stripe_subscription_id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (!shop) {
@@ -87,7 +82,7 @@ export async function POST(_request: NextRequest) {
     await supabaseAdmin
       .from("profiles")
       .update({ is_pro_seller: true })
-      .eq("id", user.id);
+      .eq("id", userId);
 
     return NextResponse.json({
       success: true,

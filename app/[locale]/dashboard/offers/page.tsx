@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import OffersClient from "./offers-client";
 
@@ -11,17 +12,13 @@ export default function OffersPage() {
   const initialTab =
     (searchParams.get("tab") as "received" | "sent") ?? undefined;
   const supabase = createClient();
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { userId, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUserId(user?.id ?? null);
-      setLoading(false);
-    });
-  }, []);
+    // Auth hook handles loading automatically
+  }, [userId]);
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div>
         <div className="h-7 w-28 bg-[#e8e6e3] animate-pulse mb-6" />

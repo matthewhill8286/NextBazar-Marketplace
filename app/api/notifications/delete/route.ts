@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,11 +13,9 @@ const supabaseAdmin = createClient(
 // Deletes a single notification belonging to the authenticated user.
 export async function DELETE(req: NextRequest) {
   try {
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ ok: false }, { status: 401 });
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
     const { id } = await req.json();
     if (!id) {
@@ -34,7 +32,7 @@ export async function DELETE(req: NextRequest) {
       .eq("id", id)
       .single();
 
-    if (!notif || notif.user_id !== user.id) {
+    if (!notif || notif.user_id !== userId) {
       return NextResponse.json(
         { ok: false, error: "Not found or not authorized" },
         { status: 404 },

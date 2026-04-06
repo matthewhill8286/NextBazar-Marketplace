@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,18 +11,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing origin" }, { status: 400 });
     }
 
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
+    const supabase = await createClient();
     const { data: shop } = await supabase
       .from("dealer_shops")
       .select("stripe_customer_id, plan_status, plan_tier")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (!shop) {

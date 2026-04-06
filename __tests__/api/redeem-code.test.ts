@@ -19,15 +19,21 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Mocks
 // ---------------------------------------------------------------------------
 
-const { mockGetUser, mockAdminFrom } = vi.hoisted(() => ({
-  mockGetUser: vi.fn(),
+const { mockRequireAuth, mockAdminFrom } = vi.hoisted(() => ({
+  mockRequireAuth: vi.fn(),
   mockAdminFrom: vi.fn(),
 }));
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const result = await mockRequireAuth();
+    return result.userId ?? null;
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
-  })),
+  createClient: vi.fn(async () => ({})),
 }));
 
 vi.mock("@supabase/supabase-js", () => ({
@@ -85,7 +91,7 @@ function setupAdminMock(
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+  mockRequireAuth.mockResolvedValue({ userId: mockUser.id });
 });
 
 // ---------------------------------------------------------------------------
@@ -119,7 +125,10 @@ describe("POST /api/dealer/redeem-code", () => {
   // -- Auth --
 
   it("returns 401 for unauthenticated users (valid code)", async () => {
-    mockGetUser.mockResolvedValueOnce({ data: { user: null } });
+    mockRequireAuth.mockResolvedValueOnce({
+      error: "Unauthorized",
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+    });
     const res = await POST(makeRequest({ code: "NEXTBAZAR" }));
     expect(res.status).toBe(401);
   });

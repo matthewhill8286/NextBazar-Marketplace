@@ -17,7 +17,7 @@ const {
   mockProductCreate,
   mockPriceCreate,
   mockGetSellerPlan,
-  mockGetUser,
+  mockRequireAuth,
   mockFrom,
   mockSelect,
   mockEq,
@@ -30,7 +30,7 @@ const {
   mockProductCreate: vi.fn(),
   mockPriceCreate: vi.fn(),
   mockGetSellerPlan: vi.fn(),
-  mockGetUser: vi.fn(),
+  mockRequireAuth: vi.fn(),
   mockFrom: vi.fn(),
   mockSelect: vi.fn(),
   mockEq: vi.fn(),
@@ -51,9 +51,16 @@ vi.mock("@/lib/stripe", () => ({
   getSellerPlan: mockGetSellerPlan,
 }));
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const result = await mockRequireAuth();
+    return result.userId ?? null;
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
     from: mockFrom,
   })),
 }));
@@ -87,7 +94,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 
   // Default: authenticated user
-  mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+  mockRequireAuth.mockResolvedValue({ userId: mockUser.id });
 
   // Default: active Pro shop
   mockSingle.mockResolvedValue({ data: activeProShop });
@@ -149,7 +156,10 @@ describe("POST /api/dealer/change-plan", () => {
   });
 
   it("returns 401 when user is not authenticated", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockRequireAuth.mockResolvedValueOnce({
+      error: "Unauthorized",
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+    });
     const res = await POST(makeRequest({ newTier: "business" }));
     expect(res.status).toBe(401);
   });

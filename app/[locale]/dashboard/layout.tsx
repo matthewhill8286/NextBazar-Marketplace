@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
+import { getUserId } from "@/lib/auth/require-auth";
 import DashboardDataProvider from "./dashboard-data-provider";
 import SidebarServer from "./sidebar-server";
 import SidebarSkeleton from "./sidebar-skeleton";
@@ -21,13 +21,10 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // ── Auth check only (fast — just reads the session cookie) ──────────
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // ── Auth check — reads x-user-id header set by middleware ───────────
+  const userId = await getUserId();
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth/login?redirect=/dashboard");
   }
 
@@ -37,12 +34,12 @@ export default async function DashboardLayout({
       <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
         {/* Sidebar: skeleton shows immediately, real sidebar streams in */}
         <Suspense fallback={<SidebarSkeleton />}>
-          <SidebarServer userId={user.id} userEmail={user.email || ""} />
+          <SidebarServer userId={userId} userEmail="" />
         </Suspense>
 
         {/* Content: loading.tsx shows while data provider resolves */}
         <Suspense>
-          <DashboardDataProvider userId={user.id}>
+          <DashboardDataProvider userId={userId}>
             <div className="min-w-0">{children}</div>
           </DashboardDataProvider>
         </Suspense>
