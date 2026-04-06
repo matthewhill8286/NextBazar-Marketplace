@@ -17,9 +17,9 @@ import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/client";
+import { useDashboardData } from "../../dashboard-context";
 import { useShopCMS } from "../../shop-context";
 
 // ─── Vehicle constants ──────────────────────────────────────────────────────
@@ -99,12 +99,7 @@ export default function NewInventoryPage() {
   const router = useRouter();
   const supabase = createClient();
   const { userId, shop, refreshListings } = useShopCMS();
-  const {
-    categories,
-    subcategories,
-    locations,
-    loading: refLoading,
-  } = useReferenceData();
+  const { categories, subcategories, locations } = useDashboardData();
   const limits = getPlanLimits(shop?.plan_tier || "starter");
 
   // ── Form state ────────────────────────────────────────────────────────────
@@ -371,14 +366,6 @@ export default function NewInventoryPage() {
     );
     setSaving(false);
     router.push("/dashboard/inventory");
-  }
-
-  if (refLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-5 h-5 animate-spin text-[#8a8280]" />
-      </div>
-    );
   }
 
   return (

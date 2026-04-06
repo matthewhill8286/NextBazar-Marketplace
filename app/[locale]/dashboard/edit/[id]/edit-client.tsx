@@ -8,8 +8,8 @@ import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { createClient } from "@/lib/supabase/client";
+import { useDashboardData } from "../../dashboard-context";
 
 type ListingData = {
   id: string;
@@ -39,7 +39,7 @@ export default function EditClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
-  const { categories, locations } = useReferenceData();
+  const { categories, locations } = useDashboardData();
 
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<UploadedImage[]>(

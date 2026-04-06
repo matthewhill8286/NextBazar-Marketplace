@@ -61,7 +61,7 @@ describe("DashboardContext", () => {
     const listings = [makeListing(), makeListing({ id: "l-2" })];
     render(
       <DashboardProvider
-        value={{ listings, isDealer: true, isProSeller: true }}
+        value={{ listings, isDealer: true, isProSeller: true, categories: [], subcategories: [], locations: [] }}
       >
         <TestConsumer />
       </DashboardProvider>,
@@ -74,7 +74,7 @@ describe("DashboardContext", () => {
   it("provides isDealer=false, isProSeller=false for regular users", () => {
     render(
       <DashboardProvider
-        value={{ listings: [], isDealer: false, isProSeller: false }}
+        value={{ listings: [], isDealer: false, isProSeller: false, categories: [], subcategories: [], locations: [] }}
       >
         <TestConsumer />
       </DashboardProvider>,

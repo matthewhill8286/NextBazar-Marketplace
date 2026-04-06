@@ -1,4 +1,9 @@
 import type { Metadata } from "next";
+import {
+  getCategoriesCached,
+  getLocationsCached,
+  getSubcategoriesCached,
+} from "@/lib/supabase/queries";
 import { getClientPricing } from "@/lib/stripe";
 import PostClient from "./post-client";
 
@@ -8,6 +13,19 @@ export const metadata: Metadata = {
 };
 
 export default async function PostPage() {
-  const pricing = await getClientPricing();
-  return <PostClient pricing={pricing} />;
+  const [pricing, categories, subcategories, locations] = await Promise.all([
+    getClientPricing(),
+    getCategoriesCached(),
+    getSubcategoriesCached(),
+    getLocationsCached(),
+  ]);
+
+  return (
+    <PostClient
+      pricing={pricing}
+      categories={categories}
+      subcategories={subcategories}
+      locations={locations}
+    />
+  );
 }

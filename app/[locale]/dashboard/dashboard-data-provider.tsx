@@ -1,3 +1,8 @@
+import {
+  getCategoriesCached,
+  getLocationsCached,
+  getSubcategoriesCached,
+} from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 import type { DashboardListing } from "@/lib/supabase/supabase.types";
 import DashboardShell from "./dashboard-shell";
@@ -27,25 +32,34 @@ export default async function DashboardDataProvider({
 }) {
   const supabase = await createClient();
 
-  const [{ data: prof }, { data: listingData }, { data: shop }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("is_pro_seller")
-        .eq("id", userId)
-        .single(),
-      supabase
-        .from("listings")
-        .select(LISTING_SELECT)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(500),
-      supabase
-        .from("dealer_shops")
-        .select("plan_status")
-        .eq("user_id", userId)
-        .single(),
-    ]);
+  const [
+    { data: prof },
+    { data: listingData },
+    { data: shop },
+    categories,
+    subcategories,
+    locations,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("is_pro_seller")
+      .eq("id", userId)
+      .single(),
+    supabase
+      .from("listings")
+      .select(LISTING_SELECT)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(500),
+    supabase
+      .from("dealer_shops")
+      .select("plan_status")
+      .eq("user_id", userId)
+      .single(),
+    getCategoriesCached(),
+    getSubcategoriesCached(),
+    getLocationsCached(),
+  ]);
 
   const listings: DashboardListing[] =
     (listingData as DashboardListing[]) || [];
@@ -57,6 +71,9 @@ export default async function DashboardDataProvider({
       listings={listings}
       isDealer={isDealer}
       isProSeller={isProSeller}
+      categories={categories}
+      subcategories={subcategories}
+      locations={locations}
     >
       {children}
     </DashboardShell>
