@@ -71,7 +71,9 @@ vi.mock("@/lib/auth-context", () => ({
 const selectMock = vi.fn().mockReturnValue({
   or: vi.fn().mockReturnValue({
     order: vi.fn().mockReturnValue({
-      order: vi.fn().mockResolvedValue({ data: [] }),
+      order: vi.fn().mockReturnValue({
+        limit: vi.fn().mockResolvedValue({ data: [] }),
+      }),
     }),
   }),
 });
@@ -161,7 +163,9 @@ describe("MessagesPage", () => {
     selectMock.mockReturnValue({
       or: vi.fn().mockReturnValue({
         order: vi.fn().mockReturnValue({
-          order: vi.fn().mockResolvedValue({ data: [] }),
+          order: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue({ data: [] }),
+          }),
         }),
       }),
     });
@@ -176,9 +180,11 @@ describe("MessagesPage", () => {
     selectMock.mockReturnValue({
       or: vi.fn().mockReturnValue({
         order: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: [fakeConversation] }),
+          order: vi.fn().mockReturnValue({
+            limit: vi
+              .fn()
+              .mockResolvedValue({ data: [fakeConversation] }),
+          }),
         }),
       }),
     });
@@ -194,9 +200,11 @@ describe("MessagesPage", () => {
     selectMock.mockReturnValue({
       or: vi.fn().mockReturnValue({
         order: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: [fakeConversation] }),
+          order: vi.fn().mockReturnValue({
+            limit: vi
+              .fn()
+              .mockResolvedValue({ data: [fakeConversation] }),
+          }),
         }),
       }),
     });
@@ -211,9 +219,11 @@ describe("MessagesPage", () => {
     selectMock.mockReturnValue({
       or: vi.fn().mockReturnValue({
         order: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: [fakeConversation] }),
+          order: vi.fn().mockReturnValue({
+            limit: vi
+              .fn()
+              .mockResolvedValue({ data: [fakeConversation] }),
+          }),
         }),
       }),
     });
@@ -230,9 +240,11 @@ describe("MessagesPage", () => {
     selectMock.mockReturnValue({
       or: vi.fn().mockReturnValue({
         order: vi.fn().mockReturnValue({
-          order: vi
-            .fn()
-            .mockResolvedValue({ data: [fakeConversation] }),
+          order: vi.fn().mockReturnValue({
+            limit: vi
+              .fn()
+              .mockResolvedValue({ data: [fakeConversation] }),
+          }),
         }),
       }),
     });

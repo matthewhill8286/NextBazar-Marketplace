@@ -52,7 +52,8 @@ export default function OffersTab({
         `*, listing:listings(id, title, slug, price, primary_image_url), buyer:profiles!offers_buyer_id_fkey(id, display_name, avatar_url)`,
       )
       .eq("seller_id", userId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(200);
 
     if (data) setOffers(data as unknown as OfferRow[]);
     setLoading(false);

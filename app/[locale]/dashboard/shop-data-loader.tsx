@@ -54,14 +54,8 @@ export default function ShopDataLoader({
         .toISOString()
         .split("T")[0];
 
-      // Fetch listing IDs first (needed for analytics .in() filter)
-      const listingIdsRes = await supabase
-        .from("listings")
-        .select("id")
-        .eq("user_id", userId);
-      const listingIds = listingIdsRes.data?.map((l) => l.id) ?? [];
-
-      const [shopRes, listingsRes, profileRes, analyticsRes, offersRes] =
+      // Step 1: Fetch shop, listings, profile, and offers in parallel
+      const [shopRes, listingsRes, profileRes, offersRes] =
         await Promise.all([
           supabase
             .from("dealer_shops")
@@ -78,20 +72,23 @@ export default function ShopDataLoader({
             .select("display_name, is_pro_seller")
             .eq("id", userId)
             .single(),
-          listingIds.length > 0
-            ? supabase
-                .from("listing_analytics")
-                .select("listing_id, date, views, favorites, messages")
-                .gte("date", since)
-                .in("listing_id", listingIds)
-                .order("date", { ascending: true })
-            : Promise.resolve({ data: [] as AnalyticsRow[], error: null }),
           supabase
             .from("offers")
             .select("id, listing_id, amount, status, created_at, responded_at")
             .eq("seller_id", userId)
             .order("created_at", { ascending: false }),
         ]);
+
+      // Step 2: Use listing IDs from step 1 to fetch analytics (no extra round-trip)
+      const listingIds = (listingsRes.data ?? []).map((l: { id: string }) => l.id);
+      const analyticsRes = listingIds.length > 0
+        ? await supabase
+            .from("listing_analytics")
+            .select("listing_id, date, views, favorites, messages")
+            .gte("date", since)
+            .in("listing_id", listingIds)
+            .order("date", { ascending: true })
+        : { data: [] as AnalyticsRow[], error: null };
 
       // Surface query errors in the console instead of silently swallowing them
       if (shopRes.error)

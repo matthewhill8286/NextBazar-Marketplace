@@ -231,10 +231,12 @@ export function ShopCard({
               Pro
             </span>
           )}
-          <span className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-[#666] text-xs font-medium px-2.5 py-1 shadow-sm">
-            <Package className="w-3 h-3" />
-            {shop.listing_count}
-          </span>
+          {shop.listing_count > 0 && (
+            <span className="inline-flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-[#666] text-xs font-medium px-2.5 py-1 shadow-sm">
+              <Package className="w-3 h-3" />
+              {shop.listing_count}
+            </span>
+          )}
         </div>
 
         {/* Logo overlay */}
@@ -294,10 +296,14 @@ export function ShopCard({
         {/* Footer */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-xs text-[#8a8280]">
-            <span className="font-medium">
-              {t("listingCount", { count: shop.listing_count })}
-            </span>
-            <span className="w-1 h-1 bg-[#ccc]" />
+            {shop.listing_count > 0 && (
+              <>
+                <span className="font-medium">
+                  {t("listingCount", { count: shop.listing_count })}
+                </span>
+                <span className="w-1 h-1 bg-[#ccc]" />
+              </>
+            )}
             <span>
               {t("joined", {
                 date: new Date(shop.created_at).toLocaleDateString(
@@ -397,10 +403,12 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
         </div>
 
         <div className="flex items-center gap-2 text-[11px] text-[#8a8280] font-medium">
-          <span className="flex items-center gap-1">
-            <Package className="w-3 h-3" />
-            {t("listingCount", { count: shop.listing_count })}
-          </span>
+          {shop.listing_count > 0 && (
+            <span className="flex items-center gap-1">
+              <Package className="w-3 h-3" />
+              {t("listingCount", { count: shop.listing_count })}
+            </span>
+          )}
           {shop.plan_tier === "business" && (
             <span className="inline-flex items-center gap-0.5 text-amber-600 font-semibold uppercase tracking-wider text-[9px]">
               <Crown className="w-2.5 h-2.5" />

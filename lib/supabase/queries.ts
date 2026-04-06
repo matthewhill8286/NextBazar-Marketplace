@@ -474,23 +474,15 @@ export async function getActiveShopsCached(): Promise<ShopCardRow[]> {
 
   if (!shops || shops.length === 0) return [];
 
-  // Collect user_ids and fetch profiles + listing counts in parallel
+  // Collect user_ids and fetch profiles + listing counts in parallel (2 queries, not N+1)
   const userIds = shops.map((s) => s.user_id);
 
-  // Fetch profiles and per-user listing counts concurrently
-  const [{ data: profiles }, ...countResults] = await Promise.all([
+  const [{ data: profiles }, { data: countRows }] = await Promise.all([
     sb
       .from("profiles")
       .select("id, display_name, avatar_url, verified")
       .in("id", userIds),
-    ...userIds.map((uid) =>
-      sb
-        .from("listings")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", uid)
-        .eq("status", "active")
-        .then((res) => ({ user_id: uid, count: res.count ?? 0 })),
-    ),
+    sb.rpc("get_listing_counts_by_user", { p_user_ids: userIds }),
   ]);
 
   // Build lookup maps
@@ -506,8 +498,11 @@ export async function getActiveShopsCached(): Promise<ShopCardRow[]> {
   );
 
   const countMap = new Map<string, number>();
-  for (const { user_id, count } of countResults) {
-    countMap.set(user_id, count);
+  for (const row of (countRows ?? []) as {
+    user_id: string;
+    listing_count: number;
+  }[]) {
+    countMap.set(row.user_id, row.listing_count);
   }
 
   return shops.map((shop) => ({

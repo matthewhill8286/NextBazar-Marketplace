@@ -842,19 +842,20 @@ export default function OffersClient({
     [supabase, userId],
   );
 
-  // Initial load for both tabs
-  useEffect(() => {
-    fetchPage("received", 0);
-    fetchPage("sent", 0);
-  }, [fetchPage]);
+  // Lazy-load: only fetch a tab when first viewed or when its page changes
+  const sentLoadedRef = useRef(false);
+  const receivedLoadedRef = useRef(false);
 
-  // Reload when page changes
   useEffect(() => {
+    receivedLoadedRef.current = true;
     fetchPage("received", receivedPage);
   }, [fetchPage, receivedPage]);
+
   useEffect(() => {
+    if (!sentLoadedRef.current && tab !== "sent") return;
+    sentLoadedRef.current = true;
     fetchPage("sent", sentPage);
-  }, [fetchPage, sentPage]);
+  }, [fetchPage, sentPage, tab]);
 
   // ── Realtime offer updates ──────────────────────────────────────────────
   // Without this, the buyer's "Sent" tab stays stale after the seller counters
