@@ -35,7 +35,8 @@ export default function PurchasesPage() {
         `)
         .eq("buyer_id", authUserId)
         .eq("status", "accepted")
-        .order("responded_at", { ascending: false });
+        .order("responded_at", { ascending: false })
+        .limit(100);
 
       setPurchases(data || []);
       setLoading(false);

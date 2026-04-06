@@ -69,7 +69,8 @@ export default function MessagesPage() {
         )
         .or(`buyer_id.eq.${uid},seller_id.eq.${uid}`)
         .order("is_pinned", { ascending: false })
-        .order("last_message_at", { ascending: false, nullsFirst: false });
+        .order("last_message_at", { ascending: false, nullsFirst: false })
+        .limit(100);
 
       setConversations((data as unknown as Conversation[]) || []);
     },

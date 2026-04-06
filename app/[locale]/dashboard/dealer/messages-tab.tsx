@@ -29,7 +29,8 @@ export default function MessagesTab({
         `*, listing:listings(id, title, slug, primary_image_url), buyer:profiles!conversations_buyer_id_fkey(id, display_name, avatar_url)`,
       )
       .eq("seller_id", userId)
-      .order("last_message_at", { ascending: false });
+      .order("last_message_at", { ascending: false })
+      .limit(100);
 
     if (data) setConversations(data as unknown as ConversationRow[]);
     setLoading(false);

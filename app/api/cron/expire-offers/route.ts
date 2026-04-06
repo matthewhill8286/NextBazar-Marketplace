@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
       "id, buyer_id, seller_id, listing_id, amount, currency, listings(title, slug)",
     )
     .in("status", ["pending", "countered"])
-    .lt("expires_at", now);
+    .lt("expires_at", now)
+    .limit(500);
 
   if (fetchError) {
     console.error("Failed to fetch expired offers:", fetchError);

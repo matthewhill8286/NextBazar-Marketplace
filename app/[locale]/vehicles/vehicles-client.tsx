@@ -488,7 +488,9 @@ export default function VehiclesClient({
                       )}
                     </div>
                     <span className="text-[11px] text-[#8a8280]">
-                      {shop.listing_count} listings
+                      {shop.listing_count > 0
+                        ? `${shop.listing_count} listings`
+                        : "View shop"}
                     </span>
                   </div>
                 </Link>

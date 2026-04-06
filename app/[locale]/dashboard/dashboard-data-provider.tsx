@@ -38,7 +38,8 @@ export default async function DashboardDataProvider({
         .from("listings")
         .select(LISTING_SELECT)
         .eq("user_id", userId)
-        .order("created_at", { ascending: false }),
+        .order("created_at", { ascending: false })
+        .limit(500),
       supabase
         .from("dealer_shops")
         .select("plan_status")
