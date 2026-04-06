@@ -551,7 +551,7 @@ export async function getShopsByCategoryCached(
   const sb = publicClient();
 
   // Get user_ids that have active listings in this category
-  const { data: categoryListings } = await sb
+  const { data: categoryListings, error: listErr } = await sb
     .from("listings")
     .select("user_id")
     .eq("category_id", categoryId)
