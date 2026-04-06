@@ -5,12 +5,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Mocks
 // ---------------------------------------------------------------------------
 
-const mockGetUser = vi.fn();
-const mockSelect = vi.fn();
+const { mockUseAuth, mockSelect } = vi.hoisted(() => ({
+  mockUseAuth: vi.fn(),
+  mockSelect: vi.fn(),
+}));
+
+vi.mock("@/lib/auth-context", () => ({
+  useAuth: mockUseAuth,
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
-    auth: { getUser: mockGetUser },
     from: () => ({
       select: mockSelect,
     }),
@@ -52,7 +58,7 @@ const fakeNotification = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetUser.mockResolvedValue({ data: { user: fakeUser } });
+  mockUseAuth.mockReturnValue({ userId: fakeUser.id, loading: false, profileVersion: 0, refreshProfile: vi.fn() });
 });
 
 // ---------------------------------------------------------------------------
@@ -61,15 +67,22 @@ beforeEach(() => {
 
 describe("NotificationsPage", () => {
   it("shows loading skeleton initially", () => {
-    // Never resolve getUser to keep loading state
-    mockGetUser.mockReturnValue(new Promise(() => {}));
+    // Keep the fetch promise pending to show loading state
+    mockSelect.mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        order: vi.fn().mockReturnValue({
+          limit: vi.fn().mockReturnValue(new Promise(() => {})), // Never resolves
+        }),
+      }),
+    });
+    mockUseAuth.mockReturnValue({ userId: fakeUser.id, loading: false, profileVersion: 0, refreshProfile: vi.fn() });
     render(<NotificationsPage />);
     const pulseElements = document.querySelectorAll(".animate-pulse");
     expect(pulseElements.length).toBeGreaterThan(0);
   });
 
   it("renders NotificationsClient when data loaded (no user)", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockUseAuth.mockReturnValue({ userId: null, loading: false, profileVersion: 0, refreshProfile: vi.fn() });
     render(<NotificationsPage />);
     await waitFor(() => {
       const client = screen.getByTestId("notifications-client");

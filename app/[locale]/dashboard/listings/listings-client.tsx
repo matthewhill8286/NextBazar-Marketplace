@@ -26,6 +26,7 @@ import CategoryIcon, {
 } from "@/app/components/category-icon";
 import { ConfirmDialog, EmptyState } from "@/app/components/ui";
 import { Link } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { LISTING_ACTIVE_MS } from "@/lib/constants";
 import {
   expiryBadge,
@@ -56,6 +57,7 @@ export default function ListingsClient({
   onListingsChangeAction?: (listings: DashboardListing[]) => void;
 }) {
   const supabase = createClient();
+  const { userId } = useAuth();
   const searchParams = useSearchParams();
   const t = useTranslations("dashboard.listings");
   const validTabs = ["active", "sold", "expired", "draft"];
@@ -182,10 +184,7 @@ export default function ListingsClient({
       return;
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    if (!userId) {
       setLoadingAction(null);
       return;
     }
@@ -197,7 +196,7 @@ export default function ListingsClient({
     const { data: newListing, error } = await supabase
       .from("listings")
       .insert({
-        user_id: user.id,
+        user_id: userId,
         title: original.title,
         slug: newSlug,
         description: null,
@@ -324,10 +323,7 @@ export default function ListingsClient({
 
   async function bulkRelist() {
     setBulkLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    if (!userId) {
       setBulkLoading(false);
       return;
     }
@@ -344,7 +340,7 @@ export default function ListingsClient({
       const { data: nl } = await supabase
         .from("listings")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           title: original.title,
           slug: `${baseSlug}-${suffix}`,
           price: original.price,

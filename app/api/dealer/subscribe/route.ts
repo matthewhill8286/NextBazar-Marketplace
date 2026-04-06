@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SellerTier } from "@/lib/pricing-config";
 import { getSellerPlan, stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 // Only seller tiers are allowed — Buyer+ plans are not yet launched.
 // This prevents API-level activation of buyer plans even if the UI is manipulated.
@@ -31,27 +32,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Get authenticated user
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
+    const supabase = await createClient();
     // Check if they already have an active shop
     const { data: existingShop } = await supabase
       .from("dealer_shops")
       .select("stripe_customer_id, plan_status, plan_tier, shop_name, slug")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     // Reuse existing Stripe customer or create a new one
     let customerId = existingShop?.stripe_customer_id;
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: user.email,
-        metadata: { user_id: user.id },
+        email: "",
+        metadata: { user_id: userId },
       });
       customerId = customer.id;
     }
@@ -93,14 +91,14 @@ export async function POST(request: NextRequest) {
       success_url: successUrl,
       cancel_url: `${origin}/pricing`,
       metadata: {
-        user_id: user.id,
+        user_id: userId,
         type: "dealer_subscription",
         plan_tier: tier,
         billing_interval: billing,
       },
       subscription_data: {
         metadata: {
-          user_id: user.id,
+          user_id: userId,
           type: "dealer_subscription",
           plan_tier: tier,
           billing_interval: billing,

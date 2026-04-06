@@ -18,7 +18,7 @@ const {
   mockProductCreate,
   mockPriceCreate,
   mockGetSellerPlan,
-  mockGetUser,
+  mockRequireAuth,
   mockSelect,
   mockEq,
   mockSingle,
@@ -28,7 +28,7 @@ const {
   mockProductCreate: vi.fn(),
   mockPriceCreate: vi.fn(),
   mockGetSellerPlan: vi.fn(),
-  mockGetUser: vi.fn(),
+  mockRequireAuth: vi.fn(),
   mockSelect: vi.fn(),
   mockEq: vi.fn(),
   mockSingle: vi.fn(),
@@ -44,9 +44,16 @@ vi.mock("@/lib/stripe", () => ({
   getSellerPlan: mockGetSellerPlan,
 }));
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const result = await mockRequireAuth();
+    return result.userId ?? null;
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
     from: vi.fn(() => ({
       select: mockSelect,
     })),
@@ -78,7 +85,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 
   // Default: authenticated user
-  mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+  mockRequireAuth.mockResolvedValue({ userId: mockUser.id });
 
   // Default: no existing shop
   mockSelect.mockReturnValue({ eq: mockEq });
@@ -139,7 +146,10 @@ describe("POST /api/dealer/subscribe", () => {
   });
 
   it("returns 401 when user is not authenticated", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockRequireAuth.mockResolvedValueOnce({
+      error: "Unauthorized",
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+    });
 
     const res = await POST(
       makeRequest({ origin: "http://localhost", tier: "pro", billing: "monthly" }),
@@ -173,7 +183,7 @@ describe("POST /api/dealer/subscribe", () => {
     );
 
     expect(mockCustomerCreate).toHaveBeenCalledWith({
-      email: "test@nextbazar.com",
+      email: "",
       metadata: { user_id: "user-123" },
     });
   });

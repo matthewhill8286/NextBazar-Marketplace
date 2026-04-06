@@ -2,6 +2,7 @@
 
 import { Check, Flag, Heart, Loader2, Share2, X } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
@@ -84,6 +85,7 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
 
 export function ReportAction({ listingId }: { listingId: string }) {
   const supabase = createClient();
+  const { userId } = useAuth();
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
@@ -98,16 +100,13 @@ export function ReportAction({ listingId }: { listingId: string }) {
     if (!reason || submitting) return;
     setSubmitting(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
+    if (!userId) {
       window.location.href = `/auth/login?redirect=${window.location.pathname}`;
       return;
     }
 
     await supabase.from("reports").insert({
-      reporter_id: user.id,
+      reporter_id: userId,
       listing_id: listingId,
       reason,
       details: details.trim() || null,
@@ -247,6 +246,7 @@ export function ContactButtons({
   const [phoneVisible, setPhoneVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
+  const { userId } = useAuth();
 
   // Build WhatsApp deep link — strip spaces/dashes, keep + prefix
   const waLink = whatsappNumber
@@ -260,16 +260,13 @@ export function ContactButtons({
 
   async function handleMessage() {
     setLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (!userId) {
       window.location.href = `/auth/login?redirect=${window.location.pathname}`;
       return;
     }
 
-    if (user.id === sellerId) {
+    if (userId === sellerId) {
       // Can't message yourself
       setLoading(false);
       return;
@@ -280,7 +277,7 @@ export function ContactButtons({
       .from("conversations")
       .select("id")
       .eq("listing_id", listingId)
-      .eq("buyer_id", user.id)
+      .eq("buyer_id", userId)
       .eq("seller_id", sellerId)
       .maybeSingle();
 
@@ -294,7 +291,7 @@ export function ContactButtons({
       .from("conversations")
       .insert({
         listing_id: listingId,
-        buyer_id: user.id,
+        buyer_id: userId,
         seller_id: sellerId,
       })
       .select("id")

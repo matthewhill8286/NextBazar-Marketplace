@@ -1,7 +1,7 @@
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const supabaseAdmin = createAdminClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,20 +11,15 @@ const supabaseAdmin = createAdminClient(
 
 export async function POST(_request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
     // Fetch the shop
     const { data: shop } = await supabaseAdmin
       .from("dealer_shops")
       .select("id, plan_status, stripe_subscription_id, stripe_customer_id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (!shop) {
@@ -69,13 +64,13 @@ export async function POST(_request: NextRequest) {
     await supabaseAdmin
       .from("profiles")
       .update({ is_pro_seller: false })
-      .eq("id", user.id);
+      .eq("id", userId);
 
     // Deactivate all the user's active listings
     await supabaseAdmin
       .from("listings")
       .update({ status: "inactive" })
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("status", "active");
 
     return NextResponse.json({

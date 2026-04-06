@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,11 +15,9 @@ const supabaseAdmin = createClient(
 export async function POST(req: NextRequest) {
   try {
     // Verify the caller is the listing owner
-    const supabase = await createServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ ok: false }, { status: 401 });
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
     const { listing_id, old_price, new_price } = await req.json();
     if (!listing_id || old_price == null || new_price == null) {
@@ -40,7 +38,7 @@ export async function POST(req: NextRequest) {
       .eq("id", listing_id)
       .single();
 
-    if (!listing || listing.user_id !== user.id) {
+    if (!listing || listing.user_id !== userId) {
       return NextResponse.json(
         { ok: false, error: "Forbidden" },
         { status: 403 },
@@ -52,7 +50,7 @@ export async function POST(req: NextRequest) {
       .from("favorites")
       .select("user_id")
       .eq("listing_id", listing_id)
-      .neq("user_id", user.id);
+      .neq("user_id", userId);
 
     if (!favs || favs.length === 0) {
       return NextResponse.json({ ok: true, notified: 0 });

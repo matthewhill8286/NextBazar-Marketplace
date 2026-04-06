@@ -3,6 +3,7 @@
 import { CheckCircle, Loader2, Star } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { timeAgo } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
 
@@ -64,7 +65,7 @@ export function LeaveReviewPrompt({
   sellerName: string;
 }) {
   const supabase = createClient();
-  const [userId, setUserId] = useState<string | null>(null);
+  const { userId } = useAuth();
   const [alreadyReviewed, setAlreadyReviewed] = useState<boolean | null>(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -73,24 +74,22 @@ export function LeaveReviewPrompt({
 
   useEffect(() => {
     async function check() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user || user.id === sellerId) return; // don't show to seller
-
-      setUserId(user.id);
+      if (!userId || userId === sellerId) {
+        setAlreadyReviewed(null);
+        return;
+      }
 
       const { data } = await supabase
         .from("reviews")
         .select("id")
-        .eq("reviewer_id", user.id)
+        .eq("reviewer_id", userId)
         .eq("listing_id", listingId)
         .maybeSingle();
 
       setAlreadyReviewed(!!data);
     }
     check();
-  }, [listingId, sellerId, supabase.auth.getUser, supabase.from]);
+  }, [listingId, sellerId, userId, supabase]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -110,9 +109,9 @@ export function LeaveReviewPrompt({
   }
 
   // Not logged in, is the seller, or still loading
-  if (userId === null || alreadyReviewed === null) return null;
+  if (alreadyReviewed === null) return null;
   // Seller can't review themselves (checked in useEffect)
-  if (!userId) return null;
+  if (!userId || userId === sellerId) return null;
 
   if (alreadyReviewed || done) {
     return (

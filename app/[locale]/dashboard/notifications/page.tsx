@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import NotificationsClient from "./notifications-client";
 
 export default function NotificationsPage() {
   const supabase = createClient();
+  const { userId } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      if (!userId) {
         setLoading(false);
         return;
       }
@@ -22,7 +21,7 @@ export default function NotificationsPage() {
       const { data } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(50);
 
@@ -30,7 +29,7 @@ export default function NotificationsPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [userId, supabase]);
 
   if (loading) {
     return (

@@ -5,13 +5,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Mocks — set up BEFORE importing the component
 // ---------------------------------------------------------------------------
 
-const mockPush = vi.fn();
-const mockGetUser = vi.fn();
-const mockFrom = vi.fn();
-const mockChannel = vi.fn().mockReturnValue({
-  on: vi.fn().mockReturnThis(),
-  subscribe: vi.fn(),
-});
+const { mockPush, mockUseAuth, mockFrom, mockChannel } = vi.hoisted(() => ({
+  mockPush: vi.fn(),
+  mockUseAuth: vi.fn(),
+  mockFrom: vi.fn(),
+  mockChannel: vi.fn().mockReturnValue({
+    on: vi.fn().mockReturnThis(),
+    subscribe: vi.fn(),
+  }),
+}));
 
 vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
@@ -61,6 +63,11 @@ vi.mock("@/lib/hooks/use-realtime-table", () => ({
   useRealtimeTable: vi.fn(),
 }));
 
+vi.mock("@/lib/auth-context", () => ({
+  useAuth: mockUseAuth,
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 const selectMock = vi.fn().mockReturnValue({
   or: vi.fn().mockReturnValue({
     order: vi.fn().mockReturnValue({
@@ -79,7 +86,6 @@ const makeChainMock = (resolvedData: unknown = null) => {
 
 vi.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
-    auth: { getUser: mockGetUser },
     from: (table: string) => {
       if (table === "dealer_shops") {
         return {
@@ -124,7 +130,7 @@ const fakeConversation = {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetUser.mockResolvedValue({ data: { user: fakeUser } });
+  mockUseAuth.mockReturnValue({ userId: fakeUser.id, loading: false, profileVersion: 0, refreshProfile: vi.fn() });
 });
 
 // ---------------------------------------------------------------------------
@@ -133,8 +139,8 @@ beforeEach(() => {
 
 describe("MessagesPage", () => {
   it("shows loading skeleton initially", () => {
-    // Never resolve getUser to keep loading state
-    mockGetUser.mockReturnValue(new Promise(() => {}));
+    // Set loading to true to keep loading state
+    mockUseAuth.mockReturnValue({ userId: null, loading: true, profileVersion: 0, refreshProfile: vi.fn() });
     render(<MessagesPage />);
     // Should have skeleton pulse elements
     const pulseElements = document.querySelectorAll(".animate-pulse");
@@ -142,7 +148,7 @@ describe("MessagesPage", () => {
   });
 
   it("redirects to login when no user", async () => {
-    mockGetUser.mockResolvedValue({ data: { user: null } });
+    mockUseAuth.mockReturnValue({ userId: null, loading: false, profileVersion: 0, refreshProfile: vi.fn() });
     render(<MessagesPage />);
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(

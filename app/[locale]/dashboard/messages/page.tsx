@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { timeAgoCompact } from "@/lib/format-helpers";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { createClient } from "@/lib/supabase/client";
@@ -46,9 +47,9 @@ type Conversation = {
 export default function MessagesPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { userId: authUserId } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Conversation | null>(null);
@@ -76,41 +77,34 @@ export default function MessagesPage() {
   );
 
   useEffect(() => {
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/auth/login?redirect=/dashboard/messages");
-        return;
-      }
-      setUserId(user.id);
-      await loadConversations(user.id);
-      setLoading(false);
+    if (!authUserId) {
+      router.push("/auth/login?redirect=/dashboard/messages");
+      return;
     }
-    load();
-  }, []);
+    loadConversations(authUserId);
+    setLoading(false);
+  }, [authUserId, router, loadConversations]);
 
   // Realtime: refresh list when any conversation the user is part of changes
   useRealtimeTable({
-    channelName: `conv-buyer-${userId ?? "anon"}`,
+    channelName: `conv-buyer-${authUserId ?? "anon"}`,
     table: "conversations",
     event: "*",
-    filter: userId ? `buyer_id=eq.${userId}` : undefined,
+    filter: authUserId ? `buyer_id=eq.${authUserId}` : undefined,
     onPayload: () => {
-      if (userId) loadConversations(userId);
+      if (authUserId) loadConversations(authUserId);
     },
-    enabled: !!userId,
+    enabled: !!authUserId,
   });
   useRealtimeTable({
-    channelName: `conv-seller-${userId ?? "anon"}`,
+    channelName: `conv-seller-${authUserId ?? "anon"}`,
     table: "conversations",
     event: "*",
-    filter: userId ? `seller_id=eq.${userId}` : undefined,
+    filter: authUserId ? `seller_id=eq.${authUserId}` : undefined,
     onPayload: () => {
-      if (userId) loadConversations(userId);
+      if (authUserId) loadConversations(authUserId);
     },
-    enabled: !!userId,
+    enabled: !!authUserId,
   });
 
   async function handlePin(conv: Conversation, e: React.MouseEvent) {
@@ -158,7 +152,7 @@ export default function MessagesPage() {
   const filtered = conversations.filter((c) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    const otherUser = c.buyer_id === userId ? c.seller : c.buyer;
+    const otherUser = c.buyer_id === authUserId ? c.seller : c.buyer;
     return (
       otherUser?.display_name?.toLowerCase().includes(q) ||
       c.listings?.title?.toLowerCase().includes(q) ||
@@ -212,7 +206,7 @@ export default function MessagesPage() {
         <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
           {filtered.map((conv) => {
             const otherUser =
-              conv.buyer_id === userId ? conv.seller : conv.buyer;
+              conv.buyer_id === authUserId ? conv.seller : conv.buyer;
             const initials =
               otherUser?.display_name
                 ?.split(" ")
@@ -375,7 +369,7 @@ export default function MessagesPage() {
             <p className="text-sm text-[#6b6560] mb-6">
               This will permanently remove the conversation with{" "}
               <span className="font-medium text-[#666]">
-                {(deleteTarget.buyer_id === userId
+                {(deleteTarget.buyer_id === authUserId
                   ? deleteTarget.seller
                   : deleteTarget.buyer
                 )?.display_name || "this user"}

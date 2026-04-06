@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 
 type Template = {
@@ -23,6 +24,7 @@ type Template = {
 
 export default function QuickReplyManager() {
   const supabase = createClient();
+  const { userId } = useAuth();
   const [presets, setPresets] = useState<Template[]>([]);
   const [custom, setCustom] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,15 +39,12 @@ export default function QuickReplyManager() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!userId) return;
 
     const { data } = await supabase
       .from("quick_reply_templates")
       .select("id, label, content, is_preset, sort_order")
-      .or(`is_preset.eq.true,user_id.eq.${user.id}`)
+      .or(`is_preset.eq.true,user_id.eq.${userId}`)
       .order("sort_order", { ascending: true });
 
     if (data) {
@@ -53,7 +52,7 @@ export default function QuickReplyManager() {
       setCustom(data.filter((t: Template) => !t.is_preset));
     }
     setLoading(false);
-  }, [supabase]);
+  }, [userId, supabase]);
 
   useEffect(() => {
     load();
@@ -83,10 +82,7 @@ export default function QuickReplyManager() {
   const handleSave = async () => {
     if (!formLabel.trim() || !formContent.trim()) return;
     setSaving(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!userId) return;
 
     if (editing) {
       await supabase
@@ -99,7 +95,7 @@ export default function QuickReplyManager() {
         .eq("id", editing.id);
     } else {
       await supabase.from("quick_reply_templates").insert({
-        user_id: user.id,
+        user_id: userId,
         label: formLabel.trim(),
         content: formContent.trim(),
         is_preset: false,

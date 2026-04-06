@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { createClient } from "@/lib/supabase/client";
 
@@ -47,10 +48,10 @@ export default function ChatThread({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const { userId } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const [userId, setUserId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -78,14 +79,10 @@ export default function ChatThread({
   // Load conversation & messages
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      if (!userId) {
         router.push(`/auth/login?redirect=${backHref}`);
         return;
       }
-      setUserId(user.id);
 
       const { data: conv } = await supabase
         .from("conversations")
@@ -121,11 +118,11 @@ export default function ChatThread({
         .from("messages")
         .update({ read_at: new Date().toISOString() })
         .eq("conversation_id", conversationId)
-        .neq("sender_id", user.id)
+        .neq("sender_id", userId)
         .is("read_at", null);
 
       // Reset the unread counter on the conversation itself
-      const isSeller = conv.seller_id === user.id;
+      const isSeller = conv.seller_id === userId;
       await supabase
         .from("conversations")
         .update(isSeller ? { seller_unread: 0 } : { buyer_unread: 0 })
@@ -136,7 +133,7 @@ export default function ChatThread({
         const { data: shop } = await supabase
           .from("dealer_shops")
           .select("plan_tier")
-          .eq("user_id", user.id)
+          .eq("user_id", userId)
           .eq("plan_status", "active")
           .single();
 
@@ -144,7 +141,7 @@ export default function ChatThread({
           const { data: templates } = await supabase
             .from("quick_reply_templates")
             .select("id, label, content")
-            .or(`is_preset.eq.true,user_id.eq.${user.id}`)
+            .or(`is_preset.eq.true,user_id.eq.${userId}`)
             .order("sort_order", { ascending: true });
           if (templates) setQuickReplies(templates);
         }
@@ -153,7 +150,7 @@ export default function ChatThread({
       setLoading(false);
     }
     load();
-  }, [conversationId]);
+  }, [conversationId, userId, router, backHref, supabase]);
 
   // Subscribe to new messages in real-time
   useRealtimeTable<Message>({

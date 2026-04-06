@@ -19,15 +19,22 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 // Mocks — hoisted so they're available before module evaluation
 // ---------------------------------------------------------------------------
 
-const { mockGetUser, mockFrom, mockPortalCreate } = vi.hoisted(() => ({
-  mockGetUser: vi.fn(),
+const { mockRequireAuth, mockFrom, mockPortalCreate } = vi.hoisted(() => ({
+  mockRequireAuth: vi.fn(),
   mockFrom: vi.fn(),
   mockPortalCreate: vi.fn(),
 }));
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const result = await mockRequireAuth();
+    return result.userId ?? null;
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
     from: mockFrom,
   })),
 }));
@@ -72,7 +79,7 @@ function setupShopMock(shopData: Record<string, unknown> | null) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+  mockRequireAuth.mockResolvedValue({ userId: mockUser.id });
 });
 
 // ---------------------------------------------------------------------------
@@ -92,7 +99,10 @@ describe("POST /api/dealer/portal", () => {
   // -- Auth --
 
   it("returns 401 for unauthenticated users", async () => {
-    mockGetUser.mockResolvedValueOnce({ data: { user: null } });
+    mockRequireAuth.mockResolvedValueOnce({
+      error: "Unauthorized",
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+    });
     const res = await POST(makeRequest({ origin: "https://nextbazar.com" }));
     expect(res.status).toBe(401);
   });

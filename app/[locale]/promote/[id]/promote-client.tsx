@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { getPlanLimits } from "@/lib/plan-limits";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
@@ -64,6 +65,7 @@ export default function PromoteClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const { userId } = useAuth();
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState("featured");
@@ -83,10 +85,7 @@ export default function PromoteClient({
 
   useEffect(() => {
     async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
+      if (!userId) {
         router.push("/auth/login");
         return;
       }
@@ -103,7 +102,7 @@ export default function PromoteClient({
         supabase
           .from("dealer_shops")
           .select("plan_tier, plan_started_at, plan_expires_at")
-          .eq("user_id", user.id)
+          .eq("user_id", userId)
           .eq("plan_status", "active")
           .single(),
       ]);
@@ -120,14 +119,14 @@ export default function PromoteClient({
       const { count } = await supabase
         .from("listings")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_promoted", true);
       setActivePromoCount(count ?? 0);
 
       setLoading(false);
     }
     load();
-  }, [listingId, router.push, supabase]);
+  }, [listingId, userId, router, supabase]);
 
   async function handleFreeBoost() {
     if (!listing || activating) return;

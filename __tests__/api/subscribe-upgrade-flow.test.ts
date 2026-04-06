@@ -16,7 +16,7 @@ const {
   mockSessionCreate,
   mockCustomerCreate,
   mockGetSellerPlan,
-  mockGetUser,
+  mockRequireAuth,
   mockSelect,
   mockEq,
   mockSingle,
@@ -24,7 +24,7 @@ const {
   mockSessionCreate: vi.fn(),
   mockCustomerCreate: vi.fn(),
   mockGetSellerPlan: vi.fn(),
-  mockGetUser: vi.fn(),
+  mockRequireAuth: vi.fn(),
   mockSelect: vi.fn(),
   mockEq: vi.fn(),
   mockSingle: vi.fn(),
@@ -40,9 +40,16 @@ vi.mock("@/lib/stripe", () => ({
   getSellerPlan: mockGetSellerPlan,
 }));
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const result = await mockRequireAuth();
+    return result.userId ?? null;
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
     from: vi.fn(() => ({
       select: mockSelect,
     })),
@@ -69,7 +76,7 @@ const mockUser = { id: "user-upgrade", email: "upgrade@test.com" };
 beforeEach(() => {
   vi.clearAllMocks();
 
-  mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+  mockRequireAuth.mockResolvedValue({ userId: mockUser.id });
 
   mockGetSellerPlan.mockResolvedValue({
     priceId: "price_biz_monthly",
@@ -198,7 +205,7 @@ describe("POST /api/dealer/subscribe — upgrade flow", () => {
     );
 
     expect(mockCustomerCreate).toHaveBeenCalledWith({
-      email: mockUser.email,
+      email: "",
       metadata: { user_id: mockUser.id },
     });
   });

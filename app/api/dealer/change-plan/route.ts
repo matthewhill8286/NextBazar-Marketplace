@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SellerTier } from "@/lib/pricing-config";
 import { getSellerPlan, stripe } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 const VALID_TIERS: SellerTier[] = ["pro", "business"];
 const VALID_BILLING = ["monthly", "yearly"] as const;
@@ -29,21 +30,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Get authenticated user
-    const supabase = await createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (auth.response) return auth.response;
+    const { userId } = auth;
 
+    const supabase = await createClient();
     // Fetch current shop
     const { data: shop } = await supabase
       .from("dealer_shops")
       .select(
         "stripe_subscription_id, stripe_customer_id, plan_tier, plan_status, billing_interval",
       )
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (!shop || shop.plan_status !== "active") {
@@ -129,7 +127,7 @@ export async function POST(request: NextRequest) {
           ? "create_prorations"
           : "create_prorations",
         metadata: {
-          user_id: user.id,
+          user_id: userId,
           type: "dealer_subscription",
           plan_tier: newTier,
           billing_interval: effectiveBilling,
@@ -151,7 +149,7 @@ export async function POST(request: NextRequest) {
         plan_started_at: now.toISOString(),
         plan_expires_at: periodEnd?.toISOString() ?? null,
       })
-      .eq("user_id", user.id);
+      .eq("user_id", userId);
 
     return NextResponse.json({
       success: true,

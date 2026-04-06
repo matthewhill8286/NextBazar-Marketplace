@@ -16,9 +16,9 @@ import { POST } from "@/app/api/dealer/import-csv/route";
 // Mocks
 // ---------------------------------------------------------------------------
 
-const { mockGetUser, mockFrom, mockSelect, mockEq, mockSingle } = vi.hoisted(
+const { mockRequireAuth, mockFrom, mockSelect, mockEq, mockSingle } = vi.hoisted(
   () => ({
-    mockGetUser: vi.fn(),
+    mockRequireAuth: vi.fn(),
     mockFrom: vi.fn(),
     mockSelect: vi.fn(),
     mockEq: vi.fn(),
@@ -26,9 +26,16 @@ const { mockGetUser, mockFrom, mockSelect, mockEq, mockSingle } = vi.hoisted(
   }),
 );
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const result = await mockRequireAuth();
+    return result.userId ?? null;
+  }),
+}));
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
-    auth: { getUser: mockGetUser },
     from: mockFrom,
     storage: {
       from: vi.fn(() => ({
@@ -87,14 +94,17 @@ function setupShopMock(shopData: Record<string, unknown> | null) {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+  mockRequireAuth.mockResolvedValue({ userId: mockUser.id });
 });
 
 // ---------------------------------------------------------------------------
 
 describe("POST /api/dealer/import-csv — plan tier gating", () => {
   it("returns 401 for unauthenticated users", async () => {
-    mockGetUser.mockResolvedValueOnce({ data: { user: null } });
+    mockRequireAuth.mockResolvedValueOnce({
+      error: "Unauthorized",
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 }),
+    });
     const res = await POST(makeRequest({ rows: [{ title: "Test" }] }));
     expect(res.status).toBe(401);
   });
