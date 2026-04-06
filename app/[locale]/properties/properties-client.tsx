@@ -483,6 +483,139 @@ export default function PropertiesClient({
           </section>
         )}
 
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {/* ── DEALER TAB CONTENT ─────────────────────────────────────── */}
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {isDealerTab && (
+          <>
+            {/* Why buy from Pro Sellers? */}
+            <section className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] border border-[#e8e6e3]">
+              <div className="flex items-center gap-2 mb-5">
+                <Sparkles className="w-4 h-4 text-[#8E7A6B]" />
+                <h3 className="text-sm font-semibold text-[#1a1a1a] tracking-wide uppercase">
+                  Why buy from Trusted Agencies?
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    icon: ShieldCheck,
+                    title: "Verified Identity",
+                    desc: "Every agency is identity-verified and vetted before joining.",
+                  },
+                  {
+                    icon: Check,
+                    title: "Quality Guaranteed",
+                    desc: "Listings are reviewed for accuracy, photos, and fair pricing.",
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: "Direct Messaging",
+                    desc: "Chat directly with the agency — fast responses guaranteed.",
+                  },
+                  {
+                    icon: Shield,
+                    title: "Buyer Protection",
+                    desc: "Transactions with trusted agencies include NextBazar buyer protection.",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="flex gap-3">
+                    <div className="shrink-0 w-8 h-8 flex items-center justify-center bg-white border border-[#e8e6e3]">
+                      <item.icon className="w-4 h-4 text-[#8E7A6B]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#1a1a1a] mb-0.5">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-[#6b6560] leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Business Tier Agencies */}
+            {businessShops.length > 0 && (
+              <section className="mb-10">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="flex items-center justify-center w-8 h-8 bg-amber-50">
+                    <Crown className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <h2
+                      className="text-lg font-light text-[#1a1a1a]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Business Agencies
+                    </h2>
+                    <p className="text-xs text-[#8a8280]">
+                      Premium agencies with the largest property portfolios
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {businessShops.map((shop) => (
+                    <ShopCard key={shop.id} shop={shop} locale={locale} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Pro Tier Agencies */}
+            {proShops.length > 0 && (
+              <section className="mb-10">
+                <div className="flex items-center gap-2.5 mb-5">
+                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
+                    <Shield className="w-4 h-4 text-[#6b6560]" />
+                  </div>
+                  <div>
+                    <h2
+                      className="text-lg font-light text-[#1a1a1a]"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
+                    >
+                      Pro Agencies
+                    </h2>
+                    <p className="text-xs text-[#8a8280]">
+                      Verified professional property sellers
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {proShops.map((shop) => (
+                    <ShopCard key={shop.id} shop={shop} locale={locale} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Empty state */}
+            {categoryShops.length === 0 && (
+              <section className="mb-12">
+                <div className="text-center py-16 text-[#8a8280]">
+                  <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
+                    <Store className="w-7 h-7 text-[#8E7A6B]" />
+                  </div>
+                  <p className="text-lg font-medium mb-1 text-[#1a1a1a]">
+                    No agencies yet
+                  </p>
+                  <p className="text-sm max-w-sm mx-auto">
+                    Property agencies in this category will appear here.{" "}
+                    <Link
+                      href="/pricing"
+                      className="text-[#1a1a1a] font-medium hover:underline"
+                    >
+                      Become a Pro Seller
+                    </Link>{" "}
+                    to get listed.
+                  </p>
+                </div>
+              </section>
+            )}
+          </>
+        )}
+
         {/* ── Featured Listings ────────────────────────────────────────── */}
         {!isDealerTab && displayFeatured.length > 0 && (
           <section className="mb-12">
