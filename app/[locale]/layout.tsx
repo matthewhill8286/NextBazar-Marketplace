@@ -15,6 +15,10 @@ import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/lib/auth-context";
 import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
+import {
+  FEATURE_FLAGS,
+  SOFT_LAUNCH_CATEGORY_SLUGS,
+} from "@/lib/feature-flags";
 import { organizationJsonLd } from "@/lib/seo";
 import {
   getCategoriesCached,
@@ -108,12 +112,19 @@ export default async function LocaleLayout({
   }
 
   // Load messages + reference data in parallel
-  const [messagesModule, navCategories, navTrending] = await Promise.all([
+  const [messagesModule, allCategories, navTrending] = await Promise.all([
     import(`../../messages/${locale}.json`),
     getCategoriesCached(),
     getSearchTrendingCached(),
   ]);
   const messages: Messages = messagesModule.default;
+
+  // Defensive soft-launch filter applied OUTSIDE the "use cache" boundary —
+  // ensures only allowed categories surface in the navbar / search dropdown
+  // even if a cached entry was populated before the flag was flipped.
+  const navCategories = FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES
+    ? allCategories.filter((c) => SOFT_LAUNCH_CATEGORY_SLUGS.has(c.slug))
+    : allCategories;
 
   return (
     <Suspense>
