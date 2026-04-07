@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { formatPriceInput, parsePriceInput } from "@/lib/format-helpers";
 import type {
   FormData,
   Location,
@@ -437,11 +438,14 @@ export default function PostStep2({
               &euro;
             </span>
             <input
-              type="number"
+              type="text"
+              inputMode="decimal"
               className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm"
               placeholder="0.00"
-              value={formData.price}
-              onChange={(e) => onUpdateAction("price", e.target.value)}
+              value={formatPriceInput(formData.price)}
+              onChange={(e) =>
+                onUpdateAction("price", parsePriceInput(e.target.value))
+              }
             />
           </div>
         </div>

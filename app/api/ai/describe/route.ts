@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { prepareImageUrlForVision } from "@/lib/ai-image-url";
 import { openai } from "@/lib/openai";
 
 export async function POST(request: NextRequest) {
@@ -34,6 +35,7 @@ Write compelling, honest listing descriptions that sell.
 
     // If we have an image, use vision
     if (imageUrl) {
+      const visionUrl = await prepareImageUrlForVision(imageUrl);
       messages.push({
         role: "user",
         content: [
@@ -49,7 +51,7 @@ Look at the photo for additional details to include.`,
           },
           {
             type: "image_url",
-            image_url: { url: imageUrl, detail: "low" },
+            image_url: { url: visionUrl, detail: "low" },
           },
         ],
       });

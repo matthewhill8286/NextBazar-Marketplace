@@ -7,7 +7,10 @@ import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
+import { revalidateListings } from "@/app/actions/revalidate";
 import { Link, useRouter } from "@/i18n/navigation";
+import { formatPriceInput, parsePriceInput } from "@/lib/format-helpers";
+import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/client";
 import { useDashboardData } from "../../dashboard-context";
 
@@ -39,7 +42,8 @@ export default function EditClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
-  const { categories, locations } = useDashboardData();
+  const { categories, locations, planTier } = useDashboardData();
+  const limits = getPlanLimits(planTier);
 
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<UploadedImage[]>(
@@ -181,6 +185,11 @@ export default function EditClient({
       );
     }
 
+    // Bust the cached listing detail / feeds so new images & fields show
+    // immediately on the public listing page (otherwise the "use cache"
+    // tagged queries can serve stale data for several refreshes).
+    await revalidateListings();
+
     toast.success("Listing updated successfully!");
     setLoading(false);
     router.push(backHref);
@@ -207,8 +216,8 @@ export default function EditClient({
           onChangeAction={handleImagesChange}
         />
 
-        {/* Video Tour — promoted listings only */}
-        {listing.is_promoted && (
+        {/* Video Tour — Business tier only */}
+        {limits.videoTours && (
           <div className="border-2 border-[#e8e6e3] bg-[#f0eeeb]/50 p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div>
@@ -216,12 +225,11 @@ export default function EditClient({
                   🎬 Video Tour
                 </p>
                 <p className="text-xs text-[#6b6560] mt-0.5">
-                  Add or replace a short video — included with your Featured
-                  listing
+                  Add or replace a short video walkthrough of your item
                 </p>
               </div>
               <span className="text-[10px] font-bold bg-[#8E7A6B] text-white px-2 py-0.5 rounded-full">
-                PAID FEATURE
+                BUSINESS
               </span>
             </div>
             <VideoUpload
@@ -289,10 +297,13 @@ export default function EditClient({
                 €
               </span>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
-                value={formData.price}
-                onChange={(e) => update("price", e.target.value)}
+                value={formatPriceInput(formData.price)}
+                onChange={(e) =>
+                  update("price", parsePriceInput(e.target.value))
+                }
               />
             </div>
           </div>

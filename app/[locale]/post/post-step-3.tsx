@@ -40,6 +40,7 @@ type Props = {
   isVehicle: boolean;
   vehicleAttrs: VehicleAttributes;
   pricing: ClientPricing;
+  canUploadVideo?: boolean;
   onSetPackageAction: (pkg: "free" | "featured" | "urgent") => void;
   onSetVideoAction: (v: UploadedVideo | null) => void;
   onBackAction: () => void;
@@ -62,6 +63,7 @@ export default function PostStep3({
   isVehicle,
   vehicleAttrs,
   pricing,
+  canUploadVideo = false,
   onSetPackageAction,
   onSetVideoAction,
   onBackAction,
@@ -388,8 +390,8 @@ export default function PostStep3({
             </div>
           </button>
 
-          {/* Video Tour — paid tiers only */}
-          {selectedPackage !== "free" && userId && (
+          {/* Video Tour — Business tier only */}
+          {canUploadVideo && userId && (
             <div className="border border-[#e8e6e3] bg-[#faf9f7] p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -401,7 +403,7 @@ export default function PostStep3({
                   </p>
                 </div>
                 <span className="text-[9px] font-medium bg-[#8E7A6B] text-white tracking-[0.15em] uppercase px-2.5 py-0.5">
-                  {t("step3.included")}
+                  BUSINESS
                 </span>
               </div>
               <VideoUpload

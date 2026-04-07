@@ -16,6 +16,10 @@ import { AuthProvider } from "@/lib/auth-context";
 import { CompareProvider } from "@/lib/compare-context";
 import { SavedProvider } from "@/lib/saved-context";
 import { organizationJsonLd } from "@/lib/seo";
+import {
+  getCategoriesCached,
+  getSearchTrendingCached,
+} from "@/lib/supabase/queries";
 
 type Messages = Record<string, unknown>;
 
@@ -103,9 +107,13 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  // Load messages directly — no plugin required
-  const messages: Messages = (await import(`../../messages/${locale}.json`))
-    .default;
+  // Load messages + reference data in parallel
+  const [messagesModule, navCategories, navTrending] = await Promise.all([
+    import(`../../messages/${locale}.json`),
+    getCategoriesCached(),
+    getSearchTrendingCached(),
+  ]);
+  const messages: Messages = messagesModule.default;
 
   return (
     <Suspense>
@@ -123,7 +131,15 @@ export default async function LocaleLayout({
             <AuthProvider>
               <SavedProvider>
                 <CompareProvider>
-                  <Navbar />
+                  <Navbar
+                    categories={navCategories.map((c) => ({
+                      id: c.id,
+                      name: c.name,
+                      slug: c.slug,
+                      icon: c.icon,
+                    }))}
+                    trending={navTrending}
+                  />
                   <main id="main-content" className="flex-1">
                     {children}
                   </main>

@@ -33,7 +33,7 @@ type SearchResult = {
   locations: { name: string } | null;
 };
 
-type TrendingItem = {
+export type TrendingItem = {
   id: string;
   title: string;
   slug: string;
@@ -43,7 +43,7 @@ type TrendingItem = {
   view_count: number;
 };
 
-type CategoryChip = {
+export type CategoryChip = {
   id: string;
   name: string;
   slug: string;
@@ -58,7 +58,13 @@ const MAX_TRENDING = 4;
 // ─── Recent searches (session-only, not persisted to disk) ──────────────────
 let recentSearchesStore: string[] = [];
 
-export default function GlobalSearch() {
+export default function GlobalSearch({
+  initialCategories = [],
+  initialTrending = [],
+}: {
+  initialCategories?: CategoryChip[];
+  initialTrending?: TrendingItem[];
+}) {
   const supabase = createClient();
   const router = useRouter();
   const t = useTranslations("nav");
@@ -70,35 +76,11 @@ export default function GlobalSearch() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [recentSearches, setRecentSearches] =
     useState<string[]>(recentSearchesStore);
-  const [trending, setTrending] = useState<TrendingItem[]>([]);
-  const [categories, setCategories] = useState<CategoryChip[]>([]);
-  const [trendingLoaded, setTrendingLoaded] = useState(false);
+  const trending = initialTrending;
+  const categories = initialCategories;
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
-
-  // ── Load trending + categories once on first open ───────────────────────
-  const loadSuggestions = useCallback(async () => {
-    if (trendingLoaded) return;
-    setTrendingLoaded(true);
-    const [{ data: trendData }, { data: catData }] = await Promise.all([
-      supabase
-        .from("listings")
-        .select(
-          "id, title, slug, price, currency, primary_image_url, view_count",
-        )
-        .eq("status", "active")
-        .order("view_count", { ascending: false })
-        .limit(MAX_TRENDING),
-      supabase
-        .from("categories")
-        .select("id, name, slug, icon")
-        .order("sort_order")
-        .limit(8),
-    ]);
-    if (trendData) setTrending(trendData as TrendingItem[]);
-    if (catData) setCategories(catData as CategoryChip[]);
-  }, [supabase, trendingLoaded]);
 
   // ── Cmd+K / Ctrl+K global shortcut ──────────────────────────────────────
   useEffect(() => {
@@ -251,7 +233,6 @@ export default function GlobalSearch() {
 
   function handleFocus() {
     setOpen(true);
-    loadSuggestions();
   }
 
   function handleBlur(e: React.FocusEvent) {

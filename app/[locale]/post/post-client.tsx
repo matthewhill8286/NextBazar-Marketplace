@@ -442,6 +442,7 @@ export default function PostClient({
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
           pricing={pricing}
+          canUploadVideo={limits.videoTours}
           onSetPackageAction={setSelectedPackage}
           onSetVideoAction={setVideo}
           onBackAction={() => goToStep(2)}

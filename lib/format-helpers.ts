@@ -33,6 +33,44 @@ export function conditionLabel(condition: string | null): string {
   );
 }
 
+// ─── Price input formatting ──────────────────────────────────────────────────
+
+/**
+ * Format a numeric string for display in a price input.
+ * Adds thousand separators and preserves a trailing decimal/decimals.
+ *   "120000"   → "120,000"
+ *   "120000.5" → "120,000.5"
+ *   "120000."  → "120,000."
+ *   ""         → ""
+ */
+export function formatPriceInput(value: string | number | null | undefined): string {
+  if (value === null || value === undefined || value === "") return "";
+  const str = String(value);
+  // Allow only digits and a single dot
+  const cleaned = str.replace(/[^\d.]/g, "");
+  if (!cleaned) return "";
+  const [intPart, ...rest] = cleaned.split(".");
+  const decimal = rest.length > 0 ? `.${rest.join("").slice(0, 2)}` : "";
+  const intFormatted = intPart
+    ? Number(intPart).toLocaleString("en-US")
+    : "";
+  // Preserve a trailing dot the user just typed
+  if (cleaned.endsWith(".") && !decimal.includes(".")) {
+    return `${intFormatted}.`;
+  }
+  return `${intFormatted}${decimal}`;
+}
+
+/**
+ * Strip formatting from a displayed price input back to a plain numeric string.
+ *   "120,000"    → "120000"
+ *   "120,000.50" → "120000.50"
+ */
+export function parsePriceInput(value: string): string {
+  if (!value) return "";
+  return value.replace(/[^\d.]/g, "");
+}
+
 // ─── Price ────────────────────────────────────────────────────────────────────
 
 /** Format a listing price. Returns "Contact" for null prices (no i18n). */

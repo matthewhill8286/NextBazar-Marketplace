@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import type { SellerTier } from "@/lib/pricing-config";
 import type {
   Category,
   DashboardListing,
@@ -12,6 +13,7 @@ type DashboardData = {
   listings: DashboardListing[];
   isDealer: boolean;
   isProSeller: boolean;
+  planTier: SellerTier;
   categories: Category[];
   subcategories: Subcategory[];
   locations: Location[];
@@ -21,6 +23,7 @@ const DashboardContext = createContext<DashboardData>({
   listings: [],
   isDealer: false,
   isProSeller: false,
+  planTier: "starter",
   categories: [],
   subcategories: [],
   locations: [],

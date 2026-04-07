@@ -18,9 +18,9 @@ import { createClient } from "@/lib/supabase/client";
 
 type UserProfile = {
   id: string;
-  email: string;
+  email?: string;
   display_name: string | null;
-  avatar_url: string | null;
+  avatar_url?: string | null;
   is_pro_seller: boolean;
 };
 
@@ -65,15 +65,13 @@ export default function UserMenu() {
     const supabase = createClient();
     supabase
       .from("profiles")
-      .select("display_name, avatar_url, is_pro_seller")
+      .select("display_name, is_pro_seller")
       .eq("id", authUserId)
       .single()
       .then(({ data: profile }) => {
         setUser({
           id: authUserId,
-          email: "", // email not needed for display
           display_name: profile?.display_name || null,
-          avatar_url: profile?.avatar_url || null,
           is_pro_seller: profile?.is_pro_seller || false,
         });
         setLoading(false);
@@ -119,7 +117,7 @@ export default function UserMenu() {
       .map((n) => n[0])
       .join("")
       .toUpperCase()
-      .slice(0, 2) || user.email[0]?.toUpperCase();
+      .slice(0, 2)
 
   return (
     <div className="relative" ref={menuRef}>
@@ -130,17 +128,7 @@ export default function UserMenu() {
         className="pointer-events-auto flex items-center gap-1.5 group"
       >
         <div className="relative w-9 h-9 bg-[#8E7A6B] rounded-full flex items-center justify-center text-white font-semibold text-xs group-hover:shadow-md transition-shadow">
-          {user.avatar_url ? (
-            <Image
-              src={user.avatar_url}
-              alt="user avatar"
-              width={36}
-              height={36}
-              className="w-full h-full rounded-full object-cover"
-            />
-          ) : (
-            initials
-          )}
+          {initials}
         </div>
         <ChevronDown
           className={`w-3.5 h-3.5 text-[#6b6560] transition-transform ${open ? "rotate-180" : ""}`}
