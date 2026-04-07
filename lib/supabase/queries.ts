@@ -169,6 +169,33 @@ export async function getTrendingListingsCached(): Promise<ListingCardRow[]> {
   return (data ?? []) as unknown as ListingCardRow[];
 }
 
+/** Lightweight trending items for the global search dropdown. */
+export type SearchTrendingItem = {
+  id: string;
+  title: string;
+  slug: string;
+  price: number | null;
+  currency: string;
+  primary_image_url: string | null;
+  view_count: number;
+};
+
+export async function getSearchTrendingCached(): Promise<SearchTrendingItem[]> {
+  "use cache";
+  cacheLife("listings");
+  cacheTag("listings");
+
+  const { data } = await publicClient()
+    .from("listings")
+    .select(
+      "id, title, slug, price, currency, primary_image_url, view_count",
+    )
+    .eq("status", "active")
+    .order("view_count", { ascending: false })
+    .limit(4);
+  return (data ?? []) as SearchTrendingItem[];
+}
+
 // ─── Cached listing detail + related (revalidate: 60 s) ──────────────────────
 
 // Explicit columns — excludes heavy `embedding` (vector, ~6 KB) and

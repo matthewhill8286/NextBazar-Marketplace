@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { prepareImageUrlForVision } from "@/lib/ai-image-url";
 import { openai } from "@/lib/openai";
 
 const supabase = createClient(
@@ -23,6 +24,10 @@ export async function POST(request: NextRequest) {
     if (!imageUrl) {
       return NextResponse.json({ error: "Missing imageUrl" }, { status: 400 });
     }
+
+    // Local Supabase URLs (127.0.0.1:54321) are unreachable from OpenAI's
+    // servers — inline them as base64 data URLs in dev.
+    const visionUrl = await prepareImageUrlForVision(imageUrl);
 
     // Fetch categories and subcategories for matching
     const [{ data: categories, error: catError }, { data: subcategories }] =
@@ -91,7 +96,7 @@ Only include vehicle_attributes fields you can confidently determine from the im
             },
             {
               type: "image_url",
-              image_url: { url: imageUrl, detail: "low" },
+              image_url: { url: visionUrl, detail: "low" },
             },
           ],
         },

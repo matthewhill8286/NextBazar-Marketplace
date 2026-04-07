@@ -12,6 +12,7 @@ import { useUserShop } from "@/lib/hooks/use-user-shop";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
 import GlobalSearch from "./global-search";
+import type { CategoryChip, TrendingItem } from "./global-search";
 import {
   MessagesPreview,
   NavPreviewWrapper,
@@ -20,7 +21,13 @@ import {
 } from "./nav-previews";
 import UserMenu from "./user-menu";
 
-export default function Navbar() {
+export default function Navbar({
+  categories,
+  trending,
+}: {
+  categories?: CategoryChip[];
+  trending?: TrendingItem[];
+} = {}) {
   const supabase = createClient();
   const { userId } = useCurrentUser();
   const { hasShop } = useUserShop();
@@ -109,7 +116,7 @@ export default function Navbar() {
         </Link>
 
         {/* Global search */}
-        <GlobalSearch />
+        <GlobalSearch initialCategories={categories} initialTrending={trending} />
 
         {/* Actions */}
         <div className="flex items-center gap-0.5 shrink-0">

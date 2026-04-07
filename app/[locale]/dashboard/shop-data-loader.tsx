@@ -22,27 +22,47 @@ const LISTING_SELECT = `
 `;
 
 /**
- * Client-side data loader that fetches shop, listings, and profile,
- * then provides them via ShopCMSContext to all child routes.
+ * Data that the server can pre-fetch and pass as hydration seed,
+ * so the client skips the initial load and renders instantly.
+ */
+export type ShopInitialData = {
+  shop: DealerShop | null;
+  listings: ListingRow[];
+  profile: { display_name: string | null; is_pro_seller: boolean } | null;
+  offers: OfferRow[];
+  analytics: AnalyticsRow[];
+  userId: string;
+};
+
+/**
+ * Client-side data loader that provides shop data via ShopCMSContext.
+ *
+ * When `initialData` is provided (from the server), state is hydrated
+ * immediately and the initial client-side fetch is skipped. The `refresh`
+ * and `refreshListings` callbacks remain available for mutations.
  */
 export default function ShopDataLoader({
+  initialData,
   children,
 }: {
+  initialData?: ShopInitialData;
   children: React.ReactNode;
 }) {
   const { userId, loading: authLoading } = useAuth();
   const pathname = usePathname();
   const supabase = createClient();
 
-  const [loading, setLoading] = useState(true);
-  const [shop, setShop] = useState<DealerShop | null>(null);
-  const [listings, setListings] = useState<ListingRow[]>([]);
-  const [analytics, setAnalytics] = useState<AnalyticsRow[]>([]);
-  const [offers, setOffers] = useState<OfferRow[]>([]);
+  const hydrated = !!initialData;
+
+  const [loading, setLoading] = useState(!hydrated);
+  const [shop, setShop] = useState<DealerShop | null>(initialData?.shop ?? null);
+  const [listings, setListings] = useState<ListingRow[]>(initialData?.listings ?? []);
+  const [analytics, setAnalytics] = useState<AnalyticsRow[]>(initialData?.analytics ?? []);
+  const [offers, setOffers] = useState<OfferRow[]>(initialData?.offers ?? []);
   const [profile, setProfile] = useState<{
     display_name: string | null;
     is_pro_seller: boolean;
-  } | null>(null);
+  } | null>(initialData?.profile ?? null);
 
   const load = useCallback(async () => {
     if (!userId) return;
@@ -137,8 +157,13 @@ export default function ShopDataLoader({
     if (data) setListings(data as unknown as ListingRow[]);
   }, [userId, supabase]);
 
-  // Initial load
+  // Initial load — skip when hydrated from server data
+  const didHydrate = useRef(hydrated);
   useEffect(() => {
+    if (didHydrate.current) {
+      didHydrate.current = false;
+      return;
+    }
     if (!authLoading && userId) load();
   }, [authLoading, userId, load]);
 

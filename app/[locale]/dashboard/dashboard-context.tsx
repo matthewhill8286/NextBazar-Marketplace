@@ -1,18 +1,32 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { DashboardListing } from "@/lib/supabase/supabase.types";
+import type { SellerTier } from "@/lib/pricing-config";
+import type {
+  Category,
+  DashboardListing,
+  Location,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 
 type DashboardData = {
   listings: DashboardListing[];
   isDealer: boolean;
   isProSeller: boolean;
+  planTier: SellerTier;
+  categories: Category[];
+  subcategories: Subcategory[];
+  locations: Location[];
 };
 
 const DashboardContext = createContext<DashboardData>({
   listings: [],
   isDealer: false,
   isProSeller: false,
+  planTier: "starter",
+  categories: [],
+  subcategories: [],
+  locations: [],
 });
 
 export const DashboardProvider = DashboardContext.Provider;

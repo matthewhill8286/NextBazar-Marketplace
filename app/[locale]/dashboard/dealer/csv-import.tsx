@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useReferenceData } from "@/lib/hooks/use-reference-data";
+import { useDashboardData } from "../dashboard-context";
 
 // ─── Column definitions ────────────────────────────────────────────────────
 
@@ -516,12 +516,7 @@ type Props = {
 
 export default function CSVImport({ onClose, shopType = "general" }: Props) {
   const router = useRouter();
-  const {
-    categories,
-    subcategories,
-    locations,
-    loading: refLoading,
-  } = useReferenceData();
+  const { categories, subcategories, locations } = useDashboardData();
 
   const fileRef = useRef<HTMLInputElement>(null);
   const [phase, setPhase] = useState<Phase>("upload");

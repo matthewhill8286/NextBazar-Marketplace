@@ -192,11 +192,11 @@ export default function ImageGallery({
     return (
       <>
         <div className="relative rounded-xl overflow-hidden">
-          <div className="relative aspect-[16/9] max-h-[520px]">
+          <div className="relative aspect-video max-h-130">
             <MediaCell
               item={media[0]}
               idx={0}
-              className="absolute inset-0 rounded-xl"
+              className="absolute inset-0 rounded-xl h-full w-full"
               sizes="(max-width: 1280px) 100vw, 1280px"
               priority
             />

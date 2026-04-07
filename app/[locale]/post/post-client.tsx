@@ -5,11 +5,15 @@ import StripeCheckoutModal from "@/app/components/stripe-checkout-modal";
 import { ErrorBanner } from "@/app/components/ui";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { useReferenceData } from "@/lib/hooks/use-reference-data";
 import { getPlanLimits } from "@/lib/plan-limits";
 import type { SellerTier } from "@/lib/pricing-config";
 import type { ClientPricing } from "@/lib/stripe";
 import { createClient } from "@/lib/supabase/client";
+import type {
+  Category,
+  Location,
+  Subcategory,
+} from "@/lib/supabase/supabase.types";
 import PostStep1 from "./post-step-1";
 import PostStep2 from "./post-step-2";
 import PostStep3 from "./post-step-3";
@@ -22,11 +26,20 @@ import type {
 } from "./post-types";
 import { EMPTY_VEHICLE_ATTRS, VEHICLES_CATEGORY_SLUG } from "./post-types";
 
-export default function PostClient({ pricing }: { pricing: ClientPricing }) {
+export default function PostClient({
+  pricing,
+  categories,
+  subcategories,
+  locations,
+}: {
+  pricing: ClientPricing;
+  categories: Category[];
+  subcategories: Subcategory[];
+  locations: Location[];
+}) {
   const router = useRouter();
   const t = useTranslations("post");
   const supabase = createClient();
-  const { categories, subcategories, locations } = useReferenceData();
 
   const [step, setStep] = useState(1);
 
@@ -429,6 +442,7 @@ export default function PostClient({ pricing }: { pricing: ClientPricing }) {
           isVehicle={isVehicle}
           vehicleAttrs={vehicleAttrs}
           pricing={pricing}
+          canUploadVideo={limits.videoTours}
           onSetPackageAction={setSelectedPackage}
           onSetVideoAction={setVideo}
           onBackAction={() => goToStep(2)}

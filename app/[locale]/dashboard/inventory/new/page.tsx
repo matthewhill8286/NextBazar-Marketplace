@@ -17,9 +17,10 @@ import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useReferenceData } from "@/lib/hooks/use-reference-data";
+import { formatPriceInput, parsePriceInput } from "@/lib/format-helpers";
 import { getPlanLimits } from "@/lib/plan-limits";
 import { createClient } from "@/lib/supabase/client";
+import { useDashboardData } from "../../dashboard-context";
 import { useShopCMS } from "../../shop-context";
 
 // ─── Vehicle constants ──────────────────────────────────────────────────────
@@ -99,12 +100,7 @@ export default function NewInventoryPage() {
   const router = useRouter();
   const supabase = createClient();
   const { userId, shop, refreshListings } = useShopCMS();
-  const {
-    categories,
-    subcategories,
-    locations,
-    loading: refLoading,
-  } = useReferenceData();
+  const { categories, subcategories, locations } = useDashboardData();
   const limits = getPlanLimits(shop?.plan_tier || "starter");
 
   // ── Form state ────────────────────────────────────────────────────────────
@@ -373,14 +369,6 @@ export default function NewInventoryPage() {
     router.push("/dashboard/inventory");
   }
 
-  if (refLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-5 h-5 animate-spin text-[#8a8280]" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -439,20 +427,29 @@ export default function NewInventoryPage() {
           </div>
         )}
 
-        {/* ── Video ────────────────────────────────────────────────────────── */}
-        <div className="border-2 border-[#e8e6e3] bg-[#f0eeeb]/50 p-5 space-y-3">
-          <div>
-            <p className="font-semibold text-[#1a1a1a] text-sm">Video Tour</p>
-            <p className="text-xs text-[#6b6560] mt-0.5">
-              Add a short video walkthrough of your item
-            </p>
+        {/* ── Video ─ Business tier only ───────────────────────────────────── */}
+        {limits.videoTours && (
+          <div className="border-2 border-[#e8e6e3] bg-[#f0eeeb]/50 p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-[#1a1a1a] text-sm">
+                  Video Tour
+                </p>
+                <p className="text-xs text-[#6b6560] mt-0.5">
+                  Add a short video walkthrough of your item
+                </p>
+              </div>
+              <span className="text-[10px] font-bold bg-[#8E7A6B] text-white px-2 py-0.5 rounded-full">
+                BUSINESS
+              </span>
+            </div>
+            <VideoUpload
+              userId={userId}
+              video={video}
+              onChangeAction={setVideo}
+            />
           </div>
-          <VideoUpload
-            userId={userId}
-            video={video}
-            onChangeAction={setVideo}
-          />
-        </div>
+        )}
 
         {/* ── Title ────────────────────────────────────────────────────────── */}
         <div>
@@ -770,11 +767,14 @@ export default function NewInventoryPage() {
                 &euro;
               </span>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 className="w-full pl-8 pr-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/10 outline-none text-sm"
                 placeholder="0.00"
-                value={formData.price}
-                onChange={(e) => update("price", e.target.value)}
+                value={formatPriceInput(formData.price)}
+                onChange={(e) =>
+                  update("price", parsePriceInput(e.target.value))
+                }
               />
             </div>
           </div>
