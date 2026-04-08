@@ -1,91 +1,32 @@
 "use client";
 
-import { Bell, Heart, MessageCircle, Plus, Search, Store } from "lucide-react";
+import { Plus, Search, Store } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
-import { useCurrentUser } from "@/lib/hooks/use-current-user";
-import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
-import { useUserShop } from "@/lib/hooks/use-user-shop";
-import { useSaved } from "@/lib/saved-context";
-import { createClient } from "@/lib/supabase/client";
 import GlobalSearch from "./global-search";
 import type { CategoryChip, TrendingItem } from "./global-search";
-import {
-  MessagesPreview,
-  NavPreviewWrapper,
-  NotificationsPreview,
-  SavedPreview,
-} from "./nav-previews";
+import NavBadges from "./nav-badges";
 import UserMenu from "./user-menu";
 
 export default function Navbar({
   categories,
   trending,
+  badgesSlot,
 }: {
   categories?: CategoryChip[];
   trending?: TrendingItem[];
+  /**
+   * Optional server-rendered badges node. When provided, the layout has
+   * already SSR'd initial unread counts so there are no extra client-side
+   * round trips on first paint. When omitted we fall back to the
+   * client-only <NavBadges /> which will lazily fetch.
+   */
+  badgesSlot?: ReactNode;
 } = {}) {
-  const supabase = createClient();
-  const { userId } = useCurrentUser();
-  const { hasShop } = useUserShop();
-  const { count: savedCount } = useSaved();
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [notifCount, setNotifCount] = useState(0);
   const t = useTranslations("nav");
-
-  const loadCounts = useCallback(async () => {
-    if (!userId) return;
-    const [{ count: msgCount }, { count: nCount }] = await Promise.all([
-      supabase
-        .from("messages")
-        .select("id", { count: "exact", head: true })
-        .neq("sender_id", userId)
-        .is("read_at", null),
-      supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userId)
-        .eq("read", false),
-    ]);
-    setUnreadCount(msgCount || 0);
-    setNotifCount(nCount || 0);
-  }, [userId]);
-
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const debouncedLoadCounts = useCallback(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => loadCounts(), 500);
-  }, [loadCounts]);
-
-  useEffect(() => {
-    loadCounts();
-  }, [loadCounts]);
-
-  useRealtimeTable({
-    channelName: "nav-msg-insert",
-    table: "messages",
-    event: "INSERT",
-    onPayload: debouncedLoadCounts,
-    enabled: !!userId,
-  });
-  useRealtimeTable({
-    channelName: "nav-msg-update",
-    table: "messages",
-    event: "UPDATE",
-    onPayload: debouncedLoadCounts,
-    enabled: !!userId,
-  });
-  useRealtimeTable({
-    channelName: `nav-notifs-${userId ?? "anon"}`,
-    table: "notifications",
-    event: "*",
-    filter: userId ? `user_id=eq.${userId}` : undefined,
-    onPayload: debouncedLoadCounts,
-    enabled: !!userId,
-  });
 
   return (
     <nav
@@ -138,41 +79,7 @@ export default function Navbar({
             <Search className="w-5 h-5" aria-hidden="true" />
           </Link>
 
-          {userId && (
-            <NavPreviewWrapper
-              href="/dashboard/messages"
-              badge={unreadCount}
-              badgeColor="bg-[#8E7A6B]"
-              label="Messages"
-              icon={<MessageCircle className="w-4 h-4" aria-hidden="true" />}
-            >
-              {() => <MessagesPreview shopMode={hasShop} />}
-            </NavPreviewWrapper>
-          )}
-
-          {userId && (
-            <NavPreviewWrapper
-              href="/dashboard/saved"
-              badge={savedCount}
-              badgeColor="bg-[#8E7A6B]"
-              label="Saved listings"
-              icon={<Heart className="w-4 h-4" aria-hidden="true" />}
-            >
-              {() => <SavedPreview />}
-            </NavPreviewWrapper>
-          )}
-
-          {userId && (
-            <NavPreviewWrapper
-              href="/dashboard/notifications"
-              badge={notifCount}
-              badgeColor="bg-[#8E7A6B]"
-              label="Notifications"
-              icon={<Bell className="w-4 h-4" aria-hidden="true" />}
-            >
-              {() => <NotificationsPreview shopMode={hasShop} />}
-            </NavPreviewWrapper>
-          )}
+          {badgesSlot ?? <NavBadges />}
 
           {/* Post-Ad CTA */}
           <Link

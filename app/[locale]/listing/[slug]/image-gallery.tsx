@@ -9,6 +9,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type GalleryImage = {
@@ -33,6 +34,7 @@ export default function ImageGallery({
   listingStatus?: string | null;
   offerStatus?: string | null;
 }) {
+  const t = useTranslations("listing.gallery");
   const media: MediaItem[] = [
     ...(videoUrl ? [{ kind: "video" as const, url: videoUrl }] : []),
     ...images.map((img) => ({ kind: "image" as const, url: img.url })),
@@ -85,7 +87,7 @@ export default function ImageGallery({
       <div className="relative aspect-video max-h-[520px] bg-[#f0eeeb] overflow-hidden flex flex-col items-center justify-center gap-3 rounded-xl">
         <Camera className="w-12 h-12 text-[#8a8280]" />
         <span className="text-sm text-[#8a8280] font-medium">
-          No photos available
+          {t("noPhotos")}
         </span>
       </div>
     );
@@ -104,7 +106,7 @@ export default function ImageGallery({
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
               <div className="border-4 border-white/80 px-8 py-3 rotate-[-12deg] select-none">
                 <span className="text-white font-black text-4xl uppercase tracking-[0.25em] drop-shadow-sm">
-                  Sold
+                  {t("sold")}
                 </span>
               </div>
             </div>
@@ -114,17 +116,17 @@ export default function ImageGallery({
           <div className="absolute top-3 left-3 pointer-events-none z-10">
             {offerStatus === "accepted" && (
               <span className="flex items-center gap-1.5 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                ✓ Offer Accepted
+                {t("offerAccepted")}
               </span>
             )}
             {offerStatus === "countered" && (
               <span className="flex items-center gap-1.5 bg-[#8E7A6B]/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                ↔ Counter Offer
+                {t("counterOffer")}
               </span>
             )}
             {offerStatus === "pending" && (
               <span className="flex items-center gap-1.5 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                ⏳ Offer Pending
+                {t("offerPending")}
               </span>
             )}
           </div>
@@ -162,7 +164,7 @@ export default function ImageGallery({
                 <Play className="w-6 h-6 text-white fill-white ml-0.5" />
               </div>
               <span className="text-white/80 text-xs font-medium">
-                Video Tour
+                {t("videoTour")}
               </span>
             </div>
           </div>
@@ -408,7 +410,7 @@ export default function ImageGallery({
                 className="absolute inset-0 bg-black/40 flex items-center justify-center z-10 hover:bg-black/50 transition-colors cursor-pointer"
               >
                 <span className="text-white font-semibold text-sm">
-                  +{totalExtra} more
+                  {t("moreCount", { count: totalExtra })}
                 </span>
               </button>
             )}
@@ -426,7 +428,7 @@ export default function ImageGallery({
             className="absolute bottom-4 right-4 z-10 flex items-center gap-2 bg-white/95 backdrop-blur-sm text-[#1a1a1a] text-xs font-semibold pl-3 pr-4 py-2 rounded-lg shadow-md hover:bg-white transition-colors"
           >
             <Grid2x2 className="w-4 h-4" />
-            Show all photos
+            {t("showAllPhotos")}
           </button>
         )}
       </div>

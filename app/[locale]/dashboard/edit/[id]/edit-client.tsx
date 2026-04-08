@@ -1,13 +1,14 @@
 "use client";
 
 import { ArrowLeft, Loader2, Package, PenLine, Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { UploadedImage } from "@/app/components/image-upload";
 import ImageUpload from "@/app/components/image-upload";
 import type { UploadedVideo } from "@/app/components/video-upload";
 import VideoUpload from "@/app/components/video-upload";
-import { revalidateListings } from "@/app/actions/revalidate";
+import { revalidateListingEdit } from "@/app/actions/revalidate";
 import { Link, useRouter } from "@/i18n/navigation";
 import { formatPriceInput, parsePriceInput } from "@/lib/format-helpers";
 import { getPlanLimits } from "@/lib/plan-limits";
@@ -16,6 +17,7 @@ import { useDashboardData } from "../../dashboard-context";
 
 type ListingData = {
   id: string;
+  slug: string;
   title: string;
   description: string | null;
   price: number | null;
@@ -42,6 +44,8 @@ export default function EditClient({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const tErrors = useTranslations("common.errors");
+  const tEdit = useTranslations("dashboard.edit");
   const { categories, locations, planTier } = useDashboardData();
   const limits = getPlanLimits(planTier);
 
@@ -125,7 +129,7 @@ export default function EditClient({
     const uploadedUrls = images.filter((img) => img.url).map((img) => img.url!);
 
     if (video?.uploading) {
-      toast.error("Please wait for your video to finish uploading.");
+      toast.error(tErrors("videoUploading"));
       setLoading(false);
       return;
     }
@@ -185,12 +189,13 @@ export default function EditClient({
       );
     }
 
-    // Bust the cached listing detail / feeds so new images & fields show
-    // immediately on the public listing page (otherwise the "use cache"
-    // tagged queries can serve stale data for several refreshes).
-    await revalidateListings();
+    // Bust the cached listing detail + collection feeds so new images and
+    // fields show immediately on the public listing page and on cards.
+    // Targeted: only this one listing's detail is invalidated, other listing
+    // detail pages keep their cache entries.
+    await revalidateListingEdit(listing.slug);
 
-    toast.success("Listing updated successfully!");
+    toast.success(tEdit("toastUpdated"));
     setLoading(false);
     router.push(backHref);
     router.refresh();
@@ -205,7 +210,7 @@ export default function EditClient({
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-2xl font-bold text-[#1a1a1a]">Edit Listing</h1>
+        <h1 className="text-2xl font-bold text-[#1a1a1a]">{tEdit("title")}</h1>
       </div>
 
       <div className="bg-white border border-[#e8e6e3] p-6 space-y-6">

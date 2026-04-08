@@ -226,7 +226,17 @@
     "vehicleDoors": "Doors",
     "vehicleDrive": "Drive",
     "vehicleOwners": "Owners",
-    "vehicleServiceHistory": "Service History"
+    "vehicleServiceHistory": "Service History",
+    "gallery": {
+      "noPhotos": "No photos available",
+      "sold": "Sold",
+      "offerAccepted": "✓ Offer Accepted",
+      "counterOffer": "↔ Counter Offer",
+      "offerPending": "⏳ Offer Pending",
+      "videoTour": "Video Tour",
+      "showAllPhotos": "Show all photos",
+      "moreCount": "+{count} more"
+    }
   },
   "offer": {
     "title": "Make an Offer",
@@ -370,6 +380,30 @@
       "title": "Dashboard error",
       "desc": "We encountered an issue loading your dashboard. Please try again.",
       "retry": "Try Again"
+    },
+    "inventory": {
+      "title": "Add Inventory",
+      "subtitle": "Create a new listing for your shop",
+      "publishButton": "Publish listing",
+      "saveDraftButton": "Save as draft",
+      "saving": "Saving…",
+      "analyzing": "Analyzing your photo…",
+      "autofillButton": "Auto-fill details from photo",
+      "autofillSuccess": "AI filled in details — review and adjust as needed",
+      "toastAutofilled": "AI auto-filled your listing details!",
+      "errorAutofillFailed": "AI autofill failed. Try again.",
+      "errorUploadPhotoFirst": "Upload a photo first so AI can analyze it.",
+      "errorAddTitleForPricing": "Add a title first so AI can suggest a price.",
+      "errorPricingFailed": "AI pricing failed. Try again.",
+      "toastSaved": "Listing saved as draft",
+      "toastActive": "Listing is now active!",
+      "videoTourLabel": "Video Tour",
+      "videoTourHint": "Add a short video walkthrough of your item",
+      "businessBadge": "BUSINESS"
+    },
+    "edit": {
+      "toastUpdated": "Listing updated successfully!",
+      "title": "Edit Listing"
     }
   },
   "auth": {
@@ -787,7 +821,16 @@
     "enterToSearch": "Enter",
     "language": "Language",
     "switchLanguage": "Switch language",
-    "home": "Home"
+    "home": "Home",
+    "errors": {
+      "imagesUploading": "Please wait for all images to finish uploading.",
+      "videoUploading": "Please wait for your video to finish uploading.",
+      "titleRequired": "Please enter a title.",
+      "categoryRequired": "Please select a category.",
+      "subcategoryRequired": "Please select a subcategory.",
+      "noDisplayName": "Please add a display name before posting. Go to Dashboard → Settings to set one up.",
+      "listingLimitReached": "You've reached your limit of {count} active listings on the {tier} plan. Upgrade to list more."
+    }
   },
   "makeOffer": {
     "title": "Make an Offer",

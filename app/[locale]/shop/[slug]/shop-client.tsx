@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeft,
   Calendar,
   Check,
   Facebook,
@@ -18,6 +19,7 @@ import {
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
+import { Link } from "@/i18n/navigation";
 import type { Tables } from "@/lib/supabase/database.types";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
@@ -187,6 +189,16 @@ export default function ShopClient({
             </div>
           </div>
         )}
+
+        {/* Back to Shops */}
+        <Link
+          href="/shops"
+          prefetch={false}
+          className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm text-[#1a1a1a] text-sm font-medium hover:bg-white transition-all shadow-sm"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Shops
+        </Link>
 
         {/* Share button */}
         <button

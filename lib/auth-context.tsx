@@ -48,14 +48,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const supabase = createClient();
+    let cancelled = false;
 
-    // Single initial getUser() call for the entire app
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUserId(user?.id ?? null);
+    // Read the cached session synchronously from local storage / cookies first.
+    // This avoids a network round-trip to /auth/v1/user on first paint, which
+    // was previously gating every downstream user-scoped fetch (UserMenu,
+    // useUserShop, NavBadges) and made the navbar feel like it blocked the UI.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
+      setUserId(session?.user?.id ?? null);
       setLoading(false);
     });
 
-    // React to log in / logout / token refresh
+    // React to log in / logout / token refresh. onAuthStateChange also fires
+    // an INITIAL_SESSION event right after subscription, which doubles as the
+    // background "verify" pass for the cached session above.
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -64,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
+      cancelled = true;
       subscription.unsubscribe();
     };
   }, []);
