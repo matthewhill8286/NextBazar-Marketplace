@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import ListingCard from "@/app/components/listing-card";
-import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import type { Tables } from "@/lib/supabase/database.types";
 import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
@@ -84,9 +84,30 @@ export default function ShopClient({
   listings,
   profile,
 }: ShopClientProps) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortOption>("newest");
   const [copied, setCopied] = useState(false);
+
+  // "Back" should return the user to whichever page sent them here
+  // (search results, a category page, the shops index, etc.) rather than
+  // hard-coding /shops. Falls back to /shops on a fresh load with no
+  // history (e.g. someone landed on the shop via a shared link).
+  function handleBack() {
+    if (
+      typeof window !== "undefined" &&
+      window.history.length > 1 &&
+      // document.referrer is empty when the previous entry is from another
+      // origin or a fresh tab — in that case router.back() would leave the
+      // app, so prefer the explicit fallback.
+      document.referrer &&
+      new URL(document.referrer).origin === window.location.origin
+    ) {
+      router.back();
+      return;
+    }
+    router.push("/shops");
+  }
 
   const planTier = (shop.plan_tier as "starter" | "pro" | "business") || "pro";
   const isBusiness = planTier === "business";
@@ -190,15 +211,15 @@ export default function ShopClient({
           </div>
         )}
 
-        {/* Back to Shops */}
-        <Link
-          href="/shops"
-          prefetch={false}
+        {/* Back — returns to wherever the user came from */}
+        <button
+          type="button"
+          onClick={handleBack}
           className="absolute top-4 left-4 inline-flex items-center gap-2 px-3 py-2 bg-white/90 backdrop-blur-sm text-[#1a1a1a] text-sm font-medium hover:bg-white transition-all shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Shops
-        </Link>
+          Back
+        </button>
 
         {/* Share button */}
         <button
