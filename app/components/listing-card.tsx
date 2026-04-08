@@ -92,6 +92,11 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
   return (
     <Link
       href={`/listing/${listing.slug}`}
+      // Listing grids typically render 12–24 cards. Default prefetch would
+      // fire an RSC payload request for every card on mount/hover, hammering
+      // the server with mostly-unused payloads. Opt out — the detail page is
+      // cached with `getListingPageDataCached` so actual clicks are fast.
+      prefetch={false}
       className="group relative bg-white border border-[#e8e6e3] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-black/8 hover:-translate-y-1 block"
       style={cardStyle}
     >

@@ -114,24 +114,29 @@ export async function proxy(request: NextRequest) {
       url.searchParams.set("redirect", pathname);
       return NextResponse.redirect(url);
     }
-  } else if (hasSession) {
-    // For public routes, still refresh the session cookie (non-blocking for
-    // the page render since middleware runs before the page), but only if
-    // there's already a session cookie present.
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) {
-      supabaseResponse.headers.set("x-user-id", user.id);
-      request.headers.set("x-user-id", user.id);
-    }
   }
+
+  // NOTE: we intentionally do NOT call supabase.auth.getUser() on public
+  // routes, even when a session cookie is present. That call was a blocking
+  // Supabase Auth API round-trip on every navigation for signed-in users
+  // browsing public pages (listings, category, home), and the result was
+  // only used to stamp an x-user-id header that public pages don't read.
+  // Server components that actually need the user still call createClient()
+  // themselves, which performs its own session handling. Protected routes
+  // and authed API handlers are unaffected — they hit the needsAuth branch.
 
   return supabaseResponse;
 }
 
 export const config = {
+  // Matcher excludes asset and metadata paths from proxy invocation:
+  //   - _next/static, _next/image   → Next.js asset pipeline
+  //   - favicon.ico, manifest       → root metadata files
+  //   - *.svg/png/jpg/jpeg/gif/webp → raster + vector images
+  //   - *.woff/woff2/ttf/otf/eot    → font files
+  //   - *.css/js/map                → compiled asset artefacts
+  //   - *.xml/txt/json              → robots, sitemap, manifest variants
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|manifest\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manifest\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|otf|eot|css|js|map|xml|txt|json)$).*)",
   ],
 };

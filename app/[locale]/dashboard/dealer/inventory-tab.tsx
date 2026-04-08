@@ -1092,11 +1092,6 @@ export default function InventoryTab({
                   </td>
                   <td className="px-3 py-3 text-right whitespace-nowrap">
                     <div className="inline-flex items-center gap-1.5">
-                      {l.is_promoted && (
-                        <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-amber-600 bg-amber-50 px-1.5 py-1">
-                          <Sparkles className="w-2.5 h-2.5" /> BOOSTED
-                        </span>
-                      )}
                       <Link
                         href={`${editBaseHref}/${l.id}`}
                         className="p-1.5 text-[#8E7A6B] hover:text-[#7A6657] hover:bg-[#f0eeeb] transition-colors"

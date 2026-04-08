@@ -112,12 +112,29 @@ export async function getPricingMap(): Promise<Record<string, PricingRow>> {
   return Object.fromEntries(rows.map((r) => [r.key, r]));
 }
 
+// ─── Listing cache tag strategy ──────────────────────────────────────────────
+//
+// We use two tiers of cache tags so that a single listing edit doesn't nuke
+// every homepage / category / related cache entry:
+//
+//   - "listings:feed"      → all COLLECTION queries (featured / recent /
+//                            trending / related / counts / popular / category
+//                            listings / search-trending). Busted when a
+//                            listing is created, deleted, or changes status /
+//                            price / title (things that affect cards).
+//   - "listing:${slug}"    → a single DETAIL query. Busted when that one
+//                            listing's fields change.
+//
+// Legacy revalidation callers that bust the generic "listings" tag still
+// work because every query below also carries that tag as a safety net —
+// but the new targeted tags let us invalidate precisely.
+
 // ─── Cached home-page listing data (revalidate: 60 s) ────────────────────────
 
 export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { data } = await publicClient()
     .from("listings")
@@ -132,7 +149,7 @@ export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
 export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { data } = await publicClient()
     .from("listings")
@@ -146,7 +163,7 @@ export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
 export async function getActiveListingCountCached(): Promise<number> {
   "use cache";
   cacheLife("pricing"); // 5 min — count doesn't need to be real-time
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { count } = await publicClient()
     .from("listings")
@@ -158,7 +175,7 @@ export async function getActiveListingCountCached(): Promise<number> {
 export async function getTrendingListingsCached(): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { data } = await publicClient()
     .from("listings")
@@ -183,7 +200,7 @@ export type SearchTrendingItem = {
 export async function getSearchTrendingCached(): Promise<SearchTrendingItem[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { data } = await publicClient()
     .from("listings")
@@ -221,7 +238,7 @@ export async function getListingBySlugCached(
 ): Promise<ListingDetailRow | null> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", `listing:${slug}`);
 
   const { data } = await publicClient()
     .from("listings")
@@ -237,7 +254,7 @@ export async function getRelatedListingsCached(
 ): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { data } = await publicClient()
     .from("listings")
@@ -316,7 +333,7 @@ export async function getListingPageDataCached(
 ): Promise<ListingPageData> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings", "dealer_shops");
+  cacheTag("listings", `listing:${slug}`, "listings:feed", "dealer_shops");
 
   const sb = publicClient();
 
@@ -367,7 +384,7 @@ export async function getListingPageDataCached(
 export async function getPopularListingSlugs(limit = 50): Promise<string[]> {
   "use cache";
   cacheLife("reference");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const { data } = await publicClient()
     .from("listings")
@@ -404,7 +421,7 @@ export async function getCategoryListingsCached(
 ): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   let q = publicClient()
     .from("listings")
@@ -420,7 +437,7 @@ export async function getCategoryListingsCached(
 export async function getCategoryStatsCached(categoryId: string) {
   "use cache";
   cacheLife("pricing"); // 5 min
-  cacheTag("listings");
+  cacheTag("listings", "listings:feed");
 
   const now = new Date();
   const weekAgo = new Date(

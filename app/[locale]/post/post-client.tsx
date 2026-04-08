@@ -39,6 +39,7 @@ export default function PostClient({
 }) {
   const router = useRouter();
   const t = useTranslations("post");
+  const tErrors = useTranslations("common.errors");
   const supabase = createClient();
 
   const [step, setStep] = useState(1);
@@ -256,9 +257,7 @@ export default function PostClient({
       .single();
 
     if (!profile?.display_name) {
-      setError(
-        "Please add a display name before posting. Go to Dashboard → Settings to set one up.",
-      );
+      setError(tErrors("noDisplayName"));
       setLoading(false);
       return;
     }
@@ -272,7 +271,10 @@ export default function PostClient({
         .eq("status", "active");
       if ((count ?? 0) >= limits.activeListings) {
         setError(
-          `You've reached your limit of ${limits.activeListings} active listings on the ${limits.tierLabel} plan. Upgrade to list more.`,
+          tErrors("listingLimitReached", {
+            count: limits.activeListings,
+            tier: limits.tierLabel,
+          }),
         );
         setLoading(false);
         return;
@@ -281,12 +283,12 @@ export default function PostClient({
 
     const pendingUploads = images.some((img) => img.uploading);
     if (pendingUploads) {
-      setError("Please wait for all images to finish uploading.");
+      setError(tErrors("imagesUploading"));
       setLoading(false);
       return;
     }
     if (video?.uploading) {
-      setError("Please wait for your video to finish uploading.");
+      setError(tErrors("videoUploading"));
       setLoading(false);
       return;
     }

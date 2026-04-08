@@ -23,6 +23,7 @@ type WrapperProps = {
   badgeColor?: string;
   icon: ReactNode;
   label?: string;
+  prefetch?: boolean;
   children: (opts: { load: () => void }) => ReactNode;
 };
 
@@ -37,6 +38,7 @@ export function NavPreviewWrapper({
   badgeColor = "bg-red-500",
   icon,
   label,
+  prefetch = false,
   children,
 }: WrapperProps) {
   const [open, setOpen] = useState(false);
@@ -75,6 +77,7 @@ export function NavPreviewWrapper({
       <Link
         href={href}
         aria-label={label}
+        prefetch={prefetch}
         className="flex items-center gap-1.5 text-sm text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors relative"
       >
         {icon}

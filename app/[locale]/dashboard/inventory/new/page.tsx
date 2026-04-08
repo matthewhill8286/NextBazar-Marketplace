@@ -10,6 +10,7 @@ import {
   PenLine,
   Sparkles,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { UploadedImage } from "@/app/components/image-upload";
@@ -99,6 +100,8 @@ const LABEL =
 export default function NewInventoryPage() {
   const router = useRouter();
   const supabase = createClient();
+  const t = useTranslations("dashboard.inventory");
+  const tErrors = useTranslations("common.errors");
   const { userId, shop, refreshListings } = useShopCMS();
   const { categories, subcategories, locations } = useDashboardData();
   const limits = getPlanLimits(shop?.plan_tier || "starter");
@@ -158,7 +161,7 @@ export default function NewInventoryPage() {
   async function handleAiAutofill() {
     const firstUploaded = images.find((img) => img.url && !img.uploading);
     if (!firstUploaded?.url) {
-      toast.error("Upload a photo first so AI can analyze it.");
+      toast.error(t("errorUploadPhotoFirst"));
       return;
     }
 
@@ -202,10 +205,10 @@ export default function NewInventoryPage() {
       }
 
       setAutofillDone(true);
-      toast.success("AI auto-filled your listing details!");
+      toast.success(t("toastAutofilled"));
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "AI autofill failed. Try again.",
+        err instanceof Error ? err.message : t("errorAutofillFailed"),
       );
     }
     setAutofillLoading(false);
@@ -253,7 +256,7 @@ export default function NewInventoryPage() {
   // ── AI Pricing ────────────────────────────────────────────────────────────
   async function handleAiPricing() {
     if (!formData.title) {
-      toast.error("Add a title first so AI can suggest a price.");
+      toast.error(t("errorAddTitleForPricing"));
       return;
     }
     setPricingLoading(true);
@@ -277,7 +280,7 @@ export default function NewInventoryPage() {
       setPricingData(data);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "AI pricing failed. Try again.",
+        err instanceof Error ? err.message : t("errorPricingFailed"),
       );
     }
     setPricingLoading(false);
@@ -288,29 +291,29 @@ export default function NewInventoryPage() {
     setSaving(true);
 
     if (!formData.title.trim()) {
-      toast.error("Please enter a title.");
+      toast.error(tErrors("titleRequired"));
       setSaving(false);
       return;
     }
     if (!formData.category_id) {
-      toast.error("Please select a category.");
+      toast.error(tErrors("categoryRequired"));
       setSaving(false);
       return;
     }
     if (!formData.subcategory_id) {
-      toast.error("Please select a subcategory.");
+      toast.error(tErrors("subcategoryRequired"));
       setSaving(false);
       return;
     }
 
     const pendingUploads = images.some((img) => img.uploading);
     if (pendingUploads) {
-      toast.error("Please wait for all images to finish uploading.");
+      toast.error(tErrors("imagesUploading"));
       setSaving(false);
       return;
     }
     if (video?.uploading) {
-      toast.error("Please wait for your video to finish uploading.");
+      toast.error(tErrors("videoUploading"));
       setSaving(false);
       return;
     }
@@ -363,7 +366,7 @@ export default function NewInventoryPage() {
 
     await refreshListings();
     toast.success(
-      status === "draft" ? "Listing saved as draft" : "Listing is now active!",
+      status === "draft" ? t("toastSaved") : t("toastActive"),
     );
     setSaving(false);
     router.push("/dashboard/inventory");
@@ -380,10 +383,8 @@ export default function NewInventoryPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">Add Inventory</h1>
-          <p className="text-xs text-[#8a8280] mt-0.5">
-            Create a new listing for your shop
-          </p>
+          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
+          <p className="text-xs text-[#8a8280] mt-0.5">{t("subtitle")}</p>
         </div>
       </div>
 

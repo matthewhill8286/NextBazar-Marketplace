@@ -7,37 +7,24 @@ import {
   Settings,
   Store,
 } from "lucide-react";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useAuth } from "@/lib/auth-context";
 import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { useUserProfile } from "@/lib/hooks/use-user-profile";
 import { createClient } from "@/lib/supabase/client";
-
-type UserProfile = {
-  id: string;
-  email?: string;
-  display_name: string | null;
-  avatar_url?: string | null;
-  is_pro_seller: boolean;
-};
 
 export default function UserMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const tAuth = useTranslations("auth");
   const tDash = useTranslations("dashboard");
-  const {
-    userId: authUserId,
-    loading: authLoading,
-    profileVersion,
-  } = useAuth();
 
-  const [user, setUser] = useState<UserProfile | null>(null);
+  // SWR-backed: deduped + cached across the whole app, no per-mount fetch.
+  const { profile: user, loading } = useUserProfile();
+
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const currentLocale = pathname.startsWith("/el")
@@ -51,32 +38,6 @@ export default function UserMenu() {
     setOpen(false);
     router.push(strippedPath, { locale: newLocale as "en" | "el" | "ru" });
   }
-
-  // ── Load profile when auth user changes (no extra getUser() call) ────────
-  useEffect(() => {
-    if (authLoading) return;
-
-    if (!authUserId) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
-    const supabase = createClient();
-    supabase
-      .from("profiles")
-      .select("display_name, is_pro_seller")
-      .eq("id", authUserId)
-      .single()
-      .then(({ data: profile }) => {
-        setUser({
-          id: authUserId,
-          display_name: profile?.display_name || null,
-          is_pro_seller: profile?.is_pro_seller || false,
-        });
-        setLoading(false);
-      });
-  }, [authUserId, authLoading, profileVersion]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -111,13 +72,12 @@ export default function UserMenu() {
     );
   }
 
-  const initials =
-    user.display_name
-      ?.split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
+  const initials = user.display_name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="relative" ref={menuRef}>
@@ -142,7 +102,6 @@ export default function UserMenu() {
             <p className="text-sm font-semibold text-[#1a1a1a] truncate">
               {user.display_name || "User"}
             </p>
-            <p className="text-xs text-[#6b6560] truncate">{user.email}</p>
           </div>
 
           {/* Navigation */}
