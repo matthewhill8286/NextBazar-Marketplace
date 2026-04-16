@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { guardAi } from "@/lib/ai-guard";
 import { openai } from "@/lib/openai";
 
 const supabase = createClient(
@@ -9,12 +10,8 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "AI features are not configured. Please set OPENAI_API_KEY." },
-        { status: 503 },
-      );
-    }
+    const guard = await guardAi(request, { bucket: "pricing", max: 20 });
+    if (guard.response) return guard.response;
 
     const { title, categoryId, condition } = await request.json();
 

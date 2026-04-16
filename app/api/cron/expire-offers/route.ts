@@ -19,11 +19,22 @@ const supabaseAdmin = createClient(
  * Protect with CRON_SECRET so only Vercel can invoke it.
  */
 export async function GET(request: NextRequest) {
+  // Fail CLOSED in production — a missing CRON_SECRET must not mean "anyone
+  // can invoke this endpoint and rewrite offer state". Vercel Cron always
+  // sends the Authorization header when the project has CRON_SECRET set.
+  const cronSecret = process.env.CRON_SECRET;
+  const isProd = process.env.NODE_ENV === "production";
+  if (isProd && !cronSecret) {
+    console.error(
+      "CRON_SECRET is not set in production — refusing cron request.",
+    );
+    return NextResponse.json(
+      { error: "Cron endpoint not configured" },
+      { status: 500 },
+    );
+  }
   const authHeader = request.headers.get("authorization");
-  if (
-    process.env.CRON_SECRET &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

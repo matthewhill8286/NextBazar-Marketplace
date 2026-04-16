@@ -14,6 +14,33 @@ import type {
 // Re-export so existing server-side consumers keep working.
 export { CARD_SELECT };
 
+// ─── Tag taxonomy ────────────────────────────────────────────────────────────
+// Centralised helpers so every tag string is defined once.
+//
+//   listings:feed   – aggregate feed queries (home, trending, category, search)
+//   listing:<slug>  – per-listing detail page cache
+//   listings        – nuclear option, busts EVERY listing-tagged entry (revalidateAll only)
+//   shops           – all shop-related cache entries (unified; replaces former "dealer_shops")
+//   shop:<slug>     – per-shop detail page cache
+//
+export const tag = {
+  /** Aggregate listing feeds (featured, recent, trending, category, search). */
+  listingsFeed: "listings:feed" as const,
+  /** Per-listing detail cache. */
+  listing: (slug: string) => `listing:${slug}` as const,
+  /** Nuclear: busts every listing-tagged entry. Use sparingly (revalidateAll). */
+  listingsAll: "listings" as const,
+  /** All shop-related cache entries. */
+  shops: "shops" as const,
+  /** Per-shop detail cache. */
+  shop: (slug: string) => `shop:${slug}` as const,
+  /** Reference data tags — unchanged. */
+  categories: "categories" as const,
+  subcategories: "subcategories" as const,
+  locations: "locations" as const,
+  pricing: "pricing" as const,
+} as const;
+
 // ─── Public (no-auth) Supabase client ────────────────────────────────────────
 // Used inside cached functions so we don't pull in the cookies() dynamic API.
 function publicClient() {
@@ -117,7 +144,7 @@ export async function getPricingMap(): Promise<Record<string, PricingRow>> {
 export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -132,7 +159,7 @@ export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
 export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -146,7 +173,7 @@ export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
 export async function getActiveListingCountCached(): Promise<number> {
   "use cache";
   cacheLife("pricing"); // 5 min — count doesn't need to be real-time
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { count } = await publicClient()
     .from("listings")
@@ -158,7 +185,7 @@ export async function getActiveListingCountCached(): Promise<number> {
 export async function getTrendingListingsCached(): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -183,13 +210,11 @@ export type SearchTrendingItem = {
 export async function getSearchTrendingCached(): Promise<SearchTrendingItem[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
-    .select(
-      "id, title, slug, price, currency, primary_image_url, view_count",
-    )
+    .select("id, title, slug, price, currency, primary_image_url, view_count")
     .eq("status", "active")
     .order("view_count", { ascending: false })
     .limit(4);
@@ -221,7 +246,7 @@ export async function getListingBySlugCached(
 ): Promise<ListingDetailRow | null> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listing(slug), tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -237,7 +262,7 @@ export async function getRelatedListingsCached(
 ): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -257,7 +282,7 @@ export async function getShopAccentColorCached(
 ): Promise<string | null> {
   "use cache";
   cacheLife("listings");
-  cacheTag("dealer_shops");
+  cacheTag(tag.shops);
 
   const { data } = await publicClient()
     .from("dealer_shops")
@@ -287,7 +312,7 @@ export async function getSellerShopInfoCached(
 ): Promise<SellerShopInfo | null> {
   "use cache";
   cacheLife("listings");
-  cacheTag("dealer_shops");
+  cacheTag(tag.shops);
 
   const { data } = await publicClient()
     .from("dealer_shops")
@@ -316,7 +341,7 @@ export async function getListingPageDataCached(
 ): Promise<ListingPageData> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings", "dealer_shops");
+  cacheTag(tag.listing(slug), tag.shops, tag.listingsAll);
 
   const sb = publicClient();
 
@@ -367,7 +392,7 @@ export async function getListingPageDataCached(
 export async function getPopularListingSlugs(limit = 50): Promise<string[]> {
   "use cache";
   cacheLife("reference");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -404,7 +429,7 @@ export async function getCategoryListingsCached(
 ): Promise<ListingCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   let q = publicClient()
     .from("listings")
@@ -420,7 +445,7 @@ export async function getCategoryListingsCached(
 export async function getCategoryStatsCached(categoryId: string) {
   "use cache";
   cacheLife("pricing"); // 5 min
-  cacheTag("listings");
+  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const now = new Date();
   const weekAgo = new Date(
@@ -488,7 +513,7 @@ export type ShopCardRow = {
 export async function getActiveShopsCached(): Promise<ShopCardRow[]> {
   "use cache";
   cacheLife("listings");
-  cacheTag("shops", "listings");
+  cacheTag(tag.shops);
 
   const sb = publicClient();
 
@@ -539,17 +564,20 @@ export async function getActiveShopsCached(): Promise<ShopCardRow[]> {
   }));
 }
 
+/**
+ * Returns the top N shops by tier rank then listing count.
+ *
+ * NOT wrapped in "use cache" — the underlying `getActiveShopsCached()` is
+ * already cached. A second cache layer here would double the ISR entries
+ * with identical tags, wasting reads and writes on every revalidation.
+ * The in-memory sort + slice is cheap enough to run on every render.
+ */
 export async function getFeaturedShopsCached(
   limit = 4,
 ): Promise<ShopCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag("shops", "listings");
-
   const allShops = await getActiveShopsCached();
   const tierRank = { business: 0, pro: 1, starter: 2 } as const;
   const rank = (t: string) => tierRank[t as keyof typeof tierRank] ?? 2;
-  // Sort by tier (business first), then listing count desc, take top N
   return [...allShops]
     .sort(
       (a, b) =>
@@ -563,17 +591,20 @@ export async function getFeaturedShopsCached(
  * Fetch active shops that have at least one active listing in the given category.
  * Sorted by tier (business → pro → starter), then by listing count desc.
  */
+/**
+ * Active shops with at least one listing in the given category.
+ *
+ * NOT wrapped in "use cache" — delegates to `getActiveShopsCached()` which
+ * is already cached. The category-listing lookup is a cheap SELECT of user_ids
+ * and runs only on cache miss of the caller (typically a page-level cache).
+ */
 export async function getShopsByCategoryCached(
   categoryId: string,
 ): Promise<ShopCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag("shops", "listings");
-
   const sb = publicClient();
 
   // Get user_ids that have active listings in this category
-  const { data: categoryListings, error: listErr } = await sb
+  const { data: categoryListings } = await sb
     .from("listings")
     .select("user_id")
     .eq("category_id", categoryId)

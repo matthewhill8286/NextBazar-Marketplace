@@ -16,6 +16,7 @@ import { useDashboardData } from "../../dashboard-context";
 
 type ListingData = {
   id: string;
+  slug: string;
   title: string;
   description: string | null;
   price: number | null;
@@ -188,7 +189,7 @@ export default function EditClient({
     // Bust the cached listing detail / feeds so new images & fields show
     // immediately on the public listing page (otherwise the "use cache"
     // tagged queries can serve stale data for several refreshes).
-    await revalidateListings();
+    await revalidateListings(listing.slug);
 
     toast.success("Listing updated successfully!");
     setLoading(false);

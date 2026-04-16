@@ -57,13 +57,27 @@ beforeEach(() => {
   // By default, constructEvent returns the raw parsed event
   mockConstructEvent.mockImplementation((body: string) => JSON.parse(body));
 
-  // Default chain: from() → update()/upsert() → eq() resolves
+  // Default chain: from() → update()/upsert() → eq() → select() → single()
   mockFrom.mockImplementation(() => ({
     update: mockUpdate,
     upsert: mockUpsert,
   }));
   mockUpdate.mockReturnValue({ eq: mockEq });
-  mockEq.mockResolvedValue({ error: null });
+  mockEq.mockImplementation(() => ({
+    // Support both .select().single() (listing promotion) and plain resolve
+    select: vi.fn().mockReturnValue({
+      single: vi
+        .fn()
+        .mockResolvedValue({
+          error: null,
+          data: { slug: "test-listing" },
+        }),
+    }),
+    // Allow .eq() chaining for subscription lifecycle
+    eq: mockEq,
+    then: (resolve: (v: unknown) => void) =>
+      Promise.resolve({ error: null }).then(resolve),
+  }));
   mockUpsert.mockResolvedValue({ error: null });
 });
 

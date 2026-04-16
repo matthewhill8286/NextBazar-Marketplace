@@ -1,8 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { guardAi } from "@/lib/ai-guard";
 import { openai } from "@/lib/openai";
 
 export async function POST(request: NextRequest) {
   try {
+    const guard = await guardAi(request, {
+      bucket: "shop-description",
+      max: 15,
+    });
+    if (guard.response) return guard.response;
+
     const { shopName, currentDescription } = await request.json();
 
     if (!shopName) {

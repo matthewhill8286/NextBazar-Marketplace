@@ -1,9 +1,19 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { __resetRateLimit } from "@/lib/rate-limit";
 
 // ---------------------------------------------------------------------------
 // Mocks
 // ---------------------------------------------------------------------------
+
+const { mockRequireAuth, mockMaybeSingle, mockEq, mockSelect, mockFrom } =
+  vi.hoisted(() => ({
+    mockRequireAuth: vi.fn(),
+    mockMaybeSingle: vi.fn(),
+    mockEq: vi.fn(),
+    mockSelect: vi.fn(),
+    mockFrom: vi.fn(),
+  }));
 
 // Mock getPromotionPrices from lib/stripe (crypto route calls it for price data)
 vi.mock("@/lib/stripe", () => ({
@@ -25,6 +35,20 @@ vi.mock("@/lib/stripe", () => ({
   })),
 }));
 
+vi.mock("@/lib/auth/require-auth", () => ({
+  requireAuth: mockRequireAuth,
+  getUserId: vi.fn(async () => {
+    const r = await mockRequireAuth();
+    return r.userId ?? null;
+  }),
+}));
+
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: vi.fn(() => ({
+    from: mockFrom,
+  })),
+}));
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -36,6 +60,8 @@ function makeRequest(body: object): NextRequest {
     body: JSON.stringify(body),
   });
 }
+
+const USER_ID = "user-owner";
 
 const VALID_BODY = {
   listingId: "listing-1",
@@ -57,7 +83,20 @@ let originalFetch: typeof fetch;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  __resetRateLimit();
   originalFetch = global.fetch;
+
+  mockRequireAuth.mockResolvedValue({ userId: USER_ID });
+  mockMaybeSingle.mockResolvedValue({
+    data: { id: "listing-1", user_id: USER_ID },
+    error: null,
+  });
+  mockEq.mockReturnValue({ maybeSingle: mockMaybeSingle });
+  mockSelect.mockReturnValue({ eq: mockEq });
+  mockFrom.mockImplementation((table: string) => {
+    if (table === "listings") return { select: mockSelect };
+    return { select: vi.fn() };
+  });
 
   // Happy-path default: Coinbase returns 200 with a charge
   global.fetch = vi.fn().mockResolvedValue({
@@ -79,6 +118,34 @@ afterEach(() => {
 import { POST } from "@/app/api/checkout/crypto/route";
 
 describe("POST /api/checkout/crypto", () => {
+  // ── Auth gate ─────────────────────────────────────────────────────────────
+
+  it("returns 401 when the caller is not authenticated", async () => {
+    mockRequireAuth.mockResolvedValueOnce({
+      error: "Unauthorized",
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+      }),
+    });
+    const res = await POST(makeRequest(VALID_BODY));
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 404 when the listing does not exist", async () => {
+    mockMaybeSingle.mockResolvedValueOnce({ data: null, error: null });
+    const res = await POST(makeRequest(VALID_BODY));
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 403 when the listing belongs to a different user", async () => {
+    mockMaybeSingle.mockResolvedValueOnce({
+      data: { id: "listing-1", user_id: "someone-else" },
+      error: null,
+    });
+    const res = await POST(makeRequest(VALID_BODY));
+    expect(res.status).toBe(403);
+  });
+
   // ── Input validation ──────────────────────────────────────────────────────
 
   it("returns 400 when listingId is missing", async () => {
@@ -178,11 +245,18 @@ describe("POST /api/checkout/crypto", () => {
         promotionType: "urgent",
       }),
     );
+    // For this test, the ownership check uses the default listing-1 owner;
+    // but listingId in metadata must match what the caller sent.
+    mockMaybeSingle.mockResolvedValueOnce({
+      data: { id: "listing-42", user_id: USER_ID },
+      error: null,
+    });
     const [, options] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     const body = JSON.parse(options.body);
     expect(body.metadata.listing_id).toBe("listing-42");
     expect(body.metadata.promotion_type).toBe("urgent");
     expect(body.metadata.duration_days).toBe("3"); // urgent is 3 days
+    expect(body.metadata.initiated_by).toBe(USER_ID);
   });
 
   it("sends correct EUR amount for featured promotion (€4.99)", async () => {

@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { tag } from "@/lib/supabase/queries";
 
 // Use service role for webhook — bypasses RLS
 const supabaseAdmin = createClient(
@@ -75,13 +76,22 @@ export async function POST(request: NextRequest) {
         updateData.boosted_until = promotedUntil.toISOString();
       }
 
-      const { error } = await supabaseAdmin
+      const { error, data: updatedListing } = await supabaseAdmin
         .from("listings")
         .update(updateData)
-        .eq("id", listingId);
+        .eq("id", listingId)
+        .select("slug")
+        .single();
 
       if (error) {
         console.error("Failed to activate promotion:", error);
+      } else {
+        // Bust the specific listing detail + all feed caches so the promoted
+        // listing appears as featured/urgent immediately.
+        if (updatedListing?.slug) {
+          revalidateTag(tag.listing(updatedListing.slug), "max");
+        }
+        revalidateTag(tag.listingsFeed, "max");
       }
     }
 
@@ -130,7 +140,7 @@ export async function POST(request: NextRequest) {
           console.error("Failed to update dealer profile:", profileError);
 
         // Bust public shop page cache
-        revalidateTag("dealer_shops", "max");
+        revalidateTag(tag.shops, "max");
       }
     }
   }
@@ -184,7 +194,7 @@ export async function POST(request: NextRequest) {
         .eq("id", userId);
 
       // Bust public shop page cache
-      revalidateTag("dealer_shops", "max");
+      revalidateTag(tag.shops, "max");
     }
   }
 

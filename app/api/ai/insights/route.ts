@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { guardAi } from "@/lib/ai-guard";
 import { openai } from "@/lib/openai";
 
 const supabase = createClient(
@@ -9,6 +10,9 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
+    const guard = await guardAi(request, { bucket: "insights", max: 30 });
+    if (guard.response) return guard.response;
+
     const { listingId } = await request.json();
     if (!listingId) {
       return NextResponse.json({ error: "Missing listingId" }, { status: 400 });

@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { guardAi } from "@/lib/ai-guard";
 import { openai } from "@/lib/openai";
 
 const supabase = createClient(
@@ -9,9 +10,20 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
+    // AI search is buyer-facing, so we allow a higher per-user budget than
+    // the seller-facing authoring tools.
+    const guard = await guardAi(request, { bucket: "search", max: 60 });
+    if (guard.response) return guard.response;
+
     const { query } = await request.json();
     if (!query) {
       return NextResponse.json({ error: "Missing query" }, { status: 400 });
+    }
+    if (typeof query !== "string" || query.length > 500) {
+      return NextResponse.json(
+        { error: "Query must be a string under 500 chars" },
+        { status: 400 },
+      );
     }
 
     // Fetch categories and locations for context

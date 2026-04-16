@@ -1,12 +1,16 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/ai/describe/route";
+import { __resetRateLimit } from "@/lib/rate-limit";
 
 // ---------------------------------------------------------------------------
 // Mock OpenAI — use vi.hoisted so the variable exists when vi.mock factory runs
 // ---------------------------------------------------------------------------
 
-const { mockCreate } = vi.hoisted(() => ({ mockCreate: vi.fn() }));
+const { mockCreate, mockGetUserId } = vi.hoisted(() => ({
+  mockCreate: vi.fn(),
+  mockGetUserId: vi.fn(async () => "user-123"),
+}));
 
 vi.mock("@/lib/openai", () => ({
   openai: {
@@ -16,6 +20,12 @@ vi.mock("@/lib/openai", () => ({
       },
     },
   },
+}));
+
+// AI guard reads the user id from this helper — stub it to a fixed uid.
+vi.mock("@/lib/auth/require-auth", () => ({
+  getUserId: mockGetUserId,
+  requireAuth: vi.fn(async () => ({ userId: await mockGetUserId() })),
 }));
 
 // ---------------------------------------------------------------------------
@@ -30,8 +40,10 @@ function makeRequest(body: object): NextRequest {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  __resetRateLimit();
   // The route early-returns 503 if OPENAI_API_KEY is not set
   process.env.OPENAI_API_KEY = "sk-test-key";
+  mockGetUserId.mockResolvedValue("user-123");
   mockCreate.mockResolvedValue({
     choices: [{ message: { content: "A great listing description." } }],
   });

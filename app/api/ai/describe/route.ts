@@ -1,15 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { guardAi } from "@/lib/ai-guard";
 import { prepareImageUrlForVision } from "@/lib/ai-image-url";
 import { openai } from "@/lib/openai";
 
 export async function POST(request: NextRequest) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json(
-        { error: "AI features are not configured. Please set OPENAI_API_KEY." },
-        { status: 503 },
-      );
-    }
+    const guard = await guardAi(request, { bucket: "describe", max: 30 });
+    if (guard.response) return guard.response;
 
     const { title, category, condition, price, imageUrl } =
       await request.json();

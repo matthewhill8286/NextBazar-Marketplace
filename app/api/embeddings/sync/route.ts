@@ -6,6 +6,12 @@ export const maxDuration = 60;
 
 const SYNC_SECRET = process.env.SYNC_SECRET;
 
+// In non-production environments (local dev, preview) the secret may be
+// intentionally absent. In production the secret MUST be set; we refuse
+// all traffic otherwise so we never serve an unauthenticated endpoint
+// that can rewrite listing embeddings at scale.
+const IS_PROD = process.env.NODE_ENV === "production";
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,6 +34,15 @@ function getSupabase() {
  *    Generates or removes the embedding for the affected listing.
  */
 export async function POST(req: NextRequest) {
+  // Fail CLOSED in production: a missing secret must not equal "open".
+  if (IS_PROD && !SYNC_SECRET) {
+    console.error("SYNC_SECRET is not set in production — refusing request.");
+    return NextResponse.json(
+      { error: "Sync endpoint not configured" },
+      { status: 500 },
+    );
+  }
+
   const authHeader = req.headers.get("x-sync-secret");
   if (SYNC_SECRET && authHeader !== SYNC_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -13,21 +13,35 @@ export async function POST(request: NextRequest) {
   const body = await request.text();
   const sig = request.headers.get("x-cc-webhook-signature");
 
-  // Verify Coinbase Commerce webhook signature
-  if (process.env.COINBASE_COMMERCE_WEBHOOK_SECRET) {
-    if (!sig) {
-      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
-    }
-    const hmac = createHmac(
-      "sha256",
-      process.env.COINBASE_COMMERCE_WEBHOOK_SECRET,
-    )
-      .update(body)
-      .digest("hex");
-    if (hmac !== sig) {
-      console.error("Coinbase webhook signature mismatch");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-    }
+  // Verify Coinbase Commerce webhook signature. Fail CLOSED: if the secret
+  // is not configured the endpoint refuses all traffic rather than silently
+  // accepting unsigned payloads.
+  const webhookSecret = process.env.COINBASE_COMMERCE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
+    console.error(
+      "COINBASE_COMMERCE_WEBHOOK_SECRET is not set — rejecting payload.",
+    );
+    return NextResponse.json(
+      { error: "Webhook secret not configured" },
+      { status: 500 },
+    );
+  }
+  if (!sig) {
+    return NextResponse.json({ error: "Missing signature" }, { status: 400 });
+  }
+  const hmac = createHmac("sha256", webhookSecret).update(body).digest("hex");
+  // Constant-time comparison to avoid timing side-channels.
+  if (hmac.length !== sig.length) {
+    console.error("Coinbase webhook signature length mismatch");
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+  let mismatch = 0;
+  for (let i = 0; i < hmac.length; i++) {
+    mismatch |= hmac.charCodeAt(i) ^ sig.charCodeAt(i);
+  }
+  if (mismatch !== 0) {
+    console.error("Coinbase webhook signature mismatch");
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   let event: any;

@@ -119,13 +119,16 @@ describe("POST /api/webhooks/coinbase", () => {
     expect(res.status).toBe(200);
   });
 
-  it("skips signature verification when COINBASE_COMMERCE_WEBHOOK_SECRET is not set", async () => {
+  it("FAILS CLOSED with 500 when COINBASE_COMMERCE_WEBHOOK_SECRET is not set", async () => {
+    // Security: a missing secret must not mean "anyone can hit this endpoint"
+    // — the route refuses traffic rather than silently accepting unsigned
+    // payloads that could mutate listing state.
     delete process.env.COINBASE_COMMERCE_WEBHOOK_SECRET;
-    // Use a totally wrong signature — should still succeed
     const event = makeChargeEvent("charge:confirmed");
     const req = makeWebhookRequest(event, { signature: "wrong-sig" });
     const res = await POST(req);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(500);
+    expect((await res.json()).error).toBe("Webhook secret not configured");
   });
 
   // ── charge:confirmed ──────────────────────────────────────────────────────
@@ -259,16 +262,18 @@ describe("POST /api/webhooks/coinbase", () => {
 
   // ── Malformed body ────────────────────────────────────────────────────────
 
-  it("returns 400 for a non-JSON body", async () => {
-    // Skip signing since we want to test JSON parse failure
-    delete process.env.COINBASE_COMMERCE_WEBHOOK_SECRET;
+  it("returns 400 for a non-JSON body (after passing signature verification)", async () => {
+    // Fail-closed means we must send a valid signature for the malformed
+    // body so that the JSON parser is what trips, not the signature check.
+    const malformed = "this is not json {{{";
+    const sig = signBody(malformed);
     const req = new NextRequest("http://localhost/api/webhooks/coinbase", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-cc-webhook-signature": "irrelevant",
+        "x-cc-webhook-signature": sig,
       },
-      body: "this is not json {{{",
+      body: malformed,
     });
     const res = await POST(req);
     expect(res.status).toBe(400);

@@ -1,12 +1,16 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/app/api/ai/shop-description/route";
+import { __resetRateLimit } from "@/lib/rate-limit";
 
 // ---------------------------------------------------------------------------
 // Mock OpenAI
 // ---------------------------------------------------------------------------
 
-const { mockCreate } = vi.hoisted(() => ({ mockCreate: vi.fn() }));
+const { mockCreate, mockGetUserId } = vi.hoisted(() => ({
+  mockCreate: vi.fn(),
+  mockGetUserId: vi.fn(async () => "user-123"),
+}));
 
 vi.mock("@/lib/openai", () => ({
   openai: {
@@ -16,6 +20,11 @@ vi.mock("@/lib/openai", () => ({
       },
     },
   },
+}));
+
+vi.mock("@/lib/auth/require-auth", () => ({
+  getUserId: mockGetUserId,
+  requireAuth: vi.fn(async () => ({ userId: await mockGetUserId() })),
 }));
 
 // ---------------------------------------------------------------------------
@@ -30,6 +39,9 @@ function makeRequest(body: object): NextRequest {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  __resetRateLimit();
+  process.env.OPENAI_API_KEY = "sk-test-key";
+  mockGetUserId.mockResolvedValue("user-123");
   mockCreate.mockResolvedValue({
     choices: [
       {
