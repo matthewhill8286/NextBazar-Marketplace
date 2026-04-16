@@ -24,6 +24,10 @@ vi.mock("@/lib/stripe", () => ({
   },
 }));
 
+vi.mock("next/cache", () => ({
+  revalidateTag: vi.fn(),
+}));
+
 // Supabase admin client mock
 vi.mock("@supabase/supabase-js", () => ({
   createClient: vi.fn(() => ({
@@ -81,7 +85,17 @@ beforeEach(() => {
   // By default, constructEvent returns the raw parsed event
   mockConstructEvent.mockImplementation((body: string) => JSON.parse(body));
   mockUpdate.mockReturnValue({ eq: mockEq });
-  mockEq.mockResolvedValue({ error: null });
+  // Support .eq().select().single() chain (listing promotion path)
+  // and plain .eq() resolve (profile/dealer_shops update path)
+  mockEq.mockImplementation(() => ({
+    select: vi.fn().mockReturnValue({
+      single: vi
+        .fn()
+        .mockResolvedValue({ error: null, data: { slug: "test-listing" } }),
+    }),
+    then: (resolve: (v: unknown) => void) =>
+      Promise.resolve({ error: null }).then(resolve),
+  }));
 });
 
 describe("POST /api/webhooks/stripe", () => {
