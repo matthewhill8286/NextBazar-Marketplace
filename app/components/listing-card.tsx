@@ -6,6 +6,8 @@ import {
   Eye,
   GitCompareArrows,
   MapPin,
+  ShieldCheck,
+  Star,
   Store,
 } from "lucide-react";
 import Image from "next/image";
@@ -40,7 +42,12 @@ type ListingCardProps = {
     categories?: CatLike | null;
     location?: LocLike | null;
     locations?: LocLike | null;
-    profiles?: { is_pro_seller?: boolean } | null;
+    profiles?: {
+      is_pro_seller?: boolean;
+      verified?: boolean;
+      rating?: number | null;
+      total_reviews?: number | null;
+    } | null;
   };
   accentColor?: string;
   userId?: string | null;
@@ -200,20 +207,45 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
           {listing.title}
         </h3>
 
-        {FEATURE_FLAGS.DEALERS && listing.profiles?.is_pro_seller && (
-          <span
-            className={`inline-flex items-center gap-1 text-[9px] font-medium px-2 py-0.5 tracking-wider uppercase mb-1.5 ${
-              accentColor ? "" : "bg-[#f0eeeb] text-[#666]"
-            }`}
-            style={
-              accentColor
-                ? { backgroundColor: `${accentColor}14`, color: accentColor }
-                : undefined
-            }
-          >
-            <Store className="w-2.5 h-2.5" /> Pro Seller
-          </span>
-        )}
+        {/* Seller trust strip */}
+        {listing.profiles &&
+          (listing.profiles.verified ||
+            listing.profiles.total_reviews ||
+            (FEATURE_FLAGS.DEALERS && listing.profiles.is_pro_seller)) && (
+            <div className="flex items-center gap-2 flex-wrap mb-1.5">
+              {listing.profiles.verified && (
+                <span className="inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 tracking-wider uppercase bg-emerald-50 text-emerald-700">
+                  <ShieldCheck className="w-2.5 h-2.5" /> Verified
+                </span>
+              )}
+              {FEATURE_FLAGS.DEALERS && listing.profiles.is_pro_seller && (
+                <span
+                  className={`inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 tracking-wider uppercase ${
+                    accentColor ? "" : "bg-[#f0eeeb] text-[#666]"
+                  }`}
+                  style={
+                    accentColor
+                      ? {
+                          backgroundColor: `${accentColor}14`,
+                          color: accentColor,
+                        }
+                      : undefined
+                  }
+                >
+                  <Store className="w-2.5 h-2.5" /> Pro
+                </span>
+              )}
+              {(listing.profiles.total_reviews ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-0.5 text-[9px] font-medium text-[#8a8280] tracking-wider">
+                  <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                  {listing.profiles.rating?.toFixed(1)}
+                  <span className="text-[#bbb]">
+                    ({listing.profiles.total_reviews})
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
 
         <div className="flex items-center gap-1.5 text-[#6b6560] text-[11px] mb-3 tracking-wide">
           <MapPin className="w-3 h-3 shrink-0" />

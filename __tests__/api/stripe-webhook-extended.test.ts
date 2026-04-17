@@ -58,10 +58,24 @@ beforeEach(() => {
   mockConstructEvent.mockImplementation((body: string) => JSON.parse(body));
 
   // Default chain: from() → update()/upsert() → eq() → select() → single()
-  mockFrom.mockImplementation(() => ({
-    update: mockUpdate,
-    upsert: mockUpsert,
-  }));
+  mockFrom.mockImplementation((table: string) => {
+    // webhook_events table — idempotency insert chain
+    if (table === "webhook_events") {
+      return {
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi
+              .fn()
+              .mockResolvedValue({ data: { id: "evt-1" }, error: null }),
+          }),
+        }),
+      };
+    }
+    return {
+      update: mockUpdate,
+      upsert: mockUpsert,
+    };
+  });
   mockUpdate.mockReturnValue({ eq: mockEq });
   mockEq.mockImplementation(() => ({
     // Support both .select().single() (listing promotion) and plain resolve

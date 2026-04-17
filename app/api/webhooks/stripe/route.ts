@@ -3,6 +3,7 @@ import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { tag } from "@/lib/supabase/queries";
+import { claimWebhookEvent } from "@/lib/webhook-idempotency";
 
 // Use service role for webhook — bypasses RLS
 const supabaseAdmin = createClient(
@@ -43,6 +44,12 @@ export async function POST(request: NextRequest) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Webhook signature verification failed:", message);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  // ─── Idempotency: skip already-processed events ────────────────────────
+  const isNew = await claimWebhookEvent("stripe", event.id);
+  if (!isNew) {
+    return NextResponse.json({ received: true, duplicate: true });
   }
 
   // ─── Listing promotion checkout ──────────────────────────────────────────

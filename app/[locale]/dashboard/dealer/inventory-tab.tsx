@@ -5,16 +5,22 @@ import {
   ArrowUp,
   ArrowUpDown,
   Check,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Clock,
   Edit3,
   FileSpreadsheet,
   Loader2,
   Megaphone,
   Minus,
+  MoreVertical,
+  Pause,
+  Play,
   Plus,
+  RotateCcw,
   ShoppingBag,
   Sparkles,
   Trash2,
@@ -22,7 +28,7 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { revalidateListings } from "@/app/actions/revalidate";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -565,6 +571,75 @@ export default function InventoryTab({
 
   const isBusy = bulkAction !== null;
 
+  // ── Single-item action menu ─────────────────────────────────────────────
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+
+  type ConfirmAction = {
+    type: "sold" | "renew" | "reactivate" | "pause" | "activate";
+    listingId: string;
+    listingTitle: string;
+  };
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
+    null,
+  );
+
+  async function handleConfirmAction() {
+    if (!confirmAction) return;
+    const { type, listingId } = confirmAction;
+    setLoadingAction(listingId);
+    try {
+      if (type === "sold") {
+        const { error } = await supabase
+          .from("listings")
+          .update({ status: "sold" })
+          .eq("id", listingId);
+        if (error) throw error;
+        toast.success("Listing marked as sold");
+      } else if (type === "renew") {
+        const expiresAt = new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000,
+        ).toISOString();
+        const { error } = await supabase
+          .from("listings")
+          .update({ status: "active", expires_at: expiresAt })
+          .eq("id", listingId);
+        if (error) throw error;
+        toast.success("Listing renewed for 30 days");
+      } else if (type === "reactivate") {
+        const { error } = await supabase
+          .from("listings")
+          .update({ status: "active" })
+          .eq("id", listingId);
+        if (error) throw error;
+        toast.success("Listing reactivated");
+      } else if (type === "pause") {
+        const { error } = await supabase
+          .from("listings")
+          .update({ status: "paused" })
+          .eq("id", listingId);
+        if (error) throw error;
+        toast.success("Listing paused");
+      } else if (type === "activate") {
+        const { error } = await supabase
+          .from("listings")
+          .update({ status: "active" })
+          .eq("id", listingId);
+        if (error) throw error;
+        toast.success("Listing activated");
+      }
+      await revalidateListings();
+      if (onRefresh) await onRefresh();
+      router.refresh();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Please try again.";
+      toast.error("Action failed", { description: message });
+    } finally {
+      setLoadingAction(null);
+      setConfirmAction(null);
+    }
+  }
+
   // ── Bulk boost ───────────────────────────────────────────────────────────
   const activeBoostCount = useMemo(
     () => listings.filter((l) => l.is_promoted).length,
@@ -627,6 +702,19 @@ export default function InventoryTab({
     }
   }
   const hasSelection = selected.size > 0;
+
+  // ── Close menu on outside click ──────────────────────────────────────────
+  const menuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!openMenu) return;
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenu(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [openMenu]);
 
   const thBase = "px-4 py-3 font-medium text-[#6b6560] select-none";
   const thBtn =
@@ -743,6 +831,60 @@ export default function InventoryTab({
                 className="px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors disabled:opacity-40"
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Confirmation Dialog */}
+      {confirmAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-sm shadow-2xl p-6">
+            <h3 className="text-base font-semibold text-[#1a1a1a] mb-2">
+              {confirmAction.type === "sold" && "Mark as Sold?"}
+              {confirmAction.type === "renew" && "Renew Listing?"}
+              {confirmAction.type === "reactivate" && "Reactivate Listing?"}
+              {confirmAction.type === "pause" && "Pause Listing?"}
+              {confirmAction.type === "activate" && "Activate Listing?"}
+            </h3>
+            <p className="text-sm text-[#6b6560] mb-5">
+              {confirmAction.type === "sold" &&
+                `"${confirmAction.listingTitle}" will be marked as sold and hidden from search.`}
+              {confirmAction.type === "renew" &&
+                `"${confirmAction.listingTitle}" will be renewed for 30 days.`}
+              {confirmAction.type === "reactivate" &&
+                `"${confirmAction.listingTitle}" will be reactivated and visible to buyers.`}
+              {confirmAction.type === "pause" &&
+                `"${confirmAction.listingTitle}" will be hidden from buyers until you reactivate it.`}
+              {confirmAction.type === "activate" &&
+                `"${confirmAction.listingTitle}" will go live and be visible to buyers.`}
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmAction(null)}
+                disabled={loadingAction !== null}
+                className="px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors disabled:opacity-40"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmAction}
+                disabled={loadingAction !== null}
+                className={`px-4 py-2 text-sm font-semibold text-white transition-colors disabled:opacity-60 flex items-center gap-1.5 ${
+                  confirmAction.type === "sold"
+                    ? "bg-[#2C2826] hover:bg-[#1a1a1a]"
+                    : confirmAction.type === "pause"
+                      ? "bg-orange-500 hover:bg-orange-600"
+                      : "bg-[#8E7A6B] hover:bg-[#7A6657]"
+                }`}
+              >
+                {loadingAction && (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                )}
+                Confirm
               </button>
             </div>
           </div>
@@ -1092,23 +1234,141 @@ export default function InventoryTab({
                     {timeAgo(l.created_at)}
                   </td>
                   <td className="px-3 py-3 text-right whitespace-nowrap">
-                    <div className="inline-flex items-center gap-1.5">
-                      <Link
-                        href={`${editBaseHref}/${l.id}`}
-                        className="p-1.5 text-[#8E7A6B] hover:text-[#7A6657] hover:bg-[#f0eeeb] transition-colors"
-                        title="Edit listing"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                      </Link>
-                      {l.status !== "removed" && (
+                    <div
+                      className="relative inline-flex items-center"
+                      ref={openMenu === l.id ? menuRef : undefined}
+                    >
+                      {loadingAction === l.id ? (
+                        <Loader2 className="w-4 h-4 text-[#8a8280] animate-spin" />
+                      ) : (
                         <button
-                          onClick={() => setDeleteIds([l.id])}
-                          disabled={isBusy}
-                          className="p-1.5 text-[#8a8280] hover:text-red-600 hover:bg-red-50 disabled:opacity-40 transition-colors"
-                          title={`Delete ${l.title}`}
+                          type="button"
+                          onClick={() =>
+                            setOpenMenu(openMenu === l.id ? null : l.id)
+                          }
+                          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#8a8280] hover:text-[#666]"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <MoreVertical className="w-4 h-4" />
                         </button>
+                      )}
+
+                      {openMenu === l.id && (
+                        <div className="absolute right-0 top-10 w-48 bg-white border border-[#e8e6e3] shadow-lg py-1.5 z-20">
+                          {/* Edit */}
+                          <Link
+                            href={`${editBaseHref}/${l.id}`}
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7]"
+                            onClick={() => setOpenMenu(null)}
+                          >
+                            <Edit3 className="w-3.5 h-3.5" /> Edit Listing
+                          </Link>
+
+                          {/* Mark as Sold — active only */}
+                          {l.status === "active" && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setConfirmAction({
+                                  type: "sold",
+                                  listingId: l.id,
+                                  listingTitle: l.title,
+                                });
+                              }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                            >
+                              <CheckCircle className="w-3.5 h-3.5" /> Mark as
+                              Sold
+                            </button>
+                          )}
+
+                          {/* Reactivate — sold only */}
+                          {l.status === "sold" && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setConfirmAction({
+                                  type: "reactivate",
+                                  listingId: l.id,
+                                  listingTitle: l.title,
+                                });
+                              }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" /> Reactivate
+                            </button>
+                          )}
+
+                          {/* Pause — active only */}
+                          {l.status === "active" && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setConfirmAction({
+                                  type: "pause",
+                                  listingId: l.id,
+                                  listingTitle: l.title,
+                                });
+                              }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                            >
+                              <Pause className="w-3.5 h-3.5" /> Pause Listing
+                            </button>
+                          )}
+
+                          {/* Activate — draft or paused */}
+                          {(l.status === "draft" || l.status === "paused") && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setConfirmAction({
+                                  type: "activate",
+                                  listingId: l.id,
+                                  listingTitle: l.title,
+                                });
+                              }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                            >
+                              <Play className="w-3.5 h-3.5" /> Activate
+                            </button>
+                          )}
+
+                          {/* Renew — active or expired */}
+                          {(l.status === "active" ||
+                            l.status === "expired") && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setConfirmAction({
+                                  type: "renew",
+                                  listingId: l.id,
+                                  listingTitle: l.title,
+                                });
+                              }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 w-full"
+                            >
+                              <Clock className="w-3.5 h-3.5" /> Renew (30 days)
+                            </button>
+                          )}
+
+                          {/* Delete — always visible except removed */}
+                          {l.status !== "removed" && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenu(null);
+                                setDeleteIds([l.id]);
+                              }}
+                              className="flex items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Delete
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </td>

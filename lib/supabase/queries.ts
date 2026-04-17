@@ -151,6 +151,7 @@ export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
     .select(CARD_SELECT)
     .eq("status", "active")
     .eq("is_promoted", true)
+    .gte("promoted_until", new Date().toISOString())
     .order("created_at", { ascending: false })
     .limit(4);
   return (data ?? []) as unknown as ListingCardRow[];
@@ -436,7 +437,11 @@ export async function getCategoryListingsCached(
     .select(CARD_SELECT)
     .eq("status", "active")
     .eq("category_id", categoryId);
-  if (opts.promoted) q = q.eq("is_promoted", true);
+  if (opts.promoted) {
+    q = q
+      .eq("is_promoted", true)
+      .gte("promoted_until", new Date().toISOString());
+  }
   q = q.order("created_at", { ascending: false }).limit(opts.limit ?? 12);
   const { data } = await q;
   return (data ?? []) as unknown as ListingCardRow[];
@@ -669,6 +674,7 @@ export async function getFeaturedListings() {
     )
     .eq("status", "active")
     .eq("is_promoted", true)
+    .gte("promoted_until", new Date().toISOString())
     .order("created_at", { ascending: false })
     .limit(8);
   if (error) throw error;

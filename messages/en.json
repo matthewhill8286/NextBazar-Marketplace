@@ -106,7 +106,7 @@
     "saveSearch": "Save search",
     "clearAll": "Clear all",
     "searchHeader": "Search & Discover",
-    "availableListings": "{count} {count, plural, one {listing} other {listings}}} available",
+    "availableListings": "{count, plural, one {listing} other {listings}} available",
     "noListingsMatch": "No listings match your search",
     "discoverDeals": "Discover great deals across Cyprus",
     "featuredAndPromoted": "Featured & Promoted Listings",

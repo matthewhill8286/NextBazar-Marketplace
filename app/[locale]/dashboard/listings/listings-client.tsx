@@ -605,14 +605,21 @@ export default function ListingsClient({
                       />
                     </div>
                   )}
-                  {listing.is_promoted && listing.status !== "sold" && (
-                    <span className="absolute top-0.5 left-0.5 bg-amber-500 text-white text-[8px] font-bold px-1 py-0.5 rounded">
-                      AD
-                    </span>
-                  )}
+                  {listing.is_promoted &&
+                    listing.status !== "sold" &&
+                    (!listing.promoted_until ||
+                      new Date(listing.promoted_until).getTime() >
+                        Date.now()) && (
+                      <span className="absolute top-0.5 left-0.5 bg-amber-500 text-white text-[8px] font-bold px-1 py-0.5 rounded">
+                        AD
+                      </span>
+                    )}
                   {listing.is_urgent &&
                     !listing.is_promoted &&
-                    listing.status !== "sold" && (
+                    listing.status !== "sold" &&
+                    (!listing.boosted_until ||
+                      new Date(listing.boosted_until).getTime() >
+                        Date.now()) && (
                       <span className="absolute top-0.5 left-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0.5 rounded">
                         ⚡
                       </span>
@@ -663,14 +670,12 @@ export default function ListingsClient({
                     {listing.is_promoted &&
                       listing.promoted_until &&
                       listing.status === "active" &&
+                      new Date(listing.promoted_until).getTime() > Date.now() &&
                       (() => {
-                        const days = Math.max(
-                          0,
-                          Math.ceil(
-                            (new Date(listing.promoted_until).getTime() -
-                              Date.now()) /
-                              86_400_000,
-                          ),
+                        const days = Math.ceil(
+                          (new Date(listing.promoted_until).getTime() -
+                            Date.now()) /
+                            86_400_000,
                         );
                         return (
                           <>
@@ -684,14 +689,12 @@ export default function ListingsClient({
                     {listing.is_urgent &&
                       listing.boosted_until &&
                       listing.status === "active" &&
+                      new Date(listing.boosted_until).getTime() > Date.now() &&
                       (() => {
-                        const days = Math.max(
-                          0,
-                          Math.ceil(
-                            (new Date(listing.boosted_until).getTime() -
-                              Date.now()) /
-                              86_400_000,
-                          ),
+                        const days = Math.ceil(
+                          (new Date(listing.boosted_until).getTime() -
+                            Date.now()) /
+                            86_400_000,
                         );
                         return (
                           <>

@@ -1,6 +1,7 @@
 import { createHmac } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
+import { claimWebhookEvent } from "@/lib/webhook-idempotency";
 
 // Service role client — bypasses RLS
 const supabaseAdmin = createClient(
@@ -49,6 +50,15 @@ export async function POST(request: NextRequest) {
     event = JSON.parse(body);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  // ─── Idempotency: skip already-processed events ────────────────────────
+  const coinbaseEventId = event.event?.id || event.id;
+  if (coinbaseEventId) {
+    const isNew = await claimWebhookEvent("coinbase", String(coinbaseEventId));
+    if (!isNew) {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
   }
 
   const eventType = event.event?.type;

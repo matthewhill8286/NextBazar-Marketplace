@@ -6,13 +6,13 @@
  *
  * Usage:
  *   import { getAllPosts, getPostBySlug } from "@/lib/blog";
- *   const posts = getAllPosts();           // sorted by date desc
- *   const post  = getPostBySlug("my-post"); // single post + content
+ *   const posts = getAllPosts(); // sorted by date desc
+ *   const post = getPostBySlug("my-post"); // single post + content
  */
 
-import fs from "fs";
+import fs from "node:fs";
+import path from "node:path";
 import matter from "gray-matter";
-import path from "path";
 
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 

@@ -201,10 +201,20 @@ export async function GET(req: NextRequest) {
     .order("is_urgent", { ascending: false })
     .order(s.col, { ascending: s.asc });
 
-  const { data, count, error } = await browseQ.range(
-    offset,
-    offset + limit - 1,
-  );
+  // Run listings + facet counts in parallel
+  const [browseResult, facetResult] = await Promise.all([
+    browseQ.range(offset, offset + limit - 1),
+    supabase.rpc("get_search_facets", {
+      filter_category_id: categoryId ?? null,
+      filter_subcategory_id: subcategoryId ?? null,
+      filter_location_id: locationId ?? null,
+      filter_price_min: priceMin ? Number(priceMin) : null,
+      filter_price_max: priceMax ? Number(priceMax) : null,
+      filter_query: null, // no text query in browse mode
+    }),
+  ]);
+
+  const { data, count, error } = browseResult;
   if (error)
     return NextResponse.json({ error: error.message }, { status: 500 });
 
@@ -213,6 +223,7 @@ export async function GET(req: NextRequest) {
       hits: data || [],
       totalHits: count ?? (data || []).length,
       source: "browse",
+      facets: facetResult.data ?? { categories: [], locations: [] },
     },
     { headers: CACHE_HEADERS },
   );

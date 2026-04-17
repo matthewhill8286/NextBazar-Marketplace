@@ -182,4 +182,86 @@ describe("ListingCard", () => {
     );
     expect(screen.getByRole("link")).toBeInTheDocument();
   });
+
+  // ─── Trust badge tests ──────────────────────────────────────────────────────
+  it("shows 'Verified' badge when profile is verified", () => {
+    render(
+      <ListingCard
+        listing={{
+          ...baseListing,
+          profiles: { verified: true, is_pro_seller: false },
+        }}
+      />,
+    );
+    expect(screen.getByText("Verified")).toBeInTheDocument();
+  });
+
+  it("does NOT show 'Verified' badge when profile is not verified", () => {
+    render(
+      <ListingCard
+        listing={{
+          ...baseListing,
+          profiles: { verified: false, is_pro_seller: false },
+        }}
+      />,
+    );
+    expect(screen.queryByText("Verified")).toBeNull();
+  });
+
+  it("shows star rating and review count when seller has reviews", () => {
+    render(
+      <ListingCard
+        listing={{
+          ...baseListing,
+          profiles: {
+            verified: false,
+            is_pro_seller: false,
+            rating: 4.8,
+            total_reviews: 23,
+          },
+        }}
+      />,
+    );
+    expect(screen.getByText("4.8")).toBeInTheDocument();
+    expect(screen.getByText("(23)")).toBeInTheDocument();
+  });
+
+  it("does NOT show rating when seller has no reviews", () => {
+    render(
+      <ListingCard
+        listing={{
+          ...baseListing,
+          profiles: {
+            verified: true,
+            is_pro_seller: false,
+            rating: null,
+            total_reviews: 0,
+          },
+        }}
+      />,
+    );
+    // Verified should show, but no rating
+    expect(screen.getByText("Verified")).toBeInTheDocument();
+    expect(screen.queryByText("(0)")).toBeNull();
+  });
+
+  it("renders all trust badges together when profile has all indicators", () => {
+    render(
+      <ListingCard
+        listing={{
+          ...baseListing,
+          profiles: {
+            verified: true,
+            is_pro_seller: true,
+            rating: 4.5,
+            total_reviews: 12,
+          },
+        }}
+      />,
+    );
+    expect(screen.getByText("Verified")).toBeInTheDocument();
+    expect(screen.getByText("Pro")).toBeInTheDocument();
+    expect(screen.getByText("4.5")).toBeInTheDocument();
+    expect(screen.getByText("(12)")).toBeInTheDocument();
+  });
 });

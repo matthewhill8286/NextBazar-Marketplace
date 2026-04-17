@@ -98,6 +98,14 @@ export default function SearchClient({
 
   const [aiSearching, setAiSearching] = useState(false);
   const [aiInterpretation, setAiInterpretation] = useState("");
+
+  // ─── Faceted counts ───────────────────────────────────────────────────────
+  type FacetEntry = { slug: string; count: number };
+  type Facets = { categories: FacetEntry[]; locations: FacetEntry[] };
+  const [facets, setFacets] = useState<Facets>({
+    categories: [],
+    locations: [],
+  });
   const [wasAiSearch, setWasAiSearch] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
   const [mapLocations, setMapLocations] = useState<MapLocation[]>([]);
@@ -141,6 +149,7 @@ export default function SearchClient({
         .select("*, categories(name, slug, icon), locations(name, slug)")
         .eq("status", "active")
         .eq("is_promoted", true)
+        .gte("promoted_until", new Date().toISOString())
         .order("is_promoted", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(24);
@@ -289,6 +298,7 @@ export default function SearchClient({
         const hits = (data.hits || []).map(normalise);
         setListings(hits);
         setTotalHits(data.totalHits ?? hits.length);
+        if (data.facets) setFacets(data.facets);
       }
       setLoading(false);
     },
@@ -442,6 +452,14 @@ export default function SearchClient({
   }
 
   // ─── Derived ──────────────────────────────────────────────────────────────
+  // ─── Facet count lookups ────────────────────────────────────────────────────
+  const categoryCountMap = new Map(
+    facets.categories.map((f) => [f.slug, f.count]),
+  );
+  const locationCountMap = new Map(
+    facets.locations.map((f) => [f.slug, f.count]),
+  );
+
   const activeCategory = categories.find((c) => c.slug === categorySlug);
   const activeSubcategory = subcategories.find(
     (s) => s.slug === subcategorySlug,
@@ -594,11 +612,15 @@ export default function SearchClient({
                   }}
                 >
                   <option value="">{t("filters_panel.allCategories")}</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.slug}>
-                      {cat.name}
-                    </option>
-                  ))}
+                  {categories.map((cat) => {
+                    const count = categoryCountMap.get(cat.slug);
+                    return (
+                      <option key={cat.id} value={cat.slug}>
+                        {cat.name}
+                        {count != null ? ` (${count})` : ""}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               <div>
@@ -611,11 +633,15 @@ export default function SearchClient({
                   onChange={(e) => setLocationSlug(e.target.value)}
                 >
                   <option value="">{t("filters_panel.allLocations")}</option>
-                  {locations.map((loc) => (
-                    <option key={loc.id} value={loc.slug}>
-                      {loc.name}
-                    </option>
-                  ))}
+                  {locations.map((loc) => {
+                    const count = locationCountMap.get(loc.slug);
+                    return (
+                      <option key={loc.id} value={loc.slug}>
+                        {loc.name}
+                        {count != null ? ` (${count})` : ""}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               <div>

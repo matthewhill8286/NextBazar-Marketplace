@@ -31,10 +31,26 @@ vi.mock("next/cache", () => ({
 // Supabase admin client mock
 vi.mock("@supabase/supabase-js", () => ({
   createClient: vi.fn(() => ({
-    from: vi.fn(() => ({
-      update: mockUpdate,
-      eq: mockEq,
-    })),
+    from: vi.fn((table: string) => {
+      // webhook_events table — idempotency insert chain
+      if (table === "webhook_events") {
+        return {
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi
+                .fn()
+                .mockResolvedValue({ data: { id: "evt-1" }, error: null }),
+            }),
+          }),
+        };
+      }
+      // Default: listings / profiles / dealer_shops
+      return {
+        update: mockUpdate,
+        eq: mockEq,
+        upsert: vi.fn().mockResolvedValue({ error: null }),
+      };
+    }),
   })),
 }));
 

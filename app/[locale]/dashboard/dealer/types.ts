@@ -12,7 +12,9 @@ export type ListingRow = {
   created_at: string;
   updated_at?: string;
   is_promoted: boolean;
+  is_urgent?: boolean;
   promoted_until?: string | null;
+  expires_at?: string | null;
   category_id?: string;
   location_id?: string | null;
   quantity?: number | null;

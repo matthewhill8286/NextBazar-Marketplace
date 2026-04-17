@@ -106,7 +106,7 @@
     "saveSearch": "Αποθήκευση αναζήτησης",
     "clearAll": "Καθαρισμός",
     "searchHeader": "Αναζήτηση & Ανακάλυψη",
-    "availableListings": "{count} {count, plural, one {αγγελία} other {αγγελίες}}} διαθέσιμη",
+    "availableListings": "{count, plural, one {αγγελία} other {αγγελίες}} διαθέσιμες",
     "noListingsMatch": "Δεν βρέθηκαν αγγελίες που να ταιριάζουν",
     "discoverDeals": "Ανακαλύψτε υπέροχες προσφορές σε όλη την Κύπρο",
     "featuredAndPromoted": "Προτεινόμενες & Ενισχυμένες Αγγελίες",

@@ -174,7 +174,7 @@ export default async function ListingDetailServer({
           <div className="lg:col-span-2 space-y-6">
             {/* Title card */}
             <div
-              className={`bg-white border overflow-hidden ${listing.status === "sold" ? "border-[#ccc]" : "border-[#e8e6e3]"}`}
+              className={`bg-white border ${listing.status === "sold" ? "border-[#ccc]" : "border-[#e8e6e3]"}`}
             >
               {/* Sold banner */}
               {listing.status === "sold" && (

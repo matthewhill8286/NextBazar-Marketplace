@@ -107,6 +107,7 @@ export default async function BlogPostPage(props: PageProps) {
             prose-strong:text-[#1a1a1a]
             prose-ul:text-[#4a4a4a] prose-ol:text-[#4a4a4a]
             prose-blockquote:border-[#8E7A6B] prose-blockquote:text-[#6b6560]"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: allow for post content
           dangerouslySetInnerHTML={{
             __html: simpleMarkdown(post.content),
           }}
@@ -129,7 +130,7 @@ export default async function BlogPostPage(props: PageProps) {
   );
 }
 
-// Simple markdown → HTML (handles basics without pulling in a full MDX pipeline)
+// Simple Markdown → HTML (handles basics without pulling in a full MDX pipeline)
 function simpleMarkdown(md: string): string {
   return md
     .replace(/^### (.+)$/gm, "<h3>$1</h3>")
