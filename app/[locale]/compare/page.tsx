@@ -4,7 +4,7 @@ import { ArrowLeft, Check, ExternalLink, X } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CONDITION_LABELS } from "@/lib/format-helpers";
 import { createClient } from "@/lib/supabase/client";
@@ -44,7 +44,25 @@ function ConditionDot({ condition }: { condition: string | null }) {
   );
 }
 
+// `useSearchParams()` must live under a <Suspense> boundary in Next.js 16 —
+// otherwise the prerenderer marks the route as blocking (E1078).
 export default function ComparePage() {
+  return (
+    <Suspense fallback={<CompareLoading />}>
+      <CompareInner />
+    </Suspense>
+  );
+}
+
+function CompareLoading() {
+  return (
+    <div className="flex items-center justify-center py-24">
+      <div className="w-8 h-8 border-4 border-[#e8e6e3] dark:border-[#3a3735] border-t-[#8E7A6B] rounded-full animate-spin" />
+    </div>
+  );
+}
+
+function CompareInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const supabase = createClient();
@@ -112,12 +130,12 @@ export default function ComparePage() {
       render: (l) => {
         const sym = l.currency === "EUR" ? "€" : l.currency;
         return l.price ? (
-          <span className="font-bold text-[#1a1a1a]">
+          <span className="font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
             {sym}
             {l.price.toLocaleString()}
           </span>
         ) : (
-          <span className="text-[#8a8280]">{t("poa")}</span>
+          <span className="text-[#8a8280] dark:text-[#6b6560]">{t("poa")}</span>
         );
       },
     },
@@ -148,7 +166,7 @@ export default function ComparePage() {
             </span>
           )}
           {!l.is_promoted && !l.is_urgent && (
-            <span className="text-[#8a8280] text-xs">—</span>
+            <span className="text-[#8a8280] dark:text-[#6b6560] text-xs">—</span>
           )}
         </span>
       ),
@@ -172,7 +190,7 @@ export default function ComparePage() {
         l.description ? (
           <p className="text-xs text-[#666] line-clamp-4">{l.description}</p>
         ) : (
-          <span className="text-[#8a8280]">—</span>
+          <span className="text-[#8a8280] dark:text-[#6b6560]">—</span>
         ),
     },
   ];
@@ -184,19 +202,19 @@ export default function ComparePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#6b6560]"
+          className="p-2 hover:bg-[#f0eeeb] dark:bg-[#333028] dark:hover:bg-[#3a3735] transition-colors text-[#6b6560] dark:text-[#9a9290]"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
-          <p className="text-sm text-[#6b6560] mt-0.5">{t("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3] dark:text-[#e8e6e3]">{t("title")}</h1>
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mt-0.5">{t("subtitle")}</p>
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-8 h-8 border-4 border-[#e8e6e3] border-t-[#8E7A6B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-[#e8e6e3] dark:border-[#3a3735] border-t-[#8E7A6B] rounded-full animate-spin" />
         </div>
       ) : listings.length < 2 ? (
         <div className="text-center py-24">
@@ -218,9 +236,9 @@ export default function ComparePage() {
 
                 {listings.map((l) => (
                   <th key={l.id} className="pb-6 px-3 align-top">
-                    <div className="bg-white border border-[#e8e6e3] overflow-hidden shadow-sm">
+                    <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden shadow-sm">
                       {/* Image */}
-                      <div className="relative aspect-video bg-[#f0eeeb]">
+                      <div className="relative aspect-video bg-[#f0eeeb] dark:bg-[#333028]">
                         {l.primary_image_url ? (
                           <Image
                             src={l.primary_image_url}
@@ -247,7 +265,7 @@ export default function ComparePage() {
 
                       {/* Title + link */}
                       <div className="p-3">
-                        <p className="font-semibold text-[#1a1a1a] text-sm line-clamp-2 text-left">
+                        <p className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] text-sm line-clamp-2 text-left">
                           {l.title}
                         </p>
                         <Link
@@ -266,8 +284,8 @@ export default function ComparePage() {
                 {listings.length < 3 &&
                   Array.from({ length: 3 - listings.length }).map((_, i) => (
                     <th key={`empty-${i}`} className="pb-6 px-3 align-top">
-                      <div className="border-2 border-dashed border-[#e8e6e3] aspect-video flex items-center justify-center">
-                        <p className="text-xs text-[#8a8280] text-center px-2">
+                      <div className="border-2 border-dashed border-[#e8e6e3] dark:border-[#3a3735] aspect-video flex items-center justify-center">
+                        <p className="text-xs text-[#8a8280] dark:text-[#6b6560] text-center px-2">
                           {t("addAnother")}
                         </p>
                       </div>
@@ -280,7 +298,7 @@ export default function ComparePage() {
               {rows.map(({ label, render }, ri) => (
                 <tr
                   key={label}
-                  className={ri % 2 === 0 ? "bg-[#faf9f7]" : "bg-white"}
+                  className={ri % 2 === 0 ? "bg-[#faf9f7] dark:bg-[#1e1c1a]" : "bg-white dark:bg-[#252220]"}
                 >
                   <td className="py-3 px-2 text-xs font-semibold text-[#6b6560] uppercase tracking-wide align-top whitespace-nowrap">
                     {label}
@@ -288,7 +306,7 @@ export default function ComparePage() {
                   {listings.map((l) => (
                     <td
                       key={l.id}
-                      className="py-3 px-3 text-sm text-[#666] align-top"
+                      className="py-3 px-3 text-sm text-[#666] dark:text-[#9a9290] align-top"
                     >
                       {render(l)}
                     </td>
@@ -301,7 +319,7 @@ export default function ComparePage() {
               ))}
 
               {/* CTA row */}
-              <tr className="bg-white">
+              <tr className="bg-white dark:bg-[#252220]">
                 <td />
                 {listings.map((l) => {
                   const sym = l.currency === "EUR" ? "€" : l.currency;

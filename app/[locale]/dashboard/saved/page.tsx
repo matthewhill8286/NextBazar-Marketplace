@@ -104,19 +104,19 @@ export default function SavedPage() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div className="space-y-2">
-            <div className="h-7 w-36 bg-[#e8e6e3] animate-pulse" />
-            <div className="h-4 w-24 bg-[#e8e6e3] animate-pulse" />
+            <div className="h-7 w-36 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+            <div className="h-4 w-24 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
           </div>
         </div>
         {/* List skeleton */}
-        <div className="space-y-px bg-[#e8e6e3]">
+        <div className="space-y-px bg-[#e8e6e3] dark:bg-[#3a3735]">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white flex gap-4 p-4">
-              <div className="w-28 h-20 bg-[#e8e6e3] animate-pulse shrink-0" />
+            <div key={i} className="bg-white dark:bg-[#252220] flex gap-4 p-4">
+              <div className="w-28 h-20 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse shrink-0" />
               <div className="flex-1 space-y-2 py-1">
-                <div className="h-4 w-3/4 bg-[#e8e6e3] animate-pulse" />
-                <div className="h-3 w-1/2 bg-[#e8e6e3] animate-pulse" />
-                <div className="h-5 w-20 bg-[#e8e6e3] animate-pulse" />
+                <div className="h-4 w-3/4 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+                <div className="h-3 w-1/2 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+                <div className="h-5 w-20 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
               </div>
             </div>
           ))}
@@ -131,25 +131,25 @@ export default function SavedPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1
-            className="text-2xl font-light text-[#1a1a1a]"
+            className="text-2xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Saved Listings
           </h1>
-          <p className="text-sm text-[#6b6560] mt-0.5">
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mt-0.5">
             {count} {count === 1 ? "item" : "items"} saved
           </p>
         </div>
         <div className="flex items-center gap-3">
           {/* View toggle */}
           {count > 0 && (
-            <div className="flex border border-[#e8e6e3] bg-white">
+            <div className="flex border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220]">
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-2 transition-colors ${
                   viewMode === "list"
                     ? "bg-[#8E7A6B] text-white"
-                    : "text-[#6b6560] hover:text-[#666] hover:bg-[#faf9f7]"
+                    : "text-[#6b6560] dark:text-[#9a9290] hover:text-[#666] hover:bg-[#faf9f7] dark:hover:bg-[#333028]"
                 }`}
                 title="List view"
               >
@@ -160,7 +160,7 @@ export default function SavedPage() {
                 className={`p-2 transition-colors ${
                   viewMode === "grid"
                     ? "bg-[#8E7A6B] text-white"
-                    : "text-[#6b6560] hover:text-[#666] hover:bg-[#faf9f7]"
+                    : "text-[#6b6560] dark:text-[#9a9290] hover:text-[#666] hover:bg-[#faf9f7] dark:hover:bg-[#333028]"
                 }`}
                 title="Grid view"
               >
@@ -189,7 +189,7 @@ export default function SavedPage() {
           </div>
         ) : (
           /* ── List View (default) ───────────────────────────────────── */
-          <div className="space-y-px bg-[#e8e6e3] border border-[#e8e6e3]">
+          <div className="space-y-px bg-[#e8e6e3] dark:bg-[#3a3735] border border-[#e8e6e3] dark:border-[#3a3735]">
             {listings.map((listing) => {
               const cat = listing.categories || listing.category;
               const loc = listing.locations || listing.location;
@@ -200,12 +200,12 @@ export default function SavedPage() {
               return (
                 <div
                   key={listing.id}
-                  className="bg-white flex items-center gap-0 group hover:bg-[#faf9f7] transition-colors"
+                  className="bg-white dark:bg-[#252220] flex items-center gap-0 group hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
                 >
                   {/* Image */}
                   <Link
                     href={`/listing/${listing.slug}`}
-                    className="relative w-32 sm:w-40 shrink-0 aspect-4/3 overflow-hidden bg-[#f0eeeb] block"
+                    className="relative w-32 sm:w-40 shrink-0 aspect-4/3 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] block"
                   >
                     <Image
                       src={imageSrc}
@@ -233,11 +233,11 @@ export default function SavedPage() {
                     href={`/listing/${listing.slug}`}
                     className="flex-1 min-w-0 px-5 py-4 block"
                   >
-                    <h3 className="text-sm font-medium text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
+                    <h3 className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate group-hover:text-[#8E7A6B] transition-colors">
                       {listing.title}
                     </h3>
 
-                    <div className="flex items-center gap-3 mt-1.5 text-xs text-[#6b6560]">
+                    <div className="flex items-center gap-3 mt-1.5 text-xs text-[#6b6560] dark:text-[#9a9290]">
                       {loc?.name && (
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-[#8a8280]" />
@@ -250,7 +250,7 @@ export default function SavedPage() {
                         </span>
                       )}
                       {cat?.name && (
-                        <span className="hidden sm:inline text-[#8a8280]">
+                        <span className="hidden sm:inline text-[#8a8280] dark:text-[#6b6560]">
                           {cat.name}
                         </span>
                       )}
@@ -258,12 +258,12 @@ export default function SavedPage() {
 
                     <div className="flex items-center gap-3 mt-2">
                       <span
-                        className="text-base font-light text-[#1a1a1a]"
+                        className="text-base font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                       >
                         {fmtPrice(listing.price, listing.currency)}
                       </span>
-                      <span className="text-[11px] text-[#8a8280]">
+                      <span className="text-[11px] text-[#8a8280] dark:text-[#6b6560]">
                         {timeAgo(listing.created_at)}
                       </span>
                     </div>
@@ -294,15 +294,15 @@ export default function SavedPage() {
           </div>
         )
       ) : (
-        <div className="text-center py-20 bg-white border border-[#e8e6e3]">
+        <div className="text-center py-20 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
           <Heart className="w-12 h-12 text-[#8a8280] mx-auto mb-3" />
           <h2
-            className="text-lg font-light text-[#1a1a1a] mb-1"
+            className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-1"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             No saved listings
           </h2>
-          <p className="text-sm text-[#6b6560] mb-6">
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mb-6">
             Tap the heart icon on any listing to save it here
           </p>
           <Link

@@ -154,15 +154,15 @@ function StockBadge({
 
   const badge =
     quantity === 0 ? (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600">
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400">
         Out of stock
       </span>
     ) : quantity <= threshold ? (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
         {quantity} left
       </span>
     ) : (
-      <span className="text-xs text-[#6b6560]">{quantity}</span>
+      <span className="text-xs text-[#6b6560] dark:text-[#9a9290]">{quantity}</span>
     );
 
   return (
@@ -203,7 +203,7 @@ function Checkbox({
       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors shrink-0 ${
         isOn
           ? "bg-[#8E7A6B] border-[#8E7A6B] text-white"
-          : "border-[#c5c0bb] bg-white hover:border-[#8E7A6B]"
+          : "border-[#c5c0bb] bg-white dark:bg-[#252220] hover:border-[#8E7A6B]"
       } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
     >
       {indeterminate && <Minus className="w-3 h-3" strokeWidth={3} />}
@@ -239,35 +239,35 @@ function PromoUsageBar({
   const pct = Math.round((used / boostsPerMonth) * 100);
 
   return (
-    <div className="bg-white border border-[#e8e6e3] p-4">
+    <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-4">
       <div className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-amber-50 rounded">
             <Zap className="w-4 h-4 text-amber-600" />
           </div>
           <div>
-            <span className="text-sm font-semibold text-[#1a1a1a]">
+            <span className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
               Promoted Listings
             </span>
-            <span className="text-[10px] font-medium text-[#8a8280] ml-2 uppercase tracking-wider">
+            <span className="text-[10px] font-medium text-[#8a8280] dark:text-[#6b6560] ml-2 uppercase tracking-wider">
               {tierLabel} Plan
             </span>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right">
-            <span className="text-lg font-bold text-[#1a1a1a]">
+            <span className="text-lg font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
               {activePromos}
             </span>
-            <span className="text-sm text-[#8a8280]"> / {boostsPerMonth}</span>
+            <span className="text-sm text-[#8a8280] dark:text-[#6b6560]"> / {boostsPerMonth}</span>
           </div>
           {remaining > 0 && (
-            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full">
+            <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">
               {remaining} left
             </span>
           )}
           {remaining === 0 && (
-            <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
+            <span className="text-[10px] font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
               All used
             </span>
           )}
@@ -275,7 +275,7 @@ function PromoUsageBar({
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 bg-[#f0eeeb] rounded-full overflow-hidden">
+      <div className="h-2 bg-[#f0eeeb] dark:bg-[#333028] rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
             pct >= 100
@@ -305,7 +305,7 @@ function PromoUsageBar({
               </span>
             ))}
           {activePromos > 5 && (
-            <span className="text-[10px] text-[#8a8280] font-medium">
+            <span className="text-[10px] text-[#8a8280] dark:text-[#6b6560] font-medium">
               +{activePromos - 5} more
             </span>
           )}
@@ -313,7 +313,7 @@ function PromoUsageBar({
       )}
 
       {activePromos === 0 && (
-        <p className="text-xs text-[#8a8280] mt-2">
+        <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mt-2">
           Promote your listings to get more visibility. You have{" "}
           {boostsPerMonth} free boosts this month.
         </p>
@@ -716,21 +716,21 @@ export default function InventoryTab({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [openMenu]);
 
-  const thBase = "px-4 py-3 font-medium text-[#6b6560] select-none";
+  const thBase = "px-4 py-3 font-medium text-[#6b6560] dark:text-[#9a9290] select-none";
   const thBtn =
-    "group inline-flex items-center gap-1.5 hover:text-[#1a1a1a] transition-colors cursor-pointer";
+    "group inline-flex items-center gap-1.5 hover:text-[#1a1a1a] dark:hover:text-white transition-colors cursor-pointer";
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-[#1a1a1a]">
+        <h3 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
           All Listings ({listings.length})
         </h3>
         <div className="flex items-center gap-2">
           {limits.csvImport && (
             <button
               onClick={() => setShowImport(true)}
-              className="inline-flex items-center gap-1.5 bg-[#faf9f7] text-[#666] border border-[#e8e6e3] px-4 py-2.5 text-sm font-semibold hover:bg-[#f0eeeb] transition-colors"
+              className="inline-flex items-center gap-1.5 bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#666] dark:text-[#9a9290] border border-[#e8e6e3] dark:border-[#3a3735] px-4 py-2.5 text-sm font-semibold hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors"
             >
               <FileSpreadsheet className="w-4 h-4" />
               Import CSV
@@ -765,17 +765,17 @@ export default function InventoryTab({
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-md shadow-2xl p-6">
+          <div className="bg-white dark:bg-[#252220] w-full max-w-md shadow-2xl p-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-red-50 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 bg-red-50 dark:bg-red-900/30 flex items-center justify-center shrink-0">
                 <Trash2 className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-[#1a1a1a]">
+                <h3 className="text-base font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                   Delete {deleteIds.length} listing
                   {deleteIds.length !== 1 ? "s" : ""}?
                 </h3>
-                <p className="text-xs text-[#8a8280] mt-0.5">
+                <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mt-0.5">
                   Choose how to handle{" "}
                   {deleteIds.length === 1 ? "this listing" : "these listings"}.
                 </p>
@@ -787,17 +787,17 @@ export default function InventoryTab({
               <button
                 onClick={() => handleDelete("soft")}
                 disabled={isBusy}
-                className="w-full text-left px-4 py-3 border border-[#e8e6e3] hover:border-[#8E7A6B] hover:bg-[#faf9f7] transition-all disabled:opacity-50 group"
+                className="w-full text-left px-4 py-3 border border-[#e8e6e3] dark:border-[#3a3735] hover:border-[#8E7A6B] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-all disabled:opacity-50 group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-[#1a1a1a]">
+                  <span className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     Remove from shop
                   </span>
                   {bulkAction === "removed" && (
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8E7A6B]" />
                   )}
                 </div>
-                <p className="text-xs text-[#8a8280] mt-0.5">
+                <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mt-0.5">
                   Hidden from buyers but kept in your records. You can restore{" "}
                   {deleteIds.length === 1 ? "it" : "them"} later.
                 </p>
@@ -828,7 +828,7 @@ export default function InventoryTab({
               <button
                 onClick={() => setDeleteIds([])}
                 disabled={isBusy}
-                className="px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors disabled:opacity-40"
+                className="px-4 py-2 text-sm font-medium text-[#666] dark:text-[#9a9290] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors disabled:opacity-40"
               >
                 Cancel
               </button>
@@ -840,7 +840,7 @@ export default function InventoryTab({
       {/* Action Confirmation Dialog */}
       {confirmAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white w-full max-w-sm shadow-2xl p-6">
+          <div className="bg-white dark:bg-[#252220] w-full max-w-sm shadow-2xl p-6">
             <h3 className="text-base font-semibold text-[#1a1a1a] mb-2">
               {confirmAction.type === "sold" && "Mark as Sold?"}
               {confirmAction.type === "renew" && "Renew Listing?"}
@@ -848,7 +848,7 @@ export default function InventoryTab({
               {confirmAction.type === "pause" && "Pause Listing?"}
               {confirmAction.type === "activate" && "Activate Listing?"}
             </h3>
-            <p className="text-sm text-[#6b6560] mb-5">
+            <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mb-5">
               {confirmAction.type === "sold" &&
                 `"${confirmAction.listingTitle}" will be marked as sold and hidden from search.`}
               {confirmAction.type === "renew" &&
@@ -865,7 +865,7 @@ export default function InventoryTab({
                 type="button"
                 onClick={() => setConfirmAction(null)}
                 disabled={loadingAction !== null}
-                className="px-4 py-2 text-sm font-medium text-[#666] hover:bg-[#f0eeeb] transition-colors disabled:opacity-40"
+                className="px-4 py-2 text-sm font-medium text-[#666] dark:text-[#9a9290] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors disabled:opacity-40"
               >
                 Cancel
               </button>
@@ -894,7 +894,7 @@ export default function InventoryTab({
       {/* Selection toolbar — appears when items are selected */}
       {hasSelection ? (
         <div className="flex items-center gap-3 bg-[#8E7A6B]/5 border border-[#8E7A6B]/20 px-4 py-2.5 text-sm">
-          <span className="font-medium text-[#2C2826]">
+          <span className="font-medium text-[#2C2826] dark:text-[#e8e6e3]">
             {selected.size} selected
           </span>
 
@@ -919,7 +919,7 @@ export default function InventoryTab({
               )
             }
             disabled={selectedActivatable.length === 0 || isBusy}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {bulkAction === "active" ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -941,7 +941,7 @@ export default function InventoryTab({
               )
             }
             disabled={selectedPausable.length === 0 || isBusy}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {bulkAction === "paused" ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -985,7 +985,7 @@ export default function InventoryTab({
           <button
             onClick={() => setDeleteIds(selectedDeletable.map((l) => l.id))}
             disabled={selectedDeletable.length === 0 || isBusy}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {bulkAction === "removed" ? (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -1004,7 +1004,7 @@ export default function InventoryTab({
           <button
             onClick={clearSelection}
             disabled={isBusy}
-            className="p-1.5 text-[#6b6560] hover:text-[#1a1a1a] hover:bg-[#e8e6e3] transition-colors rounded disabled:opacity-40"
+            className="p-1.5 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735] transition-colors rounded disabled:opacity-40"
             aria-label="Clear selection"
           >
             <X className="w-4 h-4" />
@@ -1024,7 +1024,7 @@ export default function InventoryTab({
               listings.filter((l) => l.status === "draft").length === 0 ||
               isBusy
             }
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {bulkAction === "active" && (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -1047,7 +1047,7 @@ export default function InventoryTab({
               listings.filter((l) => l.status === "active").length === 0 ||
               isBusy
             }
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {bulkAction === "paused" && (
               <Loader2 className="w-3 h-3 animate-spin" />
@@ -1084,10 +1084,10 @@ export default function InventoryTab({
       )}
 
       {/* Listings table */}
-      <div className="bg-white border border-[#e8e6e3] overflow-x-auto">
+      <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-x-auto">
         <table className="w-full text-sm min-w-0">
           <thead>
-            <tr className="border-b border-[#e8e6e3] bg-[#faf9f7]/50">
+            <tr className="border-b border-[#e8e6e3] dark:border-[#3a3735] bg-[#faf9f7]/50 dark:bg-[#1e1c1a]/50">
               <th className="w-10 px-4 py-3">
                 <Checkbox
                   checked={allPageSelected}
@@ -1155,7 +1155,7 @@ export default function InventoryTab({
               <th className={`text-right ${thBase}`}>Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#faf9f7]">
+          <tbody className="divide-y divide-[#faf9f7] dark:divide-[#3a3735]">
             {paginated.map((l) => {
               const isSelected = selected.has(l.id);
               return (
@@ -1177,7 +1177,7 @@ export default function InventoryTab({
                       href={`/listing/${l.slug}`}
                       className="flex items-center gap-3 group/listing"
                     >
-                      <div className="w-10 h-10 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
+                      <div className="w-10 h-10 bg-[#f0eeeb] dark:bg-[#333028] overflow-hidden shrink-0 relative">
                         {l.primary_image_url && (
                           <Image
                             src={l.primary_image_url}
@@ -1188,7 +1188,7 @@ export default function InventoryTab({
                           />
                         )}
                       </div>
-                      <span className="font-medium text-[#1a1a1a] truncate max-w-[200px] group-hover/listing:text-[#8E7A6B] transition-colors">
+                      <span className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate max-w-[200px] group-hover/listing:text-[#8E7A6B] transition-colors">
                         {l.title}
                       </span>
                     </Link>
@@ -1205,15 +1205,15 @@ export default function InventoryTab({
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right font-medium text-[#1a1a1a]">
+                  <td className="px-4 py-3 text-right font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {l.price != null
                       ? `\u20AC${l.price.toLocaleString()}`
                       : "\u2014"}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
+                  <td className="px-4 py-3 text-right text-[#6b6560] dark:text-[#9a9290] hidden md:table-cell">
                     {l.view_count}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#6b6560] hidden md:table-cell">
+                  <td className="px-4 py-3 text-right text-[#6b6560] dark:text-[#9a9290] hidden md:table-cell">
                     {l.favorite_count}
                   </td>
                   {limits.stockManagement && (
@@ -1226,11 +1226,11 @@ export default function InventoryTab({
                           onUpdated={onRefresh}
                         />
                       ) : (
-                        <span className="text-[#8a8280] text-xs">—</span>
+                        <span className="text-[#8a8280] dark:text-[#6b6560] text-xs">—</span>
                       )}
                     </td>
                   )}
-                  <td className="px-4 py-3 text-right text-[#6b6560] text-xs hidden lg:table-cell">
+                  <td className="px-4 py-3 text-right text-[#6b6560] dark:text-[#9a9290] text-xs hidden lg:table-cell">
                     {timeAgo(l.created_at)}
                   </td>
                   <td className="px-3 py-3 text-right whitespace-nowrap">
@@ -1246,18 +1246,18 @@ export default function InventoryTab({
                           onClick={() =>
                             setOpenMenu(openMenu === l.id ? null : l.id)
                           }
-                          className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#8a8280] hover:text-[#666]"
+                          className="p-2 hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors text-[#8a8280] dark:text-[#6b6560] hover:text-[#666]"
                         >
                           <MoreVertical className="w-4 h-4" />
                         </button>
                       )}
 
                       {openMenu === l.id && (
-                        <div className="absolute right-0 top-10 w-48 bg-white border border-[#e8e6e3] shadow-lg py-1.5 z-20">
+                        <div className="absolute right-0 top-10 w-48 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-lg py-1.5 z-20">
                           {/* Edit */}
                           <Link
                             href={`${editBaseHref}/${l.id}`}
-                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7]"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028]"
                             onClick={() => setOpenMenu(null)}
                           >
                             <Edit3 className="w-3.5 h-3.5" /> Edit Listing
@@ -1378,7 +1378,7 @@ export default function InventoryTab({
           </tbody>
         </table>
         {listings.length === 0 && (
-          <div className="text-center py-12 text-[#8a8280]">
+          <div className="text-center py-12 text-[#8a8280] dark:text-[#6b6560]">
             <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
             <p className="font-medium">No listings yet</p>
             <p className="text-xs mt-1">
@@ -1397,7 +1397,7 @@ export default function InventoryTab({
       {listings.length > PAGE_SIZES[0] && (
         <div className="flex items-center justify-between pt-1">
           {/* Page size selector */}
-          <div className="flex items-center gap-2 text-xs text-[#6b6560]">
+          <div className="flex items-center gap-2 text-xs text-[#6b6560] dark:text-[#9a9290]">
             <span>Show</span>
             <select
               value={pageSize}
@@ -1405,7 +1405,7 @@ export default function InventoryTab({
                 setPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="border border-[#e8e6e3] bg-white px-2 py-1 text-xs text-[#1a1a1a] focus:outline-none focus:ring-1 focus:ring-[#8E7A6B]/30"
+              className="border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] px-2 py-1 text-xs text-[#1a1a1a] dark:text-[#e8e6e3] focus:outline-none focus:ring-1 focus:ring-[#8E7A6B]/30"
             >
               {PAGE_SIZES.map((s) => (
                 <option key={s} value={s}>
@@ -1418,7 +1418,7 @@ export default function InventoryTab({
 
           {/* Range + controls */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-[#6b6560]">
+            <span className="text-xs text-[#6b6560] dark:text-[#9a9290]">
               {rangeStart}&ndash;{rangeEnd} of {sorted.length}
             </span>
 
@@ -1426,7 +1426,7 @@ export default function InventoryTab({
               <button
                 onClick={() => goTo(1)}
                 disabled={safeP === 1}
-                className="p-1 text-[#6b6560] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="First page"
               >
                 <ChevronsLeft className="w-4 h-4" />
@@ -1434,7 +1434,7 @@ export default function InventoryTab({
               <button
                 onClick={() => goTo(safeP - 1)}
                 disabled={safeP === 1}
-                className="p-1 text-[#6b6560] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="Previous page"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -1457,7 +1457,7 @@ export default function InventoryTab({
                 }, [])
                 .map((item, i) =>
                   item === "ellipsis" ? (
-                    <span key={`e${i}`} className="px-1 text-xs text-[#8a8280]">
+                    <span key={`e${i}`} className="px-1 text-xs text-[#8a8280] dark:text-[#6b6560]">
                       &hellip;
                     </span>
                   ) : (
@@ -1467,7 +1467,7 @@ export default function InventoryTab({
                       className={`min-w-[28px] h-7 text-xs font-medium transition-colors ${
                         item === safeP
                           ? "bg-[#8E7A6B] text-white"
-                          : "text-[#6b6560] hover:bg-[#faf9f7]"
+                          : "text-[#6b6560] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028]"
                       }`}
                     >
                       {item}
@@ -1478,7 +1478,7 @@ export default function InventoryTab({
               <button
                 onClick={() => goTo(safeP + 1)}
                 disabled={safeP === totalPages}
-                className="p-1 text-[#6b6560] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="Next page"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -1486,7 +1486,7 @@ export default function InventoryTab({
               <button
                 onClick={() => goTo(totalPages)}
                 disabled={safeP === totalPages}
-                className="p-1 text-[#6b6560] hover:text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="p-1 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 aria-label="Last page"
               >
                 <ChevronsRight className="w-4 h-4" />

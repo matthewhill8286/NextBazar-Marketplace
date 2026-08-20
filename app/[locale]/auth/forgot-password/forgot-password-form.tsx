@@ -40,16 +40,16 @@ export default function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm text-center">
-        <div className="w-12 h-12 bg-emerald-50 flex items-center justify-center mx-auto mb-4 rounded-full">
+      <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-8 shadow-sm text-center">
+        <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4 rounded-full">
           <Mail className="w-5 h-5 text-emerald-600" />
         </div>
-        <h2 className="text-lg font-semibold text-[#1a1a1a] mb-2">
+        <h2 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-2">
           Check your email
         </h2>
-        <p className="text-[#6b6560] text-sm mb-6 leading-relaxed">
+        <p className="text-[#6b6560] dark:text-[#9a9290] text-sm mb-6 leading-relaxed">
           We've sent a password reset link to{" "}
-          <strong className="text-[#1a1a1a]">{email}</strong>. Click the link in
+          <strong className="text-[#1a1a1a] dark:text-[#e8e6e3]">{email}</strong>. Click the link in
           the email to set a new password.
         </p>
         <p className="text-[#6b6560] text-xs mb-6">
@@ -75,14 +75,14 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <div className="bg-white border border-[#e8e6e3] p-8 shadow-sm">
+    <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-8 shadow-sm">
       {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
             htmlFor="email"
-            className="block text-xs font-medium uppercase tracking-[0.1em] text-[#6b6560] mb-2"
+            className="block text-xs font-medium uppercase tracking-[0.1em] text-[#6b6560] dark:text-[#9a9290] mb-2"
           >
             Email address
           </label>
@@ -95,7 +95,7 @@ export default function ForgotPasswordForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
-              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] text-sm focus:outline-none focus:border-[#8E7A6B] transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-sm text-[#1a1a1a] dark:text-[#e8e6e3] focus:outline-none focus:border-[#8E7A6B] transition-colors"
             />
           </div>
         </div>

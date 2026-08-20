@@ -133,41 +133,41 @@ export default function OffersTab({
     <div className="space-y-6">
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-[#e8e6e3] p-5">
-          <div className="w-9 h-9 bg-amber-50 flex items-center justify-center mb-3">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5">
+          <div className="w-9 h-9 bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center mb-3">
             <Clock className="w-[18px] h-[18px] text-amber-600" />
           </div>
-          <div className="text-2xl font-bold text-[#1a1a1a]">
+          <div className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
             {pendingCount}
           </div>
-          <div className="text-xs text-[#6b6560] mt-1">Pending Offers</div>
+          <div className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-1">Pending Offers</div>
         </div>
-        <div className="bg-white border border-[#e8e6e3] p-5">
-          <div className="w-9 h-9 bg-emerald-50 flex items-center justify-center mb-3">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5">
+          <div className="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
             <Euro className="w-[18px] h-[18px] text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-[#1a1a1a]">
+          <div className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
             &euro;{totalOfferValue.toLocaleString()}
           </div>
-          <div className="text-xs text-[#6b6560] mt-1">Pending Offer Value</div>
+          <div className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-1">Pending Offer Value</div>
         </div>
-        <div className="bg-white border border-[#e8e6e3] p-5">
-          <div className="w-9 h-9 bg-emerald-50 flex items-center justify-center mb-3">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5">
+          <div className="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
             <Check className="w-[18px] h-[18px] text-emerald-600" />
           </div>
-          <div className="text-2xl font-bold text-[#1a1a1a]">
+          <div className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
             &euro;{acceptedValue.toLocaleString()}
           </div>
-          <div className="text-xs text-[#6b6560] mt-1">Accepted Value</div>
+          <div className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-1">Accepted Value</div>
         </div>
-        <div className="bg-white border border-[#e8e6e3] p-5">
-          <div className="w-9 h-9 bg-[#f0eeeb] flex items-center justify-center mb-3">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5">
+          <div className="w-9 h-9 bg-[#f0eeeb] dark:bg-[#333028] flex items-center justify-center mb-3">
             <MessageCircle className="w-[18px] h-[18px] text-[#8E7A6B]" />
           </div>
-          <div className="text-2xl font-bold text-[#1a1a1a]">
+          <div className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
             {offers.length}
           </div>
-          <div className="text-xs text-[#6b6560] mt-1">Total Offers</div>
+          <div className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-1">Total Offers</div>
         </div>
       </div>
 
@@ -188,8 +188,8 @@ export default function OffersTab({
             onClick={() => setFilter(f.key)}
             className={`px-3 py-1.5 text-xs font-medium transition-all ${
               filter === f.key
-                ? "bg-[#1a1a1a] text-white"
-                : "bg-[#f0eeeb] text-[#6b6560] hover:text-[#1a1a1a]"
+                ? "bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a]"
+                : "bg-[#f0eeeb] dark:bg-[#333028] text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white"
             }`}
           >
             {f.label}
@@ -202,11 +202,11 @@ export default function OffersTab({
         {filtered.map((offer) => (
           <div
             key={offer.id}
-            className="bg-white border border-[#e8e6e3] p-4 hover:shadow-sm transition-shadow"
+            className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-4 hover:shadow-sm transition-shadow"
           >
             <div className="flex items-start gap-4">
               {/* Listing thumbnail */}
-              <div className="w-14 h-14 bg-[#f0eeeb] overflow-hidden shrink-0 relative">
+              <div className="w-14 h-14 bg-[#f0eeeb] dark:bg-[#333028] overflow-hidden shrink-0 relative">
                 {offer.listing?.primary_image_url && (
                   <Image
                     src={offer.listing.primary_image_url}
@@ -224,13 +224,13 @@ export default function OffersTab({
                   <div>
                     <Link
                       href={`/listing/${offer.listing?.slug ?? ""}`}
-                      className="text-sm font-semibold text-[#1a1a1a] hover:text-[#8E7A6B] transition-colors"
+                      className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#8E7A6B] transition-colors"
                     >
                       {offer.listing?.title ?? "Unknown listing"}
                     </Link>
-                    <p className="text-xs text-[#6b6560] mt-0.5">
+                    <p className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-0.5">
                       From{" "}
-                      <span className="font-medium text-[#1a1a1a]">
+                      <span className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                         {offer.buyer?.display_name ?? "Anonymous"}
                       </span>
                       {" \u00B7 "}
@@ -241,7 +241,7 @@ export default function OffersTab({
                     </p>
                   </div>
                   <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 capitalize shrink-0 ${OFFER_STATUS_BADGE[offer.status] ?? "bg-[#f0eeeb] text-[#6b6560]"}`}
+                    className={`text-[10px] font-semibold px-2 py-0.5 capitalize shrink-0 ${OFFER_STATUS_BADGE[offer.status] ?? "bg-[#f0eeeb] dark:bg-[#333028] text-[#6b6560] dark:text-[#9a9290]"}`}
                   >
                     {offer.status}
                   </span>
@@ -250,22 +250,22 @@ export default function OffersTab({
                 {/* Offer amounts */}
                 <div className="flex items-center gap-4 mt-2">
                   <div>
-                    <span className="text-xs text-[#6b6560]">
+                    <span className="text-xs text-[#6b6560] dark:text-[#9a9290]">
                       Listed price:
                     </span>
-                    <span className="ml-1 text-sm font-medium text-[#1a1a1a]">
+                    <span className="ml-1 text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                       &euro;{offer.listing?.price?.toLocaleString() ?? "\u2014"}
                     </span>
                   </div>
                   <div>
-                    <span className="text-xs text-[#6b6560]">Offer:</span>
+                    <span className="text-xs text-[#6b6560] dark:text-[#9a9290]">Offer:</span>
                     <span className="ml-1 text-sm font-bold text-[#8E7A6B]">
                       &euro;{offer.amount.toLocaleString()}
                     </span>
                   </div>
                   {offer.counter_amount && (
                     <div>
-                      <span className="text-xs text-[#6b6560]">Counter:</span>
+                      <span className="text-xs text-[#6b6560] dark:text-[#9a9290]">Counter:</span>
                       <span className="ml-1 text-sm font-bold text-blue-600">
                         &euro;{offer.counter_amount.toLocaleString()}
                       </span>
@@ -274,7 +274,7 @@ export default function OffersTab({
                 </div>
 
                 {offer.message && (
-                  <p className="text-xs text-[#6b6560] mt-2 bg-[#faf9f7] p-2 italic">
+                  <p className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-2 bg-[#faf9f7] dark:bg-[#1e1c1a] p-2 italic">
                     &ldquo;{offer.message}&rdquo;
                   </p>
                 )}
@@ -316,7 +316,7 @@ export default function OffersTab({
                         })
                       }
                       disabled={actionLoadingId === offer.id}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-semibold hover:bg-blue-100 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-semibold hover:bg-blue-100 transition-colors disabled:opacity-50"
                     >
                       <ArrowLeftRight className="w-3 h-3" />
                       Counter
@@ -324,7 +324,7 @@ export default function OffersTab({
                     <button
                       onClick={() => handleReject(offer.id)}
                       disabled={actionLoadingId === offer.id}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
                     >
                       <X className="w-3 h-3" />
                       Decline
@@ -334,10 +334,10 @@ export default function OffersTab({
 
                 {/* Counter-offer form */}
                 {counterOffer?.offerId === offer.id && (
-                  <div className="mt-3 p-3 bg-[#faf9f7] border border-[#e8e6e3] space-y-2">
+                  <div className="mt-3 p-3 bg-[#faf9f7] dark:bg-[#1e1c1a] border border-[#e8e6e3] dark:border-[#3a3735] space-y-2">
                     <div className="flex gap-2">
                       <div className="flex-1">
-                        <label className="text-[10px] font-medium text-[#6b6560] uppercase tracking-wider">
+                        <label className="text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290] uppercase tracking-wider">
                           Counter Amount (&euro;)
                         </label>
                         <input
@@ -349,11 +349,11 @@ export default function OffersTab({
                             )
                           }
                           placeholder={String(offer.listing?.price ?? "")}
-                          className="mt-1 w-full px-3 py-2 text-sm border border-[#e8e6e3] bg-white focus:outline-none focus:ring-2 focus:ring-[#8E7A6B]/20 focus:border-[#8E7A6B]"
+                          className="mt-1 w-full px-3 py-2 text-sm border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] dark:text-[#e8e6e3] focus:outline-none focus:ring-2 focus:ring-[#8E7A6B]/20 focus:border-[#8E7A6B]"
                         />
                       </div>
                       <div className="flex-1">
-                        <label className="text-[10px] font-medium text-[#6b6560] uppercase tracking-wider">
+                        <label className="text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290] uppercase tracking-wider">
                           Message (optional)
                         </label>
                         <input
@@ -367,7 +367,7 @@ export default function OffersTab({
                             )
                           }
                           placeholder="e.g. I can do this price if picked up today"
-                          className="mt-1 w-full px-3 py-2 text-sm border border-[#e8e6e3] bg-white focus:outline-none focus:ring-2 focus:ring-[#8E7A6B]/20 focus:border-[#8E7A6B]"
+                          className="mt-1 w-full px-3 py-2 text-sm border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] dark:text-[#e8e6e3] focus:outline-none focus:ring-2 focus:ring-[#8E7A6B]/20 focus:border-[#8E7A6B]"
                         />
                       </div>
                     </div>
@@ -381,7 +381,7 @@ export default function OffersTab({
                       </button>
                       <button
                         onClick={() => setCounterOffer(null)}
-                        className="px-3 py-1.5 text-xs text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
+                        className="px-3 py-1.5 text-xs text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
                       >
                         Cancel
                       </button>
@@ -394,10 +394,10 @@ export default function OffersTab({
         ))}
 
         {filtered.length === 0 && (
-          <div className="bg-white border border-[#e8e6e3] p-12 text-center">
+          <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-12 text-center">
             <Euro className="w-8 h-8 mx-auto mb-2 text-[#8a8280]" />
-            <p className="font-medium text-[#1a1a1a]">No offers found</p>
-            <p className="text-xs text-[#6b6560] mt-1">
+            <p className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">No offers found</p>
+            <p className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-1">
               {filter === "all"
                 ? "Offers from buyers will appear here"
                 : `No ${filter} offers`}

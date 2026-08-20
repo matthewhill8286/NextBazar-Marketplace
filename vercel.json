@@ -1,4 +1,6 @@
 {
+  "installCommand": "npm install",
+  "buildCommand": "npm run build --prefix web",
   "crons": [
     {
       "path": "/api/cron/expire-offers",

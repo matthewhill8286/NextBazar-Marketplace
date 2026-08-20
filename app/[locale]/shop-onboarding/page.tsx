@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import ShopOnboardingClient from "./shop-onboarding-client";
 import ShopOnboardingWizard from "./shop-onboarding-wizard";
@@ -10,12 +11,30 @@ export const metadata: Metadata = {
     "Complete your profile and set up your shop to start selling on NextBazar.",
 };
 
-export default async function ShopOnboardingPage({
+export default function ShopOnboardingPage({
   searchParams,
 }: {
   searchParams: Promise<{ session_id?: string }>;
 }) {
-  const supabase = await createClient();
+  // Push all runtime data access (searchParams, supabase auth) into a
+  // Suspense'd child so the page's static shell streams immediately and
+  // Next.js doesn't flag the route as blocking.
+  return (
+    <Suspense fallback={<OnboardingFallback />}>
+      <ShopOnboardingContent searchParams={searchParams} />
+    </Suspense>
+  );
+}
+
+async function ShopOnboardingContent({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>;
+}) {
+  const [params, supabase] = await Promise.all([
+    searchParams,
+    createClient(),
+  ]);
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -24,7 +43,6 @@ export default async function ShopOnboardingPage({
     redirect("/auth/login?redirect=/shop-onboarding");
   }
 
-  const params = await searchParams;
   const stripeSessionId = params.session_id;
 
   // Fetch profile and shop in parallel
@@ -76,4 +94,17 @@ export default async function ShopOnboardingPage({
 
   // Plan is active — show the wizard directly
   return <ShopOnboardingWizard {...wizardProps} />;
+}
+
+function OnboardingFallback() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-4">
+        <div className="h-8 w-2/3 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+        <div className="h-4 w-full bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+        <div className="h-4 w-5/6 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+        <div className="h-48 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] animate-pulse" />
+      </div>
+    </div>
+  );
 }

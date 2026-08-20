@@ -367,7 +367,7 @@ export default function PostClient({
           <div key={s} className="flex-1 flex items-center gap-3">
             <div className="flex-1">
               <div
-                className={`h-[2px] transition-colors ${s <= step ? "bg-[#2C2826]" : "bg-[#e8e6e3]"}`}
+                className={`h-[2px] transition-colors ${s <= step ? "bg-[#2C2826] dark:bg-[#121010]" : "bg-[#e8e6e3] dark:bg-[#3a3735]"}`}
               />
             </div>
           </div>
@@ -381,7 +381,7 @@ export default function PostClient({
         ].map((item, i) => (
           <span
             key={item.key}
-            className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a]" : "text-[#8a8280]"}`}
+            className={`text-[10px] font-medium tracking-[0.15em] uppercase ${i + 1 <= step ? "text-[#1a1a1a] dark:text-[#e8e6e3]" : "text-[#8a8280] dark:text-[#6b6560]"}`}
           >
             {item.label}
           </span>

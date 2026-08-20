@@ -93,9 +93,9 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
   }, [shops, search, sort]);
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#1e1c1a]">
       {/* ── Hero Header ──────────────────────────────────────────────────── */}
-      <div className="bg-[#faf9f7] border-b border-[#e8e6e3]">
+      <div className="bg-[#faf9f7] dark:bg-[#1e1c1a] border-b border-[#e8e6e3] dark:border-[#3a3735]">
         <div className="max-w-6xl mx-auto px-4 py-16 md:py-24">
           <div className="text-center">
             <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#8E7A6B] mb-4 flex items-center justify-center gap-2">
@@ -103,24 +103,24 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
               {t("badge")}
             </p>
             <h1
-              className="text-3xl md:text-5xl font-light text-[#1a1a1a] mb-4"
+              className="text-3xl md:text-5xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-4"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {t("title")}
             </h1>
-            <p className="text-[#6b6560] text-base md:text-lg max-w-xl mx-auto mb-10">
+            <p className="text-[#6b6560] dark:text-[#9a9290] text-base md:text-lg max-w-xl mx-auto mb-10">
               {t("subtitle")}
             </p>
 
             {/* Search bar */}
             <div className="max-w-lg mx-auto relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8280] pointer-events-none" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8a8280] dark:text-[#6b6560] pointer-events-none" />
               <input
                 type="text"
                 placeholder={t("searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 border border-[#e8e6e3] bg-white text-sm text-[#1a1a1a] placeholder:text-[#8a8280] focus:outline-none focus-visible:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 transition-all"
+                className="w-full pl-12 pr-4 py-3.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder:text-[#8a8280] dark:text-[#6b6560] dark:placeholder:text-[#6b6560] focus:outline-none focus-visible:border-[#8E7A6B] focus:ring-1 focus:ring-[#8E7A6B]/10 transition-all"
               />
             </div>
           </div>
@@ -131,13 +131,13 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-10">
         {/* Toolbar */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-[#6b6560]">
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290]">
             {t("shopCount", { count: filtered.length })}
           </p>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
-            className="px-3 py-2 border border-[#e8e6e3] bg-white text-sm text-[#666] focus:outline-none focus-visible:border-[#8E7A6B] cursor-pointer"
+            className="px-3 py-2 border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-sm text-[#666] dark:text-[#9a9290] focus:outline-none focus-visible:border-[#8E7A6B] cursor-pointer"
           >
             <option value="listings">{t("sortListings")}</option>
             <option value="newest">{t("sortNewest")}</option>
@@ -153,12 +153,12 @@ export default function ShopsClient({ shops }: ShopsClientProps) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-white border border-[#e8e6e3]">
-            <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-24 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
+            <div className="w-14 h-14 bg-[#f0eeeb] dark:bg-[#333028] flex items-center justify-center mx-auto mb-4">
               <Store className="w-7 h-7 text-[#8E7A6B]" />
             </div>
             <h2
-              className="text-xl font-light text-[#1a1a1a] mb-2"
+              className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {search.trim() ? t("noShopsFound") : t("noShopsYet")}
@@ -193,7 +193,7 @@ export function ShopCard({
   return (
     <Link
       href={`/shop/${shop.slug}`}
-      className="group block bg-white border border-[#e8e6e3] overflow-hidden hover:shadow-sm hover:shadow-[#e8e6e3]/60 hover:-translate-y-0.5 transition-all duration-300"
+      className="group block bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden hover:shadow-sm hover:shadow-[#e8e6e3]/60 hover:-translate-y-0.5 transition-all duration-300"
     >
       {/* Banner container */}
       <div className="relative">
@@ -268,7 +268,7 @@ export function ShopCard({
       <div className="pt-12 pb-5 px-5">
         {/* Name + verified */}
         <div className="flex items-center gap-2 mb-1.5">
-          <h3 className="text-base font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
+          <h3 className="text-base font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] truncate group-hover:text-[#8E7A6B] transition-colors">
             {shop.shop_name}
           </h3>
           {shop.profile?.verified && (
@@ -286,7 +286,7 @@ export function ShopCard({
 
         {/* Description */}
         {shop.description ? (
-          <p className="text-sm text-[#6b6560] line-clamp-2 mb-4 leading-relaxed">
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] line-clamp-2 mb-4 leading-relaxed">
             {shop.description}
           </p>
         ) : (
@@ -295,7 +295,7 @@ export function ShopCard({
 
         {/* Footer */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs text-[#8a8280]">
+          <div className="flex items-center gap-3 text-xs text-[#8a8280] dark:text-[#6b6560]">
             {shop.listing_count > 0 && (
               <>
                 <span className="font-medium">
@@ -317,7 +317,7 @@ export function ShopCard({
               })}
             </span>
           </div>
-          <ArrowRight className="w-4 h-4 text-[#8a8280] group-hover:text-[#8E7A6B] group-hover:translate-x-0.5 transition-all" />
+          <ArrowRight className="w-4 h-4 text-[#8a8280] dark:text-[#6b6560] group-hover:text-[#8E7A6B] group-hover:translate-x-0.5 transition-all" />
         </div>
       </div>
     </Link>
@@ -338,7 +338,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
   return (
     <Link
       href={`/shop/${shop.slug}`}
-      className="group block bg-white border border-[#e8e6e3] overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+      className="group block bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       {/* Mini banner */}
       {shop.banner_url ? (
@@ -387,7 +387,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
         </div>
 
         <div className="flex items-center gap-1.5 mb-1">
-          <h3 className="text-sm font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
+          <h3 className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] truncate group-hover:text-[#8E7A6B] transition-colors">
             {shop.shop_name}
           </h3>
           {shop.profile?.verified && (
@@ -402,7 +402,7 @@ export function ShopCardCompact({ shop }: { shop: ShopCardRow }) {
           )}
         </div>
 
-        <div className="flex items-center gap-2 text-[11px] text-[#8a8280] font-medium">
+        <div className="flex items-center gap-2 text-[11px] text-[#8a8280] dark:text-[#6b6560] font-medium">
           {shop.listing_count > 0 && (
             <span className="flex items-center gap-1">
               <Package className="w-3 h-3" />

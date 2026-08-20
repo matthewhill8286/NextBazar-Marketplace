@@ -92,34 +92,34 @@ export default function PostStep3({
     <div className="space-y-8">
       <div>
         <h2
-          className="text-3xl font-light text-[#1a1a1a] mb-2"
+          className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] dark:text-[#e8e6e3] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {t("step3.heading")}
         </h2>
-        <p className="text-sm text-[#6b6560]">{t("step3.subheading")}</p>
+        <p className="text-sm text-[#6b6560] dark:text-[#9a9290]">{t("step3.subheading")}</p>
       </div>
 
       {/* ── Two-column layout: Preview (left) + Options (right) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* LEFT COLUMN — Live Preview */}
         <div className="lg:sticky lg:top-8 space-y-3">
-          <div className="flex items-center gap-2 text-[10px] font-medium tracking-[0.15em] uppercase text-[#8a8280]">
+          <div className="flex items-center gap-2 text-[10px] font-medium tracking-[0.15em] uppercase text-[#8a8280] dark:text-[#6b6560]">
             <Eye className="w-3.5 h-3.5" />
             {t("step3.livePreview")}
           </div>
 
           <div
-            className={`relative bg-white border overflow-hidden transition-all duration-300 ${
+            className={`relative bg-white dark:bg-[#252220] border overflow-hidden transition-all duration-300 ${
               selectedPackage === "featured"
                 ? "border-amber-300 shadow-sm shadow-amber-100/60"
                 : selectedPackage === "urgent"
                   ? "border-red-200 shadow-sm shadow-red-100/40"
-                  : "border-[#e8e6e3] shadow-sm"
+                  : "border-[#e8e6e3] dark:border-[#3a3735] shadow-sm"
             }`}
           >
             {/* Image area */}
-            <div className="relative aspect-4/3 overflow-hidden bg-[#f0eeeb]">
+            <div className="relative aspect-4/3 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028]">
               {firstImage ? (
                 <Image
                   src={firstImage.preview}
@@ -130,7 +130,7 @@ export default function PostStep3({
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Camera className="w-10 h-10 text-[#8a8280]" />
+                  <Camera className="w-10 h-10 text-[#8a8280] dark:text-[#6b6560]" />
                 </div>
               )}
 
@@ -180,7 +180,7 @@ export default function PostStep3({
 
             {/* Card body */}
             <div className="p-4">
-              <h3 className="font-medium text-[#1a1a1a] text-[15px] leading-snug line-clamp-2 mb-1.5">
+              <h3 className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-[15px] leading-snug line-clamp-2 mb-1.5">
                 {formData.title || "Your listing title"}
               </h3>
 
@@ -190,7 +190,7 @@ export default function PostStep3({
                   {vehicleChips.map((chip) => (
                     <span
                       key={chip}
-                      className="text-[10px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5"
+                      className="text-[10px] font-medium bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] px-2 py-0.5"
                     >
                       {chip}
                     </span>
@@ -199,12 +199,12 @@ export default function PostStep3({
               )}
 
               {/* Meta row */}
-              <div className="flex items-center gap-1.5 text-[#8a8280] text-xs mb-3">
+              <div className="flex items-center gap-1.5 text-[#8a8280] dark:text-[#6b6560] text-xs mb-3">
                 <MapPin className="w-3 h-3 shrink-0" />
                 <span className="truncate">{location?.name || "Cyprus"}</span>
                 {formData.condition && (
                   <>
-                    <span className="text-[#ddd]">&middot;</span>
+                    <span className="text-[#ddd] dark:text-[#555]">&middot;</span>
                     <span className="shrink-0">
                       {capitalize(formData.condition)}
                     </span>
@@ -214,7 +214,7 @@ export default function PostStep3({
 
               {/* Description preview */}
               {formData.description && (
-                <p className="text-xs text-[#6b6560] line-clamp-2 mb-3 leading-relaxed">
+                <p className="text-xs text-[#6b6560] dark:text-[#9a9290] line-clamp-2 mb-3 leading-relaxed">
                   {formData.description}
                 </p>
               )}
@@ -222,7 +222,7 @@ export default function PostStep3({
               {/* Price and time */}
               <div className="flex items-center justify-between">
                 <span
-                  className="text-lg font-light text-[#1a1a1a]"
+                  className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                   style={
                     formData.price
                       ? { fontFamily: "'Playfair Display', serif" }
@@ -233,7 +233,7 @@ export default function PostStep3({
                     ? `\u20AC${Number(formData.price).toLocaleString()}`
                     : t("step3.contactForPrice")}
                 </span>
-                <span className="flex items-center gap-1 text-[11px] text-[#8a8280]">
+                <span className="flex items-center gap-1 text-[11px] text-[#8a8280] dark:text-[#6b6560]">
                   <Clock className="w-3 h-3" />
                   {t("step3.just_now")}
                 </span>
@@ -253,7 +253,7 @@ export default function PostStep3({
           </div>
 
           {/* Package visual hint */}
-          <p className="text-center text-[11px] text-[#8a8280] mt-1 min-h-[1rem]">
+          <p className="text-center text-[11px] text-[#8a8280] dark:text-[#6b6560] mt-1 min-h-[1rem]">
             {selectedPackage === "featured"
               ? t("step3.featuredHint")
               : selectedPackage === "urgent"
@@ -270,8 +270,8 @@ export default function PostStep3({
             onClick={() => onSetPackageAction("free")}
             className={`w-full text-left border p-5 transition-all ${
               selectedPackage === "free"
-                ? "border-[#8E7A6B] bg-[#faf9f7] ring-1 ring-[#8E7A6B]"
-                : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
+                ? "border-[#8E7A6B] bg-[#faf9f7] dark:bg-[#1e1c1a] ring-1 ring-[#8E7A6B]"
+                : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] hover:border-[#ccc]"
             }`}
           >
             <div className="flex items-center justify-between gap-3">
@@ -280,7 +280,7 @@ export default function PostStep3({
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                     selectedPackage === "free"
                       ? "border-[#8E7A6B] bg-[#8E7A6B]"
-                      : "border-[#e8e6e3]"
+                      : "border-[#e8e6e3] dark:border-[#3a3735]"
                   }`}
                 >
                   {selectedPackage === "free" && (
@@ -288,16 +288,16 @@ export default function PostStep3({
                   )}
                 </div>
                 <div>
-                  <div className="font-medium text-[#1a1a1a] text-sm">
+                  <div className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-sm">
                     {t("step3.freeListing")}
                   </div>
-                  <div className="text-xs text-[#6b6560]">
+                  <div className="text-xs text-[#6b6560] dark:text-[#9a9290]">
                     {t("step3.standardVisibility")}
                   </div>
                 </div>
               </div>
               <div
-                className="font-light text-[#1a1a1a] shrink-0"
+                className="font-light text-[#1a1a1a] dark:text-[#e8e6e3] shrink-0"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {t("step3.free")}
@@ -332,10 +332,10 @@ export default function PostStep3({
                   )}
                 </div>
                 <div>
-                  <div className="font-medium text-[#1a1a1a] text-sm">
+                  <div className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-sm">
                     {t("step3.featuredListing")}
                   </div>
-                  <div className="text-xs text-[#6b6560]">
+                  <div className="text-xs text-[#6b6560] dark:text-[#9a9290]">
                     {t("step3.featuredListingHint")}
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export default function PostStep3({
             className={`w-full text-left border p-5 transition-all ${
               selectedPackage === "urgent"
                 ? "border-red-300 bg-red-50/40 ring-1 ring-red-300"
-                : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
+                : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] hover:border-[#ccc]"
             }`}
           >
             <div className="flex items-center justify-between gap-3">
@@ -365,7 +365,7 @@ export default function PostStep3({
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
                     selectedPackage === "urgent"
                       ? "border-red-500 bg-red-500"
-                      : "border-[#e8e6e3]"
+                      : "border-[#e8e6e3] dark:border-[#3a3735]"
                   }`}
                 >
                   {selectedPackage === "urgent" && (
@@ -373,10 +373,10 @@ export default function PostStep3({
                   )}
                 </div>
                 <div>
-                  <div className="font-medium text-[#1a1a1a] text-sm">
+                  <div className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-sm">
                     {t("step3.quickBoost")}
                   </div>
-                  <div className="text-xs text-[#6b6560]">
+                  <div className="text-xs text-[#6b6560] dark:text-[#9a9290]">
                     {t("step3.quickBoostHint")}
                   </div>
                 </div>
@@ -392,13 +392,13 @@ export default function PostStep3({
 
           {/* Video Tour — Business tier only */}
           {canUploadVideo && userId && (
-            <div className="border border-[#e8e6e3] bg-[#faf9f7] p-5 space-y-3">
+            <div className="border border-[#e8e6e3] dark:border-[#3a3735] bg-[#faf9f7] dark:bg-[#1e1c1a] p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-[#1a1a1a] text-sm">
+                  <p className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-sm">
                     {t("step3.videoTour")}
                   </p>
-                  <p className="text-xs text-[#6b6560] mt-0.5">
+                  <p className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-0.5">
                     {t("step3.videoTourHint")}
                   </p>
                 </div>
@@ -419,7 +419,7 @@ export default function PostStep3({
             <button
               type="button"
               onClick={onBackAction}
-              className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
+              className="flex-1 border border-[#e8e6e3] dark:border-[#3a3735] text-[#666] dark:text-[#9a9290] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors flex items-center justify-center gap-2"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> {t("step3.back")}
             </button>
@@ -448,7 +448,7 @@ export default function PostStep3({
           </div>
 
           {selectedPackage !== "free" && (
-            <p className="text-center text-xs text-[#8a8280]">
+            <p className="text-center text-xs text-[#8a8280] dark:text-[#6b6560]">
               {t("step3.paymentNote")}
             </p>
           )}

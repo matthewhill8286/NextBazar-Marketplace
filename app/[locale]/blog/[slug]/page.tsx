@@ -1,8 +1,7 @@
 import { ArrowLeft, Calendar, Tag, User } from "lucide-react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { getAllPosts, getPostBySlug } from "@/lib/blog";
+import { getAllPosts, getPostBySlug, type BlogPost } from "@/lib/blog";
 import { buildAlternates } from "@/lib/seo";
 
 type PageProps = {
@@ -34,11 +33,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   };
 }
 
-export default async function BlogPostPage(props: PageProps) {
-  const { slug } = await props.params;
-  const post = getPostBySlug(slug);
-
-  if (!post) notFound();
+export default function BlogPostPage({ post }: { post: BlogPost }) {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-16">

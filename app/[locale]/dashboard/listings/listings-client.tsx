@@ -19,7 +19,7 @@ import {
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import CategoryIcon, {
   getCategoryConfig,
@@ -47,15 +47,30 @@ function expiresSoon(expiresAt: string | null, status: string): boolean {
   return ms > 0 && ms <= 86_400_000; // within 24 hours
 }
 
-export default function ListingsClient({
-  initialListings,
-  isProSeller = false,
-  onListingsChangeAction,
-}: {
+type ListingsClientProps = {
   initialListings: DashboardListing[];
   isProSeller?: boolean;
   onListingsChangeAction?: (listings: DashboardListing[]) => void;
-}) {
+};
+
+/**
+ * `useSearchParams()` in this tree forces a Suspense boundary in Next.js 16
+ * — otherwise the route is flagged as blocking (E1078).  Wrap the
+ * implementation so the search-params read is always inside <Suspense>.
+ */
+export default function ListingsClient(props: ListingsClientProps) {
+  return (
+    <Suspense fallback={null}>
+      <ListingsClientInner {...props} />
+    </Suspense>
+  );
+}
+
+function ListingsClientInner({
+  initialListings,
+  isProSeller = false,
+  onListingsChangeAction,
+}: ListingsClientProps) {
   const supabase = createClient();
   const { userId } = useAuth();
   const searchParams = useSearchParams();
@@ -433,7 +448,7 @@ export default function ListingsClient({
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#f0eeeb] p-1">
+      <div className="flex gap-1 bg-[#f0eeeb] dark:bg-[#333028] p-1">
         {TABS.map((t) => {
           const count = listings.filter((l) => l.status === t.key).length;
           return (
@@ -445,13 +460,13 @@ export default function ListingsClient({
               }}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 tab === t.key
-                  ? "bg-white text-[#1a1a1a] shadow-sm"
-                  : "text-[#6b6560] hover:text-[#666]"
+                  ? "bg-white dark:bg-[#252220] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-sm"
+                  : "text-[#6b6560] dark:text-[#9a9290] hover:text-[#666]"
               }`}
             >
               {t.label}
               {count > 0 && (
-                <span className="ml-1.5 text-xs bg-[#e8e6e3] text-[#666] px-1.5 py-0.5 rounded-full">
+                <span className="ml-1.5 text-xs bg-[#e8e6e3] dark:bg-[#3a3735] text-[#666] dark:text-[#9a9290] px-1.5 py-0.5 rounded-full">
                   {count}
                 </span>
               )}
@@ -462,8 +477,8 @@ export default function ListingsClient({
 
       {/* Bulk action bar — Pro Sellers only */}
       {isProSeller && selectedInTab.length > 0 && (
-        <div className="flex items-center gap-3 px-4 py-3 bg-[#faf9f7] border border-[#e8e6e3] ">
-          <span className="text-sm font-medium text-[#1a1a1a]">
+        <div className="flex items-center gap-3 px-4 py-3 bg-[#faf9f7] dark:bg-[#1e1c1a] border border-[#e8e6e3] dark:border-[#3a3735] ">
+          <span className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
             {t("selected", { count: selectedInTab.length })}
           </span>
           <div className="flex items-center gap-2 ml-auto flex-wrap">
@@ -484,7 +499,7 @@ export default function ListingsClient({
                 <button
                   onClick={bulkRelist}
                   disabled={bulkLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e8e6e3] bg-[#faf9f7] text-[#666] text-xs font-semibold hover:bg-[#f0eeeb] transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#666] dark:text-[#9a9290] text-xs font-semibold hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors disabled:opacity-50"
                 >
                   {bulkLoading ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
@@ -526,14 +541,14 @@ export default function ListingsClient({
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={bulkLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 border border-red-100 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
             >
               <Trash2 className="w-3 h-3" />
               Delete
             </button>
             <button
               onClick={clearSelection}
-              className="text-xs text-[#6b6560] hover:text-[#666] transition-colors px-2"
+              className="text-xs text-[#6b6560] dark:text-[#9a9290] hover:text-[#666] transition-colors px-2"
             >
               Cancel
             </button>
@@ -543,13 +558,13 @@ export default function ListingsClient({
 
       {/* Listings */}
       {filtered.length > 0 ? (
-        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] divide-y divide-[#faf9f7] dark:divide-[#3a3735]">
           {/* Select-all header — Pro Sellers only */}
           {isProSeller && (
-            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#e8e6e3] bg-[#faf9f7]/60 rounded-t-xl">
+            <div className="flex items-center gap-3 px-4 py-2.5 border-b border-[#e8e6e3] dark:border-[#3a3735] bg-[#faf9f7]/60 dark:bg-[#1e1c1a]/60 rounded-t-xl">
               <button
                 onClick={toggleSelectAll}
-                className="flex items-center gap-2 text-xs text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
+                className="flex items-center gap-2 text-xs text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
               >
                 <SelectIcon className="w-4 h-4" />
                 {allSelected ? t("deselectAll") : t("selectAll")}
@@ -566,7 +581,7 @@ export default function ListingsClient({
             return (
               <div
                 key={listing.id}
-                className={`relative flex items-center gap-3 p-4 hover:bg-[#faf9f7]/50 transition-colors ${isSelected ? "bg-[#faf9f7]/40" : isExpiringSoon ? "bg-amber-50/50" : ""}`}
+                className={`relative flex items-center gap-3 p-4 hover:bg-[#faf9f7]/50 transition-colors ${isSelected ? "bg-[#faf9f7]/40 dark:bg-[#333028]/40" : isExpiringSoon ? "bg-amber-50/50" : ""}`}
               >
                 {isExpiringSoon && (
                   <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-amber-400 rounded-r" />
@@ -586,7 +601,7 @@ export default function ListingsClient({
                 )}
 
                 {/* Thumbnail */}
-                <div className="w-20 h-16 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
+                <div className="w-20 h-16 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] shrink-0 relative">
                   {listing.primary_image_url ? (
                     <Image
                       src={listing.primary_image_url}
@@ -637,12 +652,12 @@ export default function ListingsClient({
                 <div className="flex-1 min-w-0">
                   <Link
                     href={`/listing/${listing.slug}`}
-                    className="font-medium text-[#1a1a1a] text-sm hover:text-[#666] truncate block"
+                    className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-sm hover:text-[#666] truncate block"
                   >
                     {listing.title}
                   </Link>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-[#6b6560] flex-wrap">
-                    <span className="font-semibold text-[#1a1a1a]">
+                  <div className="flex items-center gap-3 mt-1 text-xs text-[#6b6560] dark:text-[#9a9290] flex-wrap">
+                    <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                       {formatPrice(listing.price, listing.currency)}
                     </span>
                     <span>·</span>
@@ -709,7 +724,7 @@ export default function ListingsClient({
                 </div>
 
                 {/* Stats */}
-                <div className="hidden md:flex items-center gap-5 text-xs text-[#6b6560] shrink-0">
+                <div className="hidden md:flex items-center gap-5 text-xs text-[#6b6560] dark:text-[#9a9290] shrink-0">
                   <div className="flex items-center gap-1">
                     <Eye className="w-3.5 h-3.5" />
                     <span>{(listing.view_count || 0).toLocaleString()}</span>
@@ -769,7 +784,7 @@ export default function ListingsClient({
                     <button
                       onClick={() => relistListing(listing.id)}
                       disabled={loadingAction === listing.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e8e6e3] bg-[#faf9f7] text-[#666] text-xs font-semibold hover:bg-[#f0eeeb] transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#666] dark:text-[#9a9290] text-xs font-semibold hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors disabled:opacity-50"
                     >
                       <RefreshCw className="w-3 h-3" />
                       Relist
@@ -786,17 +801,17 @@ export default function ListingsClient({
                       onClick={() =>
                         setOpenMenu(openMenu === listing.id ? null : listing.id)
                       }
-                      className="p-2 hover:bg-[#f0eeeb] transition-colors text-[#8a8280] hover:text-[#666]"
+                      className="p-2 hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors text-[#8a8280] dark:text-[#6b6560] hover:text-[#666]"
                     >
                       <MoreVertical className="w-4 h-4" />
                     </button>
                   )}
 
                   {openMenu === listing.id && (
-                    <div className="absolute right-0 top-10 w-48 bg-white border border-[#e8e6e3] shadow-sm py-1.5 z-20">
+                    <div className="absolute right-0 top-10 w-48 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-sm py-1.5 z-20">
                       <Link
                         href={`/dashboard/edit/${listing.id}`}
-                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7]"
+                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028]"
                         onClick={() => setOpenMenu(null)}
                       >
                         <Pencil className="w-3.5 h-3.5" /> Edit Listing
@@ -822,7 +837,7 @@ export default function ListingsClient({
                               listingTitle: listing.title,
                             });
                           }}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] w-full"
                         >
                           <CheckCircle className="w-3.5 h-3.5" /> Mark as Sold
                         </button>
@@ -837,7 +852,7 @@ export default function ListingsClient({
                               listingTitle: listing.title,
                             });
                           }}
-                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                          className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] w-full"
                         >
                           <RotateCcw className="w-3.5 h-3.5" /> Reactivate
                         </button>
@@ -870,13 +885,13 @@ export default function ListingsClient({
                                 listingTitle: listing.title,
                               });
                             }}
-                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] w-full"
                           >
                             <Clock className="w-3.5 h-3.5" /> Renew listing
                           </button>
                           <button
                             onClick={() => relistListing(listing.id)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] hover:bg-[#faf9f7] w-full"
+                            className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] w-full"
                           >
                             <RefreshCw className="w-3.5 h-3.5" /> Relist as new
                           </button>

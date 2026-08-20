@@ -1,27 +1,16 @@
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import ListingCard from "@/app/components/listing-card";
 import { Link } from "@/i18n/navigation";
-import { getRelatedListingsCached } from "@/lib/supabase/queries";
-import { getTranslator } from "@/lib/translations";
+import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
 type Props = {
-  locale: string;
-  categoryId: string;
-  excludeId: string;
+  related: ListingCardRow[];
   categorySlug: string;
 };
 
-/** Async server component — fetches and renders related listings independently. */
-export default async function RelatedListings({
-  locale,
-  categoryId,
-  excludeId,
-  categorySlug,
-}: Props) {
-  const [related, t] = await Promise.all([
-    getRelatedListingsCached(categoryId, excludeId),
-    getTranslator(locale, "listing"),
-  ]);
+export default function RelatedListings({ related, categorySlug }: Props) {
+  const t = useTranslations("listing");
 
   if (related.length === 0) return null;
 

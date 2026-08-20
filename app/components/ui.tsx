@@ -16,7 +16,7 @@ import { EmptyListingsIllustration } from "@/app/components/illustrations";
 // ─── Form primitives ──────────────────────────────────────────────────────────
 
 const INPUT_BASE =
-  "w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white transition-colors";
+  "w-full px-4 py-3 border border-[#e8e6e3] dark:border-[#3a3735] focus-visible:border-[#8E7A6B] dark:focus-visible:border-[#b8a594] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 dark:focus-visible:ring-[#b8a594]/10 outline-none text-sm bg-white dark:bg-[#1e1c1a] text-foreground transition-colors";
 
 type FormInputProps = InputHTMLAttributes<HTMLInputElement> & {
   /** Optional prefix symbol rendered inside the left of the input (e.g. "\u20AC") */
@@ -32,7 +32,7 @@ export function FormInput({
   if (prefix) {
     return (
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b6560] font-medium pointer-events-none">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b6560] dark:text-[#9a9290] font-medium pointer-events-none">
           {prefix}
         </span>
         <input className={`${INPUT_BASE} pl-8 ${className}`} {...props} />
@@ -70,7 +70,7 @@ export function ErrorBanner({
 }) {
   if (!message) return null;
   return (
-    <div className="bg-red-50 text-red-700 text-sm px-4 py-3 border border-red-100">
+    <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm px-4 py-3 border border-red-100 dark:border-red-800">
       {message}
     </div>
   );
@@ -84,7 +84,7 @@ export function SuccessBanner({
 }) {
   if (!message) return null;
   return (
-    <div className="bg-emerald-50 text-emerald-700 text-sm px-4 py-3 border border-emerald-100">
+    <div className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm px-4 py-3 border border-emerald-100 dark:border-emerald-800">
       {message}
     </div>
   );
@@ -142,7 +142,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={`bg-white border border-[#e8e6e3] p-14 text-center ${className}`}
+      className={`bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-14 text-center ${className}`}
     >
       {/* Use illustration instead of emoji when possible */}
       {emoji ? (
@@ -151,13 +151,15 @@ export function EmptyState({
         <EmptyListingsIllustration className="w-16 h-16 mx-auto mb-4 text-[#8a8280]" />
       )}
       <p
-        className="font-light text-xl text-[#1a1a1a] mb-2"
+        className="font-light text-xl text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
         style={{ fontFamily: "'Playfair Display', serif" }}
       >
         {title}
       </p>
       {description && (
-        <p className="text-[#6b6560] text-sm max-w-sm mx-auto">{description}</p>
+        <p className="text-[#6b6560] dark:text-[#9a9290] text-sm max-w-sm mx-auto">
+          {description}
+        </p>
       )}
       {action && <div className="mt-6">{action}</div>}
     </div>
@@ -201,22 +203,24 @@ export function ConfirmDialog({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-white dark:bg-[#252220] shadow-2xl w-full max-w-sm p-6 animate-in fade-in zoom-in-95 duration-150">
         {icon && <div className="flex justify-center mb-4">{icon}</div>}
         <h3
-          className="text-xl font-light text-[#1a1a1a] mb-2"
+          className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {title}
         </h3>
         {description && (
-          <p className="text-sm text-[#6b6560] mb-6">{description}</p>
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mb-6">
+            {description}
+          </p>
         )}
         <div className="flex gap-3">
           <button
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 py-2.5 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm font-medium text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors disabled:opacity-50"
           >
             {cancelLabel}
           </button>

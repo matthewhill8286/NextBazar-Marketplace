@@ -99,11 +99,11 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
   return (
     <Link
       href={`/listing/${listing.slug}`}
-      className="group relative bg-white border border-[#e8e6e3] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-black/8 hover:-translate-y-1 block"
+      className="group relative bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-black/8 hover:-translate-y-1 block"
       style={cardStyle}
     >
       {/* Image */}
-      <div className="relative aspect-4/3 overflow-hidden bg-[#f0eeeb]">
+      <div className="relative aspect-4/3 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028]">
         <Image
           src={imageSrc}
           alt={listing.title}
@@ -135,7 +135,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
 
         {/* Sold overlay */}
         {isSold && (
-          <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/30 backdrop-blur-[3px]">
+          <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/30 dark:bg-black/30 backdrop-blur-[3px]">
             <span className="bg-[#2C2826] text-white text-[10px] font-medium px-6 py-2.5 tracking-[0.3em] uppercase">
               {t("sold")}
             </span>
@@ -176,8 +176,8 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
               compared
                 ? "bg-[#2C2826] text-white"
                 : isFull
-                  ? "bg-white/70 text-[#8a8280] cursor-not-allowed"
-                  : "bg-white/70 text-[#666] hover:bg-white hover:text-[#1a1a1a]"
+                  ? "bg-white/70 dark:bg-black/40 text-[#8a8280] cursor-not-allowed"
+                  : "bg-white/70 dark:bg-black/40 text-[#666] dark:text-[#9a9290] hover:bg-white dark:hover:bg-black/60 hover:text-[#1a1a1a] dark:hover:text-white"
             }`}
           >
             {compared ? (
@@ -198,10 +198,10 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
       {/* Body */}
       <div className="p-5">
         <h3
-          className={`font-medium text-[#1a1a1a] text-sm leading-snug line-clamp-2 mb-2 transition-colors duration-300 ${
+          className={`font-medium text-[#1a1a1a] dark:text-[#e8e6e3] text-sm leading-snug line-clamp-2 mb-2 transition-colors duration-300 ${
             accentColor
               ? "group-hover:[color:var(--card-accent)]"
-              : "group-hover:text-[#666]"
+              : "group-hover:text-[#666] dark:group-hover:text-[#9a9290]"
           }`}
         >
           {listing.title}
@@ -214,14 +214,16 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
             (FEATURE_FLAGS.DEALERS && listing.profiles.is_pro_seller)) && (
             <div className="flex items-center gap-2 flex-wrap mb-1.5">
               {listing.profiles.verified && (
-                <span className="inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 tracking-wider uppercase bg-emerald-50 text-emerald-700">
+                <span className="inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 tracking-wider uppercase bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
                   <ShieldCheck className="w-2.5 h-2.5" /> Verified
                 </span>
               )}
               {FEATURE_FLAGS.DEALERS && listing.profiles.is_pro_seller && (
                 <span
                   className={`inline-flex items-center gap-0.5 text-[9px] font-medium px-1.5 py-0.5 tracking-wider uppercase ${
-                    accentColor ? "" : "bg-[#f0eeeb] text-[#666]"
+                    accentColor
+                      ? ""
+                      : "bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290]"
                   }`}
                   style={
                     accentColor
@@ -247,12 +249,12 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
             </div>
           )}
 
-        <div className="flex items-center gap-1.5 text-[#6b6560] text-[11px] mb-3 tracking-wide">
+        <div className="flex items-center gap-1.5 text-[#6b6560] dark:text-[#9a9290] text-[11px] mb-3 tracking-wide">
           <MapPin className="w-3 h-3 shrink-0" />
           <span className="truncate">{loc?.name || "Cyprus"}</span>
           {listing.condition && (
             <>
-              <span className="text-[#ddd]">&middot;</span>
+              <span className="text-[#ddd] dark:text-[#555]">&middot;</span>
               <span className="shrink-0">
                 {formatCondition(listing.condition)}
               </span>
@@ -262,7 +264,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
 
         <div className="flex items-center justify-between">
           <span
-            className={`font-semibold ${listing.price === null ? "text-[#6b6560] text-sm" : "text-[#1a1a1a] text-lg tracking-tight"}`}
+            className={`font-semibold ${listing.price === null ? "text-[#6b6560] dark:text-[#9a9290] text-sm" : "text-[#1a1a1a] dark:text-[#e8e6e3] text-lg tracking-tight"}`}
             style={
               listing.price !== null
                 ? { fontFamily: "'Playfair Display', serif" }
@@ -279,7 +281,7 @@ function ListingCard({ listing, accentColor }: ListingCardProps) {
       </div>
 
       {/* Bottom accent line on hover */}
-      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1a1a1a] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1a1a1a] dark:bg-[#b8a594] scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
     </Link>
   );
 }

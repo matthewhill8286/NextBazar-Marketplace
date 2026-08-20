@@ -33,7 +33,7 @@ test.describe("Homepage", () => {
     await page.goto("/");
     const savedLink = page
       .getByRole("link", { name: /saved/i })
-      .or(page.locator('a[href="/saved"]'));
+      .or(page.locator('a[href*="saved"]'));
     await expect(savedLink.first()).toBeVisible();
   });
 
@@ -45,7 +45,7 @@ test.describe("Homepage", () => {
 
   test("navbar has messages icon", async ({ page }) => {
     await page.goto("/");
-    const messagesLink = page.locator('a[href="/messages"]');
+    const messagesLink = page.locator('a[href*="messages"]');
     await expect(messagesLink.first()).toBeVisible();
   });
 
@@ -92,7 +92,7 @@ test.describe("Homepage", () => {
 
   test("clicking the logo navigates to home", async ({ page }) => {
     await page.goto("/search");
-    await page.locator('a[href="/"]').first().click();
-    await expect(page).toHaveURL(/\/$/);
+    await page.locator('a[href="/en"]').first().click();
+    await expect(page).toHaveURL(/\/en\/?$/);
   });
 });

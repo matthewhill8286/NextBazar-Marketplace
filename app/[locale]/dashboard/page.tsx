@@ -52,7 +52,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1
-          className="text-3xl font-light text-[#1a1a1a]"
+          className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {t("title")}
@@ -90,18 +90,18 @@ export default function DashboardPage() {
         ].map(({ icon: Icon, label, value }) => (
           <div
             key={label}
-            className="bg-white border border-[#e8e6e3] p-5 hover:border-[#ccc] transition-colors"
+            className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5 hover:border-[#ccc] transition-colors"
           >
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="p-2 bg-[#faf9f7]">
-                <Icon className="w-4 h-4 text-[#6b6560]" />
+              <div className="p-2 bg-[#faf9f7] dark:bg-[#1e1c1a]">
+                <Icon className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
               </div>
-              <span className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em]">
+              <span className="text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290] uppercase tracking-[0.2em]">
                 {label}
               </span>
             </div>
             <div
-              className="text-2xl font-light text-[#1a1a1a] tracking-tight"
+              className="text-2xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] tracking-tight"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {value}

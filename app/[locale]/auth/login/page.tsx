@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AuthIllustration } from "@/app/components/illustrations";
 import { Link } from "@/i18n/navigation";
 import { buildAlternates } from "@/lib/seo";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 import LoginForm from "./login-form";
 
 export const metadata: Metadata = {
@@ -13,13 +13,8 @@ export const metadata: Metadata = {
   alternates: buildAlternates("/auth/login"),
 };
 
-export default async function LoginPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslator(locale, "auth");
+export default function LoginPage() {
+  const t = useTranslations("auth");
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
@@ -27,23 +22,23 @@ export default async function LoginPage({
         <div className="text-center mb-8">
           <AuthIllustration className="w-24 h-24 mx-auto mb-6 text-[#8a8280]" />
           <h1
-            className="text-3xl font-light text-[#1a1a1a]"
+            className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {t("welcomeBack")}
           </h1>
-          <p className="text-[#6b6560] mt-2 text-sm">{t("loginSubtitle")}</p>
+          <p className="text-[#6b6560] dark:text-[#9a9290] mt-2 text-sm">{t("loginSubtitle")}</p>
         </div>
 
         <Suspense
           fallback={
-            <div className="h-80 bg-white border border-[#e8e6e3] animate-pulse" />
+            <div className="h-80 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] animate-pulse" />
           }
         >
           <LoginForm />
         </Suspense>
 
-        <p className="text-center text-sm text-[#6b6560] mt-6">
+        <p className="text-center text-sm text-[#6b6560] dark:text-[#9a9290] mt-6">
           {t("noAccount")}{" "}
           <Link
             href="/auth/signup"

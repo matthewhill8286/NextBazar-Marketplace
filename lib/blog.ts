@@ -12,9 +12,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 
-const BLOG_DIR = path.join(process.cwd(), "content/blog");
+const BLOG_DIR = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../content/blog",
+);
 
 export interface BlogPost {
   slug: string;

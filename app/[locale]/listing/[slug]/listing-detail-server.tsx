@@ -28,7 +28,7 @@ import type {
   ListingCardRow,
   ListingDetailRow,
 } from "@/lib/supabase/supabase.types";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 import ImageGallery from "./image-gallery";
 import { FavoriteAction, ReportAction, ShareAction } from "./listing-actions";
 import ListingInteractions from "./listing-interactions";
@@ -74,17 +74,15 @@ type Props = {
 
 // ─── Server Component ─────────────────────────────────────────────────────────
 
-export default async function ListingDetailServer({
+export default function ListingDetailServer({
   locale,
   listing,
   accentColor,
   shopSlug,
   shopInfo,
 }: Props) {
-  const [t, tCommon] = await Promise.all([
-    getTranslator(locale, "listing"),
-    getTranslator(locale, "common"),
-  ]);
+  const t = useTranslations("listing");
+  const tCommon = useTranslations("common");
 
   const profile = listing.profiles;
   const sellerRating = profile?.rating || 0;
@@ -121,37 +119,37 @@ export default async function ListingDetailServer({
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#1e1c1a]">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 py-4">
-        <nav className="flex items-center gap-1.5 text-sm text-[#6b6560] overflow-x-auto hide-scrollbar">
+        <nav className="flex items-center gap-1.5 text-sm text-[#6b6560] dark:text-[#9a9290] overflow-x-auto hide-scrollbar">
           <Link
             href="/"
-            className="hover:text-[#1a1a1a] flex items-center gap-1 shrink-0 transition-colors"
+            className="hover:text-[#1a1a1a] dark:hover:text-white flex items-center gap-1 shrink-0 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             {tCommon("home")}
           </Link>
-          <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd]" />
+          <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd] dark:text-[#555]" />
           <Link
             href={`/search?category=${listing.categories?.slug || ""}`}
-            className="hover:text-[#1a1a1a] shrink-0 transition-colors"
+            className="hover:text-[#1a1a1a] dark:hover:text-white shrink-0 transition-colors"
           >
             {listing.categories?.name || "Listing"}
           </Link>
           {listing.subcategories && (
             <>
-              <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd]" />
+              <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd] dark:text-[#555]" />
               <Link
                 href={`/search?category=${listing.categories?.slug || ""}&subcategory=${listing.subcategories.slug}`}
-                className="hover:text-[#1a1a1a] shrink-0 transition-colors"
+                className="hover:text-[#1a1a1a] dark:hover:text-white shrink-0 transition-colors"
               >
                 {listing.subcategories.name}
               </Link>
             </>
           )}
-          <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd]" />
-          <span className="text-[#1a1a1a] font-medium truncate">
+          <ChevronRight className="w-3 h-3 shrink-0 text-[#ddd] dark:text-[#555]" />
+          <span className="text-[#1a1a1a] dark:text-[#e8e6e3] font-medium truncate">
             {listing.title}
           </span>
         </nav>
@@ -174,7 +172,7 @@ export default async function ListingDetailServer({
           <div className="lg:col-span-2 space-y-6">
             {/* Title card */}
             <div
-              className={`bg-white border ${listing.status === "sold" ? "border-[#ccc]" : "border-[#e8e6e3]"}`}
+              className={`bg-white dark:bg-[#252220] border ${listing.status === "sold" ? "border-[#ccc] dark:border-[#3a3735]" : "border-[#e8e6e3] dark:border-[#3a3735]"}`}
             >
               {/* Sold banner */}
               {listing.status === "sold" && (
@@ -215,46 +213,46 @@ export default async function ListingDetailServer({
                     </span>
                   </span>
                   {listing.condition && (
-                    <span className="bg-[#f0eeeb] text-[#666] text-xs font-medium px-2.5 py-1">
+                    <span className="bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] text-xs font-medium px-2.5 py-1">
                       {conditionLabel(listing.condition)}
                     </span>
                   )}
                   {listing.price_type === "negotiable" && (
-                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1">
+                    <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium px-2.5 py-1">
                       {tCommon("negotiable")}
                     </span>
                   )}
                   {listing.price_type === "free" && (
-                    <span className="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1">
+                    <span className="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-medium px-2.5 py-1">
                       {tCommon("free")}
                     </span>
                   )}
                   {listing.quantity != null && listing.quantity > 0 && (
-                    <span className="bg-[#f0eeeb] text-[#666] text-xs font-medium px-2.5 py-1">
+                    <span className="bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] text-xs font-medium px-2.5 py-1">
                       {listing.quantity} in stock
                     </span>
                   )}
                   {listing.quantity === 0 && (
-                    <span className="bg-red-50 text-red-600 text-xs font-semibold px-2.5 py-1">
+                    <span className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-semibold px-2.5 py-1">
                       Out of stock
                     </span>
                   )}
                 </div>
 
                 <h1
-                  className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-3 leading-tight"
+                  className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-3 leading-tight"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {listing.title}
                 </h1>
 
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[#6b6560] mb-5">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-[#6b6560] dark:text-[#9a9290] mb-5">
                   <span className="flex items-center gap-1.5">
-                    <MapPin className="w-4 h-4 text-[#8a8280]" />
+                    <MapPin className="w-4 h-4 text-[#8a8280] dark:text-[#6b6560]" />
                     {listing.locations?.name || "Cyprus"}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-[#8a8280]" />
+                    <Clock className="w-4 h-4 text-[#8a8280] dark:text-[#6b6560]" />
                     <TimeAgo
                       dateStr={listing.created_at}
                       locale={locale}
@@ -262,13 +260,13 @@ export default async function ListingDetailServer({
                     />
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Eye className="w-4 h-4 text-[#8a8280]" />
+                    <Eye className="w-4 h-4 text-[#8a8280] dark:text-[#6b6560]" />
                     {t("views", {
                       count: (listing.view_count || 0).toLocaleString(),
                     })}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Heart className="w-4 h-4 text-[#8a8280]" />
+                    <Heart className="w-4 h-4 text-[#8a8280] dark:text-[#6b6560]" />
                     {t("savedCount", {
                       count: (listing.favorite_count || 0).toLocaleString(),
                     })}
@@ -277,7 +275,7 @@ export default async function ListingDetailServer({
 
                 <div className="flex items-end gap-3 mb-1">
                   <span
-                    className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
+                    className="text-3xl md:text-4xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     {formatPrice(
@@ -303,64 +301,64 @@ export default async function ListingDetailServer({
             </div>
 
             {/* Details grid */}
-            <div className="bg-white p-6 border border-[#e8e6e3]">
+            <div className="bg-white dark:bg-[#252220] p-6 border border-[#e8e6e3] dark:border-[#3a3735]">
               <h2
-                className="text-lg font-light text-[#1a1a1a] mb-4"
+                className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-4"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {t("details")}
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
-                  <div className="p-2 bg-white shadow-sm">
-                    <Tag className="w-4 h-4 text-[#6b6560]" />
+                <div className="flex items-center gap-3 bg-[#faf9f7] dark:bg-[#1e1c1a] p-3.5">
+                  <div className="p-2 bg-white dark:bg-[#252220] shadow-sm">
+                    <Tag className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
+                    <div className="text-[10px] text-[#6b6560] dark:text-[#9a9290] font-medium uppercase tracking-[0.15em]">
                       {t("category")}
                     </div>
-                    <div className="text-sm font-medium text-[#1a1a1a]">
+                    <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                       {listing.categories?.name || "\u2014"}
                     </div>
                   </div>
                 </div>
                 {listing.condition && (
-                  <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
-                    <div className="p-2 bg-white shadow-sm">
-                      <Box className="w-4 h-4 text-[#6b6560]" />
+                  <div className="flex items-center gap-3 bg-[#faf9f7] dark:bg-[#1e1c1a] p-3.5">
+                    <div className="p-2 bg-white dark:bg-[#252220] shadow-sm">
+                      <Box className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
+                      <div className="text-[10px] text-[#6b6560] dark:text-[#9a9290] font-medium uppercase tracking-[0.15em]">
                         {t("condition")}
                       </div>
-                      <div className="text-sm font-medium text-[#1a1a1a]">
+                      <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                         {conditionLabel(listing.condition)}
                       </div>
                     </div>
                   </div>
                 )}
-                <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
-                  <div className="p-2 bg-white shadow-sm">
-                    <MapPin className="w-4 h-4 text-[#6b6560]" />
+                <div className="flex items-center gap-3 bg-[#faf9f7] dark:bg-[#1e1c1a] p-3.5">
+                  <div className="p-2 bg-white dark:bg-[#252220] shadow-sm">
+                    <MapPin className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
+                    <div className="text-[10px] text-[#6b6560] dark:text-[#9a9290] font-medium uppercase tracking-[0.15em]">
                       {t("location")}
                     </div>
-                    <div className="text-sm font-medium text-[#1a1a1a]">
+                    <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                       {listing.locations?.name || "Cyprus"}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 bg-[#faf9f7] p-3.5">
-                  <div className="p-2 bg-white shadow-sm">
-                    <Calendar className="w-4 h-4 text-[#6b6560]" />
+                <div className="flex items-center gap-3 bg-[#faf9f7] dark:bg-[#1e1c1a] p-3.5">
+                  <div className="p-2 bg-white dark:bg-[#252220] shadow-sm">
+                    <Calendar className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                   </div>
                   <div>
-                    <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
+                    <div className="text-[10px] text-[#6b6560] dark:text-[#9a9290] font-medium uppercase tracking-[0.15em]">
                       {t("posted")}
                     </div>
-                    <div className="text-sm font-medium text-[#1a1a1a]">
+                    <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                       {formatDate(listing.created_at, locale)}
                     </div>
                   </div>
@@ -439,11 +437,11 @@ export default async function ListingDetailServer({
                 const visible = fields.filter((f) => attrs[f.key]?.trim());
                 if (visible.length === 0) return null;
                 return (
-                  <div className="bg-white p-6 border border-[#e8e6e3]">
+                  <div className="bg-white dark:bg-[#252220] p-6 border border-[#e8e6e3] dark:border-[#3a3735]">
                     <div className="flex items-center gap-2 mb-4">
-                      <Car className="w-5 h-5 text-[#6b6560]" />
+                      <Car className="w-5 h-5 text-[#6b6560] dark:text-[#9a9290]" />
                       <h2
-                        className="text-lg font-light text-[#1a1a1a]"
+                        className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                       >
                         {t("vehicleSpecifications")}
@@ -457,16 +455,16 @@ export default async function ListingDetailServer({
                         return (
                           <div
                             key={field.key}
-                            className="flex items-center gap-3 bg-[#faf9f7] p-3.5"
+                            className="flex items-center gap-3 bg-[#faf9f7] dark:bg-[#1e1c1a] p-3.5"
                           >
-                            <div className="p-2 bg-white shadow-sm">
-                              <Icon className="w-4 h-4 text-[#6b6560]" />
+                            <div className="p-2 bg-white dark:bg-[#252220] shadow-sm">
+                              <Icon className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                             </div>
                             <div>
-                              <div className="text-[10px] text-[#6b6560] font-medium uppercase tracking-[0.15em]">
+                              <div className="text-[10px] text-[#6b6560] dark:text-[#9a9290] font-medium uppercase tracking-[0.15em]">
                                 {field.label}
                               </div>
-                              <div className="text-sm font-medium text-[#1a1a1a]">
+                              <div className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                                 {display}
                               </div>
                             </div>
@@ -480,14 +478,14 @@ export default async function ListingDetailServer({
 
             {/* Description */}
             {listing.description && (
-              <div className="bg-white p-6 border border-[#e8e6e3]">
+              <div className="bg-white dark:bg-[#252220] p-6 border border-[#e8e6e3] dark:border-[#3a3735]">
                 <h2
-                  className="text-lg font-light text-[#1a1a1a] mb-3"
+                  className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-3"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {t("description")}
                 </h2>
-                <div className="text-[#666] leading-relaxed whitespace-pre-wrap text-[15px]">
+                <div className="text-[#666] dark:text-[#9a9290] leading-relaxed whitespace-pre-wrap text-[15px]">
                   {listing.description}
                 </div>
               </div>
@@ -519,10 +517,10 @@ export default async function ListingDetailServer({
           <div className="space-y-4">
             {/* Seller card */}
             <div
-              className={`bg-white border overflow-hidden ${
+              className={`bg-white dark:bg-[#252220] border overflow-hidden ${
                 isEnhanced
-                  ? "border-[#e8e6e3] border-t-[3px]"
-                  : "border-[#e8e6e3]"
+                  ? "border-[#e8e6e3] dark:border-[#3a3735] border-t-[3px]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735]"
               }`}
               style={
                 isEnhanced && accentColor
@@ -564,7 +562,7 @@ export default async function ListingDetailServer({
 
               <div className="p-6">
                 <div className="flex items-center gap-3.5 mb-5">
-                  <div className="w-14 h-14 bg-[#2C2826] flex items-center justify-center text-white font-medium text-xl shrink-0">
+                  <div className="w-14 h-14 bg-[#2C2826] dark:bg-[#121010] flex items-center justify-center text-white font-medium text-xl shrink-0">
                     {profile?.avatar_url ? (
                       <Image
                         src={profile.avatar_url}
@@ -586,7 +584,7 @@ export default async function ListingDetailServer({
                             ? `/shop/${shopSlug}`
                             : `/profile/${listing.user_id}`
                         }
-                        className="font-medium text-[#1a1a1a] truncate transition-colors hover:text-[#666]"
+                        className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate transition-colors hover:text-[#666] dark:hover:text-[#9a9290]"
                         style={
                           accentColor
                             ? {
@@ -639,11 +637,11 @@ export default async function ListingDetailServer({
                           stroke="#f59e0b"
                         />
                       ))}
-                      <span className="text-xs text-[#6b6560] ml-1">
+                      <span className="text-xs text-[#6b6560] dark:text-[#9a9290] ml-1">
                         {sellerRating} ({sellerReviews})
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#8a8280] mt-0.5">
+                    <p className="text-[11px] text-[#8a8280] dark:text-[#6b6560] mt-0.5">
                       {t("memberSince")} {sellerYear}
                     </p>
                   </div>
@@ -651,7 +649,7 @@ export default async function ListingDetailServer({
 
                 {/* Enhanced: Shop description */}
                 {isEnhanced && shopInfo?.description && (
-                  <p className="text-xs text-[#6b6560] leading-relaxed mb-4 line-clamp-3">
+                  <p className="text-xs text-[#6b6560] dark:text-[#9a9290] leading-relaxed mb-4 line-clamp-3">
                     {shopInfo.description}
                   </p>
                 )}
@@ -668,13 +666,13 @@ export default async function ListingDetailServer({
                   (shopInfo?.website ||
                     shopInfo?.facebook ||
                     shopInfo?.instagram) && (
-                    <div className="mt-4 pt-4 border-t border-[#e8e6e3] flex items-center gap-3">
+                    <div className="mt-4 pt-4 border-t border-[#e8e6e3] dark:border-[#3a3735] flex items-center gap-3">
                       {shopInfo.website && (
                         <a
                           href={shopInfo.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#8a8280] hover:text-[#1a1a1a] transition-colors"
+                          className="text-xs text-[#8a8280] dark:text-[#6b6560] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
                         >
                           Website
                         </a>
@@ -684,7 +682,7 @@ export default async function ListingDetailServer({
                           href={`https://facebook.com/${shopInfo.facebook}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#8a8280] hover:text-[#1a1a1a] transition-colors"
+                          className="text-xs text-[#8a8280] dark:text-[#6b6560] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
                         >
                           Facebook
                         </a>
@@ -694,7 +692,7 @@ export default async function ListingDetailServer({
                           href={`https://instagram.com/${shopInfo.instagram}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#8a8280] hover:text-[#1a1a1a] transition-colors"
+                          className="text-xs text-[#8a8280] dark:text-[#6b6560] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
                         >
                           Instagram
                         </a>
@@ -702,14 +700,14 @@ export default async function ListingDetailServer({
                     </div>
                   )}
 
-                <div className="mt-4 pt-4 border-t border-[#e8e6e3] text-center">
+                <div className="mt-4 pt-4 border-t border-[#e8e6e3] dark:border-[#3a3735] text-center">
                   <Link
                     href={
                       shopSlug
                         ? `/shop/${shopSlug}`
                         : `/profile/${listing.user_id}`
                     }
-                    className="text-sm font-medium hover:underline text-[#1a1a1a]"
+                    className="text-sm font-medium hover:underline text-[#1a1a1a] dark:text-[#e8e6e3]"
                     style={accentColor ? { color: accentColor } : undefined}
                   >
                     {shopSlug ? t("visitShop") : t("viewSellerProfile")}
@@ -719,28 +717,28 @@ export default async function ListingDetailServer({
             </div>
 
             {/* Safety tips */}
-            <div className="bg-[#faf9f7] p-5 border border-[#e8e6e3]">
+            <div className="bg-[#faf9f7] dark:bg-[#1e1c1a] p-5 border border-[#e8e6e3] dark:border-[#3a3735]">
               <div className="flex items-center gap-2 mb-3">
-                <Shield className="w-4 h-4 text-[#6b6560]" />
-                <p className="text-sm text-[#1a1a1a] font-medium">
+                <Shield className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
+                <p className="text-sm text-[#1a1a1a] dark:text-[#e8e6e3] font-medium">
                   {t("safetyTips")}
                 </p>
               </div>
-              <ul className="space-y-2 text-xs text-[#6b6560] leading-relaxed">
+              <ul className="space-y-2 text-xs text-[#6b6560] dark:text-[#9a9290] leading-relaxed">
                 <li className="flex gap-2">
-                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
+                  <span className="shrink-0 text-[#ddd] dark:text-[#555]">&ndash;</span>
                   {t("safetyTip1")}
                 </li>
                 <li className="flex gap-2">
-                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
+                  <span className="shrink-0 text-[#ddd] dark:text-[#555]">&ndash;</span>
                   {t("safetyTip2")}
                 </li>
                 <li className="flex gap-2">
-                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
+                  <span className="shrink-0 text-[#ddd] dark:text-[#555]">&ndash;</span>
                   {t("safetyTip3")}
                 </li>
                 <li className="flex gap-2">
-                  <span className="shrink-0 text-[#ddd]">&ndash;</span>
+                  <span className="shrink-0 text-[#ddd] dark:text-[#555]">&ndash;</span>
                   {t("safetyTip4")}
                 </li>
               </ul>

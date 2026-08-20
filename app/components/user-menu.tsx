@@ -97,27 +97,28 @@ export default function UserMenu() {
   }
 
   if (loading) {
-    return <div className="w-9 h-9 bg-[#f0eeeb] rounded-full animate-pulse" />;
+    return (
+      <div className="w-9 h-9 bg-[#f0eeeb] dark:bg-[#333028] rounded-full animate-pulse" />
+    );
   }
 
   if (!user) {
     return (
       <Link
         href="/auth/login"
-        className="text-sm text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors font-medium"
+        className="text-sm text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white px-3 py-2 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors font-medium"
       >
         {tAuth("login")}
       </Link>
     );
   }
 
-  const initials =
-    user.display_name
-      ?.split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
+  const initials = user.display_name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
   return (
     <div className="relative" ref={menuRef}>
@@ -131,27 +132,29 @@ export default function UserMenu() {
           {initials}
         </div>
         <ChevronDown
-          className={`w-3.5 h-3.5 text-[#6b6560] transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-3.5 h-3.5 text-[#6b6560] dark:text-[#9a9290] transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 w-60 bg-white border border-[#e8e6e3] shadow-sm py-2 z-50">
+        <div className="absolute right-0 top-12 w-60 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-sm py-2 z-50">
           {/* User info */}
-          <div className="px-4 py-2.5 border-b border-[#e8e6e3]">
-            <p className="text-sm font-semibold text-[#1a1a1a] truncate">
+          <div className="px-4 py-2.5 border-b border-[#e8e6e3] dark:border-[#3a3735]">
+            <p className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
               {user.display_name || "User"}
             </p>
-            <p className="text-xs text-[#6b6560] truncate">{user.email}</p>
+            <p className="text-xs text-[#6b6560] dark:text-[#9a9290] truncate">
+              {user.email}
+            </p>
           </div>
 
           {/* Navigation */}
-          <div className="py-1 border-b border-[#e8e6e3]">
+          <div className="py-1 border-b border-[#e8e6e3] dark:border-[#3a3735]">
             {!(user.is_pro_seller && FEATURE_FLAGS.DEALERS) && (
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
               >
                 <LayoutDashboard className="w-4 h-4 text-[#8a8280]" />
                 {tDash("nav.overview")}
@@ -161,7 +164,7 @@ export default function UserMenu() {
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
               >
                 <Store className="w-4 h-4 text-[#8E7A6B]" />
                 My Shop
@@ -170,7 +173,7 @@ export default function UserMenu() {
             <Link
               href="/dashboard/settings"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
             >
               <Settings className="w-4 h-4 text-[#8a8280]" />
               {tDash("nav.settings")}
@@ -179,7 +182,7 @@ export default function UserMenu() {
 
           {/* Language switcher — feature flagged until i18n is ready for release */}
           {FEATURE_FLAGS.LANGUAGE_SWITCHER && (
-            <div className="px-4 py-2.5 border-b border-[#e8e6e3]">
+            <div className="px-4 py-2.5 border-b border-[#e8e6e3] dark:border-[#3a3735]">
               <p className="text-xs font-medium text-[#8a8280] mb-2 uppercase tracking-wide">
                 Language
               </p>
@@ -196,8 +199,8 @@ export default function UserMenu() {
                     onClick={() => switchLocale(code)}
                     className={`flex-1 py-1.5 text-xs font-semibold transition-all border ${
                       currentLocale === code
-                        ? "bg-[#f0eeeb] text-[#1a1a1a] border-[#8E7A6B]"
-                        : "bg-[#faf9f7] text-[#6b6560] border-[#e8e6e3] hover:border-[#e8e6e3]"
+                        ? "bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] border-[#8E7A6B] dark:border-[#b8a594]"
+                        : "bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#6b6560] dark:text-[#9a9290] border-[#e8e6e3] dark:border-[#3a3735] hover:border-[#e8e6e3]"
                     }`}
                   >
                     {label}
@@ -211,7 +214,7 @@ export default function UserMenu() {
           <div className="py-1">
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full"
             >
               <LogOut className="w-4 h-4" />
               {tAuth("logout")}

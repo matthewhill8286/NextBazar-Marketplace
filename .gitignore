@@ -19,6 +19,9 @@
 
 # production
 /build
+/web/build
+/web/.react-router
+/web/node_modules
 
 # misc
 .DS_Store

@@ -37,9 +37,17 @@ const AuthContext = createContext<AuthContextValue>({
  * This eliminates the N+1 `/auth/v1/user` network requests that previously
  * fired when many components independently called `getUser()` on mount.
  */
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+export function AuthProvider({
+  children,
+  initialUserId,
+}: {
+  children: ReactNode;
+  /** Seeded from the root loader so the navbar does not flash empty. */
+  initialUserId?: string | null;
+}) {
+  const seeded = initialUserId !== undefined;
+  const [userId, setUserId] = useState<string | null>(initialUserId ?? null);
+  const [loading, setLoading] = useState(!seeded);
   const [profileVersion, setProfileVersion] = useState(0);
 
   const refreshProfile = useCallback(() => {
@@ -49,11 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
 
-    // Single initial getUser() call for the entire app
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUserId(user?.id ?? null);
-      setLoading(false);
-    });
+    if (!seeded) {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        setUserId(user?.id ?? null);
+        setLoading(false);
+      });
+    }
 
     // React to log in / logout / token refresh
     const {
