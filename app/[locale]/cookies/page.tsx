@@ -1,7 +1,7 @@
 import { Settings } from "lucide-react";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Cookie Policy | NextBazar",
@@ -9,13 +9,8 @@ export const metadata: Metadata = {
     "Learn about cookies and tracking technologies used by NextBazar. Manage your cookie preferences in accordance with EU regulations.",
 };
 
-export default async function CookiesPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslator(locale, "cookies");
+export default function CookiesPage() {
+  const t = useTranslations("cookies");
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Safety Tips — NextBazar",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "Stay safe when buying and selling on NextBazar. Essential tips for secure transactions.",
 };
 
-function getBuyerTips(t: Awaited<ReturnType<typeof getTranslator>>) {
+function getBuyerTips(t: { (key: string, values?: Record<string, unknown>): string }) {
   return [
     {
       icon: MapPin,
@@ -58,7 +58,7 @@ function getBuyerTips(t: Awaited<ReturnType<typeof getTranslator>>) {
   ];
 }
 
-function getSellerTips(t: Awaited<ReturnType<typeof getTranslator>>) {
+function getSellerTips(t: { (key: string, values?: Record<string, unknown>): string }) {
   return [
     {
       icon: Lock,
@@ -83,7 +83,7 @@ function getSellerTips(t: Awaited<ReturnType<typeof getTranslator>>) {
   ];
 }
 
-function getRedFlags(t: Awaited<ReturnType<typeof getTranslator>>) {
+function getRedFlags(t: { (key: string, values?: Record<string, unknown>): string }) {
   return [
     t("flagRefuses"),
     t("flagPrice"),
@@ -96,7 +96,7 @@ function getRedFlags(t: Awaited<ReturnType<typeof getTranslator>>) {
   ];
 }
 
-function getReportSteps(t: Awaited<ReturnType<typeof getTranslator>>) {
+function getReportSteps(t: { (key: string, values?: Record<string, unknown>): string }) {
   return [
     { step: t("reportStep1"), text: t("reportText1") },
     { step: t("reportStep2"), text: t("reportText2") },
@@ -105,13 +105,8 @@ function getReportSteps(t: Awaited<ReturnType<typeof getTranslator>>) {
   ];
 }
 
-export default async function SafetyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslator(locale, "safety");
+export default function SafetyPage() {
+  const t = useTranslations("safety");
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Hero */}

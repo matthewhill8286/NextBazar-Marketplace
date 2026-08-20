@@ -259,24 +259,24 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <h1
-            className="text-2xl font-bold text-[#1a1a1a]"
+            className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Analytics
           </h1>
-          <p className="text-sm text-[#6b6560] mt-0.5">
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mt-0.5">
             Track performance across all your listings.
           </p>
         </div>
       </div>
 
       {listings.length === 0 ? (
-        <div className="bg-white border border-[#e8e6e3] p-16 text-center">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-16 text-center">
           <BarChart2 className="w-12 h-12 text-[#8a8280] mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
+          <h3 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
             No listings yet
           </h3>
-          <p className="text-[#6b6560] text-sm mb-6">
+          <p className="text-[#6b6560] dark:text-[#9a9290] text-sm mb-6">
             Post your first listing to start tracking performance.
           </p>
           <Link
@@ -289,7 +289,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
       ) : (
         <>
           {/* Summary row — sticky at top */}
-          <div className="grid grid-cols-3 gap-3 sticky top-0 z-10 bg-[#faf9f7] pb-2 -mx-1 px-1">
+          <div className="grid grid-cols-3 gap-3 sticky top-0 z-10 bg-[#faf9f7] dark:bg-[#1e1c1a] pb-2 -mx-1 px-1">
             {[
               {
                 label: "Active Listings",
@@ -315,7 +315,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
             ].map((s) => (
               <div
                 key={s.label}
-                className="bg-white border border-[#e8e6e3] p-4 flex items-center gap-3"
+                className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-4 flex items-center gap-3"
               >
                 <div
                   className={`w-10 h-10 ${s.bg} flex items-center justify-center shrink-0`}
@@ -323,10 +323,10 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                   <s.icon className={`w-5 h-5 ${s.color}`} />
                 </div>
                 <div>
-                  <div className="text-xl font-bold text-[#1a1a1a]">
+                  <div className="text-xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {s.value.toLocaleString()}
                   </div>
-                  <div className="text-xs text-[#6b6560]">{s.label}</div>
+                  <div className="text-xs text-[#6b6560] dark:text-[#9a9290]">{s.label}</div>
                 </div>
               </div>
             ))}
@@ -335,7 +335,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-5 items-start">
             {/* Left — listing list (scrollable) */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide px-1">
+              <p className="text-xs font-semibold text-[#6b6560] dark:text-[#9a9290] uppercase tracking-wide px-1">
                 Your Listings
               </p>
               <div className="space-y-1.5">
@@ -349,11 +349,11 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                       onClick={() => setSelectedId(l.id)}
                       className={`w-full flex items-center gap-3 p-3 border text-left transition-all ${
                         isSelected
-                          ? "border-[#8E7A6B]/30 bg-[#f0eeeb] ring-2 ring-[#8E7A6B]/10"
-                          : "border-[#e8e6e3] bg-white hover:border-[#e8e6e3] hover:bg-[#faf9f7]/80"
+                          ? "border-[#8E7A6B]/30 bg-[#f0eeeb] dark:bg-[#333028] ring-2 ring-[#8E7A6B]/10"
+                          : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] hover:border-[#e8e6e3] hover:bg-[#faf9f7]/80 dark:hover:bg-[#333028]/80"
                       }`}
                     >
-                      <div className="w-11 h-11 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
+                      <div className="w-11 h-11 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] shrink-0 relative">
                         {l.primary_image_url ? (
                           <Image
                             src={l.primary_image_url}
@@ -369,15 +369,15 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                        <p className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                           {l.title}
                         </p>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="flex items-center gap-0.5 text-xs text-[#6b6560]">
+                          <span className="flex items-center gap-0.5 text-xs text-[#6b6560] dark:text-[#9a9290]">
                             <Eye className="w-3 h-3" />
                             {(l.view_count || 0).toLocaleString()}
                           </span>
-                          <span className="flex items-center gap-0.5 text-xs text-[#6b6560]">
+                          <span className="flex items-center gap-0.5 text-xs text-[#6b6560] dark:text-[#9a9290]">
                             <Heart className="w-3 h-3" />
                             {l.favorite_count || 0}
                           </span>
@@ -401,8 +401,8 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
             {selectedListing && (
               <div className="space-y-4 sticky top-[100px]">
                 {/* Listing header */}
-                <div className="bg-white border border-[#e8e6e3] p-4 flex items-center gap-3">
-                  <div className="w-14 h-14 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
+                <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-4 flex items-center gap-3">
+                  <div className="w-14 h-14 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] shrink-0 relative">
                     {selectedListing.primary_image_url ? (
                       <Image
                         src={selectedListing.primary_image_url}
@@ -418,11 +418,11 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="font-semibold text-[#1a1a1a] truncate">
+                    <h2 className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                       {selectedListing.title}
                     </h2>
                     <span
-                      className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${selectedListing.status === "active" ? "bg-green-50 text-green-700" : "bg-[#f0eeeb] text-[#666]"}`}
+                      className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full mt-0.5 ${selectedListing.status === "active" ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290]"}`}
                     >
                       {selectedListing.status}
                     </span>
@@ -430,7 +430,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                   <Link
                     href={`/listing/${selectedListing.slug}`}
                     target="_blank"
-                    className="p-2 text-[#8a8280] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
+                    className="p-2 text-[#8a8280] dark:text-[#6b6560] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Link>
@@ -451,20 +451,20 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                       <button
                         key={m.key}
                         onClick={() => setMetric(m.key)}
-                        className={`p-4 border transition-all text-left ${metric === m.key ? `${m.bg} ${m.border} ring-2 ring-current/10` : "bg-white border-[#e8e6e3] hover:border-[#e8e6e3]"}`}
+                        className={`p-4 border transition-all text-left ${metric === m.key ? `${m.bg} ${m.border} ring-2 ring-current/10` : "bg-white dark:bg-[#252220] border-[#e8e6e3] dark:border-[#3a3735] hover:border-[#e8e6e3]"}`}
                       >
                         <div
                           className={`w-8 h-8 ${m.bg} flex items-center justify-center mb-2`}
                         >
                           <m.icon className={`w-4 h-4 ${m.text}`} />
                         </div>
-                        <div className="text-2xl font-bold text-[#1a1a1a]">
+                        <div className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
                           {total.toLocaleString()}
                         </div>
-                        <div className="text-xs text-[#6b6560] mt-0.5">
+                        <div className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-0.5">
                           {m.label} ({rangeDays}d)
                         </div>
-                        <div className="text-xs text-[#8a8280] mt-0.5">
+                        <div className="text-xs text-[#8a8280] dark:text-[#6b6560] mt-0.5">
                           {allTime.toLocaleString()} all-time
                         </div>
                       </button>
@@ -473,11 +473,11 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                 </div>
 
                 {/* Chart */}
-                <div className="bg-white border border-[#e8e6e3] p-5">
+                <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2">
                       <TrendingUp className={`w-4 h-4 ${activeMetric.text}`} />
-                      <span className="text-sm font-semibold text-[#1a1a1a]">
+                      <span className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                         {activeMetric.label}
                       </span>
                       {isSynthetic && (
@@ -489,7 +489,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     <div className="flex items-center gap-3">
                       {pctChange !== null && !isSynthetic && (
                         <span
-                          className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${pctChange >= 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}
+                          className={`flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${pctChange >= 0 ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"}`}
                         >
                           {pctChange >= 0 ? (
                             <TrendingUp className="w-3 h-3" />
@@ -500,16 +500,16 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                           {pctChange}%
                         </span>
                       )}
-                      <span className="text-xl font-bold text-[#1a1a1a]">
+                      <span className="text-xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
                         {totalForPeriod.toLocaleString()}
                       </span>
                       {/* Range picker */}
-                      <div className="flex gap-0.5 bg-[#f0eeeb] p-0.5">
+                      <div className="flex gap-0.5 bg-[#f0eeeb] dark:bg-[#333028] p-0.5">
                         {RANGES.map((r) => (
                           <button
                             key={r.days}
                             onClick={() => setRangeDays(r.days)}
-                            className={`px-2.5 py-1 text-xs font-medium transition-colors ${rangeDays === r.days ? "bg-white text-[#1a1a1a] shadow-sm" : "text-[#6b6560] hover:text-[#666]"}`}
+                            className={`px-2.5 py-1 text-xs font-medium transition-colors ${rangeDays === r.days ? "bg-white dark:bg-[#252220] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-sm" : "text-[#6b6560] dark:text-[#9a9290] hover:text-[#666]"}`}
                           >
                             {r.label}
                           </button>
@@ -524,7 +524,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                     color={activeMetric.color}
                   />
 
-                  <div className="flex justify-between mt-2 text-xs text-[#8a8280]">
+                  <div className="flex justify-between mt-2 text-xs text-[#8a8280] dark:text-[#6b6560]">
                     <span>
                       {new Date(dates[0]).toLocaleDateString("en-GB", {
                         day: "numeric",
@@ -536,7 +536,7 @@ export default function AnalyticsClient({ listings, analytics }: Props) {
                 </div>
 
                 {isSynthetic && (
-                  <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 px-4 py-2.5">
+                  <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-900/50 px-4 py-2.5">
                     Estimated distribution based on total views — live
                     day-by-day tracking started today and will populate over
                     time.

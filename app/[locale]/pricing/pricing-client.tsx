@@ -132,28 +132,28 @@ export default function PricingClient() {
   const [billing, setBilling] = useState<BillingCycle>("monthly");
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#1e1c1a]">
       {/* Hero */}
-      <section className="bg-white border-b border-[#e8e6e3]">
+      <section className="bg-white dark:bg-[#252220] border-b border-[#e8e6e3] dark:border-[#3a3735]">
         <div className="max-w-5xl mx-auto px-6 py-24 md:py-28 text-center">
-          <div className="w-14 h-14 bg-[#faf9f7] flex items-center justify-center mx-auto mb-6">
+          <div className="w-14 h-14 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center mx-auto mb-6">
             <Crown className="w-6 h-6 text-[#8E7A6B]" />
           </div>
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-6">
             Pricing
           </p>
           <h1
-            className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-6 leading-[1.1]"
+            className="text-4xl md:text-5xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-6 leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Simple, transparent pricing
           </h1>
-          <p className="text-lg text-[#6b6560] max-w-2xl mx-auto mb-6 leading-relaxed">
+          <p className="text-lg text-[#6b6560] dark:text-[#9a9290] max-w-2xl mx-auto mb-6 leading-relaxed">
             Whether you&apos;re buying, selling, or running a dealership —
             there&apos;s a plan that fits. No hidden fees. Every paid plan
             includes a 14-day money-back guarantee.
           </p>
-          <div className="flex items-center justify-center gap-4 text-xs text-[#8a8280]">
+          <div className="flex items-center justify-center gap-4 text-xs text-[#8a8280] dark:text-[#6b6560]">
             <span className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-emerald-600" />
               No setup fees
@@ -171,7 +171,7 @@ export default function PricingClient() {
       </section>
 
       {/* Tab bar */}
-      <div className="sticky top-0 z-30 bg-white border-b border-[#e8e6e3] shadow-sm">
+      <div className="sticky top-0 z-30 bg-white dark:bg-[#252220] border-b border-[#e8e6e3] dark:border-[#3a3735] shadow-sm">
         <div className="max-w-6xl mx-auto flex items-center justify-center gap-1 px-4 py-3">
           {TABS.map((t) => {
             const Icon = t.icon;
@@ -181,8 +181,8 @@ export default function PricingClient() {
                 onClick={() => setTab(t.key)}
                 className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium transition-all ${
                   tab === t.key
-                    ? "bg-[#1a1a1a] text-white"
-                    : "text-[#6b6560] hover:text-[#1a1a1a] hover:bg-[#f0eeeb]"
+                    ? "bg-[#1a1a1a] dark:bg-[#121010] text-white"
+                    : "text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735]"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -203,19 +203,19 @@ export default function PricingClient() {
       </div>
 
       {/* FAQ / trust strip */}
-      <section className="bg-white border-t border-[#e8e6e3] py-16 px-4">
+      <section className="bg-white border-t border-[#e8e6e3] dark:border-[#3a3735] py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2
-            className="text-2xl font-light text-[#1a1a1a] mb-3"
+            className="text-2xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             Questions?
           </h2>
-          <p className="text-[#6b6560] mb-6">
+          <p className="text-[#6b6560] dark:text-[#9a9290] mb-6">
             All plans include a 14-day money-back guarantee. Cancel anytime from
             your dashboard.
           </p>
-          <div className="flex items-center justify-center gap-8 text-xs text-[#8a8280]">
+          <div className="flex items-center justify-center gap-8 text-xs text-[#8a8280] dark:text-[#6b6560]">
             <span className="flex items-center gap-1.5">
               <Check className="w-3.5 h-3.5 text-emerald-600" />
               No lock-in contracts
@@ -254,7 +254,7 @@ function BillingToggle({
         onClick={() => onChange("monthly")}
         className={`px-4 py-2 text-sm font-medium transition-all ${
           billing === "monthly"
-            ? "bg-[#1a1a1a] text-white"
+            ? "bg-[#1a1a1a] dark:bg-[#121010] text-white"
             : "bg-[#f0eeeb] text-[#6b6560] hover:text-[#1a1a1a]"
         }`}
       >
@@ -264,7 +264,7 @@ function BillingToggle({
         onClick={() => onChange("yearly")}
         className={`px-4 py-2 text-sm font-medium transition-all flex items-center gap-2 ${
           billing === "yearly"
-            ? "bg-[#1a1a1a] text-white"
+            ? "bg-[#1a1a1a] dark:bg-[#121010] text-white"
             : "bg-[#f0eeeb] text-[#6b6560] hover:text-[#1a1a1a]"
         }`}
       >
@@ -290,11 +290,11 @@ function SellerSection() {
       {/* Promo code */}
       <section className="max-w-md mx-auto py-8 text-center">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 border-t border-[#e8e6e3]" />
+          <div className="flex-1 border-t border-[#e8e6e3] dark:border-[#3a3735]" />
           <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-[#8a8280]">
             Have a promo code?
           </span>
-          <div className="flex-1 border-t border-[#e8e6e3]" />
+          <div className="flex-1 border-t border-[#e8e6e3] dark:border-[#3a3735]" />
         </div>
         <PromoCodeInput />
       </section>
@@ -305,24 +305,24 @@ function SellerSection() {
           What You Get
         </p>
         <h2
-          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-center mb-14"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Built for serious sellers
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e8e6e3]">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e8e6e3] dark:bg-[#3a3735]">
           {SELLER_FEATURES.map((f) => (
-            <div key={f.title} className="bg-white p-7">
-              <div className="w-10 h-10 bg-[#faf9f7] flex items-center justify-center mb-4">
+            <div key={f.title} className="bg-white dark:bg-[#252220] p-7">
+              <div className="w-10 h-10 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center mb-4">
                 <f.icon className="w-5 h-5 text-[#8E7A6B]" />
               </div>
               <h3
-                className="font-light text-[#1a1a1a] mb-2"
+                className="font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {f.title}
               </h3>
-              <p className="text-xs text-[#6b6560] leading-relaxed">{f.desc}</p>
+              <p className="text-xs text-[#6b6560] dark:text-[#9a9290] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -334,7 +334,7 @@ function SellerSection() {
           Compare Plans
         </p>
         <h2
-          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-10"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-center mb-10"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Find the right fit
@@ -343,8 +343,8 @@ function SellerSection() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#e8e6e3]">
-                  <th className="text-left px-6 py-3 text-[#8a8280] font-medium w-1/4">
+                <tr className="border-b border-[#e8e6e3] dark:border-[#3a3735]">
+                  <th className="text-left px-6 py-3 text-[#8a8280] dark:text-[#6b6560] font-medium w-1/4">
                     Feature
                   </th>
                   {SELLER_PLANS.map((p) => {
@@ -373,7 +373,7 @@ function SellerSection() {
                   >
                     <td className="px-6 py-3 text-[#444]">{row.label}</td>
                     {row.values.map((v, i) => (
-                      <td key={i} className="text-center px-4 py-3 text-[#666]">
+                      <td key={i} className="text-center px-4 py-3 text-[#666] dark:text-[#9a9290]">
                         {v === "✓" ? (
                           <Check className="w-4 h-4 text-emerald-500 mx-auto" />
                         ) : v === "—" ? (
@@ -397,16 +397,16 @@ function SellerSection() {
           Full Breakdown
         </p>
         <h2
-          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-center mb-14"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Everything included with Pro
         </h2>
-        <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3]">
+        <div className="grid sm:grid-cols-2 gap-px bg-[#e8e6e3] dark:bg-[#3a3735]">
           {PRO_SELLER_FEATURE_GROUPS.map((group) => (
-            <div key={group.heading} className="bg-white p-8">
+            <div key={group.heading} className="bg-white dark:bg-[#252220] p-8">
               <h3
-                className="text-lg font-light text-[#1a1a1a] mb-5"
+                className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-5"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {group.heading}
@@ -415,7 +415,7 @@ function SellerSection() {
                 {group.items.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm">
                     <CheckCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#8E7A6B]" />
-                    <span className="text-[#666]">{item}</span>
+                    <span className="text-[#666] dark:text-[#9a9290]">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -430,14 +430,14 @@ function SellerSection() {
           What Sellers Say
         </p>
         <h2
-          className="text-2xl md:text-3xl font-light text-[#1a1a1a] text-center mb-14"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-center mb-14"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Trusted by local sellers
         </h2>
-        <div className="grid md:grid-cols-2 gap-px bg-[#e8e6e3]">
+        <div className="grid md:grid-cols-2 gap-px bg-[#e8e6e3] dark:bg-[#3a3735]">
           {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="bg-white p-8">
+            <div key={t.name} className="bg-white dark:bg-[#252220] p-8">
               <p
                 className="text-[#666] text-lg leading-relaxed mb-8 font-light italic"
                 style={{ fontFamily: "'Playfair Display', serif" }}
@@ -452,7 +452,7 @@ function SellerSection() {
                   <div className="text-sm font-medium text-[#1a1a1a]">
                     {t.name}
                   </div>
-                  <div className="text-xs text-[#6b6560]">{t.role}</div>
+                  <div className="text-xs text-[#6b6560] dark:text-[#9a9290]">{t.role}</div>
                 </div>
               </div>
             </div>
@@ -461,7 +461,7 @@ function SellerSection() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="bg-[#2C2826] py-20">
+      <section className="bg-[#2C2826] dark:bg-[#121010] py-20">
         <div className="max-w-xl mx-auto px-6 text-center text-white">
           <h2
             className="text-2xl md:text-3xl font-light mb-4"
@@ -507,7 +507,7 @@ function BoostSection() {
     <div>
       <div className="text-center mb-10">
         <h2
-          className="text-2xl font-light text-[#1a1a1a] mb-2"
+          className="text-2xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Listing Boosts
@@ -524,10 +524,10 @@ function BoostSection() {
           return (
             <div
               key={pkg.key}
-              className={`relative bg-white border p-5 flex flex-col ${
+              className={`relative bg-white dark:bg-[#252220] border p-5 flex flex-col ${
                 pkg.popular
                   ? "border-[#8E7A6B] shadow-lg shadow-[#8E7A6B]/10"
-                  : "border-[#e8e6e3]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735]"
               }`}
             >
               {pkg.popular && (
@@ -536,20 +536,20 @@ function BoostSection() {
                 </div>
               )}
 
-              <div className="w-10 h-10 bg-[#f0eeeb] flex items-center justify-center mb-4">
+              <div className="w-10 h-10 bg-[#f0eeeb] dark:bg-[#333028] flex items-center justify-center mb-4">
                 <Icon className="w-5 h-5 text-[#8E7A6B]" />
               </div>
 
-              <h3 className="text-base font-semibold text-[#1a1a1a]">
+              <h3 className="text-base font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] dark:text-[#e8e6e3]">
                 {pkg.name}
               </h3>
-              <p className="text-xs text-[#8a8280] mb-4">{pkg.tagline}</p>
+              <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mb-4">{pkg.tagline}</p>
 
               <div className="mb-4">
-                <span className="text-2xl font-bold text-[#1a1a1a]">
+                <span className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
                   {formatEur(pkg.amount)}
                 </span>
-                <span className="text-xs text-[#8a8280] ml-1">
+                <span className="text-xs text-[#8a8280] dark:text-[#6b6560] ml-1">
                   / {pkg.durationDays} days
                 </span>
               </div>
@@ -558,7 +558,7 @@ function BoostSection() {
                 {pkg.perks.map((p) => (
                   <li
                     key={p}
-                    className="flex items-start gap-2 text-xs text-[#444]"
+                    className="flex items-start gap-2 text-xs text-[#444] dark:text-[#9a9290]"
                   >
                     <Check className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
                     {p}
@@ -571,7 +571,7 @@ function BoostSection() {
                 className={`block text-center py-2.5 text-sm font-semibold transition-colors ${
                   pkg.popular
                     ? "bg-[#8E7A6B] text-white hover:bg-[#7A6657]"
-                    : "bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#e8e6e3]"
+                    : "bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#e8e6e3]"
                 }`}
               >
                 Boost a listing
@@ -583,10 +583,10 @@ function BoostSection() {
 
       <div className="mt-8 bg-[#8E7A6B]/5 border border-[#8E7A6B]/20 p-5 flex items-center justify-between">
         <div>
-          <p className="text-sm font-semibold text-[#1a1a1a]">
+          <p className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
             Pro & Business sellers get free Boosts every month
           </p>
-          <p className="text-xs text-[#6b6560] mt-0.5">
+          <p className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-0.5">
             Upgrade your seller plan and save on promotion costs.
           </p>
         </div>
@@ -617,7 +617,7 @@ function BuyerSection({
           Coming Soon
         </div>
         <h2
-          className="text-2xl font-light text-[#1a1a1a] mb-2"
+          className="text-2xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Buyer+
@@ -639,10 +639,10 @@ function BuyerSection({
           return (
             <div
               key={plan.key}
-              className={`relative bg-white border p-6 flex flex-col ${
+              className={`relative bg-white dark:bg-[#252220] border p-6 flex flex-col ${
                 plan.popular
                   ? "border-[#8E7A6B] shadow-lg shadow-[#8E7A6B]/10 scale-[1.02]"
-                  : "border-[#e8e6e3]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735]"
               }`}
             >
               {plan.popular && (
@@ -652,7 +652,7 @@ function BuyerSection({
               )}
 
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-[#1a1a1a]">
+                <h3 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] dark:text-[#e8e6e3]">
                   {plan.name}
                 </h3>
                 <p className="text-sm text-[#8a8280] mt-0.5">{plan.tagline}</p>
@@ -660,7 +660,7 @@ function BuyerSection({
 
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-[#1a1a1a]">
+                  <span className="text-3xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {formatEur(price)}
                   </span>
                   {price > 0 && (
@@ -678,7 +678,7 @@ function BuyerSection({
                 {plan.features.map((f) => (
                   <li
                     key={f}
-                    className="flex items-start gap-2 text-sm text-[#444]"
+                    className="flex items-start gap-2 text-sm text-[#444] dark:text-[#9a9290]"
                   >
                     <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                     {f}
@@ -688,7 +688,7 @@ function BuyerSection({
 
               <button
                 disabled
-                className="block w-full text-center py-3 text-sm font-semibold bg-[#f0eeeb] text-[#8a8280] cursor-not-allowed"
+                className="block w-full text-center py-3 text-sm font-semibold bg-[#f0eeeb] dark:bg-[#333028] text-[#8a8280] dark:text-[#6b6560] cursor-not-allowed"
               >
                 {plan.key === "free" ? "Current plan" : "Coming soon"}
               </button>

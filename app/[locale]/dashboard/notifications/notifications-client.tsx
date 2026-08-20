@@ -41,12 +41,12 @@ const TYPE_ICON: Record<string, React.ReactNode> = {
 
 const TYPE_BG: Record<string, string> = {
   price_drop: "bg-green-50",
-  offer_received: "bg-[#f0eeeb]",
+  offer_received: "bg-[#f0eeeb] dark:bg-[#333028]",
   offer_accepted: "bg-green-50",
   offer_declined: "bg-red-50",
   offer_countered: "bg-amber-50",
-  new_message: "bg-[#f0eeeb]",
-  saved_search_match: "bg-[#f0eeeb]",
+  new_message: "bg-[#f0eeeb] dark:bg-[#333028]",
+  saved_search_match: "bg-[#f0eeeb] dark:bg-[#333028]",
   listing_expired: "bg-red-50",
 };
 
@@ -95,8 +95,8 @@ export default function NotificationsClient({
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a1a1a]">{t("title")}</h1>
-          <p className="text-sm text-[#6b6560] mt-0.5">
+          <h1 className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">{t("title")}</h1>
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mt-0.5">
             {unread.length > 0
               ? t("unread", { count: unread.length })
               : t("allCaughtUp")}
@@ -120,17 +120,17 @@ export default function NotificationsClient({
       </div>
 
       {notifications.length === 0 ? (
-        <div className="bg-white border border-[#e8e6e3] p-16 text-center">
-          <div className="w-14 h-14 bg-[#faf9f7] rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-16 text-center">
+          <div className="w-14 h-14 bg-[#faf9f7] dark:bg-[#1e1c1a] rounded-full flex items-center justify-center mx-auto mb-4">
             <Bell className="w-7 h-7 text-[#8a8280]" />
           </div>
-          <h3 className="text-lg font-semibold text-[#1a1a1a] mb-1">
+          <h3 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
             {t("empty")}
           </h3>
-          <p className="text-[#6b6560] text-sm">{t("emptyDesc")}</p>
+          <p className="text-[#6b6560] dark:text-[#9a9290] text-sm">{t("emptyDesc")}</p>
         </div>
       ) : (
-        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7] overflow-hidden">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] divide-y divide-[#faf9f7] dark:divide-[#3a3735] overflow-hidden">
           {notifications.map((n) => {
             const icon = TYPE_ICON[n.type] ?? (
               <Bell className="w-4 h-4 text-[#8a8280]" />
@@ -141,7 +141,7 @@ export default function NotificationsClient({
               <div
                 key={n.id}
                 className={`flex items-start gap-4 p-4 transition-colors ${
-                  !n.read ? "bg-[#f0eeeb]/30" : "hover:bg-[#faf9f7]/50"
+                  !n.read ? "bg-[#f0eeeb]/30 dark:bg-[#333028]/30" : "hover:bg-[#faf9f7]/50 dark:hover:bg-[#333028]/50"
                 }`}
               >
                 {/* Icon */}
@@ -155,16 +155,16 @@ export default function NotificationsClient({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <p
-                      className={`text-sm ${!n.read ? "font-semibold text-[#1a1a1a]" : "font-medium text-[#666]"}`}
+                      className={`text-sm ${!n.read ? "font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]" : "font-medium text-[#666] dark:text-[#9a9290]"}`}
                     >
                       {n.title}
                     </p>
-                    <span className="text-xs text-[#8a8280] shrink-0 mt-0.5">
+                    <span className="text-xs text-[#8a8280] dark:text-[#6b6560] shrink-0 mt-0.5">
                       {timeAgo(n.created_at)}
                     </span>
                   </div>
                   {n.body && (
-                    <p className="text-sm text-[#6b6560] mt-0.5 leading-relaxed">
+                    <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mt-0.5 leading-relaxed">
                       {n.body}
                     </p>
                   )}
@@ -179,7 +179,7 @@ export default function NotificationsClient({
                         e.stopPropagation();
                         markRead(n.id);
                       }}
-                      className="p-1.5 text-[#8a8280] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] transition-colors"
+                      className="p-1.5 text-[#8a8280] dark:text-[#6b6560] hover:text-[#8E7A6B] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors"
                       title="Mark as read"
                     >
                       <Check className="w-3.5 h-3.5" />
@@ -191,7 +191,7 @@ export default function NotificationsClient({
                       e.stopPropagation();
                       deleteNotif(n.id);
                     }}
-                    className="p-1.5 text-[#8a8280] hover:text-red-500 hover:bg-red-50 transition-colors"
+                    className="p-1.5 text-[#8a8280] dark:text-[#6b6560] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                     title="Delete"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

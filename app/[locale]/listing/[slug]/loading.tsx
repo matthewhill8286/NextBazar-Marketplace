@@ -1,12 +1,12 @@
 /** Listing detail skeleton — shown instantly while the server component fetches data. */
 
 function Bone({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />;
+  return <div className={`animate-pulse bg-[#e8e6e3] dark:bg-[#3a3735] ${className}`} />;
 }
 
 export default function ListingLoading() {
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#1e1c1a]">
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center gap-2">
@@ -38,7 +38,7 @@ export default function ListingLoading() {
           {/* LEFT COLUMN */}
           <div className="lg:col-span-2 space-y-6">
             {/* Title card */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-4">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-3">
                   <Bone className="h-7 w-3/4" />
@@ -49,7 +49,7 @@ export default function ListingLoading() {
                 </div>
                 <Bone className="h-9 w-9 shrink-0" />
               </div>
-              <div className="border-t border-[#f0eeeb] pt-4 flex items-center gap-4">
+              <div className="border-t border-[#f0eeeb] dark:border-[#333028] pt-4 flex items-center gap-4">
                 <Bone className="h-3 w-16" />
                 <Bone className="h-3 w-20" />
                 <Bone className="h-3 w-16" />
@@ -57,14 +57,14 @@ export default function ListingLoading() {
             </div>
 
             {/* Price card */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-3">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-3">
               <Bone className="h-4 w-12" />
               <Bone className="h-10 w-36" />
               <Bone className="h-3 w-24" />
             </div>
 
             {/* Description card */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-3">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-3">
               <Bone className="h-5 w-28" />
               <Bone className="h-4 w-full" />
               <Bone className="h-4 w-full" />
@@ -74,7 +74,7 @@ export default function ListingLoading() {
             </div>
 
             {/* Details grid */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-4">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-4">
               <Bone className="h-5 w-20" />
               <div className="grid grid-cols-2 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -90,7 +90,7 @@ export default function ListingLoading() {
           {/* RIGHT COLUMN — seller sidebar */}
           <div className="space-y-6">
             {/* Seller card */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-4">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-4">
               <div className="flex items-center gap-3">
                 <Bone className="w-12 h-12 rounded-full" />
                 <div className="flex-1 space-y-2">
@@ -103,14 +103,14 @@ export default function ListingLoading() {
             </div>
 
             {/* Location card */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-3">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-3">
               <Bone className="h-5 w-20" />
               <Bone className="h-4 w-36" />
               <Bone className="h-32 w-full" />
             </div>
 
             {/* Safety card */}
-            <div className="bg-white border border-[#e8e6e3] p-6 space-y-3">
+            <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 space-y-3">
               <Bone className="h-5 w-24" />
               <Bone className="h-3 w-full" />
               <Bone className="h-3 w-5/6" />

@@ -52,15 +52,15 @@ export default function CookieBanner() {
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 p-4 sm:p-6 pointer-events-none">
-      <div className="max-w-lg mx-auto sm:mx-0 sm:ml-auto pointer-events-auto bg-white border border-[#e8e6e3] shadow-lg p-5">
+      <div className="max-w-lg mx-auto sm:mx-0 sm:ml-auto pointer-events-auto bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-lg p-5">
         <div className="flex items-start gap-3">
           <Cookie className="w-5 h-5 text-[#8E7A6B] flex-shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-[#1a1a1a] leading-relaxed mb-1">
+            <p className="text-sm text-[#1a1a1a] dark:text-[#e8e6e3] leading-relaxed mb-1">
               We use cookies to improve your experience and analyse site
               traffic.
             </p>
-            <p className="text-xs text-[#6b6560] mb-4">
+            <p className="text-xs text-[#6b6560] dark:text-[#9a9290] mb-4">
               Essential cookies are always active.{" "}
               <Link
                 href="/cookies"
@@ -78,7 +78,7 @@ export default function CookieBanner() {
               </button>
               <button
                 onClick={() => saveConsent("declined")}
-                className="px-4 py-2 border border-[#e8e6e3] text-[#1a1a1a] text-xs uppercase tracking-[0.1em] font-medium hover:bg-[#f0eeeb] transition-colors"
+                className="px-4 py-2 border border-[#e8e6e3] dark:border-[#3a3735] text-[#1a1a1a] dark:text-[#e8e6e3] text-xs uppercase tracking-[0.1em] font-medium hover:bg-[#f0eeeb] dark:hover:bg-[#333028] transition-colors"
               >
                 Essential only
               </button>

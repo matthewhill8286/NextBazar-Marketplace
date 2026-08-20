@@ -16,7 +16,7 @@ export default function CompareBar() {
   const slots = Array.from({ length: 3 }, (_, i) => items[i] ?? null);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#e8e6e3] shadow-2xl">
+    <div className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#252220] border-t border-[#e8e6e3] dark:border-[#3a3735] shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
         <span className="text-xs font-semibold text-[#6b6560] uppercase tracking-wide shrink-0 hidden sm:block">
           {t("label")}
@@ -28,7 +28,7 @@ export default function CompareBar() {
             listing ? (
               <div
                 key={listing.id}
-                className="flex items-center gap-2 bg-[#faf9f7] px-3 py-2 min-w-0 flex-1 max-w-[200px] border border-[#e8e6e3]"
+                className="flex items-center gap-2 bg-[#faf9f7] dark:bg-[#1e1c1a] px-3 py-2 min-w-0 flex-1 max-w-[200px] border border-[#e8e6e3] dark:border-[#3a3735]"
               >
                 <div className="w-9 h-9 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
                   {listing.primary_image_url ? (
@@ -45,7 +45,7 @@ export default function CompareBar() {
                     </div>
                   )}
                 </div>
-                <span className="text-xs font-medium text-[#1a1a1a] truncate flex-1">
+                <span className="text-xs font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate flex-1">
                   {listing.title}
                 </span>
                 <button
@@ -60,7 +60,7 @@ export default function CompareBar() {
             ) : (
               <div
                 key={`${listing}-${m}`}
-                className="flex-1 max-w-50 h-13 border-2 border-dashed border-[#e8e6e3] flex items-center justify-center hidden sm:flex"
+                className="flex-1 max-w-50 h-13 border-2 border-dashed border-[#e8e6e3] dark:border-[#3a3735] flex items-center justify-center hidden sm:flex"
               >
                 <span className="text-xs text-[#8a8280]">
                   {t("slotsLeft", { count: 3 - items.length })}

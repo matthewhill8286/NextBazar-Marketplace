@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "About Us — NextBazar",
@@ -29,23 +29,18 @@ const TEAM = [
   },
 ];
 
-export default async function AboutPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslator(locale, "about");
+export default function AboutPage() {
+  const t = useTranslations("about");
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#1e1c1a]">
       {/* Hero */}
-      <section className="bg-white border-b border-[#e8e6e3]">
+      <section className="bg-white dark:bg-[#252220] border-b border-[#e8e6e3] dark:border-[#3a3735]">
         <div className="max-w-5xl mx-auto px-6 py-24 md:py-32 text-center">
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-6">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-6">
             {t("hero.badge")}
           </p>
           <h1
-            className="text-4xl md:text-5xl font-light text-[#1a1a1a] mb-6 leading-[1.1]"
+            className="text-4xl md:text-5xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-6 leading-[1.1]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {t("hero.title")}
@@ -64,10 +59,10 @@ export default async function AboutPage({
 
       {/* Stats */}
       <section className="max-w-5xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#e8e6e3]">
-          <div className="bg-white p-8 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#e8e6e3] dark:bg-[#3a3735]">
+          <div className="bg-white dark:bg-[#252220] p-8 text-center">
             <div
-              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               10,000+
@@ -76,9 +71,9 @@ export default async function AboutPage({
               {t("stats.activeListings")}
             </div>
           </div>
-          <div className="bg-white p-8 text-center">
+          <div className="bg-white dark:bg-[#252220] p-8 text-center">
             <div
-              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               25,000+
@@ -87,9 +82,9 @@ export default async function AboutPage({
               {t("stats.registeredUsers")}
             </div>
           </div>
-          <div className="bg-white p-8 text-center">
+          <div className="bg-white dark:bg-[#252220] p-8 text-center">
             <div
-              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               12
@@ -98,9 +93,9 @@ export default async function AboutPage({
               {t("stats.citiesCovered")}
             </div>
           </div>
-          <div className="bg-white p-8 text-center">
+          <div className="bg-white dark:bg-[#252220] p-8 text-center">
             <div
-              className="text-3xl font-light text-[#1a1a1a] mb-2"
+              className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               50,000+
@@ -114,7 +109,7 @@ export default async function AboutPage({
 
       {/* Mission */}
       <section className="max-w-5xl mx-auto px-6 pb-16">
-        <div className="bg-[#2C2826] p-10 md:p-16 text-white">
+        <div className="bg-[#2C2826] dark:bg-[#121010] p-10 md:p-16 text-white">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/40 mb-6">
             {t("mission.badge")}
           </p>
@@ -132,76 +127,76 @@ export default async function AboutPage({
 
       {/* Values */}
       <section className="max-w-5xl mx-auto px-6 pb-16">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] dark:text-[#9a9290] text-center mb-4">
           {t("values.badge")}
         </p>
         <h2
-          className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-12 text-center"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-12 text-center"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {t("values.title")}
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#e8e6e3]">
-          <div className="bg-white p-8 flex gap-5">
-            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#e8e6e3] dark:bg-[#3a3735]">
+          <div className="bg-white dark:bg-[#252220] p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center shrink-0">
               <ShieldCheck className="w-5 h-5 text-[#8E7A6B]" />
             </div>
             <div>
               <h3
-                className="text-lg font-light text-[#1a1a1a] mb-2"
+                className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {t("values.trustTitle")}
               </h3>
-              <p className="text-sm text-[#6b6560] leading-relaxed">
+              <p className="text-sm text-[#6b6560] dark:text-[#9a9290] leading-relaxed">
                 {t("values.trustDesc")}
               </p>
             </div>
           </div>
-          <div className="bg-white p-8 flex gap-5">
-            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-[#252220] p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center shrink-0">
               <Zap className="w-5 h-5 text-[#8E7A6B]" />
             </div>
             <div>
               <h3
-                className="text-lg font-light text-[#1a1a1a] mb-2"
+                className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {t("values.speedTitle")}
               </h3>
-              <p className="text-sm text-[#6b6560] leading-relaxed">
+              <p className="text-sm text-[#6b6560] dark:text-[#9a9290] leading-relaxed">
                 {t("values.speedDesc")}
               </p>
             </div>
           </div>
-          <div className="bg-white p-8 flex gap-5">
-            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-[#252220] p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center shrink-0">
               <Heart className="w-5 h-5 text-[#8E7A6B]" />
             </div>
             <div>
               <h3
-                className="text-lg font-light text-[#1a1a1a] mb-2"
+                className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {t("values.communityTitle")}
               </h3>
-              <p className="text-sm text-[#6b6560] leading-relaxed">
+              <p className="text-sm text-[#6b6560] dark:text-[#9a9290] leading-relaxed">
                 {t("values.communityDesc")}
               </p>
             </div>
           </div>
-          <div className="bg-white p-8 flex gap-5">
-            <div className="w-11 h-11 bg-[#faf9f7] flex items-center justify-center shrink-0">
+          <div className="bg-white dark:bg-[#252220] p-8 flex gap-5">
+            <div className="w-11 h-11 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center shrink-0">
               <Globe2 className="w-5 h-5 text-[#8E7A6B]" />
             </div>
             <div>
               <h3
-                className="text-lg font-light text-[#1a1a1a] mb-2"
+                className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {t("values.localTitle")}
               </h3>
-              <p className="text-sm text-[#6b6560] leading-relaxed">
+              <p className="text-sm text-[#6b6560] dark:text-[#9a9290] leading-relaxed">
                 {t("values.localDesc")}
               </p>
             </div>
@@ -211,49 +206,49 @@ export default async function AboutPage({
 
       {/* Team */}
       <section className="max-w-5xl mx-auto px-6 pb-24">
-        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] text-center mb-4">
+        <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] dark:text-[#9a9290] text-center mb-4">
           {t("team.badge")}
         </p>
         <h2
-          className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-12 text-center"
+          className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-12 text-center"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {t("team.title")}
         </h2>
-        <div className="flex flex-wrap justify-center gap-px bg-[#e8e6e3] max-w-md mx-auto">
+        <div className="flex flex-wrap justify-center gap-px bg-[#e8e6e3] dark:bg-[#3a3735] max-w-md mx-auto">
           {TEAM.map((m) => (
             <div
               key={m.name}
-              className="bg-white p-8 text-center flex-1 min-w-[180px]"
+              className="bg-white dark:bg-[#252220] p-8 text-center flex-1 min-w-[180px]"
             >
               <div className="w-16 h-16 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-xl mx-auto mb-4">
                 {m.initials}
               </div>
               <div
-                className="font-light text-[#1a1a1a] text-lg"
+                className="font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-lg"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 {m.name}
               </div>
-              <div className="text-xs text-[#6b6560] mt-1">{m.role}</div>
+              <div className="text-xs text-[#6b6560] dark:text-[#9a9290] mt-1">{m.role}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="border-t border-[#e8e6e3] py-20">
+      <section className="border-t border-[#e8e6e3] dark:border-[#3a3735] py-20">
         <div className="max-w-xl mx-auto px-6 text-center">
-          <div className="w-14 h-14 bg-[#faf9f7] flex items-center justify-center mx-auto mb-6">
+          <div className="w-14 h-14 bg-[#faf9f7] dark:bg-[#1e1c1a] flex items-center justify-center mx-auto mb-6">
             <Package className="w-6 h-6 text-[#8E7A6B]" />
           </div>
           <h2
-            className="text-2xl md:text-3xl font-light text-[#1a1a1a] mb-4"
+            className="text-2xl md:text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-4"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {t("cta.title")}
           </h2>
-          <p className="text-[#6b6560] mb-10">{t("cta.subtitle")}</p>
+          <p className="text-[#6b6560] dark:text-[#9a9290] mb-10">{t("cta.subtitle")}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/post"
@@ -263,7 +258,7 @@ export default async function AboutPage({
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center gap-2 border border-[#e8e6e3] text-[#666] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-[#f0eeeb] transition-colors"
+              className="inline-flex items-center justify-center gap-2 border border-[#e8e6e3] dark:border-[#3a3735] text-[#666] dark:text-[#9a9290] text-xs font-medium tracking-[0.15em] uppercase px-8 py-3.5 hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors"
             >
               {t("cta.getInTouch")}
             </Link>

@@ -1,0 +1,42 @@
+{
+  "include": [
+    "**/*",
+    "**/.server/**/*",
+    "**/.client/**/*",
+    ".react-router/types/**/*"
+  ],
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["node", "vite/client"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "rootDirs": [".", "./.react-router/types"],
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./app/*"],
+      "@/*": ["../*"],
+      "next": ["./app/compat/next-stub.ts"],
+      "next/image": ["./app/compat/next-image.tsx"],
+      "next/link": ["./app/compat/next-link.tsx"],
+      "next/navigation": ["./app/compat/next-navigation.ts"],
+      "next/headers": ["./app/compat/next-headers.ts"],
+      "next/server": ["./app/compat/next-server.ts"],
+      "next/cache": ["./app/compat/next-cache.ts"],
+      "next/dynamic": ["./app/compat/next-dynamic.tsx"],
+      "next/script": ["./app/compat/next-script.tsx"],
+      "next/font/google": ["./app/compat/next-font.ts"],
+      "next-intl": ["./app/compat/next-intl.tsx"],
+      "next-intl/server": ["./app/compat/next-intl.tsx"],
+      "@sentry/nextjs": ["./app/compat/sentry.ts"],
+      "react-router": ["./node_modules/react-router"]
+    },
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true
+  }
+}

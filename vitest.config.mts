@@ -10,12 +10,17 @@ export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   resolve: {
     alias: {
-      // next-intl ESM code imports "next/navigation" (no .js extension) which
-      // fails in Vitest's strict ESM resolution. Map bare Next.js sub-paths to
-      // their .js entry points so the imports resolve correctly.
-      "next/navigation": resolve(root, "node_modules/next/navigation.js"),
-      "next/headers": resolve(root, "node_modules/next/headers.js"),
-      "next/router": resolve(root, "node_modules/next/router.js"),
+      "next/image": resolve(root, "web/app/compat/next-image.tsx"),
+      "next/link": resolve(root, "web/app/compat/next-link.tsx"),
+      "next/navigation": resolve(root, "web/app/compat/next-navigation.ts"),
+      "next/headers": resolve(root, "web/app/compat/next-headers.ts"),
+      "next/server": resolve(root, "web/app/compat/next-server.ts"),
+      "next/cache": resolve(root, "web/app/compat/next-cache.ts"),
+      "next/dynamic": resolve(root, "web/app/compat/next-dynamic.tsx"),
+      "next/script": resolve(root, "web/app/compat/next-script.tsx"),
+      "next/font/google": resolve(root, "web/app/compat/next-font.ts"),
+      "next-intl": resolve(root, "web/app/compat/next-intl.tsx"),
+      "@sentry/nextjs": resolve(root, "web/app/compat/sentry.ts"),
     },
   },
   test: {
@@ -23,6 +28,6 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     // Exclude node_modules and Playwright e2e specs from unit test discovery
-    exclude: ["node_modules/**", ".next/**", "e2e/**"],
+    exclude: ["node_modules/**", "web/node_modules/**", "web/build/**", "e2e/**"],
   },
 });

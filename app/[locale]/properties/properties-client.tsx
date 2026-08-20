@@ -301,30 +301,30 @@ export default function PropertiesClient({
       </section>
 
       {/* ── Stats Bar (context-aware) ────────────────────────────────── */}
-      <section className="bg-white border-b border-[#e8e6e3]">
+      <section className="bg-white dark:bg-[#252220] border-b border-[#e8e6e3] dark:border-[#3a3735]">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm">
             {isDealerTab ? (
               <>
-                <div className="flex items-center gap-2 text-[#666]">
+                <div className="flex items-center gap-2 text-[#666] dark:text-[#9a9290]">
                   <Store className="w-4 h-4 text-[#8a8280]" />
-                  <span className="font-semibold text-[#1a1a1a]">
+                  <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {tabStats.total}
                   </span>{" "}
                   verified agencies
                 </div>
-                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
-                <div className="flex items-center gap-2 text-[#666]">
+                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3] dark:bg-[#3a3735]" />
+                <div className="flex items-center gap-2 text-[#666] dark:text-[#9a9290]">
                   <BarChart3 className="w-4 h-4 text-[#8a8280]" />
-                  <span className="font-semibold text-[#1a1a1a]">
+                  <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {tabStats.totalDealerListings.toLocaleString()}
                   </span>{" "}
                   {t("listingsAvailable")}
                 </div>
-                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
-                <div className="flex items-center gap-2 text-[#666]">
+                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3] dark:bg-[#3a3735]" />
+                <div className="flex items-center gap-2 text-[#666] dark:text-[#9a9290]">
                   <Crown className="w-4 h-4 text-amber-500" />
-                  <span className="font-semibold text-[#1a1a1a]">
+                  <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {businessShops.length}
                   </span>{" "}
                   Business agencies
@@ -332,28 +332,28 @@ export default function PropertiesClient({
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2 text-[#666]">
+                <div className="flex items-center gap-2 text-[#666] dark:text-[#9a9290]">
                   <BarChart3 className="w-4 h-4 text-[#8a8280]" />
-                  <span className="font-semibold text-[#1a1a1a]">
+                  <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {tabStats.total.toLocaleString()}
                   </span>{" "}
                   {t("listingsAvailable")}
                 </div>
-                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
-                <div className="flex items-center gap-2 text-[#666]">
+                <div className="hidden sm:block w-px h-4 bg-[#e8e6e3] dark:bg-[#3a3735]" />
+                <div className="flex items-center gap-2 text-[#666] dark:text-[#9a9290]">
                   <Clock className="w-4 h-4 text-[#8a8280]" />
-                  <span className="font-semibold text-[#1a1a1a]">
+                  <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {tabStats.newThisWeek.toLocaleString()}
                   </span>{" "}
                   {t("newThisWeek")}
                 </div>
                 {tabStats.avgPrice > 0 && (
                   <>
-                    <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
-                    <div className="flex items-center gap-2 text-[#666]">
+                    <div className="hidden sm:block w-px h-4 bg-[#e8e6e3] dark:bg-[#3a3735]" />
+                    <div className="flex items-center gap-2 text-[#666] dark:text-[#9a9290]">
                       <TrendingUp className="w-4 h-4 text-[#8a8280]" />
                       {t("avgPrice")}{" "}
-                      <span className="font-semibold text-[#1a1a1a]">
+                      <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                         &euro;{tabStats.avgPrice.toLocaleString()}
                       </span>
                     </div>
@@ -378,7 +378,7 @@ export default function PropertiesClient({
                 className={`flex items-center gap-2.5 px-5 py-3 text-sm font-semibold whitespace-nowrap transition-all ${
                   isActive
                     ? "bg-[#8E7A6B] text-white shadow-sm shadow-[#8E7A6B]/10"
-                    : "bg-[#faf9f7] text-[#666] hover:bg-[#f0eeeb] hover:text-[#1a1a1a]"
+                    : "bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#666] dark:text-[#9a9290] hover:bg-[#f0eeeb] dark:hover:bg-[#333028] hover:text-[#1a1a1a] dark:hover:text-white"
                 }`}
               >
                 <TabIcon className="w-4 h-4" />
@@ -391,7 +391,7 @@ export default function PropertiesClient({
         {/* ── Active Tab Description ──────────────────────────────── */}
         {activeTabConfig && (
           <div className="mb-6">
-            <p className="text-[#6b6560] text-sm">
+            <p className="text-[#6b6560] dark:text-[#9a9290] text-sm">
               {activeTabConfig.description}
             </p>
           </div>
@@ -417,7 +417,7 @@ export default function PropertiesClient({
                 </div>
                 <div>
                   <h2
-                    className="text-lg font-light text-[#1a1a1a]"
+                    className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     Trusted Agencies
@@ -429,7 +429,7 @@ export default function PropertiesClient({
               </div>
               <button
                 onClick={() => handleTabChange("dealers")}
-                className="text-sm font-medium text-[#1a1a1a] hover:text-[#8E7A6B] flex items-center gap-1 transition-colors"
+                className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#8E7A6B] flex items-center gap-1 transition-colors"
               >
                 View all showrooms <ArrowRight className="w-3.5 h-3.5" />
               </button>
@@ -439,9 +439,9 @@ export default function PropertiesClient({
                 <Link
                   key={shop.id}
                   href={`/shop/${shop.slug}`}
-                  className="group flex items-center gap-3 p-3 bg-white border border-[#e8e6e3] hover:border-[#ccc] hover:shadow-sm transition-all"
+                  className="group flex items-center gap-3 p-3 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] hover:border-[#ccc] hover:shadow-sm transition-all"
                 >
-                  <div className="shrink-0 w-10 h-10 overflow-hidden bg-[#f0eeeb]">
+                  <div className="shrink-0 w-10 h-10 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028]">
                     {shop.logo_url ? (
                       <Image
                         src={shop.logo_url}
@@ -463,7 +463,7 @@ export default function PropertiesClient({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-semibold text-[#1a1a1a] truncate group-hover:text-[#8E7A6B] transition-colors">
+                      <span className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] truncate group-hover:text-[#8E7A6B] transition-colors">
                         {shop.shop_name}
                       </span>
                       {shop.plan_tier === "business" && (
@@ -491,10 +491,10 @@ export default function PropertiesClient({
         {isDealerTab && (
           <>
             {/* Why buy from Pro Sellers? */}
-            <section className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] border border-[#e8e6e3]">
+            <section className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] dark:from-[#1e1c1a] dark:to-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
               <div className="flex items-center gap-2 mb-5">
                 <Sparkles className="w-4 h-4 text-[#8E7A6B]" />
-                <h3 className="text-sm font-semibold text-[#1a1a1a] tracking-wide uppercase">
+                <h3 className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wide uppercase">
                   Why buy from Trusted Agencies?
                 </h3>
               </div>
@@ -522,14 +522,14 @@ export default function PropertiesClient({
                   },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-3">
-                    <div className="shrink-0 w-8 h-8 flex items-center justify-center bg-white border border-[#e8e6e3]">
+                    <div className="shrink-0 w-8 h-8 flex items-center justify-center bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
                       <item.icon className="w-4 h-4 text-[#8E7A6B]" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#1a1a1a] mb-0.5">
+                      <p className="text-sm font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-0.5">
                         {item.title}
                       </p>
-                      <p className="text-xs text-[#6b6560] leading-relaxed">
+                      <p className="text-xs text-[#6b6560] dark:text-[#9a9290] leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -547,7 +547,7 @@ export default function PropertiesClient({
                   </div>
                   <div>
                     <h2
-                      className="text-lg font-light text-[#1a1a1a]"
+                      className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
                       Business Agencies
@@ -569,12 +569,12 @@ export default function PropertiesClient({
             {proShops.length > 0 && (
               <section className="mb-10">
                 <div className="flex items-center gap-2.5 mb-5">
-                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-                    <Shield className="w-4 h-4 text-[#6b6560]" />
+                  <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb] dark:bg-[#333028]">
+                    <Shield className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                   </div>
                   <div>
                     <h2
-                      className="text-lg font-light text-[#1a1a1a]"
+                      className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
                       Pro Agencies
@@ -596,17 +596,17 @@ export default function PropertiesClient({
             {categoryShops.length === 0 && (
               <section className="mb-12">
                 <div className="text-center py-16 text-[#8a8280]">
-                  <div className="w-14 h-14 bg-[#f0eeeb] flex items-center justify-center mx-auto mb-4">
+                  <div className="w-14 h-14 bg-[#f0eeeb] dark:bg-[#333028] flex items-center justify-center mx-auto mb-4">
                     <Store className="w-7 h-7 text-[#8E7A6B]" />
                   </div>
-                  <p className="text-lg font-medium mb-1 text-[#1a1a1a]">
+                  <p className="text-lg font-medium mb-1 text-[#1a1a1a] dark:text-[#e8e6e3]">
                     No agencies yet
                   </p>
                   <p className="text-sm max-w-sm mx-auto">
                     Property agencies in this category will appear here.{" "}
                     <Link
                       href="/pricing"
-                      className="text-[#1a1a1a] font-medium hover:underline"
+                      className="text-[#1a1a1a] dark:text-[#e8e6e3] font-medium hover:underline"
                     >
                       Become a Pro Seller
                     </Link>{" "}
@@ -624,7 +624,7 @@ export default function PropertiesClient({
             <div className="flex items-center justify-between mb-5">
               <div>
                 <h2
-                  className="text-xl font-light text-[#1a1a1a]"
+                  className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {t("featured", { categoryName: "Properties" })}
@@ -633,7 +633,7 @@ export default function PropertiesClient({
               </div>
               <Link
                 href={`/search?category=${categorySlug}&sort=promoted`}
-                className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
+                className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#666] dark:hover:text-[#9a9290] flex items-center gap-1"
               >
                 {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
@@ -697,7 +697,7 @@ export default function PropertiesClient({
                       {t("beFirst")}{" "}
                       <Link
                         href="/post"
-                        className="text-[#1a1a1a] font-medium hover:underline"
+                        className="text-[#1a1a1a] dark:text-[#e8e6e3] font-medium hover:underline"
                       >
                         {t("postAListing")}
                       </Link>{" "}
@@ -713,12 +713,12 @@ export default function PropertiesClient({
                 <section key={locName} className="mb-10">
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2.5">
-                      <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb]">
-                        <MapPin className="w-4 h-4 text-[#6b6560]" />
+                      <div className="flex items-center justify-center w-8 h-8 bg-[#f0eeeb] dark:bg-[#333028]">
+                        <MapPin className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290]" />
                       </div>
                       <div>
                         <h2
-                          className="text-lg font-light text-[#1a1a1a]"
+                          className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                           style={{
                             fontFamily: "'Playfair Display', serif",
                           }}
@@ -734,7 +734,7 @@ export default function PropertiesClient({
                     </div>
                     <Link
                       href={`/search?category=${categorySlug}${locSlug ? `&location=${locSlug}` : ""}`}
-                      className="text-sm font-medium text-[#1a1a1a] hover:text-[#666] flex items-center gap-1"
+                      className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#666] dark:hover:text-[#9a9290] flex items-center gap-1"
                     >
                       {t("viewAll")} <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
@@ -836,7 +836,7 @@ export default function PropertiesClient({
         <>
           <button
             onClick={() => setShowInsightsModal(true)}
-            className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#2C2826] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#1a1a1a] transition-colors group"
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#2C2826] dark:bg-[#121010] text-white pl-4 pr-5 py-3 shadow-lg hover:bg-[#1a1a1a] transition-colors group"
             title="Price Insights"
           >
             <TrendingUp className="w-4 h-4" />
@@ -853,12 +853,12 @@ export default function PropertiesClient({
                 if (e.target === e.currentTarget) setShowInsightsModal(false);
               }}
             >
-              <div className="bg-white w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
-                <div className="sticky top-0 bg-white border-b border-[#e8e6e3] px-6 py-4 flex items-center justify-between z-10">
+              <div className="bg-white dark:bg-[#252220] w-full max-w-2xl max-h-[85vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom-4 duration-200">
+                <div className="sticky top-0 bg-white dark:bg-[#252220] border-b border-[#e8e6e3] dark:border-[#3a3735] px-6 py-4 flex items-center justify-between z-10">
                   <div className="flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-[#8E7A6B]" />
                     <h2
-                      className="text-lg font-light text-[#1a1a1a]"
+                      className="text-lg font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
                       style={{ fontFamily: "'Playfair Display', serif" }}
                     >
                       Price Insights
@@ -866,7 +866,7 @@ export default function PropertiesClient({
                   </div>
                   <button
                     onClick={() => setShowInsightsModal(false)}
-                    className="w-8 h-8 flex items-center justify-center text-[#8a8280] hover:text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors"
+                    className="w-8 h-8 flex items-center justify-center text-[#8a8280] hover:text-[#1a1a1a] dark:hover:text-white hover:bg-[#f0eeeb] dark:hover:bg-[#333028] transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>

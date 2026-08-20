@@ -255,7 +255,7 @@ export default function GlobalSearch({
     >
       {/* Search input */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b6560] pointer-events-none" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b6560] dark:text-[#9a9290] pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -268,7 +268,7 @@ export default function GlobalSearch({
           onFocus={handleFocus}
           onKeyDown={handleKeyDown}
           placeholder={t("searchPlaceholder")}
-          className="w-full pl-10 pr-20 py-2.5 bg-[#faf9f7] border border-[#e8e6e3] text-sm text-[#1a1a1a] placeholder:text-[#8a8280] outline-none focus-visible:border-[#8E7A6B] focus:bg-white focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 transition-all"
+          className="w-full pl-10 pr-20 py-2.5 bg-[#faf9f7] dark:bg-[#1e1c1a] border border-[#e8e6e3] dark:border-[#3a3735] text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder:text-[#8a8280] dark:placeholder:text-[#6b6560] outline-none focus-visible:border-[#8E7A6B] dark:focus-visible:border-[#b8a594] focus:bg-white dark:focus:bg-[#252220] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 dark:focus-visible:ring-[#b8a594]/10 transition-all"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
           {query ? (
@@ -281,12 +281,12 @@ export default function GlobalSearch({
                 setActiveCategory(null);
                 inputRef.current?.focus();
               }}
-              className="p-0.5 text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
+              className="p-0.5 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           ) : (
-            <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 bg-[#f0eeeb] border border-[#e8e6e3] text-[10px] font-medium text-[#6b6560]">
+            <kbd className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 bg-[#f0eeeb] dark:bg-[#333028] border border-[#e8e6e3] dark:border-[#3a3735] text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290]">
               {"Ctrl+"}K
             </kbd>
           )}
@@ -295,11 +295,11 @@ export default function GlobalSearch({
 
       {/* ── Suggestions dropdown (empty state) ───────────────────────────── */}
       {showSuggestions && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e8e6e3] shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
           {/* Recent searches */}
           {recentSearches.length > 0 && (
             <div className="px-3.5 pt-3 pb-1">
-              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2">
+              <p className="text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290] uppercase tracking-[0.2em] mb-2">
                 {t("recentSearches")}
               </p>
               <div className="space-y-0.5">
@@ -311,7 +311,7 @@ export default function GlobalSearch({
                         setQuery(term);
                         goToSearch(term);
                       }}
-                      className="flex-1 flex items-center gap-2.5 px-2 py-1.5 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors text-left"
+                      className="flex-1 flex items-center gap-2.5 px-2 py-1.5 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors text-left"
                     >
                       <Clock className="w-3.5 h-3.5 text-[#8a8280] shrink-0" />
                       <span className="truncate">{term}</span>
@@ -320,7 +320,7 @@ export default function GlobalSearch({
                       type="button"
                       aria-label={`Remove "${term}" from recent searches`}
                       onClick={() => removeRecent(term)}
-                      className="p-1 text-[#8a8280] hover:text-[#666] opacity-0 group-hover:opacity-100 transition-all shrink-0"
+                      className="p-1 text-[#8a8280] hover:text-[#666] dark:hover:text-white opacity-0 group-hover:opacity-100 transition-all shrink-0"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -333,7 +333,7 @@ export default function GlobalSearch({
           {/* Categories */}
           {categories.length > 0 && (
             <div className="px-3.5 pt-3 pb-2">
-              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2">
+              <p className="text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290] uppercase tracking-[0.2em] mb-2">
                 {t("categories")}
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -358,7 +358,7 @@ export default function GlobalSearch({
           {/* Trending */}
           {trending.length > 0 && (
             <div className="px-3.5 pt-3 pb-3">
-              <p className="text-[10px] font-medium text-[#6b6560] uppercase tracking-[0.2em] mb-2 flex items-center gap-1">
+              <p className="text-[10px] font-medium text-[#6b6560] dark:text-[#9a9290] uppercase tracking-[0.2em] mb-2 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" />
                 {t("trending")}
               </p>
@@ -368,9 +368,9 @@ export default function GlobalSearch({
                     key={item.id}
                     href={`/listing/${item.slug}`}
                     onClick={() => setOpen(false)}
-                    className="flex items-center gap-3 px-2 py-1.5 hover:bg-[#faf9f7] transition-colors"
+                    className="flex items-center gap-3 px-2 py-1.5 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
                   >
-                    <div className="w-9 h-9 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
+                    <div className="w-9 h-9 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] shrink-0 relative">
                       {item.primary_image_url ? (
                         <Image
                           src={item.primary_image_url}
@@ -386,11 +386,11 @@ export default function GlobalSearch({
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-[#1a1a1a] truncate">
+                      <p className="text-sm text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                         {item.title}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-[#6b6560]">
-                        <span className="font-medium text-[#1a1a1a]">
+                        <span className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                           {formatPrice(item.price, item.currency)}
                         </span>
                         <span className="flex items-center gap-0.5 text-[#8a8280]">
@@ -409,10 +409,10 @@ export default function GlobalSearch({
 
       {/* ── Results dropdown (active query) ──────────────────────────────── */}
       {showResults && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e8e6e3] shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
           {/* Category quick-filter chips */}
           {categories.length > 0 && (
-            <div className="px-3.5 pt-3 pb-2 border-b border-[#e8e6e3]">
+            <div className="px-3.5 pt-3 pb-2 border-b border-[#e8e6e3] dark:border-[#3a3735]">
               <div className="flex flex-wrap gap-1.5">
                 <button
                   type="button"
@@ -420,7 +420,7 @@ export default function GlobalSearch({
                   className={`px-2.5 py-1 text-xs font-medium transition-colors ${
                     !activeCategory
                       ? "bg-[#2C2826] text-white"
-                      : "bg-[#f0eeeb] text-[#666] hover:bg-[#e8e6e3]"
+                      : "bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735]"
                   }`}
                 >
                   {t("allCategories")}
@@ -437,7 +437,7 @@ export default function GlobalSearch({
                     className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${
                       activeCategory === cat.slug
                         ? "bg-[#2C2826] text-white"
-                        : "bg-[#f0eeeb] text-[#666] hover:bg-[#e8e6e3]"
+                        : "bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735]"
                     }`}
                   >
                     <CategoryIcon slug={cat.slug} size={12} />
@@ -454,13 +454,13 @@ export default function GlobalSearch({
             </div>
           ) : results.length === 0 ? (
             <div className="px-4 py-6 text-center">
-              <p className="text-sm text-[#6b6560]">
+              <p className="text-sm text-[#6b6560] dark:text-[#9a9290]">
                 {t("noResults", { query: trimmedQuery })}
               </p>
               <button
                 type="button"
                 onClick={() => goToSearch()}
-                className="mt-2 text-xs font-medium text-[#666] hover:text-[#1a1a1a]"
+                className="mt-2 text-xs font-medium text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white"
               >
                 {t("tryFullSearch")}
               </button>
@@ -479,12 +479,12 @@ export default function GlobalSearch({
                       onMouseEnter={() => setHighlighted(i)}
                       className={`flex items-center gap-3 px-3.5 py-2.5 transition-colors ${
                         highlighted === i
-                          ? "bg-[#faf9f7]"
-                          : "hover:bg-[#faf9f7]"
+                          ? "bg-[#faf9f7] dark:bg-[#333028]"
+                          : "hover:bg-[#faf9f7] dark:hover:bg-[#333028]"
                       }`}
                     >
                       {/* Thumbnail */}
-                      <div className="w-12 h-12 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
+                      <div className="w-12 h-12 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] shrink-0 relative">
                         {r.primary_image_url ? (
                           <Image
                             src={r.primary_image_url}
@@ -507,11 +507,11 @@ export default function GlobalSearch({
 
                       {/* Details */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                        <p className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                           {r.title}
                         </p>
-                        <div className="flex items-center gap-2 mt-0.5 text-xs text-[#6b6560]">
-                          <span className="font-medium text-[#1a1a1a]">
+                        <div className="flex items-center gap-2 mt-0.5 text-xs text-[#6b6560] dark:text-[#9a9290]">
+                          <span className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3]">
                             {formatPrice(r.price, r.currency)}
                           </span>
                           {r.categories?.name && (
@@ -546,11 +546,11 @@ export default function GlobalSearch({
               </ul>
 
               {/* Footer: view all results */}
-              <div className="border-t border-[#e8e6e3] px-3.5 py-2.5">
+              <div className="border-t border-[#e8e6e3] dark:border-[#3a3735] px-3.5 py-2.5">
                 <button
                   type="button"
                   onClick={() => goToSearch()}
-                  className="w-full text-center text-xs font-medium text-[#666] hover:text-[#1a1a1a] py-1 hover:bg-[#faf9f7] transition-colors"
+                  className="w-full text-center text-xs font-medium text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white py-1 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
                 >
                   {t("viewAllResults", { query: trimmedQuery })}
                 </button>

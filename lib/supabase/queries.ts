@@ -1,5 +1,4 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { cacheLife, cacheTag } from "next/cache";
 import { FEATURE_FLAGS, SOFT_LAUNCH_CATEGORY_SLUGS } from "@/lib/feature-flags";
 import { CARD_SELECT } from "./constants";
 import { createClient } from "./server";
@@ -53,9 +52,6 @@ function publicClient() {
 // ─── Cached reference data (revalidate: 1 hour) ───────────────────────────────
 
 export async function getCategoriesCached(): Promise<Category[]> {
-  "use cache";
-  cacheLife("reference");
-  cacheTag("categories");
 
   let q = publicClient().from("categories").select("*");
 
@@ -68,9 +64,6 @@ export async function getCategoriesCached(): Promise<Category[]> {
 }
 
 export async function getSubcategoriesCached(): Promise<Subcategory[]> {
-  "use cache";
-  cacheLife("reference");
-  cacheTag("subcategories");
 
   if (FEATURE_FLAGS.SOFT_LAUNCH_CATEGORIES) {
     // Fetch only subcategories whose parent category is in the allowed set
@@ -93,9 +86,6 @@ export async function getSubcategoriesCached(): Promise<Subcategory[]> {
 }
 
 export async function getLocationsCached(): Promise<Location[]> {
-  "use cache";
-  cacheLife("reference");
-  cacheTag("locations");
 
   const { data } = await publicClient()
     .from("locations")
@@ -121,9 +111,6 @@ export type PricingRow = {
 };
 
 export async function getPricingCached(): Promise<PricingRow[]> {
-  "use cache";
-  cacheLife("pricing");
-  cacheTag("pricing");
 
   const { data } = await publicClient()
     .from("pricing")
@@ -142,9 +129,6 @@ export async function getPricingMap(): Promise<Record<string, PricingRow>> {
 // ─── Cached home-page listing data (revalidate: 60 s) ────────────────────────
 
 export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -158,9 +142,6 @@ export async function getFeaturedListingsCached(): Promise<ListingCardRow[]> {
 }
 
 export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -172,10 +153,6 @@ export async function getRecentListingsCached(): Promise<ListingCardRow[]> {
 }
 
 export async function getActiveListingCountCached(): Promise<number> {
-  "use cache";
-  cacheLife("pricing"); // 5 min — count doesn't need to be real-time
-  cacheTag(tag.listingsFeed, tag.listingsAll);
-
   const { count } = await publicClient()
     .from("listings")
     .select("id", { count: "exact", head: true })
@@ -184,9 +161,6 @@ export async function getActiveListingCountCached(): Promise<number> {
 }
 
 export async function getTrendingListingsCached(): Promise<ListingCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -209,9 +183,6 @@ export type SearchTrendingItem = {
 };
 
 export async function getSearchTrendingCached(): Promise<SearchTrendingItem[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -245,9 +216,6 @@ const LISTING_DETAIL_SELECT = `
 export async function getListingBySlugCached(
   slug: string,
 ): Promise<ListingDetailRow | null> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listing(slug), tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -261,9 +229,6 @@ export async function getRelatedListingsCached(
   categoryId: string,
   excludeId: string,
 ): Promise<ListingCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -281,9 +246,6 @@ export async function getRelatedListingsCached(
 export async function getShopAccentColorCached(
   userId: string,
 ): Promise<string | null> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.shops);
 
   const { data } = await publicClient()
     .from("dealer_shops")
@@ -311,9 +273,6 @@ export type SellerShopInfo = {
 export async function getSellerShopInfoCached(
   userId: string,
 ): Promise<SellerShopInfo | null> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.shops);
 
   const { data } = await publicClient()
     .from("dealer_shops")
@@ -340,9 +299,6 @@ export type ListingPageData = {
 export async function getListingPageDataCached(
   slug: string,
 ): Promise<ListingPageData> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listing(slug), tag.shops, tag.listingsAll);
 
   const sb = publicClient();
 
@@ -391,9 +347,6 @@ export async function getListingPageDataCached(
 // ─── Popular listing slugs (for generateStaticParams) ───────────────────────
 
 export async function getPopularListingSlugs(limit = 50): Promise<string[]> {
-  "use cache";
-  cacheLife("reference");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   const { data } = await publicClient()
     .from("listings")
@@ -407,9 +360,6 @@ export async function getPopularListingSlugs(limit = 50): Promise<string[]> {
 // ─── Category landing page helpers (revalidate: 60 s) ────────────────────────
 
 export async function getCategoryBySlugCached(slug: string) {
-  "use cache";
-  cacheLife("reference");
-  cacheTag("categories");
 
   const { data } = await publicClient()
     .from("categories")
@@ -428,9 +378,6 @@ export async function getCategoryListingsCached(
   categoryId: string,
   opts: { promoted?: boolean; limit?: number } = {},
 ): Promise<ListingCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.listingsFeed, tag.listingsAll);
 
   let q = publicClient()
     .from("listings")
@@ -448,10 +395,6 @@ export async function getCategoryListingsCached(
 }
 
 export async function getCategoryStatsCached(categoryId: string) {
-  "use cache";
-  cacheLife("pricing"); // 5 min
-  cacheTag(tag.listingsFeed, tag.listingsAll);
-
   const now = new Date();
   const weekAgo = new Date(
     now.getTime() - 7 * 24 * 60 * 60 * 1000,
@@ -516,9 +459,6 @@ export type ShopCardRow = {
 };
 
 export async function getActiveShopsCached(): Promise<ShopCardRow[]> {
-  "use cache";
-  cacheLife("listings");
-  cacheTag(tag.shops);
 
   const sb = publicClient();
 
@@ -592,17 +532,6 @@ export async function getFeaturedShopsCached(
     .slice(0, limit);
 }
 
-/**
- * Fetch active shops that have at least one active listing in the given category.
- * Sorted by tier (business → pro → starter), then by listing count desc.
- */
-/**
- * Active shops with at least one listing in the given category.
- *
- * NOT wrapped in "use cache" — delegates to `getActiveShopsCached()` which
- * is already cached. The category-listing lookup is a cheap SELECT of user_ids
- * and runs only on cache miss of the caller (typically a page-level cache).
- */
 export async function getShopsByCategoryCached(
   categoryId: string,
 ): Promise<ShopCardRow[]> {
@@ -633,6 +562,31 @@ export async function getShopsByCategoryCached(
       rank(a.plan_tier) - rank(b.plan_tier) ||
       b.listing_count - a.listing_count,
   );
+}
+
+const SHOP_DETAIL_SELECT =
+  "id, user_id, shop_name, slug, description, logo_url, banner_url, accent_color, website, facebook, instagram, tiktok, plan_status, plan_tier, plan_started_at, plan_expires_at, created_at, updated_at";
+
+export async function getShopBySlugCached(slug: string) {
+  const { data } = await publicClient()
+    .from("dealer_shops")
+    .select(SHOP_DETAIL_SELECT)
+    .eq("slug", slug)
+    .single();
+  return data;
+}
+
+export async function getShopListingsCached(
+  userId: string,
+): Promise<ListingCardRow[]> {
+  const { data } = await publicClient()
+    .from("listings")
+    .select(CARD_SELECT)
+    .eq("user_id", userId)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(48);
+  return (data ?? []) as unknown as ListingCardRow[];
 }
 
 // ─── Non-cached helpers (used server-side with auth context) ─────────────────

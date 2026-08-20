@@ -28,7 +28,7 @@ import { FEATURE_FLAGS } from "@/lib/feature-flags";
 
 const TIER_STYLES: Record<string, { bg: string; text: string; label: string }> =
   {
-    starter: { bg: "bg-[#f0eeeb]", text: "text-[#6b6560]", label: "STARTER" },
+    starter: { bg: "bg-[#f0eeeb] dark:bg-[#333028]", text: "text-[#6b6560] dark:text-[#9a9290]", label: "STARTER" },
     pro: { bg: "bg-[#f5f0eb]", text: "text-[#8E7A6B]", label: "PRO" },
     business: { bg: "bg-amber-50", text: "text-amber-700", label: "BUSINESS" },
   };
@@ -130,8 +130,8 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         className={clsx(
           "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
           isActive
-            ? "bg-[#f0eeeb] text-[#1a1a1a]"
-            : "text-[#6b6560] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
+            ? "bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3]"
+            : "text-[#6b6560] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] hover:text-[#1a1a1a] dark:hover:text-white",
         )}
       >
         <item.icon className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
   return (
     <aside className="space-y-4">
       {/* Profile Card */}
-      <div className="bg-white border border-[#e8e6e3] p-5">
+      <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-5">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 bg-[#8E7A6B] flex items-center justify-center text-white font-medium text-lg shrink-0">
             {profile.avatar_url ? (
@@ -160,14 +160,14 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <p className="font-medium text-[#1a1a1a] truncate">
+              <p className="font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                 {profile.display_name}
               </p>
               {profile.verified && (
                 <Shield className="w-4 h-4 text-[#6b6560] shrink-0" />
               )}
             </div>
-            <p className="text-xs text-[#6b6560] truncate">{profile.email}</p>
+            <p className="text-xs text-[#6b6560] dark:text-[#9a9290] truncate">{profile.email}</p>
             {profile.is_pro_seller && profile.plan_tier && (
               <span
                 className={clsx(
@@ -183,7 +183,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
               </span>
             )}
             {profile.is_pro_seller && !profile.plan_tier && (
-              <span className="inline-block mt-1 text-[9px] font-medium bg-[#f0eeeb] text-[#666] px-2 py-0.5 tracking-[0.15em] uppercase">
+              <span className="inline-block mt-1 text-[9px] font-medium bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] px-2 py-0.5 tracking-[0.15em] uppercase">
                 {t("proSeller")}
               </span>
             )}
@@ -192,7 +192,7 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="bg-white border border-[#e8e6e3] p-2">
+      <nav className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-2">
         {NAV_ITEMS.map(renderNavLink)}
 
         {/* Admin */}
@@ -207,8 +207,8 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         {/* ── Pro Seller section ────────────────────────────────────── */}
         {FEATURE_FLAGS.DEALERS && profile.is_pro_seller && (
           <>
-            <div className="my-2 mx-3 border-t border-[#e8e6e3]" />
-            <p className="px-3 pt-1 pb-2 text-[9px] font-semibold text-[#8a8280] tracking-[0.2em] uppercase">
+            <div className="my-2 mx-3 border-t border-[#e8e6e3] dark:border-[#3a3735]" />
+            <p className="px-3 pt-1 pb-2 text-[9px] font-semibold text-[#8a8280] dark:text-[#6b6560] tracking-[0.2em] uppercase">
               Pro Seller
             </p>
             {PRO_SELLER_ITEMS.map(renderNavLink)}
@@ -218,12 +218,12 @@ export default function DashboardSidebar({ profile, isAdmin }: SidebarProps) {
         {/* Non-pro upgrade CTA */}
         {FEATURE_FLAGS.DEALERS && !profile.is_pro_seller && (
           <>
-            <div className="my-2 mx-3 border-t border-[#e8e6e3]" />
+            <div className="my-2 mx-3 border-t border-[#e8e6e3] dark:border-[#3a3735]" />
             <Link
               href="/pricing"
               className={clsx(
                 "flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium transition-colors",
-                "text-[#6b6560] border border-dashed border-[#e8e6e3] hover:bg-[#faf9f7] hover:text-[#1a1a1a]",
+                "text-[#6b6560] dark:text-[#9a9290] border border-dashed border-[#e8e6e3] dark:border-[#3a3735] hover:bg-[#faf9f7] dark:hover:bg-[#333028] hover:text-[#1a1a1a] dark:hover:text-white",
               )}
             >
               <Crown className="w-4 h-4" />

@@ -1,25 +1,37 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import {
+  createServerClient,
+  parseCookieHeader,
+  serializeCookieHeader,
+} from "@supabase/ssr";
+import { tryGetRequestStore } from "@/lib/request-context";
+
+function env(name: string): string {
+  return process.env[name] ?? "";
+}
 
 export async function createClient() {
-  const cookieStore = await cookies();
+  const store = tryGetRequestStore();
+  const cookieHeader = store?.request.headers.get("Cookie") ?? "";
+  const responseHeaders = store?.responseHeaders;
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    env("NEXT_PUBLIC_SUPABASE_URL") || env("VITE_SUPABASE_URL"),
+    env("NEXT_PUBLIC_SUPABASE_ANON_KEY") || env("VITE_SUPABASE_ANON_KEY"),
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll();
+          return parseCookieHeader(cookieHeader).map((cookie) => ({
+            name: cookie.name,
+            value: cookie.value ?? "",
+          }));
         },
         setAll(cookiesToSet) {
-          try {
-            for (const { name, value, options } of cookiesToSet) {
-              cookieStore.set(name, value, options);
-            }
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing sessions.
+          if (!responseHeaders) return;
+          for (const { name, value, options } of cookiesToSet) {
+            responseHeaders.append(
+              "Set-Cookie",
+              serializeCookieHeader(name, value, options),
+            );
           }
         },
       },

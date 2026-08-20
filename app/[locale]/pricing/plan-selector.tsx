@@ -69,8 +69,8 @@ export default function PlanSelector() {
           onClick={() => setBilling("monthly")}
           className={`px-5 py-2.5 text-sm font-medium transition-all ${
             billing === "monthly"
-              ? "bg-[#1a1a1a] text-white"
-              : "bg-white text-[#6b6560] hover:text-[#1a1a1a] border border-[#e8e6e3]"
+              ? "bg-[#1a1a1a] dark:bg-[#121010] text-white"
+              : "bg-white dark:bg-[#252220] text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white border border-[#e8e6e3] dark:border-[#3a3735]"
           }`}
         >
           Monthly
@@ -79,8 +79,8 @@ export default function PlanSelector() {
           onClick={() => setBilling("yearly")}
           className={`px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 ${
             billing === "yearly"
-              ? "bg-[#1a1a1a] text-white"
-              : "bg-white text-[#6b6560] hover:text-[#1a1a1a] border border-[#e8e6e3]"
+              ? "bg-[#1a1a1a] dark:bg-[#121010] text-white"
+              : "bg-white dark:bg-[#252220] text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white border border-[#e8e6e3] dark:border-[#3a3735]"
           }`}
         >
           Yearly
@@ -103,10 +103,10 @@ export default function PlanSelector() {
           return (
             <div
               key={plan.key}
-              className={`relative bg-white border p-7 flex flex-col ${
+              className={`relative bg-white dark:bg-[#252220] border p-7 flex flex-col ${
                 plan.popular
                   ? "border-[#8E7A6B] shadow-lg shadow-[#8E7A6B]/10 scale-[1.02]"
-                  : "border-[#e8e6e3]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735]"
               }`}
             >
               {plan.popular && (
@@ -117,17 +117,17 @@ export default function PlanSelector() {
 
               <div className="flex items-center gap-2 mb-1">
                 <Icon className="w-4 h-4 text-[#8E7A6B]" />
-                <h3 className="text-lg font-semibold text-[#1a1a1a]">
+                <h3 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                   {plan.name}
                 </h3>
               </div>
-              <p className="text-xs text-[#8a8280] mb-5">{plan.tagline}</p>
+              <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mb-5">{plan.tagline}</p>
 
               {/* Price */}
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
                   <span
-                    className="text-3xl font-bold text-[#1a1a1a]"
+                    className="text-3xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3]"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                   >
                     {formatEur(price)}
@@ -143,7 +143,7 @@ export default function PlanSelector() {
                   </p>
                 )}
                 {billing === "yearly" && plan.yearlyAmount > 0 && (
-                  <p className="text-xs text-[#8a8280] mt-0.5">
+                  <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mt-0.5">
                     Billed annually
                   </p>
                 )}
@@ -154,7 +154,7 @@ export default function PlanSelector() {
                 {plan.features.map((f) => (
                   <li
                     key={f}
-                    className="flex items-start gap-2 text-sm text-[#444]"
+                    className="flex items-start gap-2 text-sm text-[#444] dark:text-[#9a9290]"
                   >
                     <Check className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
                     {f}
@@ -166,7 +166,7 @@ export default function PlanSelector() {
               {isFree ? (
                 <Link
                   href="/post"
-                  className="block text-center py-3 text-sm font-semibold bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#e8e6e3] transition-colors"
+                  className="block text-center py-3 text-sm font-semibold bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#e8e6e3] transition-colors"
                 >
                   Start listing for free
                 </Link>
@@ -177,7 +177,7 @@ export default function PlanSelector() {
                   className={`flex items-center justify-center gap-2 py-3 text-sm font-semibold transition-colors disabled:opacity-50 ${
                     plan.popular
                       ? "bg-[#8E7A6B] text-white hover:bg-[#7A6657]"
-                      : "bg-[#1a1a1a] text-white hover:bg-[#333]"
+                      : "bg-[#1a1a1a] dark:bg-[#121010] text-white hover:bg-[#333]"
                   }`}
                 >
                   {isLoading ? (

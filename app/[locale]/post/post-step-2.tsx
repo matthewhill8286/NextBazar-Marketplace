@@ -74,10 +74,10 @@ const DRIVE_TYPES = [
 const SERVICE_HISTORY = ["full", "partial", "none"] as const;
 
 const INPUT_CLASSES =
-  "w-full px-4 py-3 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white";
+  "w-full px-4 py-3 border border-[#e8e6e3] dark:border-[#3a3735] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white dark:bg-[#252220] text-[#1a1a1a] dark:text-[#e8e6e3]";
 
 const VEHICLE_INPUT_CLASSES =
-  "w-full px-3 py-2.5 border border-[#e8e6e3] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white";
+  "w-full px-3 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 outline-none text-sm bg-white dark:bg-[#252220] text-[#1a1a1a] dark:text-[#e8e6e3]";
 
 export default function PostStep2({
   formData,
@@ -102,18 +102,18 @@ export default function PostStep2({
     <div className="space-y-8">
       <div>
         <h2
-          className="text-3xl font-light text-[#1a1a1a] mb-2"
+          className="text-3xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {t("step2.heading")}
         </h2>
-        <p className="text-sm text-[#6b6560]">{t("step2.subheading")}</p>
+        <p className="text-sm text-[#6b6560] dark:text-[#9a9290]">{t("step2.subheading")}</p>
       </div>
 
       {/* Description with AI writer */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290]">
             {t("step2.descriptionLabel")}
           </label>
           {canUseAiDescriptions ? (
@@ -121,7 +121,7 @@ export default function PostStep2({
               type="button"
               onClick={onAiDescriptionAction}
               disabled={descLoading || !formData.title}
-              className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white disabled:text-[#8a8280] dark:disabled:text-[#6b6560] disabled:cursor-not-allowed transition-colors"
             >
               {descLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -130,16 +130,16 @@ export default function PostStep2({
               )}
               {descLoading ? t("step2.writing") : t("step2.writeWithAi")}
               {!descLoading && (
-                <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                <span className="text-[9px] bg-[#f0eeeb] dark:bg-[#333028] text-[#6b6560] dark:text-[#9a9290] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                   Beta
                 </span>
               )}
             </button>
           ) : (
-            <span className="flex items-center gap-1.5 text-xs text-[#8a8280]">
+            <span className="flex items-center gap-1.5 text-xs text-[#8a8280] dark:text-[#6b6560]">
               <PenLine className="w-3 h-3" />
               {t("step2.writeWithAi")}
-              <span className="text-[9px] bg-[#f0eeeb] text-[#8a8280] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+              <span className="text-[9px] bg-[#f0eeeb] dark:bg-[#333028] text-[#8a8280] dark:text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                 Business
               </span>
             </span>
@@ -155,11 +155,11 @@ export default function PostStep2({
 
       {/* Vehicle-specific attributes */}
       {isVehicle && (
-        <div className="bg-[#faf9f7] p-6 border border-[#e8e6e3] space-y-5">
+        <div className="bg-[#faf9f7] dark:bg-[#1e1c1a] p-6 border border-[#e8e6e3] dark:border-[#3a3735] space-y-5">
           <div className="flex items-center gap-2">
             <Car className="w-4 h-4 text-[#6b6560]" />
             <span
-              className="font-light text-[#1a1a1a] text-base"
+              className="font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-base"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {t("step2.vehicleDetails")}
@@ -169,7 +169,7 @@ export default function PostStep2({
           {/* Row 1: Make, Model, Year */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.make")}
               </label>
               <input
@@ -183,7 +183,7 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.model")}
               </label>
               <input
@@ -197,7 +197,7 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.year")}
               </label>
               <input
@@ -215,7 +215,7 @@ export default function PostStep2({
           {/* Row 2: Mileage, Fuel Type, Transmission */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.mileage")}
               </label>
               <input
@@ -229,7 +229,7 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.fuelType")}
               </label>
               <select
@@ -248,7 +248,7 @@ export default function PostStep2({
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.transmission")}
               </label>
               <select
@@ -271,7 +271,7 @@ export default function PostStep2({
           {/* Row 3: Color, Body Type, Engine Size */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.color")}
               </label>
               <input
@@ -285,7 +285,7 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.bodyType")}
               </label>
               <select
@@ -304,7 +304,7 @@ export default function PostStep2({
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.engine")}
               </label>
               <input
@@ -322,7 +322,7 @@ export default function PostStep2({
           {/* Row 4: Doors, Drive Type, Owners, Service History */}
           <div className="grid grid-cols-4 gap-3">
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.doors")}
               </label>
               <input
@@ -336,7 +336,7 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.drive")}
               </label>
               <select
@@ -355,7 +355,7 @@ export default function PostStep2({
               </select>
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.owners")}
               </label>
               <input
@@ -369,7 +369,7 @@ export default function PostStep2({
               />
             </div>
             <div>
-              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1.5">
+              <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("step2.service")}
               </label>
               <select
@@ -389,7 +389,7 @@ export default function PostStep2({
             </div>
           </div>
 
-          <p className="text-[10px] text-[#8a8280] text-center tracking-wide">
+          <p className="text-[10px] text-[#8a8280] dark:text-[#6b6560] text-center tracking-wide">
             {t("step2.vehicleDetailsHint")}
           </p>
         </div>
@@ -399,7 +399,7 @@ export default function PostStep2({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560]">
+            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290]">
               {t("step2.priceLabel")}
             </label>
             {canUseAiDescriptions ? (
@@ -407,7 +407,7 @@ export default function PostStep2({
                 type="button"
                 onClick={onAiPricingAction}
                 disabled={pricingLoading || !formData.title}
-                className="flex items-center gap-1.5 text-xs font-medium text-[#666] hover:text-[#1a1a1a] disabled:text-[#8a8280] disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-1.5 text-xs font-medium text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white disabled:text-[#8a8280] dark:disabled:text-[#6b6560] disabled:cursor-not-allowed transition-colors"
               >
                 {pricingLoading ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
@@ -418,16 +418,16 @@ export default function PostStep2({
                   ? t("step2.analyzing")
                   : t("step2.getPricingGuide")}
                 {!pricingLoading && (
-                  <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                  <span className="text-[9px] bg-[#f0eeeb] dark:bg-[#333028] text-[#6b6560] dark:text-[#9a9290] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                     Beta
                   </span>
                 )}
               </button>
             ) : (
-              <span className="flex items-center gap-1.5 text-xs text-[#8a8280]">
+              <span className="flex items-center gap-1.5 text-xs text-[#8a8280] dark:text-[#6b6560]">
                 <BarChart3 className="w-3 h-3" />
                 {t("step2.getPricingGuide")}
-                <span className="text-[9px] bg-[#f0eeeb] text-[#8a8280] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
+                <span className="text-[9px] bg-[#f0eeeb] dark:bg-[#333028] text-[#8a8280] dark:text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em] ml-1">
                   Business
                 </span>
               </span>
@@ -450,7 +450,7 @@ export default function PostStep2({
           </div>
         </div>
         <div>
-          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-2">
             {t("step2.conditionLabel")}
           </label>
           <select
@@ -469,7 +469,7 @@ export default function PostStep2({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-2">
             {t("step2.locationLabel")}
           </label>
           <select
@@ -486,7 +486,7 @@ export default function PostStep2({
           </select>
         </div>
         <div>
-          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-2">
             {t("step2.priceTypeLabel")}
           </label>
           <select
@@ -505,7 +505,7 @@ export default function PostStep2({
       {/* Stock / Quantity */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+          <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-2">
             Quantity in stock
           </label>
           <input
@@ -516,13 +516,13 @@ export default function PostStep2({
             value={formData.quantity}
             onChange={(e) => onUpdateAction("quantity", e.target.value)}
           />
-          <p className="text-[10px] text-[#8a8280] mt-1">
+          <p className="text-[10px] text-[#8a8280] dark:text-[#6b6560] mt-1">
             Optional — track stock for items you sell multiple of
           </p>
         </div>
         {formData.quantity && Number(formData.quantity) > 0 && (
           <div>
-            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+            <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-2">
               Low stock alert at
             </label>
             <input
@@ -534,7 +534,7 @@ export default function PostStep2({
                 onUpdateAction("low_stock_threshold", e.target.value)
               }
             />
-            <p className="text-[10px] text-[#8a8280] mt-1">
+            <p className="text-[10px] text-[#8a8280] dark:text-[#6b6560] mt-1">
               Get notified when stock drops to this level
             </p>
           </div>
@@ -543,20 +543,20 @@ export default function PostStep2({
 
       {/* AI Pricing Guide Panel */}
       {pricingData && (
-        <div className="bg-[#faf9f7] p-6 border border-[#e8e6e3] space-y-5">
+        <div className="bg-[#faf9f7] dark:bg-[#1e1c1a] p-6 border border-[#e8e6e3] dark:border-[#3a3735] space-y-5">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#6b6560]" />
             <span
-              className="font-light text-[#1a1a1a] text-base"
+              className="font-light text-[#1a1a1a] dark:text-[#e8e6e3] text-base"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {t("step2.aiPricingGuide")}
             </span>
-            <span className="text-[9px] bg-[#f0eeeb] text-[#6b6560] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em]">
+            <span className="text-[9px] bg-[#f0eeeb] dark:bg-[#333028] text-[#6b6560] dark:text-[#9a9290] px-1.5 py-0.5 font-medium uppercase tracking-[0.1em]">
               Beta
             </span>
             {(pricingData.market?.similar_count ?? 0) > 0 && (
-              <span className="text-xs text-[#8a8280] ml-auto">
+              <span className="text-xs text-[#8a8280] dark:text-[#6b6560] ml-auto">
                 {t("step2.basedOn", {
                   count: pricingData.market!.similar_count,
                 })}
@@ -578,15 +578,15 @@ export default function PostStep2({
               }}
               className={`p-4 text-center transition-all cursor-pointer border ${
                 selectedPriceKey === "low"
-                  ? "border-[#8E7A6B] bg-white ring-1 ring-[#8E7A6B]"
-                  : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
+                  ? "border-[#8E7A6B] bg-white dark:bg-[#252220] ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] hover:border-[#ccc]"
               }`}
             >
-              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1">
+              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1">
                 {t("step2.quickSale")}
               </div>
               <div
-                className="text-xl font-light text-[#1a1a1a] mb-1"
+                className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-1"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 &euro;{pricingData.price_low?.toLocaleString()}
@@ -610,15 +610,15 @@ export default function PostStep2({
               }}
               className={`p-4 text-center transition-all cursor-pointer border ${
                 selectedPriceKey === "suggested" || selectedPriceKey === null
-                  ? "border-[#8E7A6B] bg-white ring-1 ring-[#8E7A6B]"
-                  : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
+                  ? "border-[#8E7A6B] bg-white dark:bg-[#252220] ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] hover:border-[#ccc]"
               }`}
             >
               <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#1a1a1a] mb-1">
                 {t("step2.recommended")}
               </div>
               <div
-                className="text-xl font-light text-[#1a1a1a] mb-1"
+                className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-1"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 &euro;{pricingData.suggested_price?.toLocaleString()}
@@ -642,15 +642,15 @@ export default function PostStep2({
               }}
               className={`p-4 text-center transition-all cursor-pointer border ${
                 selectedPriceKey === "high"
-                  ? "border-[#8E7A6B] bg-white ring-1 ring-[#8E7A6B]"
-                  : "border-[#e8e6e3] bg-white hover:border-[#ccc]"
+                  ? "border-[#8E7A6B] bg-white dark:bg-[#252220] ring-1 ring-[#8E7A6B]"
+                  : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] hover:border-[#ccc]"
               }`}
             >
-              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-1">
+              <div className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-1">
                 {t("step2.premium")}
               </div>
               <div
-                className="text-xl font-light text-[#1a1a1a] mb-1"
+                className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-1"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 &euro;{pricingData.price_high?.toLocaleString()}
@@ -665,7 +665,7 @@ export default function PostStep2({
 
           {/* Reasoning */}
           {pricingData.reasoning && (
-            <p className="text-xs text-[#666] leading-relaxed">
+            <p className="text-xs text-[#666] dark:text-[#9a9290] leading-relaxed">
               {pricingData.reasoning}
             </p>
           )}
@@ -676,7 +676,7 @@ export default function PostStep2({
               {pricingData.tips.map((tip) => (
                 <div
                   key={tip}
-                  className="flex items-start gap-2 text-xs text-[#666]"
+                  className="flex items-start gap-2 text-xs text-[#666] dark:text-[#9a9290]"
                 >
                   <Lightbulb className="w-3 h-3 text-amber-500 mt-0.5 shrink-0" />
                   {tip}
@@ -686,7 +686,7 @@ export default function PostStep2({
           )}
 
           {/* Selection hint */}
-          <p className="text-[10px] text-[#8a8280] text-center tracking-wide">
+          <p className="text-[10px] text-[#8a8280] dark:text-[#6b6560] text-center tracking-wide">
             {selectedPriceKey ? t("step2.priceApplied") : t("step2.clickPrice")}
           </p>
         </div>
@@ -694,7 +694,7 @@ export default function PostStep2({
 
       {/* Phone number */}
       <div>
-        <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-2">
+        <label className="block text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-2">
           {t("step2.phoneNumberLabel")}{" "}
           <span className="text-[#8a8280] font-normal normal-case tracking-normal text-xs">
             {t("step2.phoneNumberOptional")}
@@ -707,7 +707,7 @@ export default function PostStep2({
           value={formData.contact_phone}
           onChange={(e) => onUpdateAction("contact_phone", e.target.value)}
         />
-        <p className="text-xs text-[#8a8280] mt-1.5">
+        <p className="text-xs text-[#8a8280] dark:text-[#6b6560] mt-1.5">
           {t("step2.phoneNumberHint")}
         </p>
       </div>
@@ -716,7 +716,7 @@ export default function PostStep2({
         <button
           type="button"
           onClick={onBackAction}
-          className="flex-1 border border-[#e8e6e3] text-[#666] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] transition-colors flex items-center justify-center gap-2"
+          className="flex-1 border border-[#e8e6e3] dark:border-[#3a3735] text-[#666] dark:text-[#9a9290] py-3.5 text-xs font-medium tracking-[0.15em] uppercase hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors flex items-center justify-center gap-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> {t("step2.back")}
         </button>

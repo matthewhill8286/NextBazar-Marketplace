@@ -1,11 +1,11 @@
 function Bone({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />;
+  return <div className={`animate-pulse bg-[#e8e6e3] dark:bg-[#3a3735] ${className}`} />;
 }
 
 /* ── Shop card skeleton (matches ShopCard layout) ──────────────────────── */
 function ShopCardSkeleton() {
   return (
-    <div className="bg-white border border-[#e8e6e3] overflow-hidden">
+    <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden">
       {/* Banner */}
       <div className="relative">
         <Bone className="h-36 w-full" />
@@ -52,7 +52,7 @@ function TrustedAgenciesStripSkeleton() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 p-3 bg-white border border-[#e8e6e3]"
+            className="flex items-center gap-3 p-3 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]"
           >
             <Bone className="shrink-0 w-10 h-10" />
             <div className="flex-1 min-w-0">
@@ -69,7 +69,7 @@ function TrustedAgenciesStripSkeleton() {
 /* ── Listing card skeleton ─────────────────────────────────────────────── */
 function ListingCardSkeleton() {
   return (
-    <div className="bg-white border border-[#e8e6e3] overflow-hidden">
+    <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden">
       <Bone className="h-44 w-full" />
       <div className="p-3 space-y-2.5">
         <Bone className="h-4 w-5/6" />
@@ -86,9 +86,9 @@ function ListingCardSkeleton() {
 
 export default function PropertiesLoading() {
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#1e1c1a]">
       {/* ── Hero skeleton ─────────────────────────────────────────── */}
-      <div className="relative bg-[#2C2826] text-white">
+      <div className="relative bg-[#2C2826] dark:bg-[#121010] text-white">
         <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
             <Bone className="h-3 w-28 mb-4 bg-white/10" />
@@ -100,13 +100,13 @@ export default function PropertiesLoading() {
       </div>
 
       {/* ── Stats bar skeleton ────────────────────────────────────── */}
-      <div className="bg-white border-b border-[#e8e6e3]">
+      <div className="bg-white dark:bg-[#252220] border-b border-[#e8e6e3] dark:border-[#3a3735]">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-center gap-8">
             <Bone className="h-4 w-32" />
-            <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+            <div className="hidden sm:block w-px h-4 bg-[#e8e6e3] dark:bg-[#3a3735]" />
             <Bone className="h-4 w-28" />
-            <div className="hidden sm:block w-px h-4 bg-[#e8e6e3]" />
+            <div className="hidden sm:block w-px h-4 bg-[#e8e6e3] dark:bg-[#3a3735]" />
             <Bone className="h-4 w-24" />
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function PropertiesLoading() {
         </div>
 
         {/* ── Filter bar skeleton ──────────────────────────────────── */}
-        <div className="mb-8 p-4 bg-white border border-[#e8e6e3]">
+        <div className="mb-8 p-4 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
           <div className="flex flex-wrap gap-3">
             <Bone className="h-10 w-48" />
             <Bone className="h-10 w-32" />
@@ -189,7 +189,7 @@ export function ShopsLoadingSkeleton() {
   return (
     <>
       {/* Why buy from Trusted Agencies? skeleton */}
-      <div className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] border border-[#e8e6e3]">
+      <div className="mb-10 p-6 md:p-8 bg-gradient-to-br from-[#faf9f7] to-[#f5f0eb] dark:from-[#1e1c1a] dark:to-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
         <div className="flex items-center gap-2 mb-5">
           <Bone className="w-4 h-4" />
           <Bone className="h-4 w-56" />

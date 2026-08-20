@@ -62,12 +62,12 @@ export default function TrendingSection({ fallbackTrending }: Props) {
     <section className="py-20">
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4 flex items-center gap-1.5">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-4 flex items-center gap-1.5">
             <Flame className="w-3 h-3" />
             {t("badge")}
           </p>
           <h2
-            className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
+            className="text-3xl md:text-4xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {locationName ? (
@@ -86,7 +86,7 @@ export default function TrendingSection({ fallbackTrending }: Props) {
               ? `/search?location=${locationSlug}&sort=popular`
               : "/search?sort=popular"
           }
-          className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
+          className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
         >
           {t("viewAll")}
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

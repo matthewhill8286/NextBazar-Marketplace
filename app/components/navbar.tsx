@@ -11,14 +11,15 @@ import { useRealtimeTable } from "@/lib/hooks/use-realtime-table";
 import { useUserShop } from "@/lib/hooks/use-user-shop";
 import { useSaved } from "@/lib/saved-context";
 import { createClient } from "@/lib/supabase/client";
-import GlobalSearch from "./global-search";
 import type { CategoryChip, TrendingItem } from "./global-search";
+import GlobalSearch from "./global-search";
 import {
   MessagesPreview,
   NavPreviewWrapper,
   NotificationsPreview,
   SavedPreview,
 } from "./nav-previews";
+import ThemeToggle from "./theme-toggle";
 import UserMenu from "./user-menu";
 
 export default function Navbar({
@@ -90,7 +91,7 @@ export default function Navbar({
   return (
     <nav
       aria-label="Main navigation"
-      className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-[#e8e6e3]/60"
+      className="sticky top-0 z-50 bg-white/90 dark:bg-[#1a1816]/90 backdrop-blur-xl border-b border-[#e8e6e3]/60 dark:border-[#3a3735]/60"
     >
       <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
         {/* Logo */}
@@ -116,14 +117,17 @@ export default function Navbar({
         </Link>
 
         {/* Global search */}
-        <GlobalSearch initialCategories={categories} initialTrending={trending} />
+        <GlobalSearch
+          initialCategories={categories}
+          initialTrending={trending}
+        />
 
         {/* Actions */}
         <div className="flex items-center gap-0.5 shrink-0">
           {FEATURE_FLAGS.DEALERS && (
             <Link
               href="/shops"
-              className="hidden md:flex items-center gap-1.5 text-xs text-[#666] hover:text-[#1a1a1a] px-3 py-2 transition-colors font-medium tracking-wide"
+              className="hidden md:flex items-center gap-1.5 text-xs text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white px-3 py-2 transition-colors font-medium tracking-wide"
             >
               <Store className="w-4 h-4" />
               <span>{t("shops")}</span>
@@ -133,7 +137,7 @@ export default function Navbar({
           <Link
             href="/search"
             aria-label="Search listings"
-            className="md:hidden p-2.5 text-[#6b6560] hover:text-[#1a1a1a] transition-colors"
+            className="md:hidden p-2.5 text-[#6b6560] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
           >
             <Search className="w-5 h-5" aria-hidden="true" />
           </Link>
@@ -174,10 +178,12 @@ export default function Navbar({
             </NavPreviewWrapper>
           )}
 
+          <ThemeToggle />
+
           {/* Post-Ad CTA */}
           <Link
             href="/post"
-            className="bg-[#8E7A6B] text-white px-5 py-2.5 text-[10px] font-medium tracking-[0.15em] uppercase hover:bg-[#7A6657] transition-colors flex items-center gap-2 ml-2"
+            className="bg-primary text-white px-5 py-2.5 text-[10px] font-medium tracking-[0.15em] uppercase hover:bg-primary-hover transition-colors flex items-center gap-2 ml-2"
           >
             <Plus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t("postAd")}</span>

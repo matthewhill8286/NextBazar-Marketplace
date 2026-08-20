@@ -1,7 +1,7 @@
 import { Mail } from "lucide-react";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | NextBazar",
@@ -9,13 +9,8 @@ export const metadata: Metadata = {
     "Learn how NextBazar protects your personal data and privacy. We comply with GDPR and Cyprus data protection regulations.",
 };
 
-export default async function PrivacyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslator(locale, "privacy");
+export default function PrivacyPage() {
+  const t = useTranslations("privacy");
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">

@@ -1,7 +1,7 @@
 import { AlertCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslator } from "@/lib/translations";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
   title: "Terms of Service | NextBazar",
@@ -9,13 +9,8 @@ export const metadata: Metadata = {
     "Read NextBazar's Terms of Service. By using our marketplace, you agree to these terms which are governed by Cyprus law.",
 };
 
-export default async function TermsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslator(locale, "terms");
+export default function TermsPage() {
+  const t = useTranslations("terms");
 
   return (
     <div className="min-h-screen bg-[#faf9f7]">

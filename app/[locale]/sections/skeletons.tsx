@@ -1,13 +1,13 @@
 /** Skeleton fallbacks for home page streaming sections. */
 
 function Bone({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-[#e8e6e3] ${className}`} />;
+  return <div className={`animate-pulse bg-[#e8e6e3] dark:bg-[#333028] ${className}`} />;
 }
 
 export function HeroSkeleton() {
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826]">
-      <div className="absolute inset-0 bg-[#2C2826]" />
+    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826] dark:bg-[#121010]">
+      <div className="absolute inset-0 bg-[#2C2826] dark:bg-[#121010]" />
       <div className="relative w-full max-w-7xl mx-auto px-6 py-24">
         <Bone className="h-3 w-40 mb-8 !bg-white/20" />
         <Bone className="h-16 md:h-20 w-3/4 max-w-3xl mb-4 !bg-white/15" />
@@ -24,7 +24,7 @@ export function HeroSkeleton() {
 
 export function WhySkeleton() {
   return (
-    <section className="relative overflow-hidden bg-[#2C2826] text-white">
+    <section className="relative overflow-hidden bg-[#2C2826] dark:bg-[#121010] text-white">
       <div className="relative max-w-7xl mx-auto px-6 py-24">
         <div className="text-center mb-16">
           <Bone className="h-3 w-28 mx-auto mb-4 !bg-white/15" />
@@ -56,7 +56,7 @@ export function CategoriesSkeleton() {
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white border border-[#e8e6e3] p-6 text-center"
+            className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-6 text-center"
           >
             <Bone className="w-14 h-14 rounded-full mx-auto mb-4" />
             <Bone className="h-4 w-20 mx-auto mb-2" />
@@ -70,7 +70,7 @@ export function CategoriesSkeleton() {
 
 export function FeaturedSkeleton() {
   return (
-    <section className="bg-white">
+    <section className="bg-white dark:bg-[#252220]">
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="flex items-end justify-between mb-12">
           <div>
@@ -81,7 +81,7 @@ export function FeaturedSkeleton() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="border border-[#e8e6e3] bg-white">
+            <div key={i} className="border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220]">
               <Bone className="aspect-[4/3] w-full" />
               <div className="p-4 space-y-3">
                 <Bone className="h-4 w-3/4" />
@@ -108,7 +108,7 @@ export function RecentSkeleton() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="border border-[#e8e6e3] bg-white">
+          <div key={i} className="border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220]">
             <Bone className="aspect-[4/3] w-full" />
             <div className="p-4 space-y-3">
               <Bone className="h-4 w-3/4" />
@@ -133,7 +133,7 @@ export function TrendingSkeleton() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="border border-[#e8e6e3] bg-white">
+          <div key={i} className="border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220]">
             <Bone className="aspect-[4/3] w-full" />
             <div className="p-4 space-y-3">
               <Bone className="h-4 w-3/4" />

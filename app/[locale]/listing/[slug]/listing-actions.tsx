@@ -33,8 +33,8 @@ export function FavoriteAction({ listingId }: { listingId: string }) {
       onClick={handleToggle}
       className={`flex items-center gap-2 px-4 py-2.5 border text-sm font-medium transition-all ${
         saved
-          ? "bg-red-50 border-red-200 text-red-600"
-          : "bg-white border-[#e8e6e3] text-[#666] hover:border-[#e8e6e3]"
+          ? "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
+          : "bg-white dark:bg-[#252220] border-[#e8e6e3] dark:border-[#3a3735] text-[#666] dark:text-[#9a9290] hover:border-[#e8e6e3]"
       }`}
     >
       <Heart
@@ -69,7 +69,7 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-4 py-2.5 border border-[#e8e6e3] bg-white text-sm font-medium text-[#666] hover:border-[#d4d0cc] transition-colors"
+        className="flex items-center gap-2 px-4 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-sm font-medium text-[#666] dark:text-[#9a9290] hover:border-[#d4d0cc] transition-colors"
       >
         <Share2 className="w-4 h-4" /> Share
       </button>
@@ -80,14 +80,14 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
           {/* Dropdown */}
-          <div className="absolute right-0 top-full mt-1.5 z-50 w-52 bg-white border border-[#e8e6e3] shadow-lg py-1">
+          <div className="absolute right-0 top-full mt-1.5 z-50 w-52 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-lg py-1">
             {/* WhatsApp — most important for Cyprus market */}
             <a
               href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors w-full"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors w-full"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -104,7 +104,7 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors w-full"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors w-full"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -121,23 +121,23 @@ export function ShareAction({ title, slug }: { title: string; slug: string }) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors w-full"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors w-full"
             >
               <svg
                 viewBox="0 0 24 24"
-                className="w-4 h-4 fill-[#1a1a1a] shrink-0"
+                className="w-4 h-4 fill-[#1a1a1a] dark:fill-[#e8e6e3] shrink-0"
               >
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
               X (Twitter)
             </a>
 
-            <div className="border-t border-[#e8e6e3] my-1" />
+            <div className="border-t border-[#e8e6e3] dark:border-[#3a3735] my-1" />
 
             {/* Copy link */}
             <button
               onClick={handleCopy}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] hover:bg-[#f0eeeb] transition-colors w-full"
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors w-full"
             >
               {copied ? (
                 <>
@@ -212,7 +212,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 text-xs text-[#8a8280] hover:text-red-500 transition-colors"
+        className="flex items-center gap-1.5 text-xs text-[#8a8280] dark:text-[#6b6560] hover:text-red-500 transition-colors"
       >
         <Flag className="w-3 h-3" />
         Report
@@ -225,13 +225,13 @@ export function ReportAction({ listingId }: { listingId: string }) {
             if (e.target === e.currentTarget) setOpen(false);
           }}
         >
-          <div className="bg-white shadow-xl w-full max-w-md">
+          <div className="bg-white dark:bg-[#252220] shadow-xl w-full max-w-md">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e6e3]">
-              <h2 className="font-semibold text-[#1a1a1a]">Report Listing</h2>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#e8e6e3] dark:border-[#3a3735]">
+              <h2 className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">Report Listing</h2>
               <button
                 onClick={() => setOpen(false)}
-                className="p-1.5 hover:bg-[#f0eeeb] transition-colors text-[#8a8280]"
+                className="p-1.5 hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors text-[#8a8280] dark:text-[#6b6560]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -239,7 +239,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#666] mb-2">
+                <label className="block text-sm font-medium text-[#666] dark:text-[#9a9290] mb-2">
                   What's the issue?
                 </label>
                 <div className="space-y-2">
@@ -248,8 +248,8 @@ export function ReportAction({ listingId }: { listingId: string }) {
                       key={r.value}
                       className={`flex items-center gap-3 p-3 border cursor-pointer transition-all ${
                         reason === r.value
-                          ? "border-red-400 bg-red-50"
-                          : "border-[#e8e6e3] hover:border-[#e8e6e3]"
+                          ? "border-red-400 bg-red-50 dark:bg-red-900/30 dark:border-red-800"
+                          : "border-[#e8e6e3] dark:border-[#3a3735] hover:border-[#e8e6e3]"
                       }`}
                     >
                       <input
@@ -260,23 +260,23 @@ export function ReportAction({ listingId }: { listingId: string }) {
                         onChange={() => setReason(r.value)}
                         className="accent-red-500"
                       />
-                      <span className="text-sm text-[#666]">{r.label}</span>
+                      <span className="text-sm text-[#666] dark:text-[#9a9290]">{r.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#666] mb-1.5">
+                <label className="block text-sm font-medium text-[#666] dark:text-[#9a9290] mb-1.5">
                   Additional details{" "}
-                  <span className="text-[#8a8280] font-normal">(optional)</span>
+                  <span className="text-[#8a8280] dark:text-[#6b6560] font-normal">(optional)</span>
                 </label>
                 <textarea
                   rows={3}
                   placeholder="Describe the issue..."
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-[#e8e6e3] bg-[#faf9f7] focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none text-sm resize-none"
+                  className="w-full px-4 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#1a1a1a] dark:text-[#e8e6e3] focus:bg-white dark:focus:bg-[#252220] focus:border-red-400 focus:ring-2 focus:ring-red-100 dark:focus:ring-red-900/30 outline-none text-sm resize-none"
                 />
               </div>
 
@@ -284,7 +284,7 @@ export function ReportAction({ listingId }: { listingId: string }) {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="flex-1 py-2.5 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors"
+                  className="flex-1 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm font-medium text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
                 >
                   Cancel
                 </button>
@@ -490,7 +490,7 @@ export function ContactButtons({
         <button
           onClick={() => !disabled && setPhoneVisible(!phoneVisible)}
           disabled={disabled}
-          className={`w-full py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm ${disabled ? "bg-[#f0eeeb] text-[#8a8280] cursor-not-allowed" : "bg-[#f0eeeb] text-[#1a1a1a] hover:bg-[#f0eeeb]"}`}
+          className={`w-full py-3 font-semibold transition-colors flex items-center justify-center gap-2 text-sm ${disabled ? "bg-[#f0eeeb] dark:bg-[#333028] text-[#8a8280] dark:text-[#6b6560] cursor-not-allowed" : "bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735]"}`}
         >
           <svg
             width="18"

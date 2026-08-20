@@ -164,21 +164,21 @@ export default function MessagesPage() {
   if (loading) {
     return (
       <div className="mx-auto px-4 py-6">
-        <div className="h-7 w-32 bg-[#e8e6e3] animate-pulse mb-6" />
-        <div className="h-10 w-full bg-[#e8e6e3] animate-pulse mb-4" />
-        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
+        <div className="h-7 w-32 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse mb-6" />
+        <div className="h-10 w-full bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse mb-4" />
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] divide-y divide-[#faf9f7] dark:divide-[#3a3735]">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center gap-3.5 p-4">
-              <div className="w-12 h-12 rounded-full bg-[#e8e6e3] animate-pulse shrink-0" />
+              <div className="w-12 h-12 rounded-full bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse shrink-0" />
               <div className="flex-1 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="h-4 w-28 bg-[#e8e6e3] animate-pulse" />
-                  <div className="h-3 w-10 bg-[#e8e6e3] animate-pulse" />
+                  <div className="h-4 w-28 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+                  <div className="h-3 w-10 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
                 </div>
-                <div className="h-3 w-48 bg-[#e8e6e3] animate-pulse" />
-                <div className="h-3 w-36 bg-[#e8e6e3] animate-pulse" />
+                <div className="h-3 w-48 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
+                <div className="h-3 w-36 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse" />
               </div>
-              <div className="w-10 h-10 bg-[#e8e6e3] animate-pulse shrink-0" />
+              <div className="w-10 h-10 bg-[#e8e6e3] dark:bg-[#3a3735] animate-pulse shrink-0" />
             </div>
           ))}
         </div>
@@ -188,7 +188,7 @@ export default function MessagesPage() {
 
   return (
     <div className="mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-[#1a1a1a] mb-6">Messages</h1>
+      <h1 className="text-2xl font-bold text-[#1a1a1a] dark:text-[#e8e6e3] mb-6">Messages</h1>
 
       {conversations.length > 0 && (
         <div className="relative mb-4">
@@ -196,7 +196,7 @@ export default function MessagesPage() {
           <input
             type="text"
             placeholder="Search conversations..."
-            className="w-full pl-10 pr-4 py-2.5 border border-[#e8e6e3] bg-white text-sm outline-none focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5"
+            className="w-full pl-10 pr-4 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-sm dark:text-[#e8e6e3] outline-none focus-visible:border-[#1a1a1a] focus-visible:ring-2 focus-visible:ring-[#1a1a1a]/5"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -204,7 +204,7 @@ export default function MessagesPage() {
       )}
 
       {filtered.length > 0 ? (
-        <div className="bg-white border border-[#e8e6e3] divide-y divide-[#faf9f7]">
+        <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] divide-y divide-[#faf9f7] dark:divide-[#3a3735]">
           {filtered.map((conv) => {
             const otherUser =
               conv.buyer_id === authUserId ? conv.seller : conv.buyer;
@@ -220,7 +220,7 @@ export default function MessagesPage() {
             return (
               <div
                 key={conv.id}
-                className="relative group flex items-center hover:bg-[#faf9f7] transition-colors"
+                className="relative group flex items-center hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
               >
                 {/* Pin indicator strip */}
                 {conv.is_pinned && (
@@ -250,30 +250,30 @@ export default function MessagesPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-[#1a1a1a] text-sm truncate">
+                        <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] text-sm truncate">
                           {otherUser?.display_name || "User"}
                         </span>
                         {conv.is_pinned && (
                           <Pin className="w-3 h-3 text-amber-500 shrink-0" />
                         )}
                       </div>
-                      <span className="text-xs text-[#8a8280] shrink-0 ml-2">
+                      <span className="text-xs text-[#8a8280] dark:text-[#6b6560] shrink-0 ml-2">
                         {timeAgoCompact(conv.last_message_at)}
                       </span>
                     </div>
                     {conv.listings?.title && (
-                      <p className="text-xs text-[#666] truncate mb-0.5">
+                      <p className="text-xs text-[#666] dark:text-[#9a9290] truncate mb-0.5">
                         Re: {conv.listings.title}
                       </p>
                     )}
-                    <p className="text-sm text-[#6b6560] truncate">
+                    <p className="text-sm text-[#6b6560] dark:text-[#9a9290] truncate">
                       {conv.last_message_preview || "No messages yet"}
                     </p>
                   </div>
 
                   {/* Listing thumbnail */}
                   {conv.listings?.primary_image_url && (
-                    <div className="w-10 h-10 overflow-hidden bg-[#f0eeeb] shrink-0 relative">
+                    <div className="w-10 h-10 overflow-hidden bg-[#f0eeeb] dark:bg-[#333028] shrink-0 relative">
                       <Image
                         src={conv.listings.primary_image_url}
                         alt=""
@@ -289,7 +289,7 @@ export default function MessagesPage() {
                 <div className="pr-3 shrink-0 relative">
                   <button
                     onClick={() => setActiveMenu(menuOpen ? null : conv.id)}
-                    className="p-1.5 bg-white border border-[#e8e6e3] shadow-sm hover:bg-[#faf9f7] text-[#6b6560] transition-colors"
+                    className="p-1.5 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-sm hover:bg-[#faf9f7] dark:hover:bg-[#333028] text-[#6b6560] dark:text-[#9a9290] transition-colors"
                   >
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
@@ -301,10 +301,10 @@ export default function MessagesPage() {
                         className="fixed inset-0 z-20"
                         onClick={() => setActiveMenu(null)}
                       />
-                      <div className="absolute right-0 top-full mt-1 z-30 bg-white border border-[#e8e6e3] shadow-sm py-1 min-w-[160px]">
+                      <div className="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-sm py-1 min-w-[160px]">
                         <button
                           onClick={(e) => handlePin(conv, e)}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[#666] hover:bg-[#faf9f7] transition-colors"
+                          className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
                         >
                           {conv.is_pinned ? (
                             <>
@@ -333,12 +333,12 @@ export default function MessagesPage() {
           })}
         </div>
       ) : (
-        <div className="text-center py-20 bg-white border border-[#e8e6e3]">
+        <div className="text-center py-20 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
           <MessageCircle className="w-12 h-12 text-[#8a8280] mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-[#1a1a1a] mb-1">
+          <h2 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
             No messages yet
           </h2>
-          <p className="text-sm text-[#6b6560] mb-4">
+          <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mb-4">
             When you contact a seller or someone messages you, it&apos;ll appear
             here
           </p>
@@ -360,16 +360,16 @@ export default function MessagesPage() {
             onClick={() => !deleting && setDeleteTarget(null)}
           />
           {/* Modal */}
-          <div className="relative bg-white shadow-xl w-full max-w-sm p-6 flex flex-col items-center text-center">
+          <div className="relative bg-white dark:bg-[#252220] shadow-xl w-full max-w-sm p-6 flex flex-col items-center text-center">
             <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
               <AlertTriangle className="w-6 h-6 text-red-500" />
             </div>
-            <h2 className="text-lg font-semibold text-[#1a1a1a] mb-1">
+            <h2 className="text-lg font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
               Delete conversation?
             </h2>
-            <p className="text-sm text-[#6b6560] mb-6">
+            <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mb-6">
               This will permanently remove the conversation with{" "}
-              <span className="font-medium text-[#666]">
+              <span className="font-medium text-[#666] dark:text-[#9a9290]">
                 {(deleteTarget.buyer_id === authUserId
                   ? deleteTarget.seller
                   : deleteTarget.buyer
@@ -381,7 +381,7 @@ export default function MessagesPage() {
               <button
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleting}
-                className="flex-1 px-4 py-2.5 border border-[#e8e6e3] text-sm font-medium text-[#666] hover:bg-[#faf9f7] transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm font-medium text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

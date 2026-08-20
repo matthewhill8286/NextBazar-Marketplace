@@ -1,15 +1,15 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import HeroVideo from "@/app/components/hero-video";
 import { Link } from "@/i18n/navigation";
-import { getTranslator } from "@/lib/translations";
 
-export default async function HeroSection({ locale }: { locale: string }) {
-  const t = await getTranslator(locale, "home");
+export default function HeroSection() {
+  const t = useTranslations("home");
 
   return (
     <section
-      className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826]"
+      className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#2C2826] dark:bg-[#121010]"
       aria-label="Homepage hero"
     >
       {/* Poster image — always loads first for fast LCP */}
@@ -29,7 +29,7 @@ export default async function HeroSection({ locale }: { locale: string }) {
       />
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-[#2C2826]/65" />
+      <div className="absolute inset-0 bg-[#2C2826]/65 dark:bg-[#121010]/65" />
 
       {/* Content */}
       <div className="relative w-full max-w-7xl mx-auto px-6 py-24">
@@ -58,7 +58,7 @@ export default async function HeroSection({ locale }: { locale: string }) {
         <div className="flex flex-wrap gap-4">
           <Link
             href="/post"
-            className="group inline-flex items-center gap-3 bg-white text-[#1a1a1a] px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] transition-colors"
+            className="group inline-flex items-center gap-3 bg-white dark:bg-[#252220] text-[#1a1a1a] dark:text-[#e8e6e3] px-8 py-4 text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#f0eeeb] dark:hover:bg-[#3a3735] transition-colors"
           >
             {t("hero.postAd")}
             <ArrowRight

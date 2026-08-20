@@ -23,7 +23,7 @@ const ListingsMap = dynamic(() => import("@/app/components/listings-map"), {
   ssr: false,
   loading: () => (
     <div
-      className="w-full bg-[#f0eeeb] animate-pulse"
+      className="w-full bg-[#f0eeeb] dark:bg-[#333028] animate-pulse"
       style={{ height: 420 }}
     />
   ),
@@ -45,16 +45,26 @@ import type {
   Subcategory,
 } from "@/lib/supabase/supabase.types";
 
+type FacetEntry = { slug: string; count: number };
+
 type Props = {
   initialCategories?: Category[];
   initialSubcategories?: Subcategory[];
   initialLocations?: Location[];
+  initialListings?: SearchListing[];
+  initialTotalHits?: number;
+  initialFacets?: { categories: FacetEntry[]; locations: FacetEntry[] };
+  initialFeatured?: SearchListing[];
 };
 
 export default function SearchClient({
   initialCategories = [],
   initialSubcategories = [],
   initialLocations = [],
+  initialListings,
+  initialTotalHits,
+  initialFacets,
+  initialFeatured,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -86,13 +96,15 @@ export default function SearchClient({
   const [priceMax, setPriceMax] = useState(initialPriceMax);
   const [showFilters, setShowFilters] = useState(false);
 
-  const [listings, setListings] = useState<SearchListing[]>([]);
+  const [listings, setListings] = useState<SearchListing[]>(
+    initialListings ?? [],
+  );
   const [categories] = useState<Category[]>(initialCategories);
   const [subcategories] = useState<Subcategory[]>(initialSubcategories);
   const [locations] = useState<Location[]>(initialLocations);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialListings);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [totalHits, setTotalHits] = useState(0);
+  const [totalHits, setTotalHits] = useState(initialTotalHits ?? 0);
   const [offset, setOffset] = useState(0);
   const PAGE_SIZE = SEARCH_PAGE_SIZE;
 
@@ -100,21 +112,21 @@ export default function SearchClient({
   const [aiInterpretation, setAiInterpretation] = useState("");
 
   // ─── Faceted counts ───────────────────────────────────────────────────────
-  type FacetEntry = { slug: string; count: number };
   type Facets = { categories: FacetEntry[]; locations: FacetEntry[] };
-  const [facets, setFacets] = useState<Facets>({
-    categories: [],
-    locations: [],
-  });
+  const [facets, setFacets] = useState<Facets>(
+    initialFacets ?? { categories: [], locations: [] },
+  );
   const [wasAiSearch, setWasAiSearch] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
   const [mapLocations, setMapLocations] = useState<MapLocation[]>([]);
   const [mapLoading, setMapLoading] = useState(false);
 
   // ─── Featured/promoted listings shown when no search is active ────────────
-  const [featuredListings, setFeaturedListings] = useState<SearchListing[]>([]);
+  const [featuredListings, setFeaturedListings] = useState<SearchListing[]>(
+    initialFeatured ?? [],
+  );
   const [featuredLoading, setFeaturedLoading] = useState(
-    !initialQuery && !initialCategory && !initialLocation,
+    !initialFeatured && !initialQuery && !initialCategory && !initialLocation,
   );
 
   // ─── Persist last-used location slug so the home page can show trending ────
@@ -156,6 +168,7 @@ export default function SearchClient({
       if (data) setFeaturedListings(data.map(normalise));
       setFeaturedLoading(false);
     }
+    if (initialFeatured) return;
     loadFeatured();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase.from]);
@@ -306,10 +319,17 @@ export default function SearchClient({
     [buildParams],
   );
 
+  const ssrSeeded = useRef(Boolean(initialListings));
+
   // ─── Filter-change effect (Debounced to avoid jumping on rapid price input) ───
   const filterKey = `${categorySlug}|${subcategorySlug}|${locationSlug}|${sortBy}|${priceMin}|${priceMax}`;
   useEffect(() => {
     if (categories.length === 0) return;
+
+    if (ssrSeeded.current) {
+      ssrSeeded.current = false;
+      return;
+    }
 
     // Auto-fire AI search when arriving from the global search bar with ?ai=1
     if (initialAi && !aiAutoFired.current) {
@@ -481,7 +501,7 @@ export default function SearchClient({
   return (
     <>
       {/* ── Hero search header ───────────────────────────────────────────── */}
-      <section className="relative bg-[#2C2826] text-white py-10 px-4">
+      <section className="relative bg-[#2C2826] dark:bg-[#121010] text-white py-10 px-4">
         <div className="relative max-w-3xl mx-auto">
           {/* Dynamic title + count */}
           <div className="text-center mb-6">
@@ -597,14 +617,14 @@ export default function SearchClient({
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* ── Filters Panel ───────────────────────────────────────────────── */}
         {showFilters && (
-          <div className="bg-white border border-[#e8e6e3] p-4 mb-6 space-y-4">
+          <div className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] p-4 mb-6 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                   {t("filters_panel.category")}
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm bg-white dark:bg-[#252220] dark:text-[#e8e6e3] outline-none focus-visible:border-[#8E7A6B]"
                   value={categorySlug}
                   onChange={(e) => {
                     setCategorySlug(e.target.value);
@@ -624,11 +644,11 @@ export default function SearchClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                   {t("filters_panel.location")}
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm bg-white dark:bg-[#252220] dark:text-[#e8e6e3] outline-none focus-visible:border-[#8E7A6B]"
                   value={locationSlug}
                   onChange={(e) => setLocationSlug(e.target.value)}
                 >
@@ -645,11 +665,11 @@ export default function SearchClient({
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
+                <label className="block text-xs font-medium text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                   {t("filters_panel.sortBy")}
                 </label>
                 <select
-                  className="w-full px-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B]"
+                  className="w-full px-3 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm bg-white dark:bg-[#252220] dark:text-[#e8e6e3] outline-none focus-visible:border-[#8E7A6B]"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -666,12 +686,12 @@ export default function SearchClient({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#6b6560] mb-1.5">
+              <label className="block text-xs font-medium text-[#6b6560] dark:text-[#9a9290] mb-1.5">
                 {t("filters_panel.priceRange")}
               </label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] dark:text-[#6b6560] text-sm">
                     €
                   </span>
                   <input
@@ -680,12 +700,12 @@ export default function SearchClient({
                     placeholder={t("filters_panel.min")}
                     value={priceMin}
                     onChange={(e) => setPriceMin(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm bg-white dark:bg-[#252220] dark:text-[#e8e6e3] outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
-                <span className="text-[#8a8280] text-sm shrink-0">–</span>
+                <span className="text-[#8a8280] dark:text-[#6b6560] text-sm shrink-0">–</span>
                 <div className="relative flex-1">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8a8280] dark:text-[#6b6560] text-sm">
                     €
                   </span>
                   <input
@@ -694,7 +714,7 @@ export default function SearchClient({
                     placeholder={t("filters_panel.max")}
                     value={priceMax}
                     onChange={(e) => setPriceMax(e.target.value)}
-                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] text-sm bg-white outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full pl-7 pr-3 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] text-sm bg-white dark:bg-[#252220] dark:text-[#e8e6e3] outline-none focus-visible:border-[#8E7A6B] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
@@ -702,7 +722,7 @@ export default function SearchClient({
 
             {visibleSubcategories.length > 0 && (
               <div>
-                <label className="block text-xs font-medium text-[#6b6560] mb-2">
+                <label className="block text-xs font-medium text-[#6b6560] dark:text-[#9a9290] mb-2">
                   {t("filters_panel.subcategory")}
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -717,7 +737,7 @@ export default function SearchClient({
                       className={`px-3 py-1.5 text-sm font-medium border transition-all ${
                         subcategorySlug === sub.slug
                           ? "border-[#8E7A6B] bg-[#8E7A6B] text-white"
-                          : "border-[#e8e6e3] bg-white text-[#666] hover:border-[#999]"
+                          : "border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-[#666] dark:text-[#9a9290] hover:border-[#999]"
                       }`}
                     >
                       {sub.name}
@@ -738,7 +758,7 @@ export default function SearchClient({
                   setCategorySlug("");
                   setSubcategorySlug("");
                 }}
-                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735] transition-colors"
               >
                 <span
                   className={`w-4 h-4 ${getCategoryConfig(activeCategory.slug).bg} rounded flex items-center justify-center`}
@@ -752,7 +772,7 @@ export default function SearchClient({
             {activeSubcategory && (
               <button
                 onClick={() => setSubcategorySlug("")}
-                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735] transition-colors"
               >
                 {activeSubcategory.name}
                 <X className="w-3 h-3" />
@@ -761,7 +781,7 @@ export default function SearchClient({
             {activeLocation && (
               <button
                 onClick={() => setLocationSlug("")}
-                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735] transition-colors"
               >
                 <MapPin className="w-3 h-3" />
                 {activeLocation.name}
@@ -774,7 +794,7 @@ export default function SearchClient({
                   setInputValue("");
                   executeSearch("");
                 }}
-                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#666] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] dark:bg-[#333028] text-[#666] dark:text-[#9a9290] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735] transition-colors"
               >
                 &ldquo;{submittedQuery}&rdquo;
                 <X className="w-3 h-3" />
@@ -786,7 +806,7 @@ export default function SearchClient({
                   setPriceMin("");
                   setPriceMax("");
                 }}
-                className="flex items-center gap-1.5 bg-[#f0eeeb] text-[#1a1a1a] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] transition-colors"
+                className="flex items-center gap-1.5 bg-[#f0eeeb] dark:bg-[#333028] text-[#1a1a1a] dark:text-[#e8e6e3] px-3 py-1.5 text-sm font-medium hover:bg-[#e8e6e3] dark:hover:bg-[#3a3735] transition-colors"
               >
                 {priceMin && priceMax
                   ? `€${priceMin}–€${priceMax}`
@@ -812,7 +832,7 @@ export default function SearchClient({
                 lastInternalQuery.current = "";
                 router.replace("/search", { scroll: false });
               }}
-              className="text-sm text-[#8a8280] hover:text-[#666] ml-1"
+              className="text-sm text-[#8a8280] dark:text-[#6b6560] hover:text-[#666] dark:hover:text-[#9a9290] ml-1"
             >
               {t("clearAll")}
             </button>
@@ -821,8 +841,8 @@ export default function SearchClient({
 
         {/* ── AI interpretation banner ─────────────────────────────────────── */}
         {aiInterpretation && (
-          <div className="flex items-center gap-2 bg-[#faf9f7] text-[#1a1a1a] text-sm px-4 py-2.5 border border-[#e8e6e3] mb-4">
-            <Sparkles className="w-4 h-4 text-[#6b6560] shrink-0" />
+          <div className="flex items-center gap-2 bg-[#faf9f7] dark:bg-[#1e1c1a] text-[#1a1a1a] dark:text-[#e8e6e3] text-sm px-4 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] mb-4">
+            <Sparkles className="w-4 h-4 text-[#6b6560] dark:text-[#9a9290] shrink-0" />
             <span>{aiInterpretation}</span>
           </div>
         )}
@@ -832,13 +852,13 @@ export default function SearchClient({
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               {!loading && (
-                <p className="text-sm text-[#6b6560]">
-                  <span className="font-semibold text-[#1a1a1a]">
+                <p className="text-sm text-[#6b6560] dark:text-[#9a9290]">
+                  <span className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]">
                     {totalHits}
                   </span>{" "}
                   {t("found", { count: totalHits })}
                   {listings.length < totalHits && (
-                    <span className="text-[#8a8280]">
+                    <span className="text-[#8a8280] dark:text-[#6b6560]">
                       {" "}
                       · {t("showing", { count: listings.length })}
                     </span>
@@ -857,11 +877,11 @@ export default function SearchClient({
             </div>
             <div className="flex items-center gap-2">
               {/* View mode toggle */}
-              <div className="flex items-center bg-[#f0eeeb] p-0.5">
+              <div className="flex items-center bg-[#f0eeeb] dark:bg-[#333028] p-0.5">
                 <button
                   type="button"
                   onClick={() => setViewMode("grid")}
-                  className={`p-1.5 transition-colors ${viewMode === "grid" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
+                  className={`p-1.5 transition-colors ${viewMode === "grid" ? "bg-white dark:bg-[#252220] shadow-sm text-[#1a1a1a] dark:text-[#e8e6e3]" : "text-[#8a8280] dark:text-[#6b6560] hover:text-[#666] dark:hover:text-[#9a9290]"}`}
                   title={t("gridView")}
                 >
                   <LayoutGrid className="w-4 h-4" />
@@ -869,7 +889,7 @@ export default function SearchClient({
                 <button
                   type="button"
                   onClick={() => setViewMode("map")}
-                  className={`p-1.5 transition-colors ${viewMode === "map" ? "bg-white shadow-sm text-[#1a1a1a]" : "text-[#8a8280] hover:text-[#666]"}`}
+                  className={`p-1.5 transition-colors ${viewMode === "map" ? "bg-white dark:bg-[#252220] shadow-sm text-[#1a1a1a] dark:text-[#e8e6e3]" : "text-[#8a8280] dark:text-[#6b6560] hover:text-[#666] dark:hover:text-[#9a9290]"}`}
                   title={t("mapView")}
                 >
                   <MapIcon className="w-4 h-4" />
@@ -877,7 +897,7 @@ export default function SearchClient({
               </div>
               {!showFilters && (
                 <select
-                  className="text-sm border border-[#e8e6e3] px-3 py-1.5 outline-none focus-visible:border-[#1a1a1a] bg-white"
+                  className="text-sm border border-[#e8e6e3] dark:border-[#3a3735] px-3 py-1.5 outline-none focus-visible:border-[#1a1a1a] bg-white dark:bg-[#252220] dark:text-[#e8e6e3]"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
@@ -900,23 +920,23 @@ export default function SearchClient({
           <div className="mb-6">
             {mapLoading ? (
               <div
-                className="w-full bg-[#f0eeeb] animate-pulse flex items-center justify-center"
+                className="w-full bg-[#f0eeeb] dark:bg-[#333028] animate-pulse flex items-center justify-center"
                 style={{ height: 420 }}
               >
-                <p className="text-sm text-[#8a8280]">{t("updatingMap")}</p>
+                <p className="text-sm text-[#8a8280] dark:text-[#6b6560]">{t("updatingMap")}</p>
               </div>
             ) : (
               <>
                 <ListingsMap
                   locations={mapLocations}
                   selectedSlug={locationSlug}
-                  onSelectLocationAction={(slug) => {
+                  onSelectLocationAction={(slug: string) => {
                     setLocationSlug(slug === locationSlug ? "" : slug);
                     setViewMode("grid");
                   }}
                 />
                 {mapLocations.length === 0 && (
-                  <p className="text-center text-sm text-[#8a8280] mt-3">
+                  <p className="text-center text-sm text-[#8a8280] dark:text-[#6b6560] mt-3">
                     {t("noListingsOnMap")}
                   </p>
                 )}
@@ -931,13 +951,13 @@ export default function SearchClient({
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-white border border-[#e8e6e3] overflow-hidden"
+                className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden"
               >
-                <div className="aspect-4/3 bg-[#f0eeeb] animate-pulse" />
+                <div className="aspect-4/3 bg-[#f0eeeb] dark:bg-[#333028] animate-pulse" />
                 <div className="p-3.5 space-y-2">
-                  <div className="h-4 bg-[#f0eeeb] rounded animate-pulse w-3/4" />
-                  <div className="h-3 bg-[#f0eeeb] rounded animate-pulse w-1/2" />
-                  <div className="h-5 bg-[#f0eeeb] rounded animate-pulse w-1/3" />
+                  <div className="h-4 bg-[#f0eeeb] dark:bg-[#333028] rounded animate-pulse w-3/4" />
+                  <div className="h-3 bg-[#f0eeeb] dark:bg-[#333028] rounded animate-pulse w-1/2" />
+                  <div className="h-5 bg-[#f0eeeb] dark:bg-[#333028] rounded animate-pulse w-1/3" />
                 </div>
               </div>
             ))}
@@ -947,12 +967,12 @@ export default function SearchClient({
           <div className="max-w-md mx-auto py-20 text-center">
             <div className="text-5xl mb-4">🔍</div>
             <h3
-              className="text-xl font-light text-[#1a1a1a] mb-2"
+              className="text-xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-2"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
               {t("noResults.title")}
             </h3>
-            <p className="text-[#6b6560] text-sm mb-8">
+            <p className="text-[#6b6560] dark:text-[#9a9290] text-sm mb-8">
               {t("noResults.subtitle", {
                 query: submittedQuery
                   ? ` "${submittedQuery}"`
@@ -963,14 +983,14 @@ export default function SearchClient({
 
             {/* AI search nudge — only show if they haven't tried it yet */}
             {!wasAiSearch && submittedQuery && (
-              <div className="bg-[#faf9f7] border border-[#e8e6e3] p-6 mb-6">
+              <div className="bg-[#faf9f7] dark:bg-[#1e1c1a] border border-[#e8e6e3] dark:border-[#3a3735] p-6 mb-6">
                 <div className="w-12 h-12 bg-[#8E7A6B] flex items-center justify-center mx-auto mb-3">
                   <Wand2 className="w-6 h-6 text-white" />
                 </div>
-                <h4 className="font-semibold text-[#1a1a1a] mb-1">
+                <h4 className="font-semibold text-[#1a1a1a] dark:text-[#e8e6e3] mb-1">
                   {t("noResults.tryAi")}
                 </h4>
-                <p className="text-sm text-[#6b6560] mb-4">
+                <p className="text-sm text-[#6b6560] dark:text-[#9a9290] mb-4">
                   {t("aiSearch")} {t("noResults.aiNudge")}
                   <em>{t("aiSearchExample1")}</em> or{" "}
                   <em>{t("aiSearchExample2")}</em>.
@@ -1020,7 +1040,7 @@ export default function SearchClient({
             </div>
             {listings.length < totalHits && (
               <div className="mt-8 flex flex-col items-center gap-2">
-                <p className="text-sm text-[#8a8280]">
+                <p className="text-sm text-[#8a8280] dark:text-[#6b6560]">
                   {t("showingOf", {
                     showing: listings.length,
                     total: totalHits,
@@ -1029,7 +1049,7 @@ export default function SearchClient({
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
-                  className="px-8 py-2.5 border border-[#e8e6e3] bg-white text-sm font-medium text-[#666] hover:bg-[#faf9f7] hover:border-[#e8e6e3] transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-8 py-2.5 border border-[#e8e6e3] dark:border-[#3a3735] bg-white dark:bg-[#252220] text-sm font-medium text-[#666] dark:text-[#9a9290] hover:bg-[#faf9f7] dark:hover:bg-[#333028] hover:border-[#e8e6e3] transition-colors disabled:opacity-50 flex items-center gap-2"
                 >
                   {loadingMore ? (
                     <>
@@ -1048,7 +1068,7 @@ export default function SearchClient({
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <h2 className="text-sm font-medium text-[#666]">
+              <h2 className="text-sm font-medium text-[#666] dark:text-[#9a9290]">
                 {t("featuredAndPromoted")}
               </h2>
             </div>
@@ -1057,13 +1077,13 @@ export default function SearchClient({
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={`${Math.random() + i}`}
-                    className="bg-white border border-[#e8e6e3] overflow-hidden"
+                    className="bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] overflow-hidden"
                   >
-                    <div className="aspect-4/3 bg-[#f0eeeb] animate-pulse" />
+                    <div className="aspect-4/3 bg-[#f0eeeb] dark:bg-[#333028] animate-pulse" />
                     <div className="p-3.5 space-y-2">
-                      <div className="h-4 bg-[#f0eeeb] rounded animate-pulse w-3/4" />
-                      <div className="h-3 bg-[#f0eeeb] rounded animate-pulse w-1/2" />
-                      <div className="h-5 bg-[#f0eeeb] rounded animate-pulse w-1/3" />
+                      <div className="h-4 bg-[#f0eeeb] dark:bg-[#333028] rounded animate-pulse w-3/4" />
+                      <div className="h-3 bg-[#f0eeeb] dark:bg-[#333028] rounded animate-pulse w-1/2" />
+                      <div className="h-5 bg-[#f0eeeb] dark:bg-[#333028] rounded animate-pulse w-1/3" />
                     </div>
                   </div>
                 ))}
@@ -1075,7 +1095,7 @@ export default function SearchClient({
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 text-[#8a8280]">
+              <div className="text-center py-20 text-[#8a8280] dark:text-[#6b6560]">
                 <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
                 <p className="text-sm">{t("emptyState")}</p>
               </div>

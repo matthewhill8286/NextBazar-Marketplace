@@ -63,7 +63,7 @@ export default function PromoCodeInput() {
   }
 
   return (
-    <div className="bg-[#faf9f7] border border-[#e8e6e3] px-5 py-5 max-w-md mx-auto">
+    <div className="bg-[#faf9f7] dark:bg-[#1e1c1a] border border-[#e8e6e3] dark:border-[#3a3735] px-5 py-5 max-w-md mx-auto">
       <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-[#6b6560] mb-3 flex items-center justify-center gap-1.5">
         <Ticket className="w-3.5 h-3.5 text-[#8E7A6B]" />
         Have a promo code? Get started free
@@ -78,7 +78,7 @@ export default function PromoCodeInput() {
           }}
           onKeyDown={(e) => e.key === "Enter" && handleRedeem()}
           placeholder="Enter promo code"
-          className="flex-1 bg-white border border-[#e8e6e3] px-3 py-2.5 text-sm text-[#1a1a1a] placeholder:text-[#8a8280] focus:outline-none focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 font-mono tracking-wider transition-colors"
+          className="flex-1 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] px-3 py-2.5 text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder:text-[#8a8280] dark:placeholder:text-[#6b6560] focus:outline-none focus-visible:border-[#8E7A6B] focus-visible:ring-2 focus-visible:ring-[#8E7A6B]/5 font-mono tracking-wider transition-colors"
           disabled={promoLoading}
         />
         <button

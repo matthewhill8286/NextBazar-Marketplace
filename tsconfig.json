@@ -13,22 +13,23 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "next": ["./web/app/compat/next-stub.ts"],
+      "next/image": ["./web/app/compat/next-image.tsx"],
+      "next/link": ["./web/app/compat/next-link.tsx"],
+      "next/navigation": ["./web/app/compat/next-navigation.ts"],
+      "next/headers": ["./web/app/compat/next-headers.ts"],
+      "next/server": ["./web/app/compat/next-server.ts"],
+      "next/cache": ["./web/app/compat/next-cache.ts"],
+      "next/dynamic": ["./web/app/compat/next-dynamic.tsx"],
+      "next/script": ["./web/app/compat/next-script.tsx"],
+      "next/font/google": ["./web/app/compat/next-font.ts"],
+      "next-intl": ["./web/app/compat/next-intl.tsx"],
+      "next-intl/server": ["./web/app/compat/next-intl.tsx"],
+      "@sentry/nextjs": ["./web/app/compat/sentry.ts"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
-  "exclude": ["node_modules", "supabase/functions/**/*.ts"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts"],
+  "exclude": ["node_modules", "web", "supabase/functions/**/*.ts"]
 }

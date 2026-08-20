@@ -75,7 +75,7 @@ export function NavPreviewWrapper({
       <Link
         href={href}
         aria-label={label}
-        className="flex items-center gap-1.5 text-sm text-[#666] hover:text-[#1a1a1a] px-3 py-2 hover:bg-[#faf9f7] transition-colors relative"
+        className="flex items-center gap-1.5 text-sm text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white px-3 py-2 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors relative"
       >
         {icon}
         {!!badge && badge > 0 && (
@@ -91,7 +91,7 @@ export function NavPreviewWrapper({
       {open && (
         <div
           onClick={() => setOpen(false)}
-          className="absolute right-0 top-full mt-1.5 w-80 bg-white border border-[#e8e6e3] shadow-sm shadow-[#e8e6e3]/40 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-1 duration-150"
+          className="absolute right-0 top-full mt-1.5 w-80 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735] shadow-sm shadow-[#e8e6e3]/40 dark:shadow-black/20 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-1 duration-150"
         >
           {loaded && children({ load: () => {} })}
         </div>
@@ -152,10 +152,10 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
       <div className="p-3 space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-10 h-10 rounded-full bg-[#f0eeeb] shrink-0" />
+            <div className="w-10 h-10 rounded-full bg-[#f0eeeb] dark:bg-[#333028] shrink-0" />
             <div className="flex-1 space-y-1.5 pt-1">
-              <div className="h-3 w-24 bg-[#f0eeeb] rounded" />
-              <div className="h-3 w-40 bg-[#f0eeeb] rounded" />
+              <div className="h-3 w-24 bg-[#f0eeeb] dark:bg-[#333028] rounded" />
+              <div className="h-3 w-40 bg-[#f0eeeb] dark:bg-[#333028] rounded" />
             </div>
           </div>
         ))}
@@ -174,7 +174,7 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
 
   return (
     <>
-      <div className="divide-y divide-[#e8e6e3]">
+      <div className="divide-y divide-[#e8e6e3] dark:divide-[#3a3735]">
         {convos.map((c) => {
           const other = c.buyer?.id === userId ? c.seller : c.buyer;
           return (
@@ -183,7 +183,7 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
               href={
                 shopMode ? `/dashboard/messages` : `/dashboard/messages/${c.id}`
               }
-              className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors"
+              className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
             >
               <div className="w-10 h-10 rounded-full bg-[#f0eeeb] flex items-center justify-center text-[#666] text-sm font-bold shrink-0 overflow-hidden">
                 {other?.avatar_url ? (
@@ -199,10 +199,10 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[#1a1a1a] truncate">
+                <p className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                   {other?.display_name || "User"}
                 </p>
-                <p className="text-xs text-[#6b6560] truncate">
+                <p className="text-xs text-[#6b6560] dark:text-[#9a9290] truncate">
                   {c.last_message_preview || c.listings?.title || "…"}
                 </p>
               </div>
@@ -217,7 +217,7 @@ export function MessagesPreview({ shopMode = false }: { shopMode?: boolean }) {
       </div>
       <Link
         href="/dashboard/messages"
-        className="block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 border-t border-[#e8e6e3] hover:bg-[#faf9f7] transition-colors"
+        className="block text-center text-xs font-semibold text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white py-2.5 border-t border-[#e8e6e3] dark:border-[#3a3735] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
       >
         View all messages →
       </Link>
@@ -267,10 +267,10 @@ export function SavedPreview() {
       <div className="p-3 space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-12 h-10 bg-[#f0eeeb] shrink-0" />
+            <div className="w-12 h-10 bg-[#f0eeeb] dark:bg-[#333028] shrink-0" />
             <div className="flex-1 space-y-1.5 pt-1">
-              <div className="h-3 w-28 bg-[#f0eeeb] rounded" />
-              <div className="h-3 w-16 bg-[#f0eeeb] rounded" />
+              <div className="h-3 w-28 bg-[#f0eeeb] dark:bg-[#333028] rounded" />
+              <div className="h-3 w-16 bg-[#f0eeeb] dark:bg-[#333028] rounded" />
             </div>
           </div>
         ))}
@@ -289,14 +289,14 @@ export function SavedPreview() {
 
   return (
     <>
-      <div className="divide-y divide-[#e8e6e3]">
+      <div className="divide-y divide-[#e8e6e3] dark:divide-[#3a3735]">
         {items.map((item) => (
           <Link
             key={item.id}
             href={`/listing/${item.slug}`}
-            className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors"
+            className="flex items-center gap-3 px-4 py-3 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
           >
-            <div className="w-12 h-10 bg-[#f0eeeb] shrink-0 overflow-hidden">
+            <div className="w-12 h-10 bg-[#f0eeeb] dark:bg-[#333028] shrink-0 overflow-hidden">
               {item.primary_image_url && (
                 <Image
                   src={item.primary_image_url}
@@ -308,10 +308,10 @@ export function SavedPreview() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[#1a1a1a] truncate">
+              <p className="text-sm font-medium text-[#1a1a1a] dark:text-[#e8e6e3] truncate">
                 {item.title}
               </p>
-              <p className="text-xs font-semibold text-[#666]">
+              <p className="text-xs font-semibold text-[#666] dark:text-[#9a9290]">
                 {item.price != null
                   ? `${item.currency === "EUR" ? "€" : item.currency}${item.price.toLocaleString()}`
                   : "Contact"}
@@ -322,7 +322,7 @@ export function SavedPreview() {
       </div>
       <Link
         href="/dashboard/saved"
-        className="block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 border-t border-[#e8e6e3] hover:bg-[#faf9f7] transition-colors"
+        className="block text-center text-xs font-semibold text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] dark:hover:text-white py-2.5 border-t border-[#e8e6e3] dark:border-[#3a3735] hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors"
       >
         View all saved →
       </Link>
@@ -383,10 +383,10 @@ export function NotificationsPreview({
       <div className="p-3 space-y-3">
         {[1, 2, 3].map((i) => (
           <div key={i} className="flex gap-3 animate-pulse">
-            <div className="w-8 h-8 rounded-full bg-[#f0eeeb] shrink-0" />
+            <div className="w-8 h-8 rounded-full bg-[#f0eeeb] dark:bg-[#333028] shrink-0" />
             <div className="flex-1 space-y-1.5 pt-0.5">
-              <div className="h-3 w-32 bg-[#f0eeeb] rounded" />
-              <div className="h-3 w-48 bg-[#f0eeeb] rounded" />
+              <div className="h-3 w-32 bg-[#f0eeeb] dark:bg-[#333028] rounded" />
+              <div className="h-3 w-48 bg-[#f0eeeb] dark:bg-[#333028] rounded" />
             </div>
           </div>
         ))}
@@ -421,7 +421,7 @@ export function NotificationsPreview({
 
   return (
     <>
-      <div className="divide-y divide-[#e8e6e3]">
+      <div className="divide-y divide-[#e8e6e3] dark:divide-[#3a3735]">
         {notifs.map((n) => {
           const Wrapper = n.link ? Link : "div";
           const wrapperProps = n.link ? { href: n.link } : {};
@@ -430,19 +430,21 @@ export function NotificationsPreview({
               key={n.id}
               {...(wrapperProps as any)}
               onClick={() => handleClick(n)}
-              className={`flex items-start gap-3 px-4 py-3 hover:bg-[#faf9f7] transition-colors cursor-pointer ${!n.read ? "bg-[#faf9f7]/40" : ""}`}
+              className={`flex items-start gap-3 px-4 py-3 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors cursor-pointer ${!n.read ? "bg-[#faf9f7]/40 dark:bg-[#333028]/40" : ""}`}
             >
               <span className="text-base shrink-0 mt-0.5">
                 {NOTIF_ICONS[n.type] || "📋"}
               </span>
               <div className="flex-1 min-w-0">
                 <p
-                  className={`text-sm truncate ${!n.read ? "font-semibold text-[#1a1a1a]" : "font-medium text-[#666]"}`}
+                  className={`text-sm truncate ${!n.read ? "font-semibold text-[#1a1a1a] dark:text-[#e8e6e3]" : "font-medium text-[#666] dark:text-[#9a9290]"}`}
                 >
                   {n.title}
                 </p>
                 {n.body && (
-                  <p className="text-xs text-[#6b6560] truncate">{n.body}</p>
+                  <p className="text-xs text-[#6b6560] dark:text-[#9a9290] truncate">
+                    {n.body}
+                  </p>
                 )}
                 <p className="text-[10px] text-[#8a8280] mt-0.5">
                   {shortTimeAgo(n.created_at)}
@@ -455,7 +457,7 @@ export function NotificationsPreview({
           );
         })}
       </div>
-      <div className="flex items-center border-t border-[#e8e6e3]">
+      <div className="flex items-center border-t border-[#e8e6e3] dark:border-[#3a3735]">
         {notifs.some((n) => !n.read) && (
           <button
             onClick={() => {
@@ -468,14 +470,14 @@ export function NotificationsPreview({
                 .then();
               setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
             }}
-            className="flex-1 text-center text-xs font-semibold text-green-600 hover:text-green-700 py-2.5 hover:bg-green-50/50 transition-colors flex items-center justify-center gap-1"
+            className="flex-1 text-center text-xs font-semibold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 py-2.5 hover:bg-green-50/50 dark:hover:bg-green-900/20 transition-colors flex items-center justify-center gap-1"
           >
             ✓ Mark all read
           </button>
         )}
         <Link
           href="/dashboard/notifications"
-          className={`flex-1 block text-center text-xs font-semibold text-[#666] hover:text-[#1a1a1a] py-2.5 hover:bg-[#faf9f7] transition-colors ${notifs.some((n) => !n.read) ? "border-l border-[#e8e6e3]" : ""}`}
+          className={`flex-1 block text-center text-xs font-semibold text-[#666] dark:text-[#9a9290] hover:text-[#1a1a1a] py-2.5 hover:bg-[#faf9f7] dark:hover:bg-[#333028] transition-colors ${notifs.some((n) => !n.read) ? "border-l border-[#e8e6e3] dark:border-[#3a3735]" : ""}`}
         >
           View all notifications →
         </Link>

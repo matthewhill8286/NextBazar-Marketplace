@@ -1,15 +1,17 @@
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { EmptyListingsIllustration } from "@/app/components/illustrations";
 import ListingCard from "@/app/components/listing-card";
 import { Link } from "@/i18n/navigation";
-import { getRecentListingsCached } from "@/lib/supabase/queries";
-import { getTranslator } from "@/lib/translations";
+import type { ListingCardRow } from "@/lib/supabase/supabase.types";
 
-export default async function RecentSection({ locale }: { locale: string }) {
-  const [recent, t] = await Promise.all([
-    getRecentListingsCached(),
-    getTranslator(locale, "home"),
-  ]);
+export default function RecentSection({
+  listings,
+}: {
+  listings: ListingCardRow[];
+}) {
+  const t = useTranslations("home");
+  const recent = listings;
 
   return (
     <section
@@ -18,11 +20,11 @@ export default async function RecentSection({ locale }: { locale: string }) {
     >
       <div className="flex items-end justify-between mb-12">
         <div>
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] mb-4">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#6b6560] dark:text-[#9a9290] mb-4">
             {t("recent.badge")}
           </p>
           <h2
-            className="text-3xl md:text-4xl font-light text-[#1a1a1a]"
+            className="text-3xl md:text-4xl font-light text-[#1a1a1a] dark:text-[#e8e6e3]"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {recent.length === 0 ? t("recent.noListings") : t("recent.title")}
@@ -31,7 +33,7 @@ export default async function RecentSection({ locale }: { locale: string }) {
         {recent.length > 0 && (
           <Link
             href="/search"
-            className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#888] hover:text-[#1a1a1a] transition-colors"
+            className="group hidden md:inline-flex items-center gap-2 text-xs font-medium tracking-[0.15em] uppercase text-[#888] hover:text-[#1a1a1a] dark:hover:text-white transition-colors"
           >
             {t("recent.viewAll")}
             <ArrowRight
@@ -48,10 +50,10 @@ export default async function RecentSection({ locale }: { locale: string }) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-24 bg-white border border-[#e8e6e3]">
-          <EmptyListingsIllustration className="w-20 h-20 mx-auto mb-6 text-[#8a8280]" />
+        <div className="text-center py-24 bg-white dark:bg-[#252220] border border-[#e8e6e3] dark:border-[#3a3735]">
+          <EmptyListingsIllustration className="w-20 h-20 mx-auto mb-6 text-[#8a8280] dark:text-[#6b6560]" />
           <h3
-            className="text-2xl font-light text-[#1a1a1a] mb-3"
+            className="text-2xl font-light text-[#1a1a1a] dark:text-[#e8e6e3] mb-3"
             style={{ fontFamily: "'Playfair Display', serif" }}
           >
             {t("recent.emptyTitle")}
