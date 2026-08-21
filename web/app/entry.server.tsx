@@ -1,19 +1,26 @@
 import "../instrument.server.mjs";
-import { createReadableStreamFromReadable } from "@react-router/node";
 import * as Sentry from "@sentry/react-router";
-import { renderToPipeableStream } from "react-dom/server";
-import { ServerRouter } from "react-router";
+import { handleRequest } from "@vercel/react-router/entry.server";
+import type { AppLoadContext, EntryContext } from "react-router";
 
-export const streamTimeout = 5_000;
+export { streamTimeout } from "@vercel/react-router/entry.server";
 
-const handleRequest = Sentry.createSentryHandleRequest({
-  ServerRouter,
-  renderToPipeableStream,
-  createReadableStreamFromReadable,
-  streamTimeout,
-});
-
-export default handleRequest;
+export default Sentry.wrapSentryHandleRequest(
+  (
+    request: Request,
+    responseStatusCode: number,
+    responseHeaders: Headers,
+    routerContext: EntryContext,
+    loadContext: AppLoadContext,
+  ) =>
+    handleRequest(
+      request,
+      responseStatusCode,
+      responseHeaders,
+      routerContext,
+      loadContext,
+    ),
+);
 
 export const handleError = Sentry.createSentryHandleError({
   logErrors: true,
