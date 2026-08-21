@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(root, "..");
@@ -38,9 +38,22 @@ function vercelServerEsm(): Plugin {
   };
 }
 
-export default defineConfig({
+/** Next.js inlined `process.env.NEXT_PUBLIC_*` in the browser. Vite only
+ * replaces `import.meta.env.*` unless we define the `process.env` keys. */
+function publicProcessEnvDefine(mode: string): Record<string, string> {
+  const fileEnv = loadEnv(mode, repo, ["VITE_", "NEXT_PUBLIC_"]);
+  const define: Record<string, string> = {};
+  for (const [key, value] of Object.entries({ ...fileEnv, ...process.env })) {
+    if (!key.startsWith("NEXT_PUBLIC_") && !key.startsWith("VITE_")) continue;
+    define[`process.env.${key}`] = JSON.stringify(value ?? "");
+  }
+  return define;
+}
+
+export default defineConfig(({ mode }) => ({
   envDir: repo,
   envPrefix: ["VITE_", "NEXT_PUBLIC_"],
+  define: publicProcessEnvDefine(mode),
   publicDir: path.join(repo, "public"),
   ssr: {
     noExternal: [/^@sentry\//],
@@ -65,4 +78,4 @@ export default defineConfig({
       { find: "@", replacement: repo },
     ],
   },
-});
+}));
