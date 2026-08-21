@@ -7,6 +7,7 @@ import {
   getSubcategoriesCached,
 } from "@/lib/supabase/queries";
 import type { SearchListing } from "@/lib/supabase/supabase.types";
+import { asNextRequest } from "~/compat/next-server";
 import type { Route } from "./+types/search";
 
 export function meta() {
@@ -23,7 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       getCategoriesCached(),
       getSubcategoriesCached(),
       getLocationsCached(),
-      searchGet(request as never),
+      searchGet(asNextRequest(request) as never),
       getFeaturedListingsCached(),
     ]);
   const json = searchRes.ok ? await searchRes.json() : { hits: [], totalHits: 0, facets: undefined };

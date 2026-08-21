@@ -22,7 +22,7 @@ function getSupabase() {
  * Without a query    → standard Supabase filter query (browse/filter mode)
  */
 export async function GET(req: NextRequest) {
-  const sp = req.nextUrl.searchParams;
+  const sp = (req.nextUrl ?? new URL(req.url)).searchParams;
 
   const q = sp.get("q")?.trim() || "";
   const category = sp.get("category") || "";
