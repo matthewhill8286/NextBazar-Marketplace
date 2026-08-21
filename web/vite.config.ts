@@ -1,18 +1,51 @@
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
+import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(root, "..");
 const compat = path.join(root, "app/compat");
 
+/** Vercel's Node wrapper imports `./index.js` from an `.mjs` file. Without a
+ * sibling `package.json` with `"type": "module"`, Node parses that bundle as
+ * CJS and crashes on `import`. The JSON import also pulls the file into NFT. */
+function vercelServerEsm(): Plugin {
+  let ssr = false;
+  return {
+    name: "vercel-server-esm",
+    apply: "build",
+    configResolved(config) {
+      ssr = Boolean(config.build.ssr);
+    },
+    renderChunk(code, chunk) {
+      if (!ssr || !chunk.isEntry || !chunk.fileName.endsWith(".js")) return;
+      if (code.includes('import "./package.json"')) return;
+      return {
+        code: `import "./package.json" with { type: "json" };\n${code}`,
+        map: null,
+      };
+    },
+    writeBundle(options) {
+      if (!ssr || !options.dir) return;
+      writeFileSync(
+        path.join(options.dir, "package.json"),
+        `${JSON.stringify({ type: "module" }, null, 2)}\n`,
+      );
+    },
+  };
+}
+
 export default defineConfig({
   envDir: repo,
   envPrefix: ["VITE_", "NEXT_PUBLIC_"],
   publicDir: path.join(repo, "public"),
-  plugins: [tailwindcss(), reactRouter()],
+  ssr: {
+    noExternal: [/^@sentry\//],
+  },
+  plugins: [tailwindcss(), reactRouter(), vercelServerEsm()],
   resolve: {
     tsconfigPaths: true,
     alias: [
